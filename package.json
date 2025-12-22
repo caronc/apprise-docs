@@ -1,0 +1,22 @@
+{
+  "name": "apprise-docs",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Apprise Documentation - Astro Starlight Site",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/starlight": "^0.37.1",
+    "astro": "^5.16.6",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

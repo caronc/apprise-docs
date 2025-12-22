@@ -1,0 +1,11 @@
+/* Custom styles for Apprise documentation */
+
+/* You can add custom CSS here to override Starlight's default styles */
+
+:root {
+  --sl-color-accent-low: #1a3a5c;
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-high: #60a5fa;
+}
+
+/* Add any custom styling for code blocks, callouts, or other elements */
