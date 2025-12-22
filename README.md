@@ -1,0 +1,2 @@
+# apprise-docs
+Apprise Documentation
