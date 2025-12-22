@@ -1,0 +1,51 @@
+name: Documentation Issue
+description: Report an issue with the documentation
+title: "[DOCS]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to help improve Apprise documentation!
+  
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of documentation issue is this?
+      options:
+        - Error or inaccuracy
+        - Missing information
+        - Unclear or confusing content
+        - Broken link
+        - Formatting issue
+        - Other
+    validations:
+      required: true
+  
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: Which page has the issue?
+      placeholder: https://caronc.github.io/apprise-docs/...
+    validations:
+      required: false
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue with the documentation
+      placeholder: What's wrong? What needs to be improved?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Fix
+      description: If you have a suggestion for how to fix this, please share it
+      placeholder: How should this be corrected or improved?
+    validations:
+      required: false

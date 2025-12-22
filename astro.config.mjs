@@ -3,6 +3,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://caronc.github.io',
+	base: '/apprise-docs',
 	integrations: [
 		starlight({
 			title: 'Apprise Documentation',
