@@ -25,7 +25,7 @@ limits:
 
 Create a free account at <https://teams.microsoft.com>.
 
-You will need to create an **Incoming Webhook** to attach Apprise. This can be accomplished through the **the app store** (bottom left hand side of slack like interface); don't worry it's free. From within the app store, search for **Incoming Webhook**. Once you click on it you can associate it with your team. You can also assign it a name, and an avatar. Finally you will have to assign it to a channel.
+You will need to create an **Incoming Webhook** to attach Apprise. This can be accomplished through the **the app store** (bottom left hand side of slack like interface); don't worry, it's free. From within the app store, search for **Incoming Webhook**. Once you click on it you can associate it with your team. You can also assign it a name, and an avatar. Finally you will have to assign it to a channel.
 
 Alternatively, go to the channel where you want to add the webhook and select ••• icon (More options) from the top navigation bar. Search for **Incoming Webhook** and select **Add**.
 
@@ -110,7 +110,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 ### The `template` URL Argument
 
-Define a `?template=` argument that points to a predefined **MessageCard** you've already prepared for Microsoft Teams. The `template` parameter can either point to a local file or a web based URL. It's contents must be JSON (or you'll get an error trying to process it), and it at the very minimum must have the basic pattern:
+Define a `?template=` argument that points to a predefined **MessageCard** you've already prepared for Microsoft Teams. The `template` parameter can either point to a local file or a web based URL. Its contents must be JSON (or you'll get an error trying to process it), and it at the very minimum must have the basic pattern:
 
 ```json
 {
@@ -147,7 +147,7 @@ In the above example, we introduce several tokens... `app_id`, `app_title`, `tar
 - **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
 - **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
 - **app_image_url**: The image URL associated with the message type (`info`, `warning`, etc) if one exists and/or was not specified to be turned off from the URL (`image=no`)
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, it's value will be `https://github.com/caronc/apprise`.
+- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.
 
 Anything you invent outside of that is yours. So lets get back to the `target` and `whence` that was define. Template tokens can be dynamically set by using the colon `:` operator before any URL argument you identify. For example we can set these values on our Apprise URL like so:
 

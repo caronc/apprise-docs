@@ -60,7 +60,7 @@ Valid syntax is as follows:
 | flair_text | No       | Provide the `flair_text` you want to associate with your post. By default this is not passed upstream unless identified.                                                                                                                                                                                                                                                                                                                         |
 
 :::note
-Reddit always requires a `title` to go with it's `body`. Reddit will deny your post (upstream) if you don't provide both.
+Reddit always requires a `title` to go with its `body`. Reddit will deny your post (upstream) if you don't provide both.
 :::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->

@@ -75,7 +75,7 @@ The final behaviour is still constrained by the active `AppriseAsset` (storage p
 
 | Mode     | Behaviour                             | When to Use                                                                                                                                                 |
 | -------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MEMORY` | In-memory only, no disk usage         | Ephemeral or restricted environments; This is the default for all plugins unless overriden with the `storage_mode` variable during it's class initialzation |
+| `MEMORY` | In-memory only, no disk usage         | Ephemeral or restricted environments; This is the default for all plugins unless overriden with the `storage_mode` variable during its class initialzation |
 | `AUTO`   | Disk when available, otherwise memory | Flushes to disk only when the plugin is destroyed (at end) **Recommended default**                                                                          |
 | `FLUSH`  | Flush to disk aggressively            | Trades higher I/O for more durability. Long-running daemons with critical metadata                                                                          |
 

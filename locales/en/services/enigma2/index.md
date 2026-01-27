@@ -27,9 +27,9 @@ limits:
 
 A [_E2OpenPlugin_](https://github.com/E2OpenPlugins) called [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) can allow you to communicate with your Enigma2 devices (such as [Dreambox](http://www.dream-multimedia-tv.de/), [Vu+](http://www.vuplus.com), etc.) using a API.
 
-Once [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) is installed, Apprise can utilize it's API to send notifications to your Enigma2 device.
+Once [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) is installed, Apprise can utilize its API to send notifications to your Enigma2 device.
 
-Installation instructions on how to install OpenWebif onto your Engima2 device can be found on it's [GitHub Page](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
+Installation instructions on how to install OpenWebif onto your Engima2 device can be found on its [GitHub Page](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
 
 ## Syntax
 

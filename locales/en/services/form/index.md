@@ -26,7 +26,7 @@ sample_urls:
 
 This is just a custom Notification that allows you to have this tool post to a web server as a simple FORM (`application/x-www-form-urlencoded`). This is useful for those who want to be notified via their own custom methods.
 
-The payload will include a `body`, `title`, `version`, and `type` in it's response. You can add more (see below for details).
+The payload will include a `body`, `title`, `version`, and `type` in its response. You can add more (see below for details).
 
 The _type_ will be one of the following:
 

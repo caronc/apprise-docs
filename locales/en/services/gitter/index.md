@@ -19,7 +19,7 @@ sample_urls:
 
 :::caution
 
-Gitter uses Matrix and does not have it's own custom service anymore. All information below pertains to it's legacy configuration for those still hosting it.
+Gitter uses Matrix and does not have its own custom service anymore. All information below pertains to its legacy configuration for those still hosting it.
 :::
 
 <!-- SERVICE:DETAILS -->

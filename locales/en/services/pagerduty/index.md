@@ -46,7 +46,7 @@ Valid syntax is as follows:
 | component       | No       | Provide a component (string) as part of the payload; the default is **Notification** if one isn't specified.                                                                                                                           |
 | click           | No       | Provide a clickable URL to associate with the notice.                                                                                                                                                                                  |
 | image           | No       | Associate the notification status via a represented icon. You can set this value to `no` if you do not want this to occur.                                                                                                             |
-| severity        | No       | The notification severity is otherwise detected on it's own, however if you wish to force a specific mode always, you can do so by providing this as part of the URL. Possible values are: `info`, `warning`, `critical`, and `error`. |
+| severity        | No       | The notification severity is otherwise detected on its own, however if you wish to force a specific mode always, you can do so by providing this as part of the URL. Possible values are: `info`, `warning`, `critical`, and `error`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

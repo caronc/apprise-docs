@@ -41,7 +41,7 @@ Valid syntax is as follows:
 | password | Yes      | Your [Hampager](https://hampager.de) account password                                                                                                                                                                                                                                                  |
 | priority | No       | The message priority; if this isn't specified then `normal` is used by default. The possible options are `emergency` and `normal`.                                                                                                                                                                     |
 | txgroups | No       | The transmitter group(s) to associate with your message. Use a comma (`,`) to identify more then one. By default if this value isn't specified then the group `dl-all` is used.                                                                                                                        |
-| batch    | No       | [Hampager](https://hampager.de) allows for a batch mode. If you identify more then one call sign, you can send all of them in a single shot instead of the normal Apprise approach (which sends them one by one). Enabling batch mode has both it's pro's and cons. By default batch mode is disabled. |
+| batch    | No       | [Hampager](https://hampager.de) allows for a batch mode. If you identify more then one call sign, you can send all of them in a single shot instead of the normal Apprise approach (which sends them one by one). Enabling batch mode has both pros and cons. By default batch mode is disabled. |
 
 ## Constraints
 

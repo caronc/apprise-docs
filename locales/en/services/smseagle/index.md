@@ -27,7 +27,7 @@ limits:
 
 ## Account Setup
 
-Get your SMSEagle Hardware SMS/MMS Gateway connection [from here](https://www.smseagle.eu). It is from the device you can access it's web interface and configure your access token.
+Get your SMSEagle Hardware SMS/MMS Gateway connection [from here](https://www.smseagle.eu). It is from the device you can access its web interface and configure your access token.
 
 ## Syntax
 

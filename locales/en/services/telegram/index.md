@@ -27,7 +27,7 @@ limits:
 
 Telegram is slightly more complicated then some of the other notification services, so here is quick breakdown of what you need to know and do in order to send Notifications through it using this tool.
 
-At the very start (if you don't have an account already), you will need to connect with a phone. The site uses your phone number as it's credential to let you into your account. So download and install the phone app first via [Android](https://telegram.org/dl/android) or [Apple](https://telegram.org/dl/ios).
+At the very start (if you don't have an account already), you will need to connect with a phone. The site uses your phone number as its credential to let you into your account. So download and install the phone app first via [Android](https://telegram.org/dl/android) or [Apple](https://telegram.org/dl/ios).
 
 Once you're set up, it can be a bit easier to just use their web interface [here](https://telegram.org/dl/webogram) with a PC (especially for development); but this part is up to you.
 

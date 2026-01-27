@@ -38,7 +38,7 @@ At the bare minimum you need to grant the following scopes on your application:
 
 **Note**: If you change/add/remove scope entries associated with your Mastodon Application, you **MUST** regenerate your **Access Token** or your app will not take in effect the scope changes.
 
-After you create your Application, revisit it's configuration as it will now provide you with a `key`, `secret`, and `access_token`. You ONLY need the **Access Token** to have Apprise work.
+After you create your Application, revisit its configuration as it will now provide you with a `key`, `secret`, and `access_token`. You ONLY need the **Access Token** to have Apprise work.
 
 ## Syntax
 

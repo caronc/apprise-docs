@@ -28,7 +28,7 @@ Valid syntax is as follows:
 - `syslog://`
 - `syslog://{facility}`
 
-One might change the facility from it's default like so:
+One might change the facility from its default like so:
 
 - `syslog://local5`
 
