@@ -47,6 +47,25 @@ docker run --name apprise \
   -e APPRISE_ADMIN=y \
   -d caronc/apprise:latest
 ```
+
+The following will set the same container up but leverage health check monitoring:
+
+```bash
+docker run --name apprise \
+  -p 8000:8000 \
+  -v ./config:/config \
+  -v ./attach:/attach \
+  -e APPRISE_STATEFUL_MODE=simple \
+  -e APPRISE_WORKER_COUNT=1 \
+  -e APPRISE_ADMIN=y \
+  --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
+  --health-interval=30s \
+  --health-timeout=5s \
+  --health-retries=3 \
+  --health-start-period=20s \
+  -d caronc/apprise:latest
+```
+
 </TabItem>
 <TabItem label="Docker Compose">
 
@@ -64,6 +83,34 @@ services:
     volumes:
       - ./config:/config
       - ./attach:/attach
+```
+
+The following will set the same container up but leverage health check monitoring:
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise-api:latest
+    container_name: apprise
+    ports:
+      - "8000:8000"
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_ADMIN: "y"
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 ```
 
 </TabItem>
@@ -98,6 +145,58 @@ spec:
             - name: APPRISE_ADMIN
               value: y
 ```
+
+The following example expands on the above and offers a **liveness** and **readiness** probe:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: 1
+            - name: APPRISE_ADMIN
+              value: y
+
+          # Ready only when /status returns 200
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Restart the container if /status stops returning 200
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+```
+
 </TabItem>
 
 <TabItem label="Full Example">
@@ -235,7 +334,94 @@ spec:
             name: apprise-api-override-conf-config
 ```
 
-Credit goes to: [@steled](https://github.com/steled) for the above.
+Credit goes to: [@steled](https://github.com/steled) for the above. The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the last section with the following instead:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: apprise
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: apprise
+    spec:
+      containers:
+        - env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          image: caronc/apprise:1.1
+          name: apprise
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: apprise-data
+            - mountPath: /plugin
+              name: apprise-data
+            - mountPath: /attach
+              name: apprise-data
+            - mountPath: /etc/nginx/.htpasswd
+              name: apprise-api-htpasswd-secret-volume
+              readOnly: true
+              subPath: .htpasswd
+            - mountPath: /etc/nginx/location-override.conf
+              name: apprise-api-override-conf-config-volume
+              readOnly: true
+              subPath: location-override.conf
+      restartPolicy: Always
+      volumes:
+        - name: apprise-data
+          persistentVolumeClaim:
+            claimName: apprise-data
+        - name: apprise-api-htpasswd-secret-volume
+          secret:
+            secretName: apprise-api-htpasswd-secret
+        - name: apprise-api-override-conf-config-volume
+          configMap:
+            name: apprise-api-override-conf-config
+```
 
 </TabItem>
 
@@ -285,6 +471,101 @@ spec:
           ports:
             - containerPort: 8000
               name: http
+          volumeMounts:
+            # Persistent data
+            - name: config
+              mountPath: /config
+            - name: plugin
+              mountPath: /plugin
+            - name: attach
+              mountPath: /attach
+
+            # Ephemeral runtime and temp files
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: apprise-config
+        - name: plugin
+          persistentVolumeClaim:
+            claimName: apprise-plugin
+        - name: attach
+          persistentVolumeClaim:
+            claimName: apprise-attach
+
+        # The deployment mounts /tmp as an in-memory emptyDir, which is where nginx,
+        # gunicorn, and supervisord store pids, sockets, and temporary files.
+        # This is configured as an ephemeral volume, stored in memory.
+        - name: tmp
+          emptyDir:
+            medium: Memory
+```
+
+The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the section with the following instead:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        readOnlyRootFilesystem: true
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: "1"
+            - name: APPRISE_ADMIN
+              value: "y"
+          ports:
+            - containerPort: 8000
+              name: http
+
+          # Health checks: /status must return HTTP 200
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
           volumeMounts:
             # Persistent data
             - name: config
