@@ -54,11 +54,11 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable      | Required | Description                                                                            |
-| ------------- | -------- | -------------------------------------------------------------------------------------- |
-| workspace     | Yes      | The workspace associated with your Google Chat account.                                |
-| webhook_key   | Yes      | The webhook key associated with your Google Chat account.                              |
-| webhook_token | Yes      | The webhook token associated with your Google Chat account.                            |
+| Variable      | Required | Description                                                                           |
+| ------------- | -------- | ------------------------------------------------------------------------------------- |
+| workspace     | Yes      | The workspace associated with your Google Chat account.                               |
+| webhook_key   | Yes      | The webhook key associated with your Google Chat account.                             |
+| webhook_token | Yes      | The webhook token associated with your Google Chat account.                           |
 | thread        | No       | You can optionally specify a `ThreadKey` on the URL to focus its notifications there. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
