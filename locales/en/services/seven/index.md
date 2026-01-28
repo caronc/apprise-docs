@@ -22,7 +22,7 @@ limits:
 
 ## Account Setup
 
-Signup [from here](https://www.seven.io/). It is from the device you can access it's web interface and configure your access token.
+Signup [from here](https://www.seven.io/). It is from the device you can access its web interface and configure your access token.
 
 ## Syntax
 

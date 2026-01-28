@@ -55,13 +55,13 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                 |
-| --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| workflow  | Yes      | The Workflow Identifier provided in the Azure Webhook Link                                                                                                                                                                                                                                                  |
-| signature | Yes      | The Signature Identifier provided in the Azure Webhook Link (`sig=`)                                                                                                                                                                                                                                        |
-| wrap      | No       | Wrap body text in response.                                                                                                                                                                                                                                                                                 |
-| ver       | No       | The Power Automate API Version to use; the default value is `2016-06-01`. This is also parsed using the keyword `api-version` that can be found on the Azure Webhook Link.                                                                                                                                  |
-| template  | No       | provide a path to a template you would prefer to use instead of the Adaptive card chosen by Apprise. use double `{{token}}` curly braces to identify the tokens you wish to have swapped in the provided template prior to it's submission to the upstream service. (e.g `{{app_body}}` or `{{app_title}}`) |
+| Variable  | Required | Description                                                                                                                                                                                                                                                                                                |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| workflow  | Yes      | The Workflow Identifier provided in the Azure Webhook Link                                                                                                                                                                                                                                                 |
+| signature | Yes      | The Signature Identifier provided in the Azure Webhook Link (`sig=`)                                                                                                                                                                                                                                       |
+| wrap      | No       | Wrap body text in response.                                                                                                                                                                                                                                                                                |
+| ver       | No       | The Power Automate API Version to use; the default value is `2016-06-01`. This is also parsed using the keyword `api-version` that can be found on the Azure Webhook Link.                                                                                                                                 |
+| template  | No       | provide a path to a template you would prefer to use instead of the Adaptive card chosen by Apprise. use double `{{token}}` curly braces to identify the tokens you wish to have swapped in the provided template prior to its submission to the upstream service. (e.g `{{app_body}}` or `{{app_title}}`) |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -118,7 +118,7 @@ In the above example, we introduce several tokens... `app_id`, `app_title`, `tar
 - **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
 - **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
 - **app_image_url**: The image URL associated with the message type (`info`, `warning`, etc) if one exists and/or was not specified to be turned off from the URL (`image=no`)
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, it's value will be `https://github.com/caronc/apprise`.
+- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.
 
 Anything you invent outside of that is yours. So lets get back to the `target` and `whence` that was define. Template tokens can be dynamically set by using the colon `:` operator before any URL argument you identify. For example we can set these values on our Apprise URL like so:
 

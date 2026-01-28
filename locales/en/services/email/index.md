@@ -46,7 +46,7 @@ Secure connections are always implied whether you choose to use **mailto://** or
 
 **Note** Fastmail Users are required to generate a custom App password before you can connect it up to send email to (from a 3rd party tool like this one). You must assign the _SMTP_ option to the new App you generate. This Fastmail portion of this plugin currently supports [the following 116 domains](./fastmail/). Just make sure you identify the email address you're using when you build the mailto:// url and everything will work as intended.
 
-**Note** SendGrid users just need to be sure to use a Validated Domain (through their service) as part of the required **from=** email address (on the URL) or it will not work. It's additionally worth pointing out that [sendgrid://](../sendgrid/) has it's own separate integration as well if you do not need to use the SMTP service.
+**Note** SendGrid users just need to be sure to use a Validated Domain (through their service) as part of the required **from=** email address (on the URL) or it will not work. It's additionally worth pointing out that [sendgrid://](../sendgrid/) has its own separate integration as well if you do not need to use the SMTP service.
 
 ## Email Address Formatting
 

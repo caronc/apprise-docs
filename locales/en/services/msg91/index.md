@@ -23,7 +23,7 @@ limits:
 
 ## Account Setup
 
-To use MSG91, you will need to acquire your _Authentication Key_. This is accessible via the [MSG91 Dashboard](https://control.msg91.com). In addition to this, you will need to prepare a template and assign a `body`, `title`, and `type` variable to it so that Apprise can relay it's information through here.
+To use MSG91, you will need to acquire your _Authentication Key_. This is accessible via the [MSG91 Dashboard](https://control.msg91.com). In addition to this, you will need to prepare a template and assign a `body`, `title`, and `type` variable to it so that Apprise can relay its information through here.
 
 ## Syntax
 

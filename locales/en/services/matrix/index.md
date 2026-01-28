@@ -25,9 +25,9 @@ limits:
 
 ## Account Setup
 
-By default the Apprise Integration of Matrix occurs using it's built in API.
+By default the Apprise Integration of Matrix occurs using its built in API.
 
-However, [the webhook service](https://matrix.org/docs/projects/bot/matrix-webhook.html) also works for those wishing to use it too. At the time, this is still identified as being in it's _late beta_ state.
+However, [the webhook service](https://matrix.org/docs/projects/bot/matrix-webhook.html) also works for those wishing to use it too. At the time, this is still identified as being in its _late beta_ state.
 This can be done by specifying **?mode=matrix** or **?mode=slack**. Presuming you've [set it up](https://github.com/turt2live/matrix-appservice-webhooks).
 
 ## Syntax

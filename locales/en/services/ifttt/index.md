@@ -85,7 +85,7 @@ Now I realize not everyone will want to use the default **{valueX}** entries def
 #
 # Now we use a plus (+) symbol in front of an argument to tell
 # the remote server we want to include a new option called
-# switch and set it's value to 'on'
+# switch and set its value to 'on'
 apprise -vv -b "" ifttt:///b1lUk7b9LpGakJARKBwRIZ@my_light/?-value1&-value2&-value3&+switch=on
 ```
 

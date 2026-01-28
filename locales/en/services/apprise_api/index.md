@@ -127,7 +127,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "apprise://localhost:8080/path/apprise/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-**Note:** this service is a little redundant because you can already use the CLI and point it's configuration to an existing Apprise API server (using the `--config` on the CLI or `AppriseConfig()` class via it's own internal API).
+**Note:** this service is a little redundant because you can already use the CLI and point its configuration to an existing Apprise API server (using the `--config` on the CLI or `AppriseConfig()` class via its own internal API).
 
 ```bash
 # A simple example of the Apprise CLI using a Config file instead:

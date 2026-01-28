@@ -13,7 +13,7 @@ The thing with Apprise is it doesn't know what you're feeding it (the format the
 
 ## Apprise URL Manipulation
 
-You can force the upstream service you're working with the push it's content using `text`, `html`, or `markdown` by specifying it on the Apprise URL you construct. For example, the below tells the mailto:// to transmit the content it's provided as `text`:
+You can force the upstream service you're working with to push its content using `text`, `html`, or `markdown` by specifying it on the Apprise URL you construct. For example, the below tells the mailto:// to transmit the content it's provided as `text`:
 
 - `mailtos://example.com?user=username&pass=password&to=myspy@example.com&format=text`
 

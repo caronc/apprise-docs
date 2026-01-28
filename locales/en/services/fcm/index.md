@@ -47,7 +47,7 @@ You can mix and match these entries as well:
 
 The OAuth2 mode is what FCM seems to hint that you use. But it has much more overhead then the legacy way of doing things. It also requires you to point to a specially generated `JSON` file you can generate from your FCM Management Console.
 
-You can point to the `JSON` file generated locally (if you saved it onto your PC) or refer to it by it's web URL (if you're sharing it somewhere on your network) like so:
+You can point to the `JSON` file generated locally (if you saved it onto your PC) or refer to it by its web URL (if you're sharing it somewhere on your network) like so:
 
 - `fcm://{Project}/{Device}/?keyfile=/path/to/keyfile`
 - `fcm://{Project}/{Device1}/{Device2}/{DeviceN}/?keyfile=https://user:pass@localhost/web/location`

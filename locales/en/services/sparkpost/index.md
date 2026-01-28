@@ -107,7 +107,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 ### Global Substitution
 
-SparkPost allows you to identify `{{tokens}}` that are wrapped in 2 curly braces. [See here on their section of templating](https://developers.sparkpost.com/api/template-language/) for more details. If you wish to pass in a keyword and it's substituted value, simply use the colon (**:**) in front of any parameter you specify on your URL string. The below examples send a sparkpost notification to the email address `bill.gates@microsoft.com` while leveraging the header manipulation.
+SparkPost allows you to identify `{{tokens}}` that are wrapped in 2 curly braces. [See here on their section of templating](https://developers.sparkpost.com/api/template-language/) for more details. If you wish to pass in a keyword and its substituted value, simply use the colon (**:**) in front of any parameter you specify on your URL string. The below examples send a sparkpost notification to the email address `bill.gates@microsoft.com` while leveraging the header manipulation.
 
 ```bash
 # Below would set the token {{software}} to be substituted with Microsoft:
@@ -127,4 +127,4 @@ You can specify as many tokens as you like. Apprise automatically provides some 
 - **app_type**: The message type itself; it may be `info`, `warning`, `success`, etc
 - **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
 - **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, it's value will be `https://github.com/caronc/apprise`.
+- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.

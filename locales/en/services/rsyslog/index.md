@@ -31,7 +31,7 @@ Valid syntax is as follows:
 - `rsyslog://{host}/{facility}`
 - `rsyslog://{host}:{port}/{facility}`
 
-One might change the facility on a remote syslog (rsyslog) server from it's default like so:
+One might change the facility on a remote syslog (rsyslog) server from its default like so:
 
 - `syslog://localhost/local5`
 
@@ -84,6 +84,6 @@ docker run  --cap-add SYSLOG --restart always \
 # In another terminal window, you can look into a directory
 # relative to the location you ran the above command for a directory
 # called `log`
-You may need to adjust it's permissions, the log file will only get
+You may need to adjust its permissions, the log file will only get
 created after you send an apprise notification.
 ```

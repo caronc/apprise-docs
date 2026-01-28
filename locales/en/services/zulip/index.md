@@ -32,7 +32,7 @@ To use this Zulip, you must have a Zulip Chat bot defined; See [here for more de
 
 If you know your organization **{ID}** (as it's part of your zulipchat.com url), then you can also access your bot information by visiting: `https://ID.zulipchat.com/#settings/your-bots`
 
-Upon creating a bot successfully, you'll now be able to access it's API Token.
+Upon creating a bot successfully, you'll now be able to access its API Token.
 
 ## Syntax
 

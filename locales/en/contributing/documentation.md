@@ -13,7 +13,7 @@ merge your contributions smoothly.
 ## Retrieve from GitHub
 
 ```bash
-# Acquire the documentation source from it's official resting spot on GitHub
+# Acquire the documentation source from its official resting spot on GitHub
 git clone git@github.com:caronc/apprise-docs.git
 
 ```
