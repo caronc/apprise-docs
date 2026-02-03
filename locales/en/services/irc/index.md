@@ -6,8 +6,8 @@ sidebar:
 
 source: https://ircv3.net/
 schemas:
-  - irc
-  - ircs: secure
+  - irc: insecure
+  - ircs
 
 sample_urls:
   - irc://{host}/#channel
