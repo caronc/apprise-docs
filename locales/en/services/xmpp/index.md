@@ -78,6 +78,14 @@ The **`mode`** parameter explicitly controls how the XMPP connection is establis
 | `starttls` | STARTTLS upgrade on a plaintext connection |
 | `tls`      | Direct TLS connection                      |
 
+:::note
+the XMPP plugin takes the most secure option when presented with an ambiguous situation. Here are the scenarios:
+
+1. Setting your Apprise URL to a secure mode (such as `xmpps://` or `?secure=yes`) while at the same time setting the (secure) `mode` to `none`. In this circumstance, the `secure=yes` prevails and the default mode used is `starttls`
+1. Setting your Apprise URL to an insecure mode (such as `xmpp://` or `?secure=no`) while at the same time setting the (secure) `mode` to something other than `none`. In this circumstance, the secure mode is turned on, and the mode you identified prevails.
+
+   :::
+
 ### Default behaviour
 
 - `xmpp://` defaults to `mode=none`
