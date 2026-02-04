@@ -22,10 +22,10 @@ sample_urls:
 
 ## Account Setup
 
-XMPP support requires **slixmpp**:
+XMPP support requires **slixmpp version 1.10.0 or newer**:
 
 ```bash
-pip install slixmpp
+pip install "slixmpp>=1.10.0"
 ```
 
 From here, you will need:
@@ -56,16 +56,32 @@ Targets may also be supplied using the `to=` query argument (comma-separated).
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                           |
-| -------- | -------- | --------------------------------------------------------------------- |
-| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID |
-| password | **Yes**  | Password for the XMPP account                                         |
-| host     | **Yes**  | XMPP server hostname (domain)                                         |
-| port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)             |
-| to       | No       | Alternate way to specify target JIDs (comma-separated)                |
-| target   | No       | Recipient JID                                                         |
+| Variable | Required | Description                                                                      |
+| -------- | -------- | -------------------------------------------------------------------------------- |
+| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID            |
+| password | **Yes**  | Password for the XMPP account                                                    |
+| host     | **Yes**  | XMPP server hostname (domain)                                                    |
+| port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                        |
+| mode     | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls` |
+| to       | No       | Alternate way to specify target JIDs (comma-separated)                           |
+| target   | No       | Recipient JID                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Secure Modes
+
+The **`mode`** parameter explicitly controls how the XMPP connection is established and **overrides the schema (`xmpp://` or `xmpps://`) default**.
+
+| Mode       | Description                                |
+| ---------- | ------------------------------------------ |
+| `none`     | Plaintext connection (no TLS)              |
+| `starttls` | STARTTLS upgrade on a plaintext connection |
+| `tls`      | Direct TLS connection                      |
+
+### Default behaviour
+
+- `xmpp://` defaults to `mode=none`
+- `xmpps://` defaults to `mode=starttls`
 
 ### JID Assembly
 
@@ -97,15 +113,25 @@ Alternatively, use the `to=` query argument, which eliminates the need to URL-en
 
 ## Examples
 
-Send a XMPP notification to a server listening on the default secure port:
+Send a plaintext XMPP notification:
 
 ```bash
-# Assuming the xmpp {hostname} is localhost
-# Assuming the jid is user@example.ca
-#  - constructed using {hostname} and {userid}
-# Assuming the xmpp {password} is abc123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   xmpp://user:abc123@example.ca
+apprise -vv -b "Test Message" \
+  xmpp://user:password@localhost
+```
+
+Send a STARTTLS-secured notification (recommended):
+
+```bash
+apprise -vv -b "Secure Message" \
+  xmpp://user:password@localhost?mode=starttls
+```
+
+Send a direct TLS notification:
+
+```bash
+apprise -vv -b "TLS Message" \
+  xmpps://user:password@chat.example.com
 ```
 
 Send a message to a specific recipient:
@@ -129,9 +155,9 @@ apprise -vv -b "Test Message" \
   xmpps://user:password@chat.example.com/alice@example.net?verify=no
 ```
 
-Send a notification that has a /resource
+Send a notification to a resource:
 
 ```bash
 apprise -vv -b "Test Message" \
-  xmpps://user:password@chat.example.com/?to=alice@example.net/mobile&verify=no
+  xmpps://user:password@chat.example.com/?to=alice@example.net/mobile
 ```
