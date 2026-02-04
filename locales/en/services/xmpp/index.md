@@ -22,7 +22,7 @@ sample_urls:
 
 ## Account Setup
 
-XMPP Support requires **slixmpp** to work:
+XMPP support requires **slixmpp**:
 
 ```bash
 pip install slixmpp
@@ -30,72 +30,108 @@ pip install slixmpp
 
 From here, you will need:
 
-1. An existing XMPP account username (on a self hosted or remotely hosted XMPP Server).
+1. An existing XMPP account username (on a self-hosted or remotely hosted XMPP server).
 1. The password associated with that account.
 1. The hostname of your XMPP server.
 1. (Optional) The port the XMPP server listens on.
 
-In Apprise, the **login JID is automatically constructed as `{user}@{host}`**. You do not need to explicitly provide a full JID. If your XMPP server requires authentication, the JID is still assembled from `{user}:{password}@{host}` back into `{user}@{host}`.
+In Apprise, the **login JID is automatically constructed as `{user}@{host}`**. You do not need to explicitly provide a full JID. Authentication credentials are supplied using `{user}:{password}@{host}`, but the resulting login identity is always normalized to `{user}@{host}`.
 
 ## Syntax
 
 Valid syntax is as follows:
 
-- `xmpp://{user}/{password}@{hostname}`
-- `xmpps://{user}/{password}@{hostname}`
-- `xmpp://{user}/{password}@{hostname}/{jid}`
-- `xmpp://{user}/{password}@{hostname}/{jid1}/{jid2}/{jidN}`
+- `xmpp://{user}:{password}@{host}`
+- `xmpps://{user}:{password}@{host}`
+- `xmpp://{user}:{password}@{host}:{port}`
+- `xmpp://{user}:{password}@{host}/{jid}`
+- `xmpp://{user}:{password}@{host}/{jid1}/{jid2}`
+- `xmpps://{user}:{password}@{host}/{jid}?verify=no`
 
-Secure connections should be referenced using **xmpps://** where as insecure connections should be referenced via **xmpp://**.
+Secure connections should be referenced using **xmpps://**, whereas insecure connections should be referenced using **xmpp://**.
 
-If no target is specified, Apprise will send the notification to the
-authenticated account itself (`{user}@{host}`).
+If no target is specified, Apprise sends the notification to the authenticated account itself (`{user}@{host}`).
 
-Targets may also be supplied using the `to=` query argument.
+Targets may also be supplied using the `to=` query argument (comma-separated).
 
 ## Parameter Breakdown
 
 | Variable | Required | Description                                                           |
 | -------- | -------- | --------------------------------------------------------------------- |
-| user     | **Yes**  | XMPP username (localpart); combined with `host` to form the login JID |
+| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID |
 | password | **Yes**  | Password for the XMPP account                                         |
 | host     | **Yes**  | XMPP server hostname (domain)                                         |
 | port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)             |
+| to       | No       | Alternate way to specify target JIDs (comma-separated)                |
 | target   | No       | Recipient JID                                                         |
-| verify   | No       | Enable TLS certificate verification (default: yes)                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+### JID Assembly
+
+Apprise normalizes JIDs to ensure consistent and predictable behaviour, even when shorthand forms are used.
+
+Consider the following Apprise XMPP URL:
+
+```text
+         xmpp://user:pass@example.ca
+                              ^
+                              |
+                         default_host
+```
+
+:::tip[Defining Resources]
+Use `%2F` to represent a resource (acts as `/`) when specifying resources in the URL path, for example: `jason@example.ca%2Fresource`.
+
+Alternatively, use the `to=` query argument, which eliminates the need to URL-encode `/`. For example: `?to=jason@example.ca/resource`.
+:::
+
+| URL                                                         | JIDs Notified                           |
+| ----------------------------------------------------------- | --------------------------------------- |
+| `xmpps://user:pass@example.ca`                              | `user@example.ca`                       |
+| `xmpps://user:pass@example.ca/jane`                         | `jane@example.ca`                       |
+| `xmpps://user:pass@example.ca/jane/joe`                     | `jane@example.ca`, and `joe@example.ca` |
+| `xmpps://user:pass@example.ca/jane@foobar.ca`               | `jane@foobar.ca`                        |
+| `xmpps://user:pass@example.ca/jason%2Fmobile`               | `jason@example.ca/mobile`               |
+| `xmpps://user:pass@example.ca/jane@foobar.ca%2Fworkstation` | `jane@foobar.ca/workstation`            |
+
 ## Examples
 
-Send a XMPP notification to our server listening on port 5223:
+Send a XMPP notification to a server listening on the default secure port:
 
 ```bash
 # Assuming the xmpp {hostname} is localhost
-# Assuming the jid is user@localhost
+# Assuming the jid is user@example.ca
 #  - constructed using {hostname} and {userid}
 # Assuming the xmpp {password} is abc123
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   xmpp://user:abc123@localhost
+   xmpp://user:abc123@example.ca
 ```
 
 Send a message to a specific recipient:
 
 ```bash
 apprise -vv -t "Test Title" -b "Hello from Apprise" \
-  xmpps://me:password@chat.example.com/alice@example.net
+  xmpps://user:password@chat.example.com/alice@example.net
 ```
 
 Send a message to multiple recipients using the `to=` argument:
 
 ```bash
 apprise -vv -b "Group Message" \
-  xmpps://me:password@chat.example.com?to=alice@example.net,bob@example.org
+  xmpps://user:password@chat.example.com?to=alice@example.net,bob@example.org
 ```
 
 Disable TLS certificate verification:
 
 ```bash
 apprise -vv -b "Test Message" \
-  xmpps://me:password@chat.example.com/alice@example.net?verify=no
+  xmpps://user:password@chat.example.com/alice@example.net?verify=no
+```
+
+Send a notification that has a /resource
+
+```bash
+apprise -vv -b "Test Message" \
+  xmpps://user:password@chat.example.com/?to=alice@example.net/mobile&verify=no
 ```
