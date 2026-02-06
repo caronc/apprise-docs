@@ -63,6 +63,7 @@ Targets may also be supplied using the `to=` query argument (comma-separated).
 | host     | **Yes**  | XMPP server hostname (domain)                                                    |
 | port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                        |
 | mode     | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls` |
+| roster   | No       | Retrieves roster from server after connection to it; default is `no`             |
 | to       | No       | Alternate way to specify target JIDs (comma-separated)                           |
 | target   | No       | Recipient JID                                                                    |
 
