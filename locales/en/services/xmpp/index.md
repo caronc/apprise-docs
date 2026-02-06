@@ -56,16 +56,17 @@ Targets may also be supplied using the `to=` query argument (comma-separated).
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                      |
-| -------- | -------- | -------------------------------------------------------------------------------- |
-| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID            |
-| password | **Yes**  | Password for the XMPP account                                                    |
-| host     | **Yes**  | XMPP server hostname (domain)                                                    |
-| port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                        |
-| mode     | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls` |
-| roster   | No       | Retrieves roster from server after connection to it; default is `no`             |
-| to       | No       | Alternate way to specify target JIDs (comma-separated)                           |
-| target   | No       | Recipient JID                                                                    |
+| Variable | Required | Description                                                                                                                                                                                                                                                  |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID                                                                                                                                                                                        |
+| password | **Yes**  | Password for the XMPP account                                                                                                                                                                                                                                |
+| host     | **Yes**  | XMPP server hostname (domain)                                                                                                                                                                                                                                |
+| port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                                                                                                                                                                                                    |
+| mode     | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                             |
+| roster   | No       | Retrieves roster from server after connection to it; default is `no`                                                                                                                                                                                         |
+| subject  | No       | Messages are sent as `mtype=chat` which do not typically use the built in XMPP `subject=` field. Setting this to `yes` redirect any title provied into the `subject=` field instead of concatinating it to the body (default behavior which is `subject=no`) |
+| to       | No       | Alternate way to specify target JIDs (comma-separated)                                                                                                                                                                                                       |
+| target   | No       | Recipient JID                                                                                                                                                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
