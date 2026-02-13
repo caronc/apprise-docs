@@ -350,15 +350,82 @@ apprise --config=/etc/apprise/config.yml --body="test"
 apprise --config=https://myserver.com/cfg/apprise --body="test"
 ```
 
-## File Locations
+## Default Configuration Locations
 
-If you do not specify a configuration file via the CLI (`--config`), Apprise automatically checks these default locations (in order):
+If you do not specify a configuration file via the CLI (`--config`), Apprise automatically loads a default configuration file for you.
+
+<Tabs syncKey="config-search-path">
+<TabItem label="Linux/BSD/Apple">
+The following configuration files are scanned in the order identified below; the first match is loaded and nothing further is processed thereafter.
 
 1. `~/.apprise`
+1. `~/.apprise.conf`
+1. `~/.apprise.yml`
 1. `~/.apprise.yaml`
 1. `~/.config/apprise`
+1. `~/.config/apprise.conf`
+1. `~/.config/apprise.yml`
 1. `~/.config/apprise.yaml`
-1. `/etc/apprise` (and `/etc/apprise.yaml`)
+1. `~/.apprise/apprise`
+1. `~/.apprise/apprise.conf`
+1. `~/.apprise/apprise.yml`
+1. `~/.apprise/apprise.yaml`
+1. `~/.config/apprise/apprise`
+1. `~/.config/apprise/apprise.conf`
+1. `~/.config/apprise/apprise.yml`
+1. `~/.config/apprise/apprise.yaml`
+
+The following global paths are also searched if nothing is found above:
+
+1. `/etc/apprise`
+1. `/etc/apprise.yml`
+1. `/etc/apprise.yaml`
+1. `/etc/apprise/apprise`
+1. `/etc/apprise/apprise.conf`
+1. `/etc/apprise/apprise.yml`
+1. `/etc/apprise/apprise.yaml`
+
+</TabItem>
+
+<TabItem label="Microsoft Windows">
+The following configuration files are scanned in the order identified below; the first match is loaded and nothing further is processed thereafter.
+
+1. `%APPDATA%\Apprise\apprise`
+1. `%APPDATA%\Apprise\apprise.conf`
+1. `%APPDATA%\Apprise\apprise.yml`
+1. `%APPDATA%\Apprise\apprise.yaml`
+1. `%LOCALAPPDATA%\Apprise\apprise`
+1. `%LOCALAPPDATA%\Apprise\apprise.conf`
+1. `%LOCALAPPDATA%\Apprise\apprise.yml`
+1. `%LOCALAPPDATA%\Apprise\apprise.yaml`
+
+The following global paths are also searched if nothing is found above:
+
+1. `%ALLUSERSPROFILE%\Apprise\apprise`
+1. `%ALLUSERSPROFILE%\Apprise\apprise.conf`
+1. `%ALLUSERSPROFILE%\Apprise\apprise.yml`
+1. `%ALLUSERSPROFILE%\Apprise\apprise.yaml`
+1. `%PROGRAMFILES%\Apprise\apprise`
+1. `%PROGRAMFILES%\Apprise\apprise.conf`
+1. `%PROGRAMFILES%\Apprise\apprise.yml`
+1. `%PROGRAMFILES%\Apprise\apprise.yaml`
+1. `%COMMONPROGRAMFILES%\Apprise\apprise`
+1. `%COMMONPROGRAMFILES%\Apprise\apprise.conf`
+1. `%COMMONPROGRAMFILES%\Apprise\apprise.yml`
+1. `%COMMONPROGRAMFILES%\Apprise\apprise.yaml`
+
+Assuming we were the user `foobar` and Microsoft Windows was installed on the `C:\` drive; the above can be interprted as:
+
+| Environment Variable  | Example Translation               |
+| --------------------- | --------------------------------- |
+| `%APPDATA%`           | `C:\Users\foobar\AppData\Roaming` |
+| `%LOCALAPPDATA%`      | `C:\Users\foobar\AppData\Local`   |
+| `%ALLUSERSPROFILE%`   | `C:\ProgramData`                  |
+| `%PROGRAMFILES%`      | `C:\Program Files`                |
+| `%COMMONPROGRAMFILES` | `C:\Program Files\Common Files`   |
+
+</TabItem>
+</Tabs>
 
 :::tip[Did you know?]
 Apprise automatically determines the format (TEXT vs YAML) based on the file extension (`.yml` or `.yaml`). If your file has no extension, it defaults to TEXT unless valid YAML structure is detected.
