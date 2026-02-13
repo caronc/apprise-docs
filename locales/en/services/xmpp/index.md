@@ -48,7 +48,8 @@ Valid syntax is as follows:
 - `xmpp://{user}:{password}@{host}/{jid1}/{jid2}`
 - `xmpps://{user}:{password}@{host}/{jid}?verify=no`
 
-Secure connections should be referenced using **xmpps://**, whereas insecure connections should be referenced using **xmpp://**.
+Secure connections should be referenced using **`xmpps://`**, whereas
+insecure connections should be referenced using **`xmpp://`**.
 
 If no target is specified, Apprise sends the notification to the authenticated account itself (`{user}@{host}`).
 
@@ -56,17 +57,18 @@ Targets may also be supplied using the `to=` query argument (comma-separated).
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                                                  |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| user     | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID                                                                                                                                                                                        |
-| password | **Yes**  | Password for the XMPP account                                                                                                                                                                                                                                |
-| host     | **Yes**  | XMPP server hostname (domain)                                                                                                                                                                                                                                |
-| port     | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                                                                                                                                                                                                    |
-| mode     | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                             |
-| roster   | No       | Retrieves roster from server after connection to it; default is `no`                                                                                                                                                                                         |
-| subject  | No       | Messages are sent as `mtype=chat` which do not typically use the built in XMPP `subject=` field. Setting this to `yes` redirect any title provied into the `subject=` field instead of concatinating it to the body (default behavior which is `subject=no`) |
-| to       | No       | Alternate way to specify target JIDs (comma-separated)                                                                                                                                                                                                       |
-| target   | No       | Recipient JID                                                                                                                                                                                                                                                |
+| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user      | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID                                                                                                                                                                                                                                                                                                                                                                                                        |
+| password  | **Yes**  | Password for the XMPP account                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| host      | **Yes**  | XMPP server hostname (domain)                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| port      | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| mode      | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                                                                                                                                                                                                                                             |
+| roster    | No       | Retrieves roster from the server after connection; default is `no`                                                                                                                                                                                                                                                                                                                                                                                                           |
+| keepalive | No       | Enables XMPP keepalive mode to maintain a persistent connection between notifications. This is only effective when Apprise remains resident in memory (for example, in long-running applications). It has no practical effect when using the Apprise CLI or API in one-shot mode, as the instance is created, sends the notification, and is then destroyed. Even with `?keepalive=yes`, the connection closes once the Apprise instance goes out of scope. Default is `no`. |
+| subject   | No       | Messages are sent as `mtype=chat`, which do not typically use the built-in XMPP `subject=` field. Setting this to `yes` redirects any title provied into the `subject=` field instead of concatinating it to the body (default behavior which is `subject=no`).                                                                                                                                                                                                              |
+| to        | No       | Alternate way to specify target JIDs (comma-separated)                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| target    | No       | Recipient JID                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -81,10 +83,14 @@ The **`mode`** parameter explicitly controls how the XMPP connection is establis
 | `tls`      | Direct TLS connection                      |
 
 :::note
-the XMPP plugin takes the most secure option when presented with an ambiguous situation. Here are the scenarios:
+The XMPP plugin takes the most secure option when presented with an ambiguous situation:
 
-1. Setting your Apprise URL to a secure mode (such as `xmpps://` or `?secure=yes`) while at the same time setting the (secure) `mode` to `none`. In this circumstance, the `secure=yes` prevails and the default mode used is `starttls`
-1. Setting your Apprise URL to an insecure mode (such as `xmpp://` or `?secure=no`) while at the same time setting the (secure) `mode` to something other than `none`. In this circumstance, the secure mode is turned on, and the mode you identified prevails.
+1. If you use a secure schema (`xmpps://`) while also setting
+   `mode=none`, the secure schema prevails and `starttls` is used.
+1. If you use an insecure schema (`xmpp://`) while setting
+   `mode=starttls` or `mode=tls`, the secure mode you specified prevails.
+
+   :::
 
    :::
 
@@ -93,7 +99,42 @@ the XMPP plugin takes the most secure option when presented with an ambiguous si
 - `xmpp://` defaults to `mode=none`
 - `xmpps://` defaults to `mode=starttls`
 
-### JID Assembly
+## Keepalive Mode
+
+Keepalive mode is intended for long-running applications that reuse a
+single Apprise instance.
+
+When enabled:
+
+- The XMPP connection remains open between notifications.
+- Multiple messages reuse the same session.
+- Connection overhead is reduced.
+
+When using the CLI or a one-shot execution model, keepalive provides no
+benefit because the process exits immediately after sending.
+
+Example of enabling keepalive:
+
+```bash
+apprise -vv -b "Persistent Message" \
+  xmpps://user:password@chat.example.com?keepalive=yes
+```
+
+In embedded usage:
+
+```python
+from apprise import Apprise
+
+a = Apprise()
+a.add("xmpps://user:password@chat.example.com?keepalive=yes")
+
+a.notify(body="First message")
+a.notify(body="Second message")
+```
+
+In this scenario, the connection is reused between notifications.
+
+## JID Assembly
 
 Apprise normalizes JIDs to ensure consistent and predictable behaviour, even when shorthand forms are used.
 
@@ -130,7 +171,7 @@ apprise -vv -b "Test Message" \
   xmpp://user:password@localhost
 ```
 
-Send a STARTTLS-secured notification (recommended):
+Send a STARTTLS-secured notification:
 
 ```bash
 apprise -vv -b "Secure Message" \
