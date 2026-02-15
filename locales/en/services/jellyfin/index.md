@@ -36,7 +36,7 @@ Valid syntax is as follows:
 
 Secure connections (via https) should be referenced using **jellyfins://**, whereas insecure connections (via http) should be referenced via **jellyfin://**.
 
-## Emby compatibility
+## Emby Compatibility
 
 Jellyfin is a fork of Emby, and Apprise treats Jellyfin as an Emby-compatible notification target.
 
