@@ -1,6 +1,6 @@
 ---
 title: "Email Notifications"
-description: "Send notifications using SMTP and built-in email providers."
+description: "Send Notifications Using SMTP And Built-In Email Providers."
 sidebar:
   label: "Email"
 
@@ -14,121 +14,217 @@ sample_urls:
   - mailto://userid:pass@domain.com
   - mailtos://domain.com?user=userid&pass=password
   - mailtos://domain.com:465?user=userid&pass=password
-  - mailtos://user@hotmail.com&pass=password
   - mailto://mySendingUsername:mySendingPassword@example.com?to=receivingAddress@example.com
   - mailto://userid:password@example.com?smtp=mail.example.com&from=noreply@example.com&name=no%20reply
 ---
 
 <!-- SERVICE:DETAILS -->
 
-## Using Built-In Email Services
+## Built-In Provider Support
 
-If you are using one of the following Built-In E-Mail services, then setting up this notification service has never been easier. If the email provider you use isn't on the list, and you'd like to request it, just [open up a ticket](https://github.com/caronc/apprise/issues) and let me know. The alternative the the below list is to use a custom email server configuration; these are a little bit more complicated to set up, but still work great. Custom email configuration is discussed in the [next section](#using-custom-servers-syntax)
+Apprise automatically detects many email providers based on the **From** address derived from your URL.  
+When a provider is recognized, Apprise automatically configures:
 
-The following syntax works right out of the box:
+- SMTP host
+- Port
+- Secure mode (SSL or STARTTLS)
+- Login format (full email vs user id)
 
-- mailto://{user}:{app-password}@**yahoo.com**
-- mailto://{user}:{password}@**gmail.com**
-- mailto://{user}:{app-password}@**fastmail.com**
-- mailto://{user}:{password}@**zoho.com**
-- mailto://{user}:{password}@**yandex.com**
-- mailto://{user}:{password}@**sendgrid.com**?from=noreply@{validated_domain}
-- mailto://{user}:{password}@**qq.com**
-- mailto://{user}:{password}@**163.com**
+In most cases, you only need to provide your email and password.
 
-Secure connections are always implied whether you choose to use **mailto://** or **mailtos://**
+| Provider                                     | Example URL                                                         | Notes                                                                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Google (Gmail)**                           | `mailto://user:app-password@gmail.com`                              | If 2-Step Verification is enabled, generate an App Password: <https://security.google.com/settings/security/apppasswords> |
+| **Yahoo**                                    | `mailto://user:app-password@yahoo.com`                              | Requires an App Password: <https://help.yahoo.com/kb/SLN15241.html>                                                       |
+| **Fastmail**                                 | `mailto://user:app-password@fastmail.com`                           | App Password must permit SMTP. See supported domains [here](./fastmail/).                                                 |
+| **GMX**                                      | `mailto://user:password@gmx.net`                                    | Also supports `gmx.com`, `gmx.de`, `gmx.at`, `gmx.ch`, `gmx.fr`.                                                          |
+| **Zoho**                                     | `mailto://user:password@zoho.com`                                   | Provider defaults are applied automatically.                                                                              |
+| **Yandex**                                   | `mailto://user:password@yandex.com`                                 | Login may be user-id based depending on domain rules.                                                                     |
+| **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` must use a validated sender identity.                                                                             |
+| **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Provider defaults are applied automatically.                                                                              |
+| **163.com**                                  | `mailto://user:password@163.com`                                    | Provider defaults are applied automatically.                                                                              |
+| **Microsoft (Outlook, Hotmail, Office 365)** | _Use `azure://` instead_                                            | Microsoft disabled SMTP basic authentication. Use the [`azure://` plugin](/services/office365/).                          |
 
-**Note** Google Users using the 2 Step Verification Process will be required to generate an **app-password** from [here](https://security.google.com/settings/security/apppasswords) that you can use in the {password} field.
+> This is not an exhaustive list. Additional domains are automatically detected when supported.
 
-**Note** Yahoo Users will be required to generate an **app-password** from [here](https://help.yahoo.com/kb/SLN15241.html) that you can use in the {password} field.
+:::tip[Automatic Secure Upgrade]
 
-**Note** Microsoft users must switch to using the [`azure://` Apprise plugin](/services/office365/) instead. More details can be found [here](./microsoft/).
+When a supported provider is detected, Apprise automatically enforces secure connections using the correct TLS mode and port.
 
-**Note** Fastmail Users are required to generate a custom App password before you can connect it up to send email to (from a 3rd party tool like this one). You must assign the _SMTP_ option to the new App you generate. This Fastmail portion of this plugin currently supports [the following 116 domains](./fastmail/). Just make sure you identify the email address you're using when you build the mailto:// url and everything will work as intended.
+Even if you use `mailto://`, secure mode is applied when the provider template defines it.
 
-**Note** SendGrid users just need to be sure to use a Validated Domain (through their service) as part of the required **from=** email address (on the URL) or it will not work. It's additionally worth pointing out that [sendgrid://](../sendgrid/) has its own separate integration as well if you do not need to use the SMTP service.
+If you explicitly specify `smtp=`, Apprise assumes you are overriding provider detection.
+
+:::
 
 ## Email Address Formatting
 
-When defining your email address you want to send to, you can format them in 2 ways:
+Email addresses may be written as:
 
-- Classic: `just.an.email@domain.com`
-- Name/Email: `John<just.an.email@domain.com>`
+- `user@example.com`
+- `Optional Name<user@example.com>`
 
-Annotating your emails with names allow your delivered emails to have a nicer look/feel. You can also leverage these formats with the `from=` directive (defined below) allowing you to change who the email otherwise identifies who is sending it (providing your Mail Provider allows for it).
+This syntax works in:
 
-## Using Custom Servers Syntax
+- URL targets
+- `from=`
+- `cc=`
+- `bcc=`
+- `reply=`
 
-If you're using a specific SMTP Server or one that simply isn't in the _Built-In_ list defined in the previous section then things get a wee-bit more complicated.
+If you need spaces inside a URL, encode them as `%20`.
 
-First off, secure vs insecure emails are defined by **mailto://** (port 25) and **mailtos://** (port 587) where **mailtos://** will enable TLS prior to sending the user and password.
+Example:
 
-Here are some more example syntax you can use when doing the custom approach:
+```text
+from=Optional%20Name<noreply@example.com>
+```
 
-- `mailto://{user}:{password}@{domain}`
-- `mailto://{user}:{password}@{domain}:{port}?smtp={smtp_server}`
-- `mailto://{user}:{password}@{domain}:{port}?from={from_email}`
-- `mailto://{user}:{password}@{domain}:{port}?from={from_name} <{from_email}>`
+## Recipient Behaviour
 
-Using a local relay server that does not require authentication? No problem, use this:
+| What you specify          | What happens                                                            |
+| ------------------------- | ----------------------------------------------------------------------- |
+| No targets and no `to=`   | Apprise sends the email to the sender address (the derived From email). |
+| Targets in the URL path   | Each target becomes a recipient.                                        |
+| `to=` in the query string | Treated as an additional recipient (same as adding a target).           |
+| `cc=` / `bcc=`            | Applied to each generated email.                                        |
+| `reply=`                  | Sets the Reply-To header (can be multiple).                             |
 
-- **mailto**://**{user}**:**{password}**@**{domain}**:**{port}**?from=**{from_email}**&to=**{to_email}**
+## Using Custom SMTP Servers
 
-Some mail servers will require your {user} to be your full email address. In these cases, you'll need to specify your username in the url as an attribute like so:
+If your provider is not automatically detected, configure SMTP manually.
 
-- **mailto**://**{password}**@**{domain}**:**{port}**?user=**{user}**
+Defaults:
 
-## Custom Syntax Examples
+- `mailto://`: defaults to port **25**
+- `mailtos://`: defaults to port **587** using STARTTLS
 
-If your SMTP server is identified by a different hostname/domain than what is identified by the suffix of your email, then you'll need to specify it as an argument; for example:
-If you want to adjust the email's ReplyTo address, then you can do the following:
+Most public providers require TLS. Prefer `mailtos://` for external servers.
+
+### Authenticated SMTP Examples
+
+Send using a custom SMTP host:
 
 - `mailtos://user:password@server.com?smtp=smtp.server.com&from=noreply@server.com`
 
-You can also adjust the ReplyTo's Name too:
+Include a From display name:
 
 - `mailtos://user:password@server.com?smtp=smtp.server.com&from=Optional%20Name<noreply@server.com>`
 
-To send an email notification via a smtp server that does not require authentication, simply leave out the user and pass parameters in the URL:
+Force SSL (usually port 465):
 
-- `mailto://server.com?smtp=smtp.server.com&from=noreply@server.com&to=myemail@server.com`
+- `mailtos://user:password@server.com:465?smtp=smtp.server.com&mode=ssl&from=noreply@server.com`
 
-Since URLs can't have spaces in them, you'll need to use '**%20**' as a place-holder for one (if needed). In the example above, the email would actually be received as _Optional Name_.
+## Local Relay (No Authentication Required)
 
-Got a local passwordless SMTP relay service you're hosting? No problem, the following URL will work:
+If you run Postfix, Exim, or another internal relay that does not require authentication, omit `user` and `pass`.
 
-- `mailto://localhost?from=john@example.ca`
+```text
+mailto://localhost?from=john@example.ca
+```
 
-### Multiple To Addresses
+Internal relay host:
 
-By default your `mailto://` URL effectively works out to be `mailto://user:pass@domain` and therefore attempts to send your email to `user@domain` unless you've otherwise specified a `to=`. But you can actually send an email to more then one address using the same URL. Here are some examples (written slightly differently but accomplish the same thing) that send an email to more then one address:
+```text
+mailto://relay-server?from=noreply@example.com&to=alerts@example.com
+```
+
+If the SMTP host differs from the URL host:
+
+```text
+mailto://server.com?smtp=smtp.server.com&from=noreply@server.com
+```
+
+## From Name vs From Address
+
+If you want to set a display name, you can use either:
+
+- `from=Optional%20Name<noreply@example.com>` (preferred)
+- `name=Optional%20Name&from=noreply@example.com`
+
+If both are provided, the name embedded in `from=` takes precedence.
+
+## Header Manipulation
+
+Email supports custom header injection by prefixing query keys with a plus symbol (**+**).
+
+This is useful for mail filters, internal routing, and tagging.
+
+### One Header
+
+Set:
+
+- `X-Token: abcdefg`
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+  "mailto://localhost?to=john@example.ca&+X-Token=abcdefg"
+```
+
+### Multiple Headers
+
+If you need to control some of the headers being sent to the mail server, you can simply generate keyword arguments that are prefixed with the plus (`+`) symbol.
+
+For example, assuming you wanted to also pass along the following email headers (in your payload):
+
+- `X-Token: abcdefg`
+- `X-Apprise: is great`
+
+You would structure your email like so:
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+  "mailto://localhost?to=john@example.ca&+X-Token=abcdefg&+X-Apprise=is%20great"
+```
+
+### Notes
+
+- Header values must be URL-encoded when they contain spaces.
+- Apprise automatically sets `X-Application` and merges in any headers you define.
+
+## Multiple Recipients
+
+By default, `mailto://user:pass@domain` sends to `user@domain` unless `to=` is specified.
+
+Send to multiple recipients using either query form or path form:
 
 - `mailto://user:pass@domain/?to=target@example.com,target2@example.com`
 - `mailto://user:pass@domain/target@example.com/target2@example.com`
 - `mailto://user:pass@domain/Accounting<accounting@example.com>/Billing<billing@example.com>`
 
-There is no limit to the number of addresses you either separate by comma (**,**) and/or add to your `mailto://` path separated by a slash (**/**).
+There is no hard-coded limit to recipient count, though your SMTP server may impose one.
 
-The Carbon Copy (**cc=**) and Blind Carbon Copy (**bcc=**) however are applied to each email sent. Hence if you send an email to 3 target users, the entire _cc_ and _bcc_ lists will be part of all 3 emails.
+`cc=` and `bcc=` apply to every email sent. If you notify 3 recipients, the same cc and bcc lists are used for each generated email.
+
+## Attachments
+
+Attachments are fully supported.
+
+SMTP provider limits may apply. Apprise does not impose attachment size restrictions.
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     | Yes      | The account login to your SMTP server; if this is an email you must specify this near the end of the URL as an argument. You can over-ride this by specifying `?user=` on the URL string.<br/>**Note:** Both the `user` and `pass` are not required if you're using an anonymous login.                                                                                                         |
-| pass     | Yes      | The password required to send an email via your SMTP Server. You can over-ride this by specifying `?pass=` on the URL string.<br/>**Note:** Both the `user` and `pass` are not required if you're using an anonymous login.                                                                                                                                                                     |
-| domain   | Yes      | If your email address was **<test@example.com>** then _example.com_ is your domain. You must provide this as part of the URL string!                                                                                                                                                                                                                                                            |
-| port     | No       | The port your SMTP server is listening on. By default the port is **25** for **mailto://** and **587** for all **mailtos://** references.                                                                                                                                                                                                                                                       |
-| smtp     | No       | If the SMTP server differs from your specified domain, then you'll want to specify it as an argument in your URL.                                                                                                                                                                                                                                                                               |
-| from     | No       | Identify the address the email address associated with the email account being used. This is automatically otherwise detected from the Apprise URL an is not required. You can express this as a regular `user@email.com` or you can also set it as `A User<user@email.com>`.                                                                                                                   |
-| to       | No       | This will enforce (or set the address the email is sent To). This is only required in special circumstances. The notification script is usually clever enough to figure this out for you.                                                                                                                                                                                                       |
-| name     | No       | With respect to {from*email}, this allows you to provide a name with your \_Reply-To* address. <br/>**Note:** This field has become redundant and become synonymous to `from=`. It still behaves as it did in previous versions, but you can also follow the `A User<user@email.com>` syntax as well. To eliminate ambiguity; the values parsed from the `from=` will always trump the `name=`. |
-| cc       | No       | Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                                                                                                                                                                                                                                        |
-| bcc      | No       | Blind Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                                                                                                                                                                                                                                  |
-| reply    | No       | Provide a Reply-To email (or set of). More than one can be separated with a space and/or comma.                                                                                                                                                                                                                                                                                                 |
-| mode     | No       | This is only referenced if using **mailtos://** (a secure url). The Mode allows you to change the connection method. Some sites only support SSL (mode=**ssl**) while others only support STARTTLS (mode=**starttls**). The default value is **starttls**. If you define a `mode` with a `mailto://` declaration, it is upgraded to be a `mailtos://` when the URL is processed.                |
+| Variable | Required | Description                                                                                                   |
+| -------- | -------: | ------------------------------------------------------------------------------------------------------------- |
+| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                   |
+| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                             |
+| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.            |
+| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                    |
+| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                               |
+| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                     |
+| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.           |
+| to       |       No | Recipient override. Also supported via URL path targets.                                                      |
+| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                        |
+| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                  |
+| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                           |
+| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection. |
+| pgp      |       No | Enable PGP encryption (`yes` or `no`). Defaults to `no`.                                                      |
+| pgpkey   |       No | Path to a PGP public key (input key: `pgpkey`). Treated as sensitive.                                         |
+| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                 |
 
-To eliminate any confusion, any url parameter (key=value) specified will over-ride what was detected in the url; hence:
+**\*** Not required for anonymous relays.
+
+To avoid ambiguity, any URL parameter (`?key=value`) overrides values in the main URL:
 
 - `mailto://usera:pass123@domain.com?user=foobar`: the user of `foobar` would over-ride the user `usera` specified. However since the password was not over-ridden, the password of `pass123` would be used still.
 
@@ -136,16 +232,16 @@ To eliminate any confusion, any url parameter (key=value) specified will over-ri
 
 ## Examples
 
-Send a email notification to our hotmail account:
+Built-in provider example:
 
 ```bash
-# It's really easy if you're using a built in provider
-# Built-In providers look after handling the little details such as
-# the SMTP server, port, enforcing a secure connection, etc
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-    mailto:///example:mypassword@hotmail.com
+    mailto:///example:mypassword@gmail.com
+```
 
-# Send an email to a custom provider:
+Send an email to a custom provider; since no `smtp=` was identified, the host `example.com` is also assumed to be the SMTP server.
+
+```bash
 # Assuming the {domain} is example.com
 # Assuming the {user} is george
 # Assuming the {password} is pass123
@@ -154,9 +250,21 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 # The above URL could also have been written like:
 #  mailto://example.com?user=george&pass=pass123
+```
 
-# In some cases, the {user} is an email address.  In this case
-# you can place this information in the URL parameters instead:
+If the SMTP Server differs from the domain (which is usually the case), your URL should include the `?smtp=` keyword argument:
+
+```bash
+# Assuming the {domain} is example.com
+# Assuming the {user} is george
+# Assuming the {password} is pass123
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   mailto://george:pass123@example.com?smtp=smtp.example.com
+```
+
+In some cases, the `{user}` is an email address. In this case you can place this information in the URL parameters instead:
+
+```bash
 # Assuming the {domain} is example.com
 # Assuming the {user} is george@example.com
 # Assuming the {password} is pass123
@@ -165,11 +273,9 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 # Note that the ampersand (&) that is used in the URL to separate
 # one argument from another is also interpreted by the CLI as
-# run in the background.  So to make sure the URL sticks together
-# and your terminal doesn't break your URL up, make sure to wrap
-# it in quotes!
+# run in the background. Wrap your URL in quotes.
 
-# Send an email to a smtp relay server your hosting on your box:
+# Send an email to a smtp relay server you are hosting:
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    mailto://localhost?from=john@example.ca
 ```
@@ -189,9 +295,11 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # - Since no `to=` was specified above, the `from` address is notified
 # - mailtos:// defaults to starttls on 587; if you want to use port 465 (SSL)
 #   you would just need to add `mode=ssl` to the parameter of your URL.
+```
 
-# Here is a more complicated example where you want to use `ssl` and a custom port
+Here is a more complicated example where you want to use `ssl` and a custom port
 
+````bash
 # Assuming the {smtp_server} is mail.example.com
 # Assuming the {send_from} is joe@example.com
 # Assuming the {login} is user1@example.com
@@ -201,4 +309,8 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mailtos://example.com:12522?user=user1@example.com&pass=pass123&smtp=mail.example.com&from=joe@example.com&to=bob@example.com,jane@yahoo.ca&mode=ssl"
 
-```
+Local relay:
+```bash
+apprise -t "Test Title" -b "Test Body" \
+   mailto://localhost?to=john@example.com
+````
