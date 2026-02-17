@@ -49,7 +49,7 @@ Matrix supports both:
 - **Room aliases** (prefixed with `#`)
 - **Room IDs** (prefixed with `!`)
 
-Room identifiers may or may not include a homeserver component (for example `:example.com`). Modern Matrix room versions may omit the homeserver portion entirely.
+Room identifiers may include a homeserver component (for example `:example.com`). In Matrix, room aliases are typically written with a homeserver, and room IDs are generally expected to include one as well.
 
 Examples:
 
@@ -60,51 +60,45 @@ Examples:
 
 ### Default Behaviour (Recommended)
 
-By default, Apprise does **not** enforce a homeserver on room identifiers.
+By default, Apprise **enforces** a homeserver on room identifiers when it is missing.
 
 If you provide:
 
-- `#room`: it is used exactly as provided.
-- `!room`: it is used exactly as provided.
+- `#room`: it is internally interpreted as `#room:{hostname}`
+- `!room`: it is internally interpreted as `!room:{hostname}`
 
-However Federated rooms identifiers are fully supported by Apprise. If you explicitly include a homeserver component, Apprise honours it exactly as specified.
+If you explicitly include a homeserver component, Apprise honours it exactly as specified.
 
-This behaviour aligns with newer Matrix room versions where room IDs may not include a homeserver component.
+### Opt-out Behaviour (Compatibility Mode)
 
-### Legacy Behaviour
+You may disable homeserver enforcement by specifying `?hsreq=no`. In this setting:
 
-You may restore the previous Apprise behaviour by specifying:
+- `#room` is used exactly as provided.
+- `!room` is used exactly as provided.
 
-- `?hsreq=yes`
+This is intended for environments where a reverse proxy, non-standard server behaviour, or strict URL routing makes `:homeserver` suffixing undesirable.
 
-When `hsreq=yes` is set:
+If you are using room IDs (prefixed with `!`), note that many Matrix deployments expect fully-qualified room IDs. If your server rejects `!room:{hostname}` but accepts `!room` as-is, `hsreq=no` may be required.
 
-- `#room` is internally interpreted as `#room:{hostname}`
-- `!room` is internally interpreted as `!room:{hostname}`
-
-This may be required for older Matrix deployments that expect room identifiers to always include a homeserver.
-
-### Example
-
-Given:
+For example; given:
 
 ```text
 matrix://user:pass@localhost/#room/!abc123
 ```
 
-With default behaviour (`hsreq=no`):
-
-- `#room` is used as `#room`
-- `!abc123` is used as `!abc123`
-
-With legacy enforcement:
-
-```text
-matrix://user:pass@localhost/#room/!abc123?hsreq=yes
-```
+With default behaviour (`hsreq=yes`):
 
 - `#room` becomes `#room:localhost`
 - `!abc123` becomes `!abc123:localhost`
+
+With enforcement disabled:
+
+```text
+matrix://user:pass@localhost/#room/!abc123?hsreq=no
+```
+
+- `#room` is used as `#room`
+- `!abc123` is used as `!abc123`
 
 ## Webhook Mode
 
@@ -139,7 +133,7 @@ Or directly:
 | mode                | No       | Enables webhook mode. Valid values are **matrix** or **slack**.                                                                           |
 | msgtype             | No       | Matrix message type: **text** or **notice**. Default is **text**.                                                                         |
 | version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. This does not affect room ID formatting. |
-| hsreq               | No       | Enforces homeserver inclusion on room identifiers. Set to **yes** to restore legacy behaviour. Default is **no**.                         |
+| hsreq               | No       | Enforces homeserver inclusion on room identifiers when missing. Set to **no** to disable enforcement. Default is **yes**.                 |
 
 **Note:** If neither a **{room_alias}** nor a **{room_id}** is specified, Apprise will query the server for currently joined rooms and notify all of them.
 
@@ -158,11 +152,11 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    matrixs://nuxref:abc123@matrix.example.com/#general/#apprise
 ```
 
-Force legacy homeserver enforcement:
+Disable homeserver enforcement:
 
 ```bash
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   matrixs://nuxref:abc123@matrix.example.com/!abc123?hsreq=yes
+   matrixs://nuxref:abc123@matrix.example.com/!abc123?hsreq=no
 ```
 
 Use API v2 (required for attachments in some deployments):
