@@ -76,26 +76,26 @@ If `mode=private` is selected but the host contains `fluxer.app`, Apprise will a
 
 ## Parameter Breakdown
 
-| Variable     | Required | Description |
-| ------------ | -------- | ----------- |
-| WebhookID    | Yes      | The first part of 2 tokens provided to you after creating an incoming webhook |
-| WebhookToken | Yes      | The second part of 2 tokens provided to you after creating an incoming webhook |
-| botname      | No       | Identify the name of the bot that should issue the message |
-| host         | No       | Hostname of your private Fluxer server (used with `mode=private`) |
-| port         | No       | Port of your private Fluxer server (used with `mode=private`) |
-| mode         | No       | One of: `cloud` (default) or `private` |
-| tts          | No       | Enable Text-To-Speech (default is **No**) |
-| avatar       | No       | Override the default avatar icon and replace it with one identifying the notification type (default is **Yes**) |
-| avatar_url   | No       | Override the avatar icon URL. If not set, Apprise chooses a URL dynamically based on message type |
-| footer       | No       | Include a footer section in the embed (default is **No**) |
-| footer_logo  | No       | Include the Fluxer footer logo when `footer=yes` (default is **Yes**) |
-| image        | No       | Include an image in-line with the message describing the notification type (default is **No**) |
-| fields       | No       | Use embedded fields when posting in `markdown` format (default is **Yes**) |
+| Variable     | Required | Description                                                                                                      |
+| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| WebhookID    | Yes      | The first part of 2 tokens provided to you after creating an incoming webhook                                    |
+| WebhookToken | Yes      | The second part of 2 tokens provided to you after creating an incoming webhook                                   |
+| botname      | No       | Identify the name of the bot that should issue the message                                                       |
+| host         | No       | Hostname of your private Fluxer server (used with `mode=private`)                                                |
+| port         | No       | Port of your private Fluxer server (used with `mode=private`)                                                    |
+| mode         | No       | One of: `cloud` (default) or `private`                                                                           |
+| tts          | No       | Enable Text-To-Speech (default is **No**)                                                                        |
+| avatar       | No       | Override the default avatar icon and replace it with one identifying the notification type (default is **Yes**)  |
+| avatar_url   | No       | Override the avatar icon URL. If not set, Apprise chooses a URL dynamically based on message type                |
+| footer       | No       | Include a footer section in the embed (default is **No**)                                                        |
+| footer_logo  | No       | Include the Fluxer footer logo when `footer=yes` (default is **Yes**)                                            |
+| image        | No       | Include an image in-line with the message describing the notification type (default is **No**)                   |
+| fields       | No       | Use embedded fields when posting in `markdown` format (default is **Yes**)                                       |
 | format       | No       | The default is `text`. Set to `markdown` to enable markdown-to-embed parsing (headers are converted into embeds) |
-| href         | No       | Identify a URL the title should link to when posting. You can also use `url=` as an alias |
-| thread       | No       | Optionally set the `thread_id` you wish your message to be applied to |
-| thread_name  | No       | Optionally set the thread name when using `thread=` |
-| ping         | No       | A comma-separated list of users, roles, or tokens such as `everyone` that should always be pinged |
+| href         | No       | Identify a URL the title should link to when posting. You can also use `url=` as an alias                        |
+| thread       | No       | Optionally set the `thread_id` you wish your message to be applied to                                            |
+| thread_name  | No       | Optionally set the thread name when using `thread=`                                                              |
+| ping         | No       | A comma-separated list of users, roles, or tokens such as `everyone` that should always be pinged                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
