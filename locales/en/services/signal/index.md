@@ -65,7 +65,7 @@ You can post in multiple chats by simply chaining them at the end of the URL.
 | Variable | Required | Description                                                                                                                                      |
 | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | hostname | Yes      | The Web Server's hostname                                                                                                                        |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **signal://** and **443** for all **singals://** references.          |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **signal://** and **443** for all **signals://** references.          |
 | user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                |
 | password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                |
 | from     | Yes      | This must be a _From Phone Number_ you've added to the API service.                                                                              |
