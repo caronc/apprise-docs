@@ -106,7 +106,7 @@ bantime = 1d
 #   - Read from /etc/fail2ban/apprise.conf
 #   - Only notify end points tagged with 'fail2ban'
 #
-action = apprise[config="/etc/fail2ban/apprise.conf", apprise_args="--tag fail2ban"]
+action = apprise[config="/etc/fail2ban/apprise.conf", args="--tag fail2ban"]
 
 #
 # Now we will define our jails
@@ -126,14 +126,14 @@ bantime = 1h
 # The below entry is not nessisary as it's defined in the [DEFAULT] section above
 # but this is to show that you could also define another entry here as well
 # and assign it a different set of tags.
-action = apprise[config="/etc/fail2ban/apprise.conf", apprise_args="--tag fail2ban"]
+action = apprise[config="/etc/fail2ban/apprise.conf", args="--tag fail2ban"]
 ```
 
 :::tip
 You can easily leverage an Apprise API instance by setting:
 
 ```ini
-action = apprise[config="http://api.example.ca:8000/cfg/apprise-key", apprise_args="--tag fail2ban"]
+action = apprise[config="http://api.example.ca:8000/cfg/apprise-key", args="--tag fail2ban"]
 ```
 
 :::
