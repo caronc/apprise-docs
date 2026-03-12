@@ -18,7 +18,7 @@ Both methods return the same data: the Apprise version, the active `AppriseAsset
 
 `Apprise.details()` returns a dictionary that describes all supported notification services. Use this when you need to work with the data programmatically in Python.
 
-### Signature
+### details() Signature
 
 ```python
 apobj.details(
@@ -28,7 +28,7 @@ apobj.details(
 )
 ```
 
-### Basic Usage
+### details() Basic Usage
 
 ```python
 import apprise
@@ -40,7 +40,7 @@ apobj = apprise.Apprise()
 info: dict = apobj.details()
 ```
 
-### Showing Disabled Plugins
+### details() Showing Disabled Plugins
 
 Some schemas may be present but not usable because optional dependencies are missing. If you are building a UI, you usually want to surface these as "available, but currently disabled", along with the reasons for it being disabled. Reasons can be that the server simply doesn't have the necessary packages installed to use it, environment related, or that it was manually disabled by the administrator. By default `show_disabled=False`, so to see this list, you need to explicitly set it.
 
@@ -62,7 +62,7 @@ info: dict = apobj.details(show_disabled=True)
 
 `Apprise.json()` is a convenience wrapper around `details()` that handles JSON serialization for you, including proper encoding of types that the standard `json` module cannot handle (such as `datetime` objects, `bytes`, `set`, `frozenset`, and `tuple`).
 
-### Signature
+### json() Signature
 
 ```python
 apobj.json(
@@ -74,7 +74,7 @@ apobj.json(
 )
 ```
 
-### Basic Usage
+### json() Basic Usage
 
 Without a `path` argument, `json()` returns the serialized JSON as a `str`:
 
@@ -91,7 +91,7 @@ payload: str = apobj.json()
 payload: str = apobj.json(indent=2)
 ```
 
-### Showing Disabled Plugins
+### json() Showing Disabled Plugins
 
 Same as `details()`, pass `show_disabled=True` to include services that exist but cannot currently be used:
 
