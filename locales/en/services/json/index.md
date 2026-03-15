@@ -81,6 +81,28 @@ Send a JSON notification to our web server listening on port 80:
 apprise json://json.server.local
 ```
 
+### HTTP Method
+
+By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+
+```bash
+# Send as a PUT request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=put"
+
+# Send as a DELETE request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=delete"
+
+# Send as a PATCH request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=patch"
+```
+
+The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+
+> **Note:** When `method=get` is used, the JSON body is still sent as a request body. To pass parameters as URL query strings instead, use the `-` prefix (see [GET Parameter Manipulation](#get-parameter-manipulation) below).
+
 ### Payload Manipulation
 
 Making use of the `:` on the Apprise URL allows you to alter and add to the content posted upstream to a remote server.

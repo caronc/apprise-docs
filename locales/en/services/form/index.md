@@ -79,6 +79,86 @@ Send a FORM Based web request to our web server listening on port 80:
 apprise form://my.server.local
 ```
 
+### HTTP Method
+
+By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+
+```bash
+# Send as a PUT request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=put"
+
+# Send as a DELETE request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=delete"
+
+# Send as a PATCH request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=patch"
+```
+
+The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+
+> **Note:** When `method=get` is used, the form payload fields (`version`, `title`, `message`, `type`) are appended as URL query parameters rather than sent as a request body. The `Content-Type` header is not set for GET requests. File attachments are not compatible with GET.
+
+### Payload Manipulation
+
+Making use of the `:` on the Apprise URL allows you to alter and add to the form fields posted upstream to a remote server.
+
+```bash
+# Add to the payload delivered to the remote server as if it was part
+# the prepared message Apprise would have otherwise put together
+#
+# Assuming our {hostname} is localhost
+# Assuming we want to include "sound=oceanwave" as part of the existing payload:
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:sound=oceanwave"
+```
+
+The above would POST the following form fields:
+
+```
+version=1.0
+title=Test Message Title
+message=Test Message Body
+type=info
+sound=oceanwave
+```
+
+You can also remove built-in fields by setting their value to empty:
+
+```bash
+# Remove version and type from the payload:
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:version&:type"
+```
+
+The above would POST:
+
+```
+title=Test Message Title
+message=Test Message Body
+```
+
+Finally, you can remap a built-in field to a different key name:
+
+```bash
+# Remap the "message" field to "body":
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:message=body"
+```
+
+The above would POST:
+
+```
+version=1.0
+title=Test Message Title
+body=Test Message Body
+type=info
+```
+
 ### Header Manipulation
 
 Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
