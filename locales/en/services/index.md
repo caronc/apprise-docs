@@ -5,8 +5,9 @@ tableOfContents: false
 sidebar:
   label: "Services"
 ---
+<!-- SERVICE:URL-BUILDER-BTN -->
 
-Apprise supports **<!-- SERVICES:COUNT -->** services.
+Apprise supports **<!-- SERVICES:COUNT -->** services. Here you can find a list of all of them and details about each.
 
 ## General
 
