@@ -117,7 +117,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 The above would POST the following form fields:
 
-```
+```text
 version=1.0
 title=Test Message Title
 message=Test Message Body
@@ -136,7 +136,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 The above would POST:
 
-```
+```text
 title=Test Message Title
 message=Test Message Body
 ```
@@ -152,7 +152,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 The above would POST:
 
-```
+```text
 version=1.0
 title=Test Message Title
 body=Test Message Body
