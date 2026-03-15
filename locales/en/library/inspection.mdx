@@ -5,36 +5,44 @@ sidebar:
   order: 6
 ---
 
-Apprise includes a small set of inspection utilities that let your application discover what is supported at runtime, and capture diagnostic output without taking over global logging configuration. The most important entry point is `Apprise.details()`, which is designed for dynamic tooling such as URL builders, setup wizards, admin UIs, and validation pipelines.
+import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-## Inspecting Capabilities with `Apprise.details()`
+Apprise includes a small set of inspection utilities that let your application discover what is supported at runtime, and capture diagnostic output without taking over global logging configuration. The most important entry point is `Apprise.details()` and `Apprise.json()`, which is designed for dynamic tooling such as URL builders, setup wizards, admin UIs, and validation pipelines.
 
-`Apprise.details()` returns a dictionary that describes:
+## Inspecting Capabilities
 
-- the Apprise version your process is running,
-- the active `AppriseAsset` configuration (icons, themes, masks),
-- every schema (plugin) Apprise knows about, including URL construction templates and token metadata that can be used to build a correct Apprise URL dynamically.
+Both methods return the same data: the Apprise version, the active `AppriseAsset` configuration (icons, themes, masks), and every schema (plugin) Apprise knows about — including URL construction templates and token metadata that can be used to build a correct Apprise URL dynamically. The difference is the return type: `details()` returns a raw Python dictionary, while `json()` returns a JSON-serialized string (or writes to a file).
 
-### Basic Usage
+<Tabs>
+<TabItem label="details()">
 
-The following will provide you a full dump of all of the information loaded into Apprise:
+`Apprise.details()` returns a dictionary that describes all supported notification services. Use this when you need to work with the data programmatically in Python.
+
+### details() Signature
 
 ```python
-import json
-import apprise
-
-apobj = apprise.Apprise()
-
-# Retrieve Details
-info: dict = apobj.details()
-
-# Print formatted JSON
-print(json.dumps(info, indent=2))
+apobj.details(
+    lang=None,                # BCP 47 language tag, e.g. "fr" or "de"
+    show_requirements=False,  # Include per-plugin dependency info
+    show_disabled=False,      # Include plugins that are currently unavailable
+)
 ```
 
-### Showing Disabled Plugins
+### details() Basic Usage
 
-Some schemas may be present but not usable because optional dependencies are missing. If you are building a UI, you usually want to surface these as “available, but currently disabled”, along with the reasons for it being disabled. Reasons can be that the server simply doesn't have the nessisary packages installed to use it, environment related, or that it was manually disabled by the administrator. By default `show_disabled=False`, so to see this list, you need to explicitly set it.
+```python
+import apprise
+
+# Instantiate an instance of Apprise
+apobj = apprise.Apprise()
+
+# Produce list of details
+info: dict = apobj.details()
+```
+
+### details() Showing Disabled Plugins
+
+Some schemas may be present but not usable because optional dependencies are missing. If you are building a UI, you usually want to surface these as "available, but currently disabled", along with the reasons for it being disabled. Reasons can be that the server simply doesn't have the necessary packages installed to use it, environment related, or that it was manually disabled by the administrator. By default `show_disabled=False`, so to see this list, you need to explicitly set it.
 
 ```python
 import apprise
@@ -45,9 +53,94 @@ apobj = apprise.Apprise()
 info: dict = apobj.details(show_disabled=True)
 ```
 
+:::note
+`details()` may return Python types such as `datetime`, `bytes`, `set`, and `tuple` that the standard `json.dumps()` cannot serialize. Use `json()` (see the other tab) when you need a JSON payload — it handles all type encoding automatically via `AppriseJSONEncoder`.
+:::
+
+</TabItem>
+<TabItem label="json()">
+
+`Apprise.json()` is a convenience wrapper around `details()` that handles JSON serialization for you, including proper encoding of types that the standard `json` module cannot handle (such as `datetime` objects, `bytes`, `set`, `frozenset`, and `tuple`).
+
+### json() Signature
+
+```python
+apobj.json(
+    lang=None,                # BCP 47 language tag, e.g. "fr" or "de"
+    show_requirements=False,  # Include per-plugin dependency info
+    show_disabled=False,      # Include plugins that are currently unavailable
+    indent=None,              # Passed to json.dumps(); None = compact output
+    path=None,                # If set, write to this file path instead of returning a string
+)
+```
+
+### json() Basic Usage
+
+Without a `path` argument, `json()` returns the serialized JSON as a `str`:
+
+```python
+import apprise
+
+# Instantiate an instance of Apprise
+apobj = apprise.Apprise()
+
+# Compact JSON string — useful for API responses, caching, etc.
+payload: str = apobj.json()
+
+# Pretty-printed JSON — useful for debugging or writing config stubs
+payload: str = apobj.json(indent=2)
+```
+
+### json() Showing Disabled Plugins
+
+Same as `details()`, pass `show_disabled=True` to include services that exist but cannot currently be used:
+
+```python
+import apprise
+
+apobj = apprise.Apprise()
+
+# Include services that exist but are not currently usable
+payload: str = apobj.json(show_disabled=True)
+```
+
+### Writing JSON to a File
+
+Pass a `path` to write the output directly to disk. On success it returns `True`; on failure (permissions error, disk full, etc.) it logs the error and returns `False`.
+
+```python
+import apprise
+
+apobj = apprise.Apprise()
+
+ok: bool = apobj.json(path="/var/cache/apprise/details.json")
+if not ok:
+    print("Failed to write details — check logs for the reason")
+```
+
+### Including Requirements and Disabled Plugins
+
+```python
+import apprise
+
+apobj = apprise.Apprise()
+
+# Full audit dump — every plugin, even those missing dependencies
+payload: str = apobj.json(
+    show_requirements=True,
+    show_disabled=True,
+    indent=2,
+)
+```
+
+</TabItem>
+</Tabs>
+
 ## Understanding the Returned Structure
 
-At a high level, `details()` is meant to be JSON friendly. You can safely `json.dumps()` it (translations are normalized to strings before returning).
+:::note
+`details()` may contain Python types such as `datetime`, `bytes`, `set`, and `tuple` that the standard `json.dumps()` cannot serialize. Use `Apprise.json()` (described above) when you need JSON output — it uses `AppriseJSONEncoder` internally to handle these types correctly. If you call `json.dumps(apobj.details())` directly you may encounter a `TypeError` for certain plugins.
+:::
 
 ### Top-Level Keys
 
@@ -81,7 +174,7 @@ Each schema entry describes one plugin, such as `discord`, `mailto`, `slack`, an
 - token metadata for URL components and query parameters,
 - dependency requirements (required vs recommended packages).
 
-The “URL building” portion is generated by the plugin inspection helper `apprise.plugins.details(plugin)`, which returns a structure with these keys:
+The "URL building" portion is generated by the plugin inspection helper `apprise.plugins.details(plugin)`, which returns a structure with these keys:
 
 - `templates`
 - `tokens`
@@ -93,10 +186,10 @@ The “URL building” portion is generated by the plugin inspection helper `app
 `templates` is a list of URL patterns supported by the plugin, expressed with `{token}` placeholders. Templates are meant for display and tooling, for example:
 
 - show examples in your UI,
-- drive a “wizard” that asks only for tokens relevant to the selected template,
+- drive a "wizard" that asks only for tokens relevant to the selected template,
 - validate that a constructed URL matches at least one template.
 
-Templates are sourced directly from each plugin’s `templates` attribute.
+Templates are sourced directly from each plugin's `templates` attribute.
 
 ### Token Metadata
 
@@ -104,13 +197,13 @@ The most valuable part of the schema details is the token metadata. Apprise gene
 
 Tokens are divided into three groups:
 
-- `tokens`: path, host, auth, and other “core” pieces used to initialize the plugin.
+- `tokens`: path, host, auth, and other "core" pieces used to initialize the plugin.
 - `args`: query string arguments (normal plugin options).
 - `kwargs`: dynamic key/value arguments, where the user provides both the argument name and its value (used by a small number of services).
 
 #### The Implicit `schema` Token
 
-Apprise injects a `schema` token automatically, and it is always required. Its values come from the plugin’s `secure_protocol` and `protocol` settings. This is how tooling can show, for example, `http` and `https` variants where appropriate.
+Apprise injects a `schema` token automatically, and it is always required. Its values come from the plugin's `secure_protocol` and `protocol` settings. This is how tooling can show, for example, `http` and `https` variants where appropriate.
 
 #### Standard Token Fields (normalized)
 
@@ -230,5 +323,6 @@ with apprise.LogCapture(fmt=fmt) as logs:
 
 If you are integrating Apprise into another library or service:
 
-- Prefer `details()` for capability discovery and for building UI around supported plugins and their configuration fields.
+- Prefer `json()` when you need a JSON payload (API responses, file dumps) — it handles all type encoding automatically.
+- Prefer `details()` when you need the raw dictionary for further processing, such as building UI widgets or performing programmatic inspection of plugin metadata.
 - Prefer `LogCapture` in tests and diagnostics so you can show users meaningful error output without forcing them to reconfigure logging globally.
