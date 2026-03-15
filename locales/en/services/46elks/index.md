@@ -33,14 +33,11 @@ limits:
 
 ## Syntax
 
-Valid syntax is as follows:
+Valid syntax is as follows (both `46elks://` and `elks://` are accepted aliases):
 
 - `46elks://{user}:{password}@/{from}`
 - `46elks://{user}:{password}@/{from}/{to}`
 - `46elks://{user}:{password}@/{from}/{to1}/{to2}/{toN}`
-- `elks://{user}:{password}@/{from}`
-- `elks://{user}:{password}@/{from}/{to}`
-- `elks://{user}:{password}@/{from}/{to1}/{to2}/{toN}`
 
 ## Parameter Breakdown
 

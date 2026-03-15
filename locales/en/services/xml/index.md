@@ -61,7 +61,7 @@ Valid syntax is as follows:
 - `xml://{user}:{password}@{hostname}`
 - `xml://{user}:{password}@{hostname}:{port}`
 
-The secure versions:
+Adding an `s` to the schema (i.e. `xmls://`) switches to a secure HTTPS connection:
 
 - `xmls://{hostname}`
 - `xmls://{hostname}:{port}`
@@ -70,13 +70,13 @@ The secure versions:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                    |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname | Yes      | The Web Server's hostname                                                                                                                                                      |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references.                                              |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                              |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                              |
-| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, and `head`. By default if no method is specified then `post` is used. |
+| Variable | Required | Description                                                                                                                                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Yes      | The Web Server's hostname                                                                                                                                                                           |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references.                                                                   |
+| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
+| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
+| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

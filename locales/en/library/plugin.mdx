@@ -854,6 +854,55 @@ Apprise uses your template metadata as a contract, and tests enforce consistency
 - Every `alias_of` must point to a real token or arg, and cannot just point to itself unless it also exists in tokens.
 - For kwargs entries, `prefix` is required, and must be one of `:`, `+`, or `-`.
 
+### alias_of Inheritance Rule
+
+Alias entries must **never** redeclare properties that are inherited from the target. The following keys are forbidden on any entry that contains `alias_of`:
+
+`private`, `type`, `required`, `regex`, `default`, `min`, `max`, `map_to`, `prefix`, `group`
+
+These are resolved at runtime by following the alias chain — consumers such as the [URL Builder](/tools/url-builder/) read them from the target, not from the alias itself. The only permitted extras alongside `alias_of` are:
+
+| Extra key | When allowed                                                                                 |
+| :-------- | :------------------------------------------------------------------------------------------- |
+| `name`    | Required when `alias_of` lists **multiple** targets, to provide a grouping label for the UI. |
+| `delim`   | Allowed when the aliased target is a `list:*` type, to override the delimiter character(s).  |
+
+Valid approaches:
+
+1. Single alias — only alias_of
+
+   ```python
+   "t": {"alias_of": "token"},
+   ```
+
+1. Multiple aliases — alias_of + name for grouping label
+
+   ```python
+   "tok": {
+       "name": _("Token"),
+       "alias_of": ("access_token", "token_a", "token_b"),
+   },
+   ```
+
+1. List alias with delimiter override
+
+   ```python
+   "to": {
+       "alias_of": "targets",
+       "delim": (",", " "),
+   },
+   ```
+
+Additional tokens outside of what was identified above can not be used. For example, the following is not valid:
+
+```python
+# do NOT redeclare inherited properties
+"t": {
+    "alias_of": "token",
+    "private": True,  # <-- This should have been defined in what is being inherited
+},
+```
+
 ### Round-Trip Requirements
 
 Two functions should work together:
@@ -914,6 +963,30 @@ Kwargs are for prefixed arguments that can appear multiple times, typically used
 - `-` is often used for URL parameters
 - `:` is often used for payload extras
 
+Each `template_kwargs` entry requires a `prefix` and a `name`, and those are also surfaced in the [URL Builder](/tools/url-builder/) as a **Custom Parameters** table where users can add any number of key/value rows.
+
+```python
+template_kwargs = dict(
+    NotifyBase.template_kwargs,
+    **{
+        "headers": {
+            "name": _("HTTP Header"),
+            "prefix": "+",
+        },
+        "params": {
+            "name": _("GET Parameter"),
+            "prefix": "-",
+        },
+        "payload": {
+            "name": _("Payload Extra"),
+            "prefix": ":",
+        },
+    },
+)
+```
+
+In a URL these look like: `?+X-Custom-Header=foo&-debug=1&:extra=bar`
+
 ## Requirements And Optional Dependencies
 
 If your plugin needs extra packages, declare them in `requirements` so Apprise can report what is required or recommended.
@@ -952,6 +1025,57 @@ common implementation patterns are documented here:
 Authors are strongly encouraged to review the attachment documentation before
 implementing support, as incorrect handling can easily lead to excessive memory
 usage or failed deliveries.
+
+## URL Builder Integration
+
+The [Apprise URL Builder](/tools/url-builder/) generates its form entirely from the metadata exported by your plugin. Well-formed metadata leads to a polished, user-friendly experience.
+
+### Checklist for URL Builder quality
+
+| What to set                          | Why it matters                                                                                                                |
+| :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| `service_name`                       | Shown as the service display name in search results.                                                                          |
+| `service_url`                        | Powers the "Service website" link next to the form.                                                                           |
+| `setup_url`                          | Powers the "Setup guide" link for step-by-step instructions.                                                                  |
+| `name` on every token/arg            | Appears as the form field label. Without it the raw key name is shown.                                                        |
+| `private: True` on secrets           | Renders the field as a password input with a reveal toggle, and prevents the value from leaking into the browser address bar. |
+| `required: True` on mandatory tokens | Marks fields with an asterisk (`*`) and blocks URL generation until filled.                                                   |
+| `regex` on validated tokens          | Provides client-side format hints (not enforced in the browser, but surfaced in schema metadata).                             |
+| `default` on optional args           | Shown as the placeholder in dropdowns and number inputs.                                                                      |
+| `templates` ordered simple → complex | The URL Builder defaults to the most complex template so all fields are visible from the start.                               |
+
+### template ordering
+
+The URL Builder picks the **most complex** template by default (the one with the most `{token}` slots). As the user fills fields it switches to the simplest template that covers every filled token.
+
+Order your `templates` tuple from simplest to most complex:
+
+```python
+templates = (
+    "{schema}://{token}",                           # simplest — no targets
+    "{schema}://{token}/{targets}",                 # adds optional targets
+    "{schema}://{botname}@{token}/{targets}",       # most complex
+)
+```
+
+### private flag matters
+
+Mark every API key, token, password, or secret with `"private": True` in both `template_tokens` and `template_args`. The URL Builder:
+
+1. Renders the input as a password field with an eye-toggle button.
+2. Shows `••••••` in the assembled URL display instead of the real value.
+3. Excludes the value from the browser address bar (share links never expose secrets).
+
+Alias entries (`alias_of`) **inherit** the `private` flag from their target — do not redeclare it on the alias.
+
+### service_url vs setup_url
+
+| Attribute     | Purpose                                                                                                                                      |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| `service_url` | Links to the upstream vendor or product landing page (e.g. `https://discord.com/`). Shown in the URL Builder as "Service website".           |
+| `setup_url`   | Links to the Apprise-specific integration guide on `appriseit.com` (e.g. `https://appriseit.com/services/discord/`). Shown as "Setup guide". |
+
+Both should always be set. Generic or local-only plugins (e.g. MQTT, Windows notifications) may omit `service_url` if there is no applicable upstream URL.
 
 ## Format and Overflow
 

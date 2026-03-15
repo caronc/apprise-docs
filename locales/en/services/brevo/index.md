@@ -52,8 +52,8 @@ Valid syntax is as follows:
 
 The plugin URL template is:
 
-- `{schema}://{apikey}:{from_email}`
-- `{schema}://{apikey}:{from_email}/{targets}`
+- `brevo://{apikey}:{from_email}`
+- `brevo://{apikey}:{from_email}/{targets}`
 
 ## Parameter Breakdown
 

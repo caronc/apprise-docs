@@ -31,13 +31,13 @@ The last thing you need is to generate an **API Key** with at least the **Mail S
 
 Valid syntax is as follows:
 
-- `{schema}://{apikey}:{from_email}`
-- `{schema}://{apikey}:{from_email}/{to_email}`
-- `{schema}://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}`
+- `sendgrid://{apikey}:{from_email}`
+- `sendgrid://{apikey}:{from_email}/{to_email}`
+- `sendgrid://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}`
 
 Template support is also supported as well, You just need to specify the UUID assigned to it as part of the URL:
 
-- `{schema}://{apikey}:{from_email}/{to_email}?template={template_uuid}`
+- `sendgrid://{apikey}:{from_email}/{to_email}?template={template_uuid}`
 
 If you want to take advantage of the `dynamic_template_data` variables, just create arguments prefixed with a plus (+); for example:
 

@@ -45,7 +45,8 @@
     "image_support": "Image Support",
     "attachment_support": "Attachment Support",
     "message_character_limits": "Message Character Limits",
-    "default_limit_name": "Body"
+    "default_limit_name": "Body",
+    "build_url": "Build Your Apprise URL"
   },
   "tables": {
     "service": "Service",
