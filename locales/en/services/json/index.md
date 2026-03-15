@@ -53,7 +53,7 @@ Valid syntax is as follows:
 - `json://{user}:{password}@{hostname}`
 - `json://{user}:{password}@{hostname}:{port}`
 
-The secure versions:
+Adding an `s` to the schema (i.e. `jsons://`) switches to a secure HTTPS connection:
 
 - `jsons://{hostname}`
 - `jsons://{hostname}:{port}`
@@ -62,13 +62,13 @@ The secure versions:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                    |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname | Yes      | The Web Server's hostname                                                                                                                                                      |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **json://** and **443** for all **jsons://** references.                                            |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                              |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                              |
-| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, and `head`. By default if no method is specified then `post` is used. |
+| Variable | Required | Description                                                                                                                                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Yes      | The Web Server's hostname                                                                                                                                                                           |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **json://** and **443** for all **jsons://** references.                                                                 |
+| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
+| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
+| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -80,6 +80,28 @@ Send a JSON notification to our web server listening on port 80:
 # Assuming our {hostname} is json.server.local
 apprise json://json.server.local
 ```
+
+### HTTP Method
+
+By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+
+```bash
+# Send as a PUT request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=put"
+
+# Send as a DELETE request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=delete"
+
+# Send as a PATCH request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "json://localhost/?method=patch"
+```
+
+The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+
+> **Note:** When `method=get` is used, the JSON body is still sent as a request body. To pass parameters as URL query strings instead, use the `-` prefix (see [GET Parameter Manipulation](#get-parameter-manipulation) below).
 
 ### Payload Manipulation
 

@@ -76,22 +76,12 @@ From here you're ready to go. You can post public posts or simply create DMs thr
 
 ## Syntax
 
-Valid syntax is as follows:
-
-- `twitter://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
-- `twitter://{ScreenName}@{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
-
-Or
+Valid syntax is as follows (`x://`, `twitter://`, and `tweet://` are all accepted aliases):
 
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
 - `x://{ScreenName}@{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
 
 If you know the targets you wish to identify; they can be targeted by their X Screen Name:
-
-- `twitter://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName}`
-- `twitter://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName1}/{ScreenName2}/{ScreenNameN}`
-
-Or
 
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName}`
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName1}/{ScreenName2}/{ScreenNameN}`
@@ -101,7 +91,6 @@ Or
 
 A Public post can be referenced like so:
 
-- `twitter://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}?mode=tweet`
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}?mode=tweet`
 
 ## Parameter Breakdown

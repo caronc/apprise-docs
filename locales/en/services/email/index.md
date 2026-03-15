@@ -20,6 +20,24 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
+## Syntax
+
+Valid syntax is as follows:
+
+- `mailto://{user}:{password}@{domain}`
+- `mailto://{user}:{password}@{domain}:{port}`
+- `mailto://{domain}?user={user}&pass={password}`
+- `mailto://{user}:{password}@{domain}/{to_email}`
+- `mailto://{user}:{password}@{domain}/{to_email1}/{to_email2}/{to_emailN}`
+
+Adding an `s` to the schema (i.e. `mailtos://`) switches to a secure STARTTLS connection (port 587 by default):
+
+- `mailtos://{user}:{password}@{domain}`
+- `mailtos://{user}:{password}@{domain}:{port}`
+- `mailtos://{domain}?user={user}&pass={password}`
+- `mailtos://{user}:{password}@{domain}/{to_email}`
+- `mailtos://{user}:{password}@{domain}/{to_email1}/{to_email2}/{to_emailN}`
+
 ## Built-In Provider Support
 
 Apprise automatically detects many email providers based on the **From** address derived from your URL.  

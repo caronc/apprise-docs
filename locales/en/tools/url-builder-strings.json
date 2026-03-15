@@ -1,0 +1,47 @@
+{
+  "notificationService": "Notification Service",
+  "searchPlaceholder": "Search by name or schema\u2026",
+  "clearSelection": "Clear selection",
+  "noServicesMatch": "No services match",
+  "allServices": "All services",
+  "moreServicesSuffix": "more \u2014 refine your search",
+
+  "setupGuide": "Setup guide",
+  "serviceWebsite": "Service website",
+  "secure": "Secure",
+  "alwaysSecure": "Always secure",
+
+  "urlPattern": "URL Pattern",
+  "urlPatternHint": "Pattern auto-selected based on filled fields. Change manually if needed.",
+
+  "urlParameters": "URL Parameters",
+  "requiredNote": "* required",
+  "boolDefaultYes": "\u2014 default (yes) \u2014",
+  "boolDefaultNo": "\u2014 default (no) \u2014",
+  "defaultPrefix": "\u2014 default (",
+  "defaultSuffix": ") \u2014",
+  "listPlaceholder": "One per line or comma-separated",
+  "listCommaSeparated": "Comma-separated",
+
+  "options": "Options",
+  "advancedOptions": "Advanced Options",
+
+  "customParameters": "Custom Parameters",
+  "addRow": "+ Add",
+  "removeRow": "\u00d7",
+  "keyPlaceholder": "key",
+  "valuePlaceholder": "value",
+
+  "stepSelectService": "Select the service you wish to use",
+  "stepConfigure": "Provide the required configuration",
+  "stepGeneratedUrl": "Access Your Generated URL",
+
+  "schemaVariant": "Schema",
+
+  "fillRequired": "Fill required (*) fields to complete the URL",
+  "copy": "Copy",
+  "copied": "Copied!",
+  "showUrl": "Show URL",
+  "hideUrl": "Hide URL",
+  "selectServiceToBegin": "Select a service above to begin"
+}

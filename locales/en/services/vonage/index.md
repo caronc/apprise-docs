@@ -30,16 +30,13 @@ The **{FromPhoneNo}** must be a number provided to you through Nexmo
 
 ## Syntax
 
-Valid syntax is as follows:
+Valid syntax is as follows (both `vonage://` and `nexmo://` are accepted aliases; `nexmo://` is the legacy name):
 
-- `nexmo://{ApiKey}:{ApiSecret}@{FromPhoneNo}/{PhoneNo}`
-- `nexmo://{ApiKey}:{ApiSecret}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 - `vonage://{ApiKey}:{ApiSecret}@{FromPhoneNo}/{PhoneNo}`
 - `vonage://{ApiKey}:{ApiSecret}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
 If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ will be messaged instead; hence the following is a valid URL:
 
-- `nexmo://{ApiKey}:{ApiSecret}@{FromPhoneNo}/`
 - `vonage://{ApiKey}:{ApiSecret}@{FromPhoneNo}/`
 
 ## Parameter Breakdown

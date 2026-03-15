@@ -61,7 +61,7 @@ Valid syntax is as follows:
 - `xml://{user}:{password}@{hostname}`
 - `xml://{user}:{password}@{hostname}:{port}`
 
-The secure versions:
+Adding an `s` to the schema (i.e. `xmls://`) switches to a secure HTTPS connection:
 
 - `xmls://{hostname}`
 - `xmls://{hostname}:{port}`
@@ -70,13 +70,13 @@ The secure versions:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                    |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname | Yes      | The Web Server's hostname                                                                                                                                                      |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references.                                              |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                              |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                              |
-| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, and `head`. By default if no method is specified then `post` is used. |
+| Variable | Required | Description                                                                                                                                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Yes      | The Web Server's hostname                                                                                                                                                                           |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references.                                                                   |
+| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
+| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
+| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -90,9 +90,33 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    xml://xml.server.local
 ```
 
+### HTTP Method
+
+By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+
+```bash
+# Send as a PUT request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "xml://localhost/?method=put"
+
+# Send as a DELETE request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "xml://localhost/?method=delete"
+
+# Send as a PATCH request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "xml://localhost/?method=patch"
+```
+
+The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+
+> **Note:** When `method=get` is used, the XML body is still sent as a request body. To pass parameters as URL query strings instead, use the `-` prefix (see [GET Parameter Manipulation](#get-parameter-manipulation) below).
+
 ### Payload Manipulation
 
-Making use of the `:` on the Apprise URL now allows you to alter and add to the content posted upstream to a remote server.
+Making use of the `:` on the Apprise URL allows you to alter and add to the content posted upstream to a remote server.
+
+> **Note:** XML element names must be valid identifiers. Any characters outside of `[A-Za-z0-9_-]` are stripped automatically from the `:key` name.
 
 ```bash
 # Add to the payload delivered to the remote server as if it was part
@@ -119,6 +143,62 @@ The above would post a message such as:
             <MessageType>info</MessageType>
             <Message>Test Message Body</Message>
             <Sound>oceanwave</Sound>
+       </Notification>
+    </soapenv:Body>
+</soapenv:Envelope>
+```
+
+You can also remove built-in elements from the output by setting their value to empty:
+
+```bash
+# Remove the Version and MessageType elements from the payload:
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "xml://localhost/?:Version&:MessageType"
+```
+
+The above would post a message such as:
+
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <Notification>
+            <Subject>Test Message Title</Subject>
+            <Message>Test Message Body</Message>
+       </Notification>
+    </soapenv:Body>
+</soapenv:Envelope>
+```
+
+> **Note:** When any payload customisation is applied (adding, removing, or remapping elements), the XSD namespace attribute is omitted from the `<Notification>` element.
+
+Finally, you can remap a built-in element to a different tag name:
+
+```bash
+# Remap "Message" to "Body" and "Subject" to "Title":
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "xml://localhost/?:Message=Body&:Subject=Title"
+```
+
+The above would post a message such as:
+
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <Notification>
+            <Version>1.0</Version>
+            <Title>Test Message Title</Title>
+            <MessageType>info</MessageType>
+            <Body>Test Message Body</Body>
        </Notification>
     </soapenv:Body>
 </soapenv:Envelope>

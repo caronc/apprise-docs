@@ -46,7 +46,7 @@ Valid syntax is as follows:
 - `form://{user}:{password}@{hostname}`
 - `form://{user}:{password}@{hostname}:{port}`
 
-The secure versions:
+Adding an `s` to the schema (i.e. `forms://`) switches to a secure HTTPS connection:
 
 - `forms://{hostname}`
 - `forms://{hostname}:{port}`
@@ -63,7 +63,7 @@ The secure versions:
 | port      | No       | The port our Web server is listening on. By default the port is **80** for **form://** and **443** for all **forms://** references.                                                                                                                                                                                                                                                                                                                                                                                  |
 | user      | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | password  | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| method    | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, and `head`. By default if no method is specified then `post` is used.                                                                                                                                                                                                                                                                                                                                       |
+| method    | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used.                                                                                                                                                                                                                                                                                                                  |
 | attach-as | No       | Optionally override the meta filename set when there are attachments. Each attachment by default gets posted as `file01`, `file02`, etc. There have been use-cases where someone's end point expects the meta name (where the file is found on the HTTP request) to be named something specific such as `document`. Utilize this over-ride to accomplish such a feat. Also use the `*` character to allow the numbering. Hence `?attach-as=meta*` would cause Apprise to store the files as `meta01`, `meta02`, etc. |
 
 **Note:**: If you include file attachments; each one is concatenated into the same single post to the upstream server. The `Content-Type` header request also changes from `application/x-www-form-urlencoded` to `multipart/form-data` in this case.
@@ -77,6 +77,86 @@ Send a FORM Based web request to our web server listening on port 80:
 ```bash
 # Assuming our {hostname} is my.server.local
 apprise form://my.server.local
+```
+
+### HTTP Method
+
+By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+
+```bash
+# Send as a PUT request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=put"
+
+# Send as a DELETE request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=delete"
+
+# Send as a PATCH request
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?method=patch"
+```
+
+The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+
+> **Note:** When `method=get` is used, the form payload fields (`version`, `title`, `message`, `type`) are appended as URL query parameters rather than sent as a request body. The `Content-Type` header is not set for GET requests. File attachments are not compatible with GET.
+
+### Payload Manipulation
+
+Making use of the `:` on the Apprise URL allows you to alter and add to the form fields posted upstream to a remote server.
+
+```bash
+# Add to the payload delivered to the remote server as if it was part
+# the prepared message Apprise would have otherwise put together
+#
+# Assuming our {hostname} is localhost
+# Assuming we want to include "sound=oceanwave" as part of the existing payload:
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:sound=oceanwave"
+```
+
+The above would POST the following form fields:
+
+```text
+version=1.0
+title=Test Message Title
+message=Test Message Body
+type=info
+sound=oceanwave
+```
+
+You can also remove built-in fields by setting their value to empty:
+
+```bash
+# Remove version and type from the payload:
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:version&:type"
+```
+
+The above would POST:
+
+```text
+title=Test Message Title
+message=Test Message Body
+```
+
+Finally, you can remap a built-in field to a different key name:
+
+```bash
+# Remap the "message" field to "body":
+# Assuming our {hostname} is localhost
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "form://localhost/?:message=body"
+```
+
+The above would POST:
+
+```text
+version=1.0
+title=Test Message Title
+body=Test Message Body
+type=info
 ```
 
 ### Header Manipulation

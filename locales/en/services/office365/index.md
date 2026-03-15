@@ -96,12 +96,10 @@ Because Microsoft has disabled Basic Authentication (Username/Password), **you m
 
 ## Syntax
 
-Valid syntax is as follows:
+Valid syntax is as follows (both `o365://` and `azure://` are accepted aliases):
 
 - `o365://{source}/{tenant_id}/{client_id}/{client_secret}/`
 - `o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}`
-- `azure://{source}/{tenant_id}/{client_id}/{client_secret}/`
-- `azure://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}`
 
 ## Parameter Breakdown
 

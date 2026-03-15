@@ -37,11 +37,10 @@ NotificationAPI lets you trigger email, SMS, calls, push, and in‑app notificat
 
 ## Syntax
 
-Valid syntax is as follows:
+Valid syntax is as follows (both `napi://` and `notificationapi://` are accepted aliases):
 
 - `napi://{ClientID}/{ClientSecret}/{Target}`
 - `napi://{Type}@{ClientID}/{ClientSecret}/{Target}`
-- `notificationapi://{...}` (alias of `napi://`)
 
 **Targets** can be combined in a single path and are grouped by a leading **id**. Each `{Target}` segment may be:
 

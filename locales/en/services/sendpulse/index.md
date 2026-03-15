@@ -27,13 +27,13 @@ Once you have an account and access to [your dashboard](https://app.sendpulse.co
 
 Valid syntax is as follows:
 
-- `{schema}://{user}@{host}/{client_id}/{client_secret}`
-- `{schema}://{user}@{host}/{client_id}/{client_secret}/{to_email}`
-- `{schema}://{user}@{host}/{client_id}/{client_secret}/{to_email1}/{to_email2}/{to_email3}`
+- `sendpulse://{user}@{host}/{client_id}/{client_secret}`
+- `sendpulse://{user}@{host}/{client_id}/{client_secret}/{to_email}`
+- `sendpulse://{user}@{host}/{client_id}/{client_secret}/{to_email1}/{to_email2}/{to_email3}`
 
 Template support is also supported as well, You just need to specify the integer assigned to it as part of the URL:
 
-- `{schema}://{user}@{host}/{client_id}/{client_secret}/:{to_email}?template={temlate_int}`
+- `sendpulse://{user}@{host}/{client_id}/{client_secret}/:{to_email}?template={temlate_int}`
 
 If you want to take advantage of the `dynamic_template_data` variables, just create arguments prefixed with a plus (+); for example:
 
