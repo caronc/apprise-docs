@@ -48,28 +48,32 @@ The Apprise API container is highly configurable via environment variables.
 
 The container also supports the following variables, which map directly to the server settings.
 
-| Variable                     | Default                      | Description                                                                     |
-| :--------------------------- | :--------------------------- | :------------------------------------------------------------------------------ |
-| `APPRISE_DEFAULT_CONFIG_ID`  | `apprise`                    | Default configuration key used by the web UI.                                   |
-| `APPRISE_WEBHOOK_URL`        | _(Empty)_                    | Optional webhook that receives a POST payload after each notification attempt.  |
-| `APPRISE_CONFIG_DIR`         | `<BASE_DIR>/var/config`      | Directory storing configurations.                                               |
-| `APPRISE_STORAGE_DIR`        | `<APPRISE_CONFIG_DIR>/store` | Directory storing persistent storage.                                           |
-| `APPRISE_STORAGE_MODE`       | `auto`                       | Persistent storage mode. Values: `memory`, `auto`, `flush`.                     |
-| `APPRISE_STORAGE_PRUNE_DAYS` | `30`                         | Number of days before persistent storage is pruned.                             |
-| `APPRISE_STORAGE_UID_LENGTH` | `8`                          | Default URL id length used by persistent storage.                               |
-| `APPRISE_ATTACH_DIR`         | `<BASE_DIR>/var/attach`      | Directory storing uploaded attachments.                                         |
-| `APPRISE_ATTACH_SIZE`        | `200`                        | Maximum attachment size in MB. Set to `0` to disable attachments.               |
-| `APPRISE_MAX_ATTACHMENTS`    | `6`                          | Maximum number of attachments per request. Set to `0` to disable the limit.     |
-| `APPRISE_ATTACH_ALLOW_URL`   | `*`                          | Allow list for remote attachment URLs.                                          |
-| `APPRISE_ATTACH_REJECT_URL`  | `127.0.* localhost*`         | Deny list for remote attachment URLs.                                           |
-| `APPRISE_STATELESS_URLS`     | _(Empty)_                    | Default URLs used by stateless `/notify/` requests when no `urls` are supplied. |
-| `APPRISE_STATELESS_STORAGE`  | `no`                         | Allow stateless requests to use persistent storage when enabled.                |
-| `APPRISE_DENY_SERVICES`      | _(Platform list)_            | Comma-separated list of schemas to disable.                                     |
-| `APPRISE_ALLOW_SERVICES`     | _(Empty)_                    | Exclusive allow list. If set, anything not in this list is disabled.            |
-| `APPRISE_PLUGIN_PATHS`       | `<BASE_DIR>/var/plugin`      | Comma-separated list of plugin paths to scan.                                   |
-| `APPRISE_API_ONLY`           | `no`                         | Disable the web UI and allow only the API endpoints.                            |
-| `APPRISE_DEFAULT_THEME`      | `light`                      | Default theme for the web UI. Values: `light`, `dark`.                          |
-| `APPRISE_INTERPRET_EMOJIS`   | _(Unset)_                    | If set, overrides emoji interpretation. Values: yes or no.                      |
+:::note[About `<BASE_DIR>` in default values]
+`<BASE_DIR>` is **not** an environment variable — it refers to the directory where the Apprise API application is installed and running from (its working directory). Relative paths you set for any of these variables are also resolved from that same directory. If you need to store data outside the install directory, use an absolute path (e.g. `/data/apprise/config`).
+:::
+
+| Variable                     | Default                      | Description                                                                                             |
+| :--------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------------ |
+| `APPRISE_DEFAULT_CONFIG_ID`  | `apprise`                    | Default configuration key used by the web UI.                                                           |
+| `APPRISE_WEBHOOK_URL`        | _(Empty)_                    | Optional webhook that receives a POST payload after each notification attempt.                          |
+| `APPRISE_CONFIG_DIR`         | `<BASE_DIR>/var/config`      | Directory storing configurations. Relative to `<BASE_DIR>` unless an absolute path is given.            |
+| `APPRISE_STORAGE_DIR`        | `<APPRISE_CONFIG_DIR>/store` | Directory storing persistent storage.                                                                   |
+| `APPRISE_STORAGE_MODE`       | `auto`                       | Persistent storage mode. Values: `memory`, `auto`, `flush`.                                             |
+| `APPRISE_STORAGE_PRUNE_DAYS` | `30`                         | Number of days before persistent storage is pruned.                                                     |
+| `APPRISE_STORAGE_UID_LENGTH` | `8`                          | Default URL id length used by persistent storage.                                                       |
+| `APPRISE_ATTACH_DIR`         | `<BASE_DIR>/var/attach`      | Directory storing uploaded attachments. Relative to `<BASE_DIR>` unless an absolute path is given.      |
+| `APPRISE_ATTACH_SIZE`        | `200`                        | Maximum attachment size in MB. Set to `0` to disable attachments.                                       |
+| `APPRISE_MAX_ATTACHMENTS`    | `6`                          | Maximum number of attachments per request. Set to `0` to disable the limit.                             |
+| `APPRISE_ATTACH_ALLOW_URL`   | `*`                          | Allow list for remote attachment URLs.                                                                  |
+| `APPRISE_ATTACH_REJECT_URL`  | `127.0.* localhost*`         | Deny list for remote attachment URLs.                                                                   |
+| `APPRISE_STATELESS_URLS`     | _(Empty)_                    | Default URLs used by stateless `/notify/` requests when no `urls` are supplied.                         |
+| `APPRISE_STATELESS_STORAGE`  | `no`                         | Allow stateless requests to use persistent storage when enabled.                                        |
+| `APPRISE_DENY_SERVICES`      | _(Platform list)_            | Comma-separated list of schemas to disable.                                                             |
+| `APPRISE_ALLOW_SERVICES`     | _(Empty)_                    | Exclusive allow list. If set, anything not in this list is disabled.                                    |
+| `APPRISE_PLUGIN_PATHS`       | `<BASE_DIR>/var/plugin`      | Comma-separated list of plugin paths to scan. Relative to `<BASE_DIR>` unless absolute paths are given. |
+| `APPRISE_API_ONLY`           | `no`                         | Disable the web UI and allow only the API endpoints.                                                    |
+| `APPRISE_DEFAULT_THEME`      | `light`                      | Default theme for the web UI. Values: `light`, `dark`.                                                  |
+| `APPRISE_INTERPRET_EMOJIS`   | _(Unset)_                    | If set, overrides emoji interpretation. Values: yes or no.                                              |
 
 ## Django and Logging
 
