@@ -88,6 +88,6 @@ If you prefer running tools directly (once dev dependencies are installed), the 
 
 ## Licensing and Attribution
 
-Apprise is released under the MIT License
+Apprise API is released under the MIT License
 
 All contributions must be compatible with this licence, and new files should include appropriate headers where required.
