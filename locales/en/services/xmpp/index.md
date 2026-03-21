@@ -13,9 +13,10 @@ schemas:
 has_selfhosted: true
 
 sample_urls:
-  - xmpp://{user}/{password}@{hostname}
-  - xmpps://{user}/{password}@{hostname}/{jid}
-  - xmpps://{user}/{password}@{hostname}/{jid1}/{jid2}/{jidN}
+  - xmpp://{user}:{password}@{hostname}
+  - xmpps://{user}:{password}@{hostname}/{jid}
+  - xmpps://{user}:{password}@{hostname}/{jid1}/{jid2}/{jidN}
+  - xmpps://{user}:{password}@{hostname}/#{room}@{conference_host}
 ---
 
 <!-- SERVICE:DETAILS -->
@@ -55,6 +56,21 @@ If no target is specified, Apprise sends the notification to the authenticated a
 
 Targets may also be supplied using the `to=` query argument (comma-separated).
 
+### Multi-User Chat (MUC) Rooms
+
+To send to an XMPP **Multi-User Chat** room ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)), prefix the room JID with `#`:
+
+- `xmpps://{user}:{password}@{host}/#room@{conference_host}`
+- `xmpps://{user}:{password}@{host}/#room1@{ch}/#room2@{ch}`
+
+You can mix room and user targets freely in the same URL:
+
+- `xmpps://{user}:{password}@{host}/#room@{ch}/{jid}`
+
+:::note
+When Apprise reconstructs a URL internally (e.g. for logging or storage), MUC room prefixes are stored as `#` (or url-encoded `%23`) to avoid ambiguity with regular JID identifiers. Both forms are accepted on input.
+:::
+
 ## Parameter Breakdown
 
 | Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -66,9 +82,10 @@ Targets may also be supplied using the `to=` query argument (comma-separated).
 | mode      | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                                                                                                                                                                                                                                             |
 | roster    | No       | Retrieves roster from the server after connection; default is `no`                                                                                                                                                                                                                                                                                                                                                                                                           |
 | keepalive | No       | Enables XMPP keepalive mode to maintain a persistent connection between notifications. This is only effective when Apprise remains resident in memory (for example, in long-running applications). It has no practical effect when using the Apprise CLI or API in one-shot mode, as the instance is created, sends the notification, and is then destroyed. Even with `?keepalive=yes`, the connection closes once the Apprise instance goes out of scope. Default is `no`. |
-| subject   | No       | Messages are sent as `mtype=chat`, which do not typically use the built-in XMPP `subject=` field. Setting this to `yes` redirects any title provied into the `subject=` field instead of concatinating it to the body (default behavior which is `subject=no`).                                                                                                                                                                                                              |
-| to        | No       | Alternate way to specify target JIDs (comma-separated)                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| target    | No       | Recipient JID                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| subject   | No       | Messages are sent as `mtype=chat`, which do not typically use the built-in XMPP `subject=` field. Setting this to `yes` redirects any title provided into the `subject=` field instead of concatenating it to the body (default behavior which is `subject=no`).                                                                                                                                                                                                             |
+| name      | No       | Nickname used when joining MUC rooms (alphanumeric and underscores only). The JID username is detected and used by default unless explicitly overridden here. If neither is available, the system default is used.                                                                                                                                                                                                                                                           |
+| to        | No       | Alternate way to specify target JIDs or MUC rooms (comma-separated); prefix rooms with `#`                                                                                                                                                                                                                                                                                                                                                                                   |
+| target    | No       | Recipient JID (plain user) or MUC room JID when prefixed with `#`                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -153,14 +170,21 @@ Use `%2F` to represent a resource (acts as `/`) when specifying resources in the
 Alternatively, use the `to=` query argument, which eliminates the need to URL-encode `/`. For example: `?to=jason@example.ca/resource`.
 :::
 
-| URL                                                         | JIDs Notified                           |
-| ----------------------------------------------------------- | --------------------------------------- |
-| `xmpps://user:pass@example.ca`                              | `user@example.ca`                       |
-| `xmpps://user:pass@example.ca/jane`                         | `jane@example.ca`                       |
-| `xmpps://user:pass@example.ca/jane/joe`                     | `jane@example.ca`, and `joe@example.ca` |
-| `xmpps://user:pass@example.ca/jane@foobar.ca`               | `jane@foobar.ca`                        |
-| `xmpps://user:pass@example.ca/jason%2Fmobile`               | `jason@example.ca/mobile`               |
-| `xmpps://user:pass@example.ca/jane@foobar.ca%2Fworkstation` | `jane@foobar.ca/workstation`            |
+:::note[Multi-User Chat (MUC)]
+MUC is the XMPP group chat protocol ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)). A MUC room JID typically looks like `roomname@conference.example.com`. Apprise identifies MUC targets by the `#` prefix — the same convention used by IRC and many chat applications. When Apprise joins a room it uses the sender's username as the nickname.
+:::
+
+| URL                                                                      | Targets Notified                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------- |
+| `xmpps://user:pass@example.ca`                                           | `user@example.ca` (self)                          |
+| `xmpps://user:pass@example.ca/jane`                                      | `jane@example.ca`                                 |
+| `xmpps://user:pass@example.ca/jane/joe`                                  | `jane@example.ca`, `joe@example.ca`               |
+| `xmpps://user:pass@example.ca/jane@foobar.ca`                            | `jane@foobar.ca`                                  |
+| `xmpps://user:pass@example.ca/jason%2Fmobile`                            | `jason@example.ca/mobile`                         |
+| `xmpps://user:pass@example.ca/jane@foobar.ca%2Fworkstation`              | `jane@foobar.ca/workstation`                      |
+| `xmpps://user:pass@example.ca/#general@conference.example.ca`            | MUC room `general@conference.example.ca`          |
+| `xmpps://user:pass@example.ca/#general@conference.example.ca/jane`       | MUC room `general@...` and user `jane@example.ca` |
+| `xmpps://user:pass@example.ca/#room1@conference.ca/#room2@conference.ca` | MUC rooms `room1@...` and `room2@...`             |
 
 ## Examples
 
@@ -211,4 +235,25 @@ Send a notification to a resource:
 ```bash
 apprise -vv -b "Test Message" \
   xmpps://user:password@chat.example.com/?to=alice@example.net/mobile
+```
+
+Send a message to a MUC room:
+
+```bash
+apprise -vv -b "Hello, room!" \
+  "xmpps://user:password@chat.example.com/#general@conference.example.com"
+```
+
+Send a message to multiple MUC rooms and a direct user:
+
+```bash
+apprise -vv -b "Broadcast" \
+  "xmpps://user:password@chat.example.com/#ops@conference.example.com/#dev@conference.example.com/alice@example.com"
+```
+
+Send to a MUC room using the `to=` argument:
+
+```bash
+apprise -vv -b "Room message" \
+  "xmpps://user:password@chat.example.com?to=#general@conference.example.com"
 ```
