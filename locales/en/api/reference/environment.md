@@ -9,13 +9,15 @@ The Apprise API container is highly configurable via environment variables.
 
 ## Runtime Configuration
 
-| Variable                 | Default  | Description                                                                                                                                                                                                                                                                                     |
-| :----------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `APPRISE_STATEFUL_MODE`  | `hash`   | Controls the persistent storage backend.<br/>`simple`: Saves configs as human-readable files (`/config/{KEY}.yaml`). Recommended for most users.<br/>`hash`: Saves configs as indexed hashes. Efficient for high-volume.<br/>`disabled`: Disables persistent storage entirely (Stateless only). |
-| `APPRISE_WORKER_COUNT`   | _(Auto)_ | Number of Gunicorn workers. Defaults to `(2 * CPUs) + 1`. Set to `1` for low-resource environments.                                                                                                                                                                                             |
-| `APPRISE_WORKER_TIMEOUT` | `300`    | Worker timeout in seconds.                                                                                                                                                                                                                                                                      |
-| `APPRISE_BASE_URL`       | _(None)_ | Set this if running behind a reverse proxy under a subpath (e.g., `/apprise`).                                                                                                                                                                                                                  |
-| `APPRISE_ADMIN`          | `no`     | Set to `yes` to enable the `/cfg` endpoint, allowing you to list all saved keys in the Web UI.                                                                                                                                                                                                  |
+| Variable                             | Default  | Description                                                                                                                                                                                                                                                                                     |
+| :----------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `APPRISE_STATEFUL_MODE`              | `hash`   | Controls the persistent storage backend.<br/>`simple`: Saves configs as human-readable files (`/config/{KEY}.yaml`). Recommended for most users.<br/>`hash`: Saves configs as indexed hashes. Efficient for high-volume.<br/>`disabled`: Disables persistent storage entirely (Stateless only). |
+| `APPRISE_WORKER_COUNT`               | _(Auto)_ | Number of Gunicorn workers. Defaults to `(2 * CPUs) + 1`. Set to `1` for low-resource environments.                                                                                                                                                                                             |
+| `APPRISE_WORKER_MAX_REQUESTS`        | `1000`   | Number of requests a worker handles before being recycled. Recycling releases accumulated memory. Lower this (e.g., `100`) if workers are long-lived and memory growth is a concern.                                                                                                            |
+| `APPRISE_WORKER_MAX_REQUESTS_JITTER` | `50`     | Random offset added to `APPRISE_WORKER_MAX_REQUESTS` to stagger worker restarts and avoid a thundering herd.                                                                                                                                                                                    |
+| `APPRISE_WORKER_TIMEOUT`             | `300`    | Worker timeout in seconds.                                                                                                                                                                                                                                                                      |
+| `APPRISE_BASE_URL`                   | _(None)_ | Set this if running behind a reverse proxy under a subpath (e.g., `/apprise`).                                                                                                                                                                                                                  |
+| `APPRISE_ADMIN`                      | `no`     | Set to `yes` to enable the `/cfg` endpoint, allowing you to list all saved keys in the Web UI.                                                                                                                                                                                                  |
 
 ## Security & Access
 
@@ -25,6 +27,38 @@ The Apprise API container is highly configurable via environment variables.
 | `ALLOWED_HOSTS`          | `*`              | Space-delimited list of allowed `Host` headers.                                                               |
 | `APPRISE_DENY_SERVICES`  | _(Default List)_ | Comma-separated list of schemas to block (e.g., `dbus`, `windows`, `macos` are blocked by default in Docker). |
 | `APPRISE_ALLOW_SERVICES` | _(All)_          | Comma-separated list of allowed schemas. If set, only these services will work.                               |
+
+### Memory Impact of Service Filtering
+
+`APPRISE_ALLOW_SERVICES` and `APPRISE_DENY_SERVICES` do more than toggle which schemas are active. The Apprise API automatically **evicts optional libraries from memory** when every plugin that depends on them is disabled.
+
+Each notification plugin that requires a heavy optional dependency declares it internally. When the last plugin using a given library is disabled, that library is removed from the Python runtime (`sys.modules`), freeing its associated objects. This happens at startup, before the first request is served.
+
+The libraries subject to eviction and their estimated savings:
+
+| Library        | Used By                               | Freed Memory |
+| :------------- | :------------------------------------ | :----------: |
+| `slixmpp`      | `xmpp://`                             |    ~20 MB    |
+| `paho`         | `mqtt://`                             |    ~4 MB     |
+| `gntp`         | `growl://`                            |    ~2 MB     |
+| `smpplib`      | `smpp://`, `smpps://`                 |    ~2 MB     |
+| `cryptography` | `simplepush://`, `fcm://`, `vapid://` |   partial†   |
+
+†`cryptography` links against OpenSSL natively. The Python wrapper objects are released, but the underlying shared library remains mapped by the OS for the process lifetime.
+
+**Example** — a deployment that only needs Telegram and NTFY:
+
+```bash
+APPRISE_ALLOW_SERVICES=tgram,ntfy
+```
+
+This disables every other plugin, causing `slixmpp`, `paho`, `gntp`, `smpplib`, and the `cryptography` wrappers to be evicted. Combined with `APPRISE_WORKER_COUNT=1`, this brings a single-worker container from the typical ~180 MB baseline down to approximately **~145 MB**.
+
+:::note
+This eviction behaviour is specific to the **Apprise API**. The Apprise Python library used directly or embedded in third-party projects does not evict libraries — disabled plugins simply become inactive, leaving all loaded modules intact.
+:::
+
+For a full guide on reducing container memory and RAM usage, see [Resource Usage](/qa/resource-usage/).
 
 ## Storage & Limits
 
