@@ -30,13 +30,13 @@ sample_urls:
 
 Valid syntax is as follows:
 
-- **Text API**  
-  `dot://{token}@{device_id}/text/?signature={footer}&icon={base64_icon}`
+- **Text API**
+  `dot://{token}@{device_id}/text/?signature={footer}&icon={base64_icon}&task_key={key}`
 
   Title and message can be provided at runtime via `apprise.notify(title="...", body="...")`.
 
-- **Image API**  
-  `dot://{token}@{device_id}/image/?image={base64_png}&link={tap_url}&border={0|1}&dither_type={type}&dither_kernel={kernel}`
+- **Image API**
+  `dot://{token}@{device_id}/image/?image={base64_png}&link={tap_url}&border={0|1}&dither_type={type}&dither_kernel={kernel}&task_key={key}`
 
 ## Attachment Support
 
@@ -53,6 +53,7 @@ The plugin supports file attachments that are automatically converted to base64 
 | ------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | token        | Yes         | Dot. API token (`dot_app_...`)                                                                                                      |
 | device_id    | Yes         | Dot. device serial number (12 hex characters)                                                                                       |
+| refresh      | No          | Set to `no` to defer content display until the next scheduled refresh (default: `yes`)                                              |
 | title        | No (text)   | Title shown on device                                                                                                               |
 | message      | No (text)   | Body text shown on device                                                                                                           |
 | signature    | No (text)   | Footer text shown on device                                                                                                         |
@@ -62,6 +63,7 @@ The plugin supports file attachments that are automatically converted to base64 
 | border       | No (image)  | 0=white (default), 1=black frame                                                                                                    |
 | ditherType   | No (image)  | DIFFUSION, ORDERED, or NONE                                                                                                         |
 | ditherKernel | No (image)  | THRESHOLD, ATKINSON, BURKES, FLOYD_STEINBERG, SIERRA2, STUCKI, JARVIS_JUDICE_NINKE, DIFFUSION_ROW, DIFFUSION_COLUMN, DIFFUSION_2D   |
+| task_key     | No          | Specify which content slot to update when multiple Text or Image API contents exist on a device                                     |
 
 ## Examples
 
@@ -78,6 +80,13 @@ apprise -vv -t "Morning Routine" -b "Remember to water the plants" \
 apprise -vv -t "Morning Routine" -b "Remember to water the plants" \
   -a /path/to/icon.png \
   dot://dot_app_TOKEN@A1B2C3D4E5F6/text/?signature=Apprise
+```
+
+**Update a specific content slot using task_key:**
+
+```bash
+apprise -vv -t "Server Status" -b "All systems operational" \
+  dot://dot_app_TOKEN@A1B2C3D4E5F6/text/?task_key=status_monitor
 ```
 
 **Push an image card (via URL parameter):**
