@@ -17,6 +17,7 @@ sample_urls:
   - xmpps://{user}:{password}@{hostname}/{jid}
   - xmpps://{user}:{password}@{hostname}/{jid1}/{jid2}/{jidN}
   - xmpps://{user}:{password}@{hostname}/#{room}@{conference_host}
+  - xmpps://{user}:{password}@{hostname}/{jid}?xmpp={xmpp_server}
 ---
 
 <!-- SERVICE:DETAILS -->
@@ -33,7 +34,8 @@ From here, you will need:
 
 1. An existing XMPP account username (on a self-hosted or remotely hosted XMPP server).
 1. The password associated with that account.
-1. The hostname of your XMPP server.
+1. The **JID domain** of your XMPP account (e.g. `example.com` in `user@example.com`).
+1. (Optional) A separate **server hostname** if your XMPP server is hosted at a different address than your JID domain (see [Split Domain](#split-domain--server-hostname-override) below).
 1. (Optional) The port the XMPP server listens on.
 
 In Apprise, the **login JID is automatically constructed as `{user}@{host}`**. You do not need to explicitly provide a full JID. Authentication credentials are supplied using `{user}:{password}@{host}`, but the resulting login identity is always normalized to `{user}@{host}`.
@@ -48,6 +50,7 @@ Valid syntax is as follows:
 - `xmpp://{user}:{password}@{host}/{jid}`
 - `xmpp://{user}:{password}@{host}/{jid1}/{jid2}`
 - `xmpps://{user}:{password}@{host}/{jid}?verify=no`
+- `xmpps://{user}:{password}@{host}/{jid}?xmpp={xmpp_server}`
 
 Secure connections should be referenced using **`xmpps://`**, whereas
 insecure connections should be referenced using **`xmpp://`**.
@@ -77,8 +80,9 @@ When Apprise reconstructs a URL internally (e.g. for logging or storage), MUC ro
 | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | user      | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID                                                                                                                                                                                                                                                                                                                                                                                                        |
 | password  | **Yes**  | Password for the XMPP account                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| host      | **Yes**  | XMPP server hostname (domain)                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| host      | **Yes**  | JID domain (e.g. `example.com` for accounts of the form `user@example.com`). Also used as the connection hostname unless `xmpp=` is set.                                                                                                                                                                                                                                                                                                                                     |
 | port      | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| xmpp      | No       | Override the TCP connection hostname without changing the JID domain. Use this when your XMPP server is reachable at a different hostname than your JID domain (e.g. `xmpp=xmpp.example.com`). All JIDs are still built from `host`. See [Split Domain](#split-domain--server-hostname-override).                                                                                                                                                                            |
 | mode      | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                                                                                                                                                                                                                                             |
 | roster    | No       | Retrieves roster from the server after connection; default is `no`                                                                                                                                                                                                                                                                                                                                                                                                           |
 | keepalive | No       | Enables XMPP keepalive mode to maintain a persistent connection between notifications. This is only effective when Apprise remains resident in memory (for example, in long-running applications). It has no practical effect when using the Apprise CLI or API in one-shot mode, as the instance is created, sends the notification, and is then destroyed. Even with `?keepalive=yes`, the connection closes once the Apprise instance goes out of scope. Default is `no`. |
@@ -186,6 +190,31 @@ MUC is the XMPP group chat protocol ([XEP-0045](https://xmpp.org/extensions/xep-
 | `xmpps://user:pass@example.ca/#general@conference.example.ca/jane`       | MUC room `general@...` and user `jane@example.ca` |
 | `xmpps://user:pass@example.ca/#room1@conference.ca/#room2@conference.ca` | MUC rooms `room1@...` and `room2@...`             |
 
+## Split Domain / Server Hostname Override
+
+Some XMPP deployments host the server at a different hostname than the JID domain. For example, accounts may be `user@example.com` but the physical server is reachable at `xmpp.example.com`. Normally XMPP resolves this via DNS SRV records, but when SRV records are absent or incorrect, connections will fail.
+
+Use the `xmpp=` parameter to specify the connection hostname independently:
+
+```text
+xmpps://user@example.com/joe?xmpp=xmpp.example.com
+```
+
+This produces:
+
+| Property         | Value              |
+| ---------------- | ------------------ |
+| Login JID        | `user@example.com` |
+| Target JID       | `joe@example.com`  |
+| TCP connection   | `xmpp.example.com` |
+| XMPP stream `to` | `example.com`      |
+
+All JIDs (login and targets) are always assembled from the URL `host` component (`example.com`). The `xmpp=` value is used **only** for the TCP connection.
+
+:::note
+Without `xmpp=`, Apprise connects to `host` directly. If the server is at a different address and no DNS SRV record bridges the gap, you will see a `host-unknown` stream error from the server. Setting `xmpp=` resolves this without any URL encoding tricks.
+:::
+
 ## Examples
 
 Send a plaintext XMPP notification:
@@ -256,4 +285,12 @@ Send to a MUC room using the `to=` argument:
 ```bash
 apprise -vv -b "Room message" \
   "xmpps://user:password@chat.example.com?to=#general@conference.example.com"
+```
+
+Connect to a server at a different hostname than the JID domain:
+
+```bash
+# JID domain is example.com; server is physically at xmpp.example.com
+apprise -vv -b "Hello" \
+  "xmpps://user@example.com/joe?xmpp=xmpp.example.com"
 ```
