@@ -578,6 +578,31 @@ requirements = {
 }
 ```
 
+### `runtime_deps()` — Memory Eviction Hint
+
+If your plugin **conditionally imports a heavy third-party library**, also override `runtime_deps()` to tell the plugin manager which top-level package names it loaded.
+
+```python
+class NotifyMyService(NotifyBase):
+    # ...
+
+    @staticmethod
+    def runtime_deps():
+        return ("mylibrary",)
+```
+
+The return value is a **tuple of importable top-level package names** — the same string you would pass to `import`, not the pip install name (e.g. `"paho"` for `paho-mqtt`).
+
+The [Notification Manager](./extending/notification-manager#library-eviction) tracks a reference count for each declared library. When every plugin that uses a given library is disabled and `N_MGR.evict_on_disable` is `True`, the manager removes that library — and all of its submodules — from `sys.modules`, releasing the associated Python objects from memory.
+
+- Return the base-class default `()` (an empty tuple) if your plugin has no optional runtime dependencies worth evicting.
+- Submodules are handled automatically; declare only the top-level name.
+- This is separate from `requirements`, which names pip packages for human-readable dependency reporting. `runtime_deps()` names importable packages for runtime memory management.
+
+:::note
+`runtime_deps()` is only useful when the library is loaded conditionally (imported only if the plugin is active). If your plugin always imports the library at module load time, eviction has no practical effect because the module is already resident.
+:::
+
 ## Plugin Base Defaults
 
 The following identifies the default values of variables defined in your plugin automatically if not otherwise overridden.

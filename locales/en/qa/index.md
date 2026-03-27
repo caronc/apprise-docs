@@ -33,3 +33,4 @@ The following topics have already been captured and documented here:
 - [Formatting Issues](./formatting-issues/)
 - [Data Overflow](./data-overflow/)
 - [PyInstaller Support](./pyinstaller/)
+- [Resource Usage (RAM / Memory)](./resource-usage/)
