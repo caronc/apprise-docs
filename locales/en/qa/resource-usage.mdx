@@ -117,14 +117,6 @@ APPRISE_ALLOW_SERVICES=tgram,ntfy
 
 Libraries that are no longer needed by any enabled plugin are automatically removed from Python's module cache (`sys.modules`). The savings compound with `APPRISE_WORKER_COUNT=1`:
 
-| Library Evicted | Services Freed From                   | Savings  |
-| :-------------- | :------------------------------------ | :------: |
-| `slixmpp`       | `xmpp://`                             |  ~20 MB  |
-| `paho`          | `mqtt://`                             |  ~4 MB   |
-| `gntp`          | `growl://`                            |  ~2 MB   |
-| `smpplib`       | `smpp://`, `smpps://`                 |  ~2 MB   |
-| `cryptography`  | `simplepush://`, `fcm://`, `vapid://` | partial† |
-
-†`cryptography` wraps OpenSSL natively. Python wrapper objects are freed; the native shared library remains mapped at the OS level.
+<!-- TEMPLATE:EVICTION-TABLE -->
 
 For full details on how this works and configuration examples, see [Memory Impact of Service Filtering](../../api/reference/environment/#memory-impact-of-service-filtering).

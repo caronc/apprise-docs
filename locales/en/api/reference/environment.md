@@ -21,12 +21,12 @@ The Apprise API container is highly configurable via environment variables.
 
 ## Security & Access
 
-| Variable                 | Default          | Description                                                                                                   |
-| :----------------------- | :--------------- | :------------------------------------------------------------------------------------------------------------ |
-| `APPRISE_CONFIG_LOCK`    | `no`             | Set to `yes` to make the configuration read-only. Prevents adding or modifying keys via API.                  |
-| `ALLOWED_HOSTS`          | `*`              | Space-delimited list of allowed `Host` headers.                                                               |
-| `APPRISE_DENY_SERVICES`  | _(Default List)_ | Comma-separated list of schemas to block (e.g., `dbus`, `windows`, `macos` are blocked by default in Docker). |
-| `APPRISE_ALLOW_SERVICES` | _(All)_          | Comma-separated list of allowed schemas. If set, only these services will work.                               |
+| Variable                 | Default          | Description                                                                                                                       |
+| :----------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `APPRISE_CONFIG_LOCK`    | `no`             | Set to `yes` to make the configuration read-only. Prevents adding or modifying keys via API.                                      |
+| `ALLOWED_HOSTS`          | `*`              | Space-delimited list of allowed `Host` headers.                                                                                   |
+| `APPRISE_DENY_SERVICES`  | _(Default List)_ | Comma-separated list of schemas to block (e.g., `dbus`, `windows`, `macosx`, `gnome`, `syslog` are blocked by default in Docker). |
+| `APPRISE_ALLOW_SERVICES` | _(All)_          | Comma-separated list of allowed schemas. If set, only these services will work.                                                   |
 
 ### Memory Impact of Service Filtering
 
@@ -36,15 +36,7 @@ Each notification plugin that requires a heavy optional dependency declares it i
 
 The libraries subject to eviction and their estimated savings:
 
-| Library        | Used By                               | Freed Memory |
-| :------------- | :------------------------------------ | :----------: |
-| `slixmpp`      | `xmpp://`                             |    ~20 MB    |
-| `paho`         | `mqtt://`                             |    ~4 MB     |
-| `gntp`         | `growl://`                            |    ~2 MB     |
-| `smpplib`      | `smpp://`, `smpps://`                 |    ~2 MB     |
-| `cryptography` | `simplepush://`, `fcm://`, `vapid://` |   partial†   |
-
-†`cryptography` links against OpenSSL natively. The Python wrapper objects are released, but the underlying shared library remains mapped by the OS for the process lifetime.
+<!-- TEMPLATE:EVICTION-TABLE -->
 
 **Example** — a deployment that only needs Telegram and NTFY:
 
