@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Documentation (Apprise Docs)
+    url: https://appriseit.com
+    about: Documentation
   - name: Support and Questions for Apprise Core
     url: https://github.com/caronc/apprise/discussions
     about: Please use Discussions for questions and general support.

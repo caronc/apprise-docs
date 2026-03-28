@@ -30,53 +30,92 @@ If it can be written as Markdown and helps users understand [Apprise](https://gi
 
 ## Repository Layout
 
-All documentation lives under the `locales/` directory.
-
-Each locale mirrors the same structure so navigation remains predictable across languages.
+The repository is organised into a few top-level areas:
 
 ```text
-locales/
-  <locale>/
-    index.md
-    getting-started/
-    guides/
-    services/
-      <service>/
-        index.md
-    api/
-    cli/
-    library/
-    qa/
-    contributing/
-    assets/
+apprise-docs/
+  locales/                   # All localised documentation
+    <locale>/
+      index.mdx
+      getting-started/
+      guides/
+      services/
+        <service>/
+          index.md
+          images/
+      api/
+      cli/
+      library/
+      tools/
+      qa/
+      contributing/
+      assets/
+      _partials/             # Reusable MDX snippets injected into pages
+      _templates/            # Locale-specific auto-generated content tables
+  scripts/                   # Build and lint helper scripts
+  shared_templates/          # Shared Markdown partials (e.g. service-params.md)
+  templates/                 # Contributor starter templates for new pages
 ```
 
-### Directory Guide
+### Locale Directories (`locales/<locale>/`)
 
-- **Getting Started** (`getting-started/`)  
+Each locale mirrors the same structure so navigation remains predictable
+across languages. English (`en`) is the canonical locale; all other
+locales may be partial.
+
+- **Getting Started** (`getting-started/`)
   Introductory material for new users
 
-- **Troubleshooting** (`qa/`)  
+- **Troubleshooting** (`qa/`)
   Troubleshooting, diagnostics, and FAQs
 
-- **Apprise API** (`api/`)  
-  Documentation for web based API (Sidecar) wrapper for Apprise
+- **Apprise API** (`api/`)
+  Documentation for the web-based API (Sidecar) wrapper for Apprise
 
-- **Apprise CLI** (`cli/`)  
-  Command line interface documentation
+- **Apprise CLI** (`cli/`)
+  Command-line interface documentation
 
-- **Apprise (Python) Library** (`library/`)  
+- **Apprise (Python) Library** (`library/`)
   Developer-focused documentation and internals
 
-- **Guides** (`guides/`)  
+- **Guides** (`guides/`)
   How-to articles, workflows, best practices, and troubleshooting patterns
 
-- **Contributing** (`contributing/`)  
+- **Tools** (`tools/`)
+  Documentation for companion tools such as the URL builder
+
+- **Contributing** (`contributing/`)
   How to help improve Apprise and its ecosystem
 
-- **Services** (`services/`)  
+- **Services** (`services/`)
   Documentation specific to a notification service, including URL syntax,
   configuration options, and examples
+
+- **Partials** (`_partials/`)
+  Reusable MDX snippets that are injected into rendered pages at build time
+  (e.g. the _"Notice a typo?"_ help panel). These files are not standalone
+  pages and should not be edited unless you know where they are referenced.
+
+- **Templates** (`_templates/`)
+  Locale-specific Markdown fragments used to auto-generate content during
+  the documentation sync (e.g. the plugin memory-eviction table). Like
+  `_partials/`, these are not standalone pages.
+
+### Root-Level Directories
+
+- **`scripts/`**
+  Node.js helper scripts used by `pnpm lint` and related tasks
+  (e.g. `lint-docs.mjs` validates frontmatter and service metadata).
+
+- **`shared_templates/`**
+  Shared Markdown partials that are injected into service pages via markers
+  such as `<!-- GLOBAL:SERVICE:PARAMS -->`. For example,
+  `service-params.md` documents the parameters that apply to every service.
+
+- **`templates/`**
+  Starter templates for contributors creating new content.
+  Copy `templates/new_service.md` as the starting point for a new service
+  page and fill in the placeholders.
 
 ## Getting Started as a Contributor
 
@@ -113,6 +152,10 @@ locales/
 
 > If linting fails, it will tell you exactly what needs attention.
 
+Before writing new content, skim [`STYLE_GUIDE.md`](STYLE_GUIDE.md) — it
+covers heading conventions, frontmatter requirements, and Markdown formatting
+rules used across the project.
+
 ## Adding or Improving a Service
 
 Each service lives at:
@@ -120,6 +163,9 @@ Each service lives at:
 ```text
 locales/<locale>/services/<service>/index.md
 ```
+
+To add a new service, copy `templates/new_service.md` to the appropriate path
+and fill in the placeholders.
 
 Optionally, a service may include an `images/` directory for logos or diagrams.
 

@@ -5,13 +5,13 @@
 <!--
   -- Have anything else to describe?
   -- Define it here; this helps build the wiki item later
---!>
+-->
 
 <!-- The following must be completed or your PR can't be merged -->
 
 ## Checklist
 
-- [ ] No lint errors (use `tox -e lint` and even `tox -e lint:fix` to autofix what it can)
+- [ ] No lint errors (use `pnpm lint` and optionally `pnpm lint:fix` to autofix what it can)
 - [ ] The changes do not include any copyright infringing content
 - [ ] Assets follow the documented rules:
   - `/assets/...` for shared assets

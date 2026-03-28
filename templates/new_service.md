@@ -21,8 +21,8 @@ schemas:
 
 sample_urls:
   # These will automatically be rendered for users visiting the main service tab
-  # Do not specify more then 4 or 5 as it tends to bload the main display otherwise users
-  # who want to see more will read the below documentation
+  # Do not specify more than 4 or 5 as it tends to bloat the main display; users
+  # who want to see more will read the documentation below.
   - schema://{credentials}/{targets}
 
 # `has_*` values always default to `false` if not provided
@@ -41,13 +41,16 @@ has_selfhosted: false
 # type (info/warning/success/failure) then this should be set to true
 has_image: false
 
-# Define any message limits defined; these are only applicable if the user specifies:
-# ?overflow=truncate or ?overflow=split otherwise this information is not applicable as
-# the upstream service will handle content set beyond this value.
-# This is optional and if not specified presumes there are no limits set
-limits:
-  - name: "Body"
-    max_chars: 2000
+# Define any message limits — only applicable when the user specifies
+# ?overflow=truncate or ?overflow=split; otherwise the upstream service handles
+# content beyond these values.  Remove this block entirely if the service has no
+# known limits.
+#
+# limits:
+#   - name: "Title"
+#     max_chars: 250
+#   - name: "Body"
+#     max_chars: 2000
 
 # Place a service into the graveyard by adding one of the following:
 #    ended: YYYY-MM-DD
@@ -86,4 +89,12 @@ Provide clear, copy-pasteable CLI and Python examples.
 ```bash
 apprise -v -t "title" -b "body" \
    "schema://configuration"
+```
+
+```python
+import apprise
+
+ap = apprise.Apprise()
+ap.add("schema://configuration")
+ap.notify(title="title", body="body")
 ```
