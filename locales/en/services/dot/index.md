@@ -65,6 +65,8 @@ The plugin supports file attachments that are automatically converted to base64 
 | ditherKernel | No (image)  | THRESHOLD, ATKINSON, BURKES, FLOYD_STEINBERG, SIERRA2, STUCKI, JARVIS_JUDICE_NINKE, DIFFUSION_ROW, DIFFUSION_COLUMN, DIFFUSION_2D   |
 | task_key     | No          | Specify which content slot to update when multiple Text or Image API contents exist on a device                                     |
 
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
 ## Examples
 
 **Send a text reminder (via URL parameters):**

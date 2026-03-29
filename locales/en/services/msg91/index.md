@@ -41,7 +41,7 @@ Valid syntax is as follows:
 | PhoneNo    | Yes      | A phone number MUST include the country codes dialing prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion |
 | short_url  | No       | A boolean (defaults) to `No` whether the SMS messages should use the Short URL notation.                                                                                                                                           |
 
-<!-- TEMPLATE:SERVICE-PARAMS --
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ### Template Variables
 

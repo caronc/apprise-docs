@@ -44,6 +44,8 @@ Valid syntax is as follows:
 | unicode  | No       | Message should be set to `unicode`. By default this is set `False`. When set to `False` (default), in the background: an `auto` switch is specified allowing D7 Networks to detect the message type on its own. Set this to `True` if you want to enforce all messages to be of type `unicode`.                    |
 | batch    | No       | D7 Networks allows a batch mode. If you identify more then one phone number, you can send all of the phone numbers you identify on the URL in a single shot instead of the normal _Apprise_ approach (which sends them one by one). Enabling batch mode has both pros and cons. By default batch mode is disabled. |
 
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
 ## Examples
 
 Send a SMS message through D7 Networks:

@@ -60,6 +60,8 @@ Valid syntax is as follows:
 | integration_key | Yes      | A 32-character token that uniquely identifies your Spike.sh alert source. |
 | token           | No       | An alias to `integration_key`                                             |
 
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
 ## Examples
 
 Using the simplified Apprise URL:

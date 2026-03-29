@@ -48,6 +48,8 @@ Valid syntax is as follows:
 | source   | No       | Optionally provide the source of the notification as a descriptive string (you can also use `from` as an alias to this same variable)   |
 | event    | No       | Optionally specify the Notifiarr Event ID you want your notification update. If none is specified, then a new notification is generated |
 
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
 ## Examples
 
 Send a discord notification:
