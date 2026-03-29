@@ -1,20 +1,20 @@
 ---
-title: "Opsgenie Notifications"
-description: "Send Opsgenie notifications."
+title: "Jira Notifications"
+description: "Send Jira notifications."
 sidebar:
-  label: "Opsgenie"
+  label: "Jira"
 
-source: https://www.opsgenie.com
+source: https://atlassian.com/
 
 schemas:
-  - opsgenie
+  - jira
 
 sample_urls:
-  - opsgenie://{apikey}/
-  - opsgenie://{apikey}/@{user}
-  - opsgenie://{apikey}/*{schedule}
-  - opsgenie://{apikey}/^{escalation}
-  - opsgenie://{apikey}/#{team}
+  - jira://{apikey}
+  - jira://{apikey}/@{user}
+  - jira://{apikey}/*{schedule}
+  - jira://{apikey}/^{escalation}
+  - jira://{apikey}/#{team}
 
 limits:
   max_chars: 15000
@@ -24,30 +24,22 @@ limits:
 
 ## Account Setup
 
-1. Visit <https://www.opsgenie.com> to create your account.
-2. [Generate your Integration API Key](https://app.opsgenie.com/settings/integration/add/API/)
-
-:::note
-You must generate an Integration API Key; this is not to be confused with the Opsgenie Management API Key.
-:::
-
-:::caution
-Opsgenie is being retired by Atlassian. Consider migrating to [Jira Service Management](../jira/) which provides the same functionality. See the [Atlassian migration guide](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/) for details.
-:::
+1. Visit <https://atlassian.com/> to create your account.
+1. Generate your Integration API Key
 
 ## Syntax
 
 Valid syntax is as follows:
 
-- `opsgenie://{apikey}/`
-- `opsgenie://{apikey}/@{user}`
-- `opsgenie://{apikey}/@{user1}/@{user2}/@{userN}`
-- `opsgenie://{apikey}/*{schedule}`
-- `opsgenie://{apikey}/*{schedule1}/*{schedule2}/*{scheduleN}`
-- `opsgenie://{apikey}/^{escalation}`
-- `opsgenie://{apikey}/^{escalation1}/^{escalation2}/^{escalationN}`
-- `opsgenie://{apikey}/#{team}`
-- `opsgenie://{apikey}/#{team1}/#{team2}/#{teamN}`
+- `jira://{apikey}/`
+- `jira://{apikey}/@{user}`
+- `jira://{apikey}/@{user1}/@{user2}/@{userN}`
+- `jira://{apikey}/*{schedule}`
+- `jira://{apikey}/*{schedule1}/*{schedule2}/*{scheduleN}`
+- `jira://{apikey}/^{escalation}`
+- `jira://{apikey}/^{escalation1}/^{escalation2}/^{escalationN}`
+- `jira://{apikey}/#{team}`
+- `jira://{apikey}/#{team1}/#{team2}/#{teamN}`
 
 :::note
 If no prefix character is specified, then the target is presumed to be a user (an `@` symbol is presumed to be in front of it).
@@ -55,20 +47,20 @@ If no prefix character is specified, then the target is presumed to be a user (a
 
 You can also mix/match the targets:
 
-- `opsgenie://{apikey}/@{user}/#{team}/*{schedule}/^{escalation}`
+- `jira://{apikey}/@{user}/#{team}/*{schedule}/^{escalation}`
 
 ## Parameter Breakdown
 
 | Variable   | Required | Description                                                                                                                                                                                                         |
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey     | Yes      | This is the API Key associated with your Opsgenie account.                                                                                                                                                          |
+| apikey     | Yes      | This is the API Key associated with your Jira account.                                                                                                                                                              |
 | user       | No       | The user you wish to notify; this can be a `username`, `email`, or `uuid4`. This is the assumed default target type to notify, but it is advised you prefix all users with a `@` symbol to eliminate any ambiguity. |
 | team       | No       | The team you wish to notify; this can be the team name itself, or a `uuid4` associated with it. <br>**Note:** Teams must be prefixed with a `#` symbol.                                                             |
 | schedule   | No       | The schedule you wish to notify; this can be the schedule name itself, or a `uuid4` associated with it. <br>**Note:** Schedules must be prefixed with a `*` symbol.                                                 |
 | escalation | No       | The escalation you wish to notify; this can be the escalation name itself, or a `uuid4` associated with it. <br>**Note:** Escalations must be prefixed with a `^` symbol.                                           |
 | region     | No       | The 2 character region code. By default this is set to `us` if not specified. Europeans must set this to `eu` to work correctly.                                                                                    |
 | batch      | No       | Set it to **Yes** if you want all identified targets to be notified in batches (instead of individually). By default this is set to **No**.                                                                         |
-| tags       | No       | A comma separated list of tags you can associate with your Opsgenie message                                                                                                                                         |
+| tags       | No       | A comma separated list of tags you can associate with your Jira message                                                                                                                                             |
 | priority   | No       | The priority to associate with the message. It is on a scale between 1 and 5. The default value is `3` if not specified.                                                                                            |
 | alias      | No       | The alias to associate with the message.                                                                                                                                                                            |
 | entity     | No       | The entity to associate with the message.                                                                                                                                                                           |
@@ -78,7 +70,7 @@ You can also mix/match the targets:
 
 ## Alert Actions
 
-The `action` parameter controls what Opsgenie operation is performed when a notification is sent. The following actions are supported:
+The `action` parameter controls what Jira operation is performed when a notification is sent. The following actions are supported:
 
 | Action        | Description                                                                                                   |
 | ------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -106,34 +98,34 @@ Actions other than `new` require a stored request ID from a prior `new` notifica
 
 You can override the default type-to-action mapping using `:key=value` URL parameters:
 
-- `opsgenie://{apikey}/?:failure=new&:warning=new&:success=close&:info=note`
+- `jira://{apikey}/?:failure=new&:warning=new&:success=close&:info=note`
 
 For example, to make `info` notifications create a new alert instead of adding a note:
 
 ```bash
 apprise -vv -t "Test Title" -b "Test Body" \
-   "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?:info=new"
+   "jira://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?:info=new"
 ```
 
 ## Examples
 
-Send a Opsgenie notification to all devices associated with a project:
+Send a Jira notification to all devices associated with a project:
 
 ```bash
 # Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
+   jira://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 ```
 
 ### Include Details (Key/Value Pairs)
 
-Opsgenie allows you to provide details composed of key/value pairs you can set with messages. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Jira allows you to provide details composed of key/value pairs you can set with messages. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
 
 ```bash
 # Below would set the key/value pair of foo=bar:
 # Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar"
+   "jira://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar"
 
 # Multiple key/value pairs just require more entries:
 # Below would set the key/value pairs of:
@@ -142,5 +134,5 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #
 # Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar&+apprise=awesome"
+   "jira://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar&+apprise=awesome"
 ```
