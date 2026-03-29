@@ -15,6 +15,8 @@ sample_urls:
   - pover://{user_key}@{token}
   - pover://{user_key}@{token}/{device_id}
   - pover://{user_key}@{token}/{device_id1}/{device_id2}/{device_idN}
+  - pover://{user_key}@{token}/#{group_key}
+  - pover://{user_key}@{token}/{device_id}/#{group_key}
 
 limits:
   max_chars: 512
@@ -41,6 +43,8 @@ Valid syntax is as follows:
 - `pover://{user_key}@{token}`
 - `pover://{user_key}@{token}/{device_id}`
 - `pover://{user_key}@{token}/{device_id1}/{device_id2}/{device_idN}`
+- `pover://{user_key}@{token}/#{group_key}`
+- `pover://{user_key}@{token}/{device_id}/#{group_key}`
 - `pover://{user_key}@{token}?priority={priority}`
 - `pover://{user_key}@{token}?priority=emergency&expire={expire}&retry={retry}`
 
@@ -51,6 +55,7 @@ Valid syntax is as follows:
 | user_key  | Yes      | The user key identifier associated with your Pushover account. This is NOT your email address. The key can be acquired from your Pushover dashboard.                                                                                                                                                                                                                                                                                                                                                                                          |
 | token     | Yes      | The token associated with your Pushover account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | device_id | No       | The device identifier to send your notification to. By default if one isn't specified then all of devices associated with your account are notified.                                                                                                                                                                                                                                                                                                                                                                                          |
+| group_key | No       | A Pushover [delivery group](https://pushover.net/api/groups) key, prefixed with `#`. Group keys look identical to user keys and allow broadcasting a message to all members of a group with a single key. Multiple groups may be specified. Groups and devices can be mixed in the same URL.                                                                                                                                                                                                                                                  |
 | priority  | No       | Can be **low**, **moderate**, **normal**, **high**, or **emergency**; the default is **normal** if a priority isn't specified. <br/>To send an emergency-priority notification, the `retry` and `expire` parameters _should_ be supplied. You may also set the priorities as documented on the [Pushover API](https://pushover.net/api#priority) where `-2` is **low**, `-1` is **moderate**, `0` is **normal**, `1` is **high** and `2` is **emergency**                                                                                     |
 | expire    | No       | The expire parameter specifies how many seconds your notification will continue to be retried for (every `retry` seconds). If the notification has not been acknowledged in `expire` seconds, it will be marked as expired and will stop being sent to the user. Note that the notification is still shown to the user after it is expired, but it will not prompt the user for acknowledgement. This parameter has a maximum value of at most 10800 seconds (3 hours). The default is 3600 seconds (1 hr) if nothing is otherwise specified. |
 | retry     | No       | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user. In a situation where your user might be in a noisy environment or sleeping, retrying the notification (with sound and vibration) will help get his or her attention. This parameter must have a value of at least 30 seconds between retries. The default is 900 seconds (15 minutes) if nothing is otherwise specified.                                                                                               |
@@ -80,6 +85,17 @@ Send a Pushover notification to all of our configured devices:
 # Assuming our {token} is abcdefghijklmnop-abcdefg
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg
+```
+
+Send a Pushover notification to a delivery group:
+
+```bash
+# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
+# Assuming our {token} is abcdefghijklmnop-abcdefg
+# Assuming our {group_key} is gznej3rKEVAvPUxu9vvNnqpmZpokzF
+# The # prefix identifies it as a group key
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg/#gznej3rKEVAvPUxu9vvNnqpmZpokzF"
 ```
 
 Send a Pushover notification with the Emergency Priority:
