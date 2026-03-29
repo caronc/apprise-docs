@@ -80,23 +80,23 @@ You can also mix/match the targets:
 
 The `action` parameter controls what Opsgenie operation is performed when a notification is sent. The following actions are supported:
 
-| Action        | Description                                                                                                   |
-| ------------- | ------------------------------------------------------------------------------------------------------------- |
-| `map`         | **(default)** Automatically choose an action based on the Apprise notification type. See the table below.     |
-| `new`         | Always create a new alert, regardless of notification type.                                                    |
-| `close`       | Close a previously opened alert (requires a stored request ID from a prior `new` action).                     |
-| `acknowledge` | Acknowledge a previously opened alert (requires a stored request ID from a prior `new` action).               |
-| `note`        | Add a note to a previously opened alert (requires a stored request ID from a prior `new` action).             |
-| `delete`      | Delete a previously opened alert (requires a stored request ID from a prior `new` action).                    |
+| Action        | Description                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| `map`         | **(default)** Automatically choose an action based on the Apprise notification type. See the table below. |
+| `new`         | Always create a new alert, regardless of notification type.                                               |
+| `close`       | Close a previously opened alert (requires a stored request ID from a prior `new` action).                 |
+| `acknowledge` | Acknowledge a previously opened alert (requires a stored request ID from a prior `new` action).           |
+| `note`        | Add a note to a previously opened alert (requires a stored request ID from a prior `new` action).         |
+| `delete`      | Delete a previously opened alert (requires a stored request ID from a prior `new` action).                |
 
 When `action=map` (the default), the following mapping is applied:
 
-| Apprise Type | Default Action | Rationale                                              |
-| ------------ | -------------- | ------------------------------------------------------ |
-| `failure`    | `new`          | Something went wrong — open a new alert.               |
-| `warning`    | `new`          | Something may go wrong — open a new alert.             |
-| `success`    | `close`        | Issue resolved — close the associated alert.           |
-| `info`       | `note`         | Informational context — annotate an existing alert.    |
+| Apprise Type | Default Action | Rationale                                           |
+| ------------ | -------------- | --------------------------------------------------- |
+| `failure`    | `new`          | Something went wrong — open a new alert.            |
+| `warning`    | `new`          | Something may go wrong — open a new alert.          |
+| `success`    | `close`        | Issue resolved — close the associated alert.        |
+| `info`       | `note`         | Informational context — annotate an existing alert. |
 
 :::note
 Actions other than `new` require a stored request ID from a prior `new` notification with the same `entity`, `alias`, or title. Apprise caches these IDs automatically for up to 60 days.
