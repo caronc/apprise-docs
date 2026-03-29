@@ -7,10 +7,7 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-## Overview
-
-Attachments are first-class in Apprise. When you pass `attach=` into
-`Apprise.notify()`, Apprise normalizes every entry into an
+When you pass `attach=` into `Apprise.notify()`, Apprise normalizes every entry into an
 `AppriseAttachment` object (internally backed by `AttachBase`
 implementations). Plugins that opt in (by setting
 `attachment_support = True`) receive a list of attachment objects through

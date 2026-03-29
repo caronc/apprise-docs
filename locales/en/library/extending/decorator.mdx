@@ -45,17 +45,17 @@ Do not point Apprise at a shared or untrusted filesystem location.
 
 Here is the practical decision rule.
 
-| Capability                   | `@notify()` Decorator |                          Full Apprise Plugin |
-| ---------------------------- | --------------------: | -------------------------------------------: |
-| Time to implement            |               Minutes |                                Hours to days |
-| Packaging and distribution   |            Local file |              PyPI, distro packages, upstream |
-| URL templates and validation |               Minimal |   First-class (tokens, args, strict parsing) |
-| Privacy handling in `url()`  |                Manual |          Standardized (`PrivacyMode.Secret`) |
-| Native URL reversal          |                  Rare |                       Expected when feasible |
-| Attachments support          |         You implement |      Built-in patterns (`AppriseAttachment`) |
-| Throttling, retry patterns   |         You implement | Standardized (`throttle()`, request helpers) |
-| Testability                  |                Ad-hoc |  First-class (AppriseURLTester, error paths) |
-| Best for                     |    Private automation |             Upstream services and public use |
+| Capability                   | `@notify()` Decorator |                                     Full Apprise Plugin |
+| ---------------------------- | --------------------: | ------------------------------------------------------: |
+| Time to implement            |               Minutes |                                           Hours to days |
+| Packaging and distribution   |            Local file |                         PyPI, distro packages, upstream |
+| URL templates and validation |               Minimal |    Built-in patterns (tokens, args, and strict parsing) |
+| Privacy handling in `url()`  |                Manual |                     Standardized (`PrivacyMode.Secret`) |
+| Native URL reversal          |                  Rare |                                  Expected when feasible |
+| Attachments support          |         You implement |                 Built-in patterns (`AppriseAttachment`) |
+| Throttling, retry patterns   |         You implement |            Standardized (`throttle()`, request helpers) |
+| Testability                  |                Ad-hoc | Built-in patterns (`AppriseURLTester`, and error paths) |
+| Best for                     |    Private automation |                        Upstream services and public use |
 
 If your handler is likely to be reused by other people, becomes business-critical, or needs strong URL parsing, an Apprise plugin is usually more appropriate.
 
