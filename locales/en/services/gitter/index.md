@@ -9,6 +9,8 @@ source: https://gitter.im/
 schemas:
   - gitter
 
+ended: 2023-02-13
+
 has_image: true
 
 sample_urls:
