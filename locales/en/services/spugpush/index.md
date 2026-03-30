@@ -7,7 +7,7 @@ sidebar:
 source: https://push.spug.dev/
 
 schemas:
-  - bulksms
+  - spugpush
 
 sample_urls:
   - https://push.spug.dev/send/{token}
