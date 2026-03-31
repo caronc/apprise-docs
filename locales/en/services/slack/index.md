@@ -18,7 +18,7 @@ sample_urls:
   - slack://{OAuthToken}/
 
 limits:
-  max_chars: 30000
+  max_chars: 35000
 ---
 
 <!-- SERVICE:DETAILS -->
