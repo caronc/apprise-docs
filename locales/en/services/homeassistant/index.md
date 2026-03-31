@@ -69,16 +69,23 @@ Append one or more service targets after the access token to call any
 Home Assistant service directly. This supports mobile app push
 notifications, TTS, media players, and any other HA service domain.
 
+Each target segment follows this grammar:
+
+| Form                   | Example                    | Notes                                  |
+| ---------------------- | -------------------------- | -------------------------------------- |
+| `service`              | `mobile_app_phone`         | Domain defaults to `notify`            |
+| `domain.service`       | `media_player.living_room` | Explicit domain                        |
+| `service:target`       | `mobile_app_phone:user1`   | Single sub-target                      |
+| `service:t1,t2,t3`     | `notify_group:alice,bob`   | Comma (or space) separated sub-targets |
+| `domain.service:t1,t2` | `tts.google_say:en-US`     | Domain + sub-targets                   |
+
+Multiple top-level targets are separated by `/` in the URL:
+
 ```text
 hassio://{host}/{access_token}/{service}
 hassio://{host}/{access_token}/{domain}.{service}
 hassio://{host}/{access_token}/{domain}.{service}:{target}
 hassio://{host}/{access_token}/{domain}.{service}:{t1},{t2}
-```
-
-Multiple targets can be specified as slash-separated path segments:
-
-```text
 hassio://{host}/{access_token}/{service1}/{domain}.{service2}:{target}
 ```
 
