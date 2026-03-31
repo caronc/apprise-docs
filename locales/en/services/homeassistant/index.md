@@ -23,6 +23,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
+:::tip[Using Apprise from within Home Assistant?]
+This page covers sending notifications **to** Home Assistant from Apprise.
+If you want to use Apprise **from within** Home Assistant to fan out to
+other services (email, Telegram, etc.), see the
+[Home Assistant Integration Guide](/guides/hassio/).
+:::
+
 ## Account Setup
 
 1. Log into your Home Assistant instance and navigate to your **Profile** page.
@@ -78,6 +85,14 @@ hassio://{host}/{access_token}/{service1}/{domain}.{service2}:{target}
 The **default domain** is `notify` when none is specified, so
 `hassio://host/token/mobile_app_phone` is equivalent to
 `hassio://host/token/notify.mobile_app_phone`.
+
+:::tip[Finding your service name]
+In Home Assistant, go to **Developer Tools → Services**. The service
+names listed there map directly to `{domain}.{service}` in the Apprise
+URL. For mobile app push notifications the service is usually named
+`notify.mobile_app_{device_name}` where `{device_name}` matches what
+appears in the HA companion app settings.
+:::
 
 #### Reverse-Proxy Path Prefix
 
