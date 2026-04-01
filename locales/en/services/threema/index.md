@@ -34,7 +34,7 @@ This is the simplest option. Threema handles all encryption on their servers;
 you do not need to manage any keys.
 
 1. Sign up at <https://gateway.threema.ch/> and confirm your e-mail address.
-2. Obtain credits (ask Threema support at support-gateway@threema.ch for a
+2. Obtain credits (ask Threema support at <support-gateway@threema.ch> for a
    small number of test credits, or purchase them through your account).
 3. [Request a Basic Gateway ID](https://gateway.threema.ch/en/id-request?type=simple).
    Threema will review it (usually within one or two business days) and create
@@ -103,13 +103,13 @@ Both forms are accepted.
 
 ## Parameter Breakdown
 
-| Variable   | Required | Description                                                                                                                                                                |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| gateway_id | Yes      | Your 8-character Gateway ID starting with `*`, e.g. `*MYGWYID`. Aliases: `?from=` or `?gwid=`.                                                                           |
-| secret     | Yes      | The API secret shown on your Gateway ID overview page. Alias: `?secret=`.                                                                                                 |
-| target     | No       | Who to notify: a Threema ID (8 chars), phone number, or e-mail address. No limit on the number of targets. Alias: `?to=`. E2E mode accepts Threema IDs only.              |
-| mode       | No       | Set to `e2e` to enable end-to-end encrypted messaging (requires PyNaCl and an E2E Gateway ID). Defaults to `basic`.                                                       |
-| privkey    | No       | Your Curve25519 private key as a 64-character hex string. Required when `mode=e2e`. Accepts raw hex (`aabbcc...`) or the Threema SDK format (`private:aabbcc...`).        |
+| Variable   | Required | Description                                                                                                                                                        |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| gateway_id | Yes      | Your 8-character Gateway ID starting with `*`, e.g. `*MYGWYID`. Aliases: `?from=` or `?gwid=`.                                                                     |
+| secret     | Yes      | The API secret shown on your Gateway ID overview page. Alias: `?secret=`.                                                                                          |
+| target     | No       | Who to notify: a Threema ID (8 chars), phone number, or e-mail address. No limit on the number of targets. Alias: `?to=`. E2E mode accepts Threema IDs only.       |
+| mode       | No       | Set to `e2e` to enable end-to-end encrypted messaging (requires PyNaCl and an E2E Gateway ID). Defaults to `basic`.                                                |
+| privkey    | No       | Your Curve25519 private key as a 64-character hex string. Required when `mode=e2e`. Accepts raw hex (`aabbcc...`) or the Threema SDK format (`private:aabbcc...`). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
