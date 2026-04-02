@@ -156,15 +156,15 @@ to Apprise fields using query parameters prefixed with a colon (`:`).
 
 ### Mapping Rules
 
-| Syntax | Effect |
-|---|---|
-| `?:incoming_field=apprise_field` | Rename `incoming_field` to `apprise_field` |
-| `?:incoming_field=` | Remove `incoming_field` from the payload |
-| `?:apprise_field=literal value` | Hard-code `apprise_field` to a fixed string |
+| Syntax                           | Effect                                      |
+| -------------------------------- | ------------------------------------------- |
+| `?:incoming_field=apprise_field` | Rename `incoming_field` to `apprise_field`  |
+| `?:incoming_field=`              | Remove `incoming_field` from the payload    |
+| `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string |
 
 **Flat field example** — a tool sends `{"message": "Server Down"}`:
 
-```
+```text
 POST /notify/{KEY}?:message=body
 ```
 
@@ -194,7 +194,7 @@ leaf value is assigned to the target Apprise field.
   Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
 - If any step in the path is missing, a `WARNING` is logged — no exception is raised —
   so you can debug misconfigured rules without breaking notification delivery.
-- The maximum traversal depth is **5** levels by default.  Set the
+- The maximum traversal depth is **5** levels by default. Set the
   `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable to change this limit.
 
 ## Examples
