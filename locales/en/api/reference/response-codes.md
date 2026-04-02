@@ -11,7 +11,7 @@ Apprise API uses standard HTTP status codes. Many error responses return a short
 | :---- | :------------------------------ | :-------------------------------------------------------------------------------------------------------------------- |
 | `200` | OK                              | Request succeeded.                                                                                                    |
 | `204` | No Content                      | No configuration exists for the requested key, or a stateless notify request had no valid URLs to notify.             |
-| `400` | Bad Request                     | Invalid payload, unsupported `type` or `format`, invalid tag definition, or invalid recursion header.                 |
+| `400` | Bad Request                     | Invalid payload, unsupported `type` or `format`, invalid tag definition, invalid recursion header, or a payload field mapping rule (`:source=target`) could not be resolved (e.g. the dot-notation path was not found in the payload or exceeded the maximum depth). |
 | `403` | Forbidden                       | The server is configured to deny the request (for example, `APPRISE_CONFIG_LOCK=yes`, or `/cfg` listing is disabled). |
 | `405` | Method Not Allowed              | The request used an unsupported HTTP method for the endpoint.                                                         |
 | `406` | Not Acceptable                  | The recursion limit has been reached, or the request was rejected by a server rule.                                   |

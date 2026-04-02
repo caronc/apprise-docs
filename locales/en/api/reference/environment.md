@@ -89,7 +89,8 @@ The container also supports the following variables, which map directly to the s
 | `APPRISE_STORAGE_UID_LENGTH` | `8`                          | Default URL id length used by persistent storage.                                                       |
 | `APPRISE_ATTACH_DIR`         | `<BASE_DIR>/var/attach`      | Directory storing uploaded attachments. Relative to `<BASE_DIR>` unless an absolute path is given.      |
 | `APPRISE_ATTACH_SIZE`        | `200`                        | Maximum attachment size in MB. Set to `0` to disable attachments.                                       |
-| `APPRISE_MAX_ATTACHMENTS`    | `6`                          | Maximum number of attachments per request. Set to `0` to disable the limit.                             |
+| `APPRISE_MAX_ATTACHMENTS`            | `6`                          | Maximum number of attachments per request. Set to `0` to disable the limit.                             |
+| `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH`  | `5`                          | Maximum nesting depth when using dot-notation subfield mapping rules (e.g. `:event.title=title`).        |
 | `APPRISE_ATTACH_ALLOW_URL`   | `*`                          | Allow list for remote attachment URLs.                                                                  |
 | `APPRISE_ATTACH_REJECT_URL`  | `127.0.* localhost*`         | Deny list for remote attachment URLs.                                                                   |
 | `APPRISE_STATELESS_URLS`     | _(Empty)_                    | Default URLs used by stateless `/notify/` requests when no `urls` are supplied.                         |
