@@ -152,18 +152,50 @@ To send attachments, use `multipart/form-data`.
 ## Payload Mapping Hooks
 
 If a third-party tool cannot change its JSON keys, Apprise API can map incoming fields
-to Apprise fields using query parameters.
+to Apprise fields using query parameters prefixed with a colon (`:`).
 
-Syntax:
+### Mapping Rules
 
-- `?:incoming_field=apprise_field`
+| Syntax                           | Effect                                      |
+| -------------------------------- | ------------------------------------------- |
+| `?:incoming_field=apprise_field` | Rename `incoming_field` to `apprise_field`  |
+| `?:incoming_field=`              | Remove `incoming_field` from the payload    |
+| `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string |
 
-Example:
+**Flat field example** — a tool sends `{"message": "Server Down"}`:
 
-- A tool sends `{"message": "Server Down"}`
-- Map it to Apprise `body` with `?:message=body`
+```text
+POST /notify/{KEY}?:message=body
+```
 
-See the API usage documentation for more details.
+### Nested / Subfield Mapping
+
+When a third-party payload contains nested objects, use **dot-notation** on the
+source side to reach into them:
+
+```bash
+# Payload from a monitoring tool:
+# {
+#   "event":     { "title": "CPU spike", "state": "critical" },
+#   "component": { "name": "web-server-01" }
+# }
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"event":{"title":"CPU spike","state":"critical"},"component":{"name":"web-server-01"}}' \
+  "http://apprise-host/notify/{KEY}?:event.title=title&:event.state=type&:component.name=body"
+```
+
+The dot-separated path is walked left-to-right through the nested dictionaries and the
+leaf value is assigned to the target Apprise field.
+
+**Rules and limits:**
+
+- Only the **source** side of the rule may use dot-notation; the target must be a flat
+  Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
+- If any step in the path is missing, a `WARNING` is logged — no exception is raised —
+  so you can debug misconfigured rules without breaking notification delivery.
+- The maximum traversal depth is **5** levels by default. Set the
+  `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable to change this limit.
 
 ## Examples
 

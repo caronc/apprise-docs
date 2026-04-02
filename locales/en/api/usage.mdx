@@ -147,19 +147,44 @@ curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
 
 ## Payload Mapping (Hooks)
 
-Sometimes you cannot change the payload format sent by a third-party tool (e.g., Grafana, Prometheus). Apprise API allows you to map incoming JSON keys to Apprise-compatible keys using URL parameters.
-
-**Syntax:** `?:incoming_field=apprise_field`
+Sometimes you cannot change the payload format sent by a third-party tool (e.g., Grafana, Prometheus). Apprise API allows you to map incoming fields to Apprise-compatible fields using query parameters prefixed with a colon (`:`).
 
 :::note
-mapping keys are passed in the query string and must be URL encoded if they contain special characters.
+Mapping keys are passed in the query string and must be URL encoded if they contain special characters.
 :::
 
-**Example:**
-Your tool sends `{"message": "Server Down", "severity": "high"}`, but Apprise expects `body` and `type`.
+### Mapping Rules
+
+| Syntax                           | Effect                                       |
+| -------------------------------- | -------------------------------------------- |
+| `?:incoming_field=apprise_field` | Rename `incoming_field` to the Apprise field |
+| `?:incoming_field=`              | Remove `incoming_field` from the payload     |
+| `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string  |
+
+**Example** — your tool sends `{"message": "Server Down", "severity": "high"}`, but Apprise expects `body` and `type`:
 
 ```bash
 curl -X POST \
   -d '{"message": "Server Down", "severity": "high"}' \
   "http://localhost:8000/notify/my-alerts?:message=body&:severity=type"
 ```
+
+### Nested Field (Dot-Notation) Mapping
+
+When the incoming payload uses nested objects, reference them with a **dot-separated path** on the source side of the rule:
+
+```bash
+# Payload from a monitoring tool:
+# { "event": { "title": "CPU spike", "state": "critical" },
+#   "component": { "name": "web-server-01" } }
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"event":{"title":"CPU spike","state":"critical"},"component":{"name":"web-server-01"}}' \
+  "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
+```
+
+**Rules and limits:**
+
+- Only the **source** side may use dot-notation; the target must be a flat Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
+- If any step in the path cannot be resolved, the server returns **400** and logs a `WARNING` — no notification is sent. This lets you catch misconfigured rules without silently dropping messages.
+- The maximum traversal depth is **5** levels by default. Adjust it with the `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable. Setting it to `0` disables subfield mapping entirely.
