@@ -54,3 +54,7 @@ The protocols defined are additionally flagged with an icon for quick reference 
 | ------------- | ---------------- |
 | 🔒            | Yes              |
 | 🔓            | No               |
+
+:::note
+To see a list of services no longer being supported and the reasoning behind it, visit the [Service Graveyard](/services/graveyard/).
+:::
