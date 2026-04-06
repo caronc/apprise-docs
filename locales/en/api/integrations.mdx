@@ -170,8 +170,13 @@ POST /notify/{KEY}?:message=body
 
 ### Nested / Subfield Mapping
 
-When a third-party payload contains nested objects, use **dot-notation** on the
-source side to reach into them:
+When a third-party payload contains nested objects or arrays, Apprise API can reach into
+them using **dot-notation** for nested objects and **bracket-notation** for array elements.
+Both syntaxes can be freely mixed on the source side of the mapping rule.
+
+#### Nested Objects (Dot-Notation)
+
+Walk into nested dictionaries with a dot-separated path:
 
 ```bash
 # Payload from a monitoring tool:
@@ -185,17 +190,45 @@ curl -X POST \
   "http://apprise-host/notify/{KEY}?:event.title=title&:event.state=type&:component.name=body"
 ```
 
-The dot-separated path is walked left-to-right through the nested dictionaries and the
-leaf value is assigned to the target Apprise field.
+#### Array Elements (Bracket-Notation)
+
+Append `[N]` after a key name to dereference index `N` of that array. Multiple subscripts
+and mixing with dot-notation are both supported:
+
+```bash
+# Payload from a forum / project-management webhook (e.g. Scoold / Para):
+# {
+#   "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ]
+# }
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"items":[{"title":"New post","objectURI":"https://example.com/q/1234"}]}' \
+  "http://apprise-host/notify/{KEY}?:items[0].title=title&:items[0].objectURI=body"
+```
+
+Quick-reference for path expressions:
+
+| Source key            | Resolves to                                        |
+| --------------------- | -------------------------------------------------- |
+| `items[0]`            | First element of `items`                           |
+| `items[0].objectURI`  | `.objectURI` property of the first element         |
+| `matrix[0][1]`        | Row 0, column 1 of a 2-D array                     |
+| `a[0][1][2].value[3]` | Nested arrays -> dict -> array (6 traversal steps) |
 
 **Rules and limits:**
 
-- Only the **source** side of the rule may use dot-notation; the target must be a flat
+- Only the **source** side of the rule may use path notation; the target must be a flat
   Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
-- If any step in the path is missing, a `WARNING` is logged — no exception is raised —
-  so you can debug misconfigured rules without breaking notification delivery.
-- The maximum traversal depth is **5** levels by default. Set the
-  `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable to change this limit.
+- `N` in `[N]` must be a non-negative integer. Both `key[abc]` (non-integer) and
+  `key[0` / `key0]` (unmatched bracket) are rejected immediately.
+- If any step is unresolvable — missing key, index out of range, or a non-list node at
+  an index step — the server returns **400** and logs a `WARNING`. No notification is sent,
+  so misconfigured rules are visible in logs rather than silently dropped.
+- **Depth** is the total number of traversal operations: each dict-key lookup _and_ each
+  array-index dereference counts as one step. `items[0].objectURI` = 3 steps;
+  `a[0][1][2].value[3]` = 6 steps.
+- The maximum traversal depth defaults to **5**. Set
+  `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` to change this limit.
 
 ## Examples
 
