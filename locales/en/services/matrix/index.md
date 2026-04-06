@@ -16,6 +16,7 @@ has_attachments: true
 sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
+  - matrixs://{token}@{hostname}/#{room_alias}
 
 limits:
   max_chars: 65000
@@ -33,14 +34,25 @@ Alternatively, you may use the [Matrix Webhook service](https://matrix.org/docs/
 
 Valid syntax is as follows:
 
+Using a username and password:
+
 - `matrix://{user}:{password}@{hostname}/#{room_alias}`
 - `matrixs://{user}:{password}@{hostname}/!{room_id}`
+
+Using a pre-generated access token (no username or password required):
+
+- `matrix://{token}@{hostname}/#{room_alias}`
+- `matrixs://{token}@{hostname}/!{room_id}`
+
+You may also supply the token as a query parameter:
+
+- `matrixs://{hostname}/#{room_alias}?token={token}`
 
 You may specify multiple rooms:
 
 - `matrixs://{user}:{password}@{matrixhost}/!{room_id}/#{room_alias}/`
 
-**Note:** If no user and/or password is specified, the Matrix registration process may be invoked. Some Matrix servers allow automatic registration of temporary users, depending on server configuration. In most production environments you should always provide both **{user}** and **{password}**.
+**Note:** If no user and/or password is specified, the Matrix registration process may be invoked. Some Matrix servers allow automatic registration of temporary users, depending on server configuration. In most production environments you should always provide both **{user}** and **{password}**, or a pre-generated **{token}**.
 
 ## Room Identifiers and Homeserver Behaviour
 
@@ -120,20 +132,21 @@ Or directly:
 
 ## Parameter Breakdown
 
-| Variable            | Required | Description                                                                                                                                                                                                                                                                                 |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname            | \*Yes    | The Matrix server you wish to connect to.                                                                                                                                                                                                                                                   |
-| t2bot_webhook_token | \*Yes    | Used when leveraging t2bot webhook mode. Acts as hostname in this case.                                                                                                                                                                                                                     |
-| user                | No       | The user to authenticate (and/or register) with the Matrix server.                                                                                                                                                                                                                          |
-| password            | No       | The password to authenticate (and/or register) with the Matrix server.                                                                                                                                                                                                                      |
-| port                | No       | The server port Matrix is listening on. By default **matrixs://** uses port **443**, while **matrix://** uses port **80**.                                                                                                                                                                  |
-| room_alias          | No       | The room alias to join and notify. It is recommended to prefix with **#**.                                                                                                                                                                                                                  |
-| room_id             | No       | The room ID to join and notify. You must prefix this with **!**.                                                                                                                                                                                                                            |
-| thumbnail           | No       | Displays an image before each notification identifying the notification type. Default is **False**.                                                                                                                                                                                         |
-| mode                | No       | Enables webhook mode. Valid values are **matrix** or **slack**.                                                                                                                                                                                                                             |
-| msgtype             | No       | Matrix message type: **text** or **notice**. Default is **text**.                                                                                                                                                                                                                           |
-| version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. This does not affect room ID formatting.                                                                                                                                                   |
-| hsreq               | No       | When enabled, enforces Room Version 12 semantics (such as hashed room IDs) as defined in the [Matrix v1.17 specification](https://spec.matrix.org/v1.17/rooms/v12/). This patches state-reset vulnerabilities and formalizes room creator power levels. By default, this is set to **yes**. |
+| Variable            | Required | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname            | \*Yes    | The Matrix server you wish to connect to.                                                                                                                                                                                                                                                                          |
+| t2bot_webhook_token | \*Yes    | Used when leveraging t2bot webhook mode. Acts as hostname in this case.                                                                                                                                                                                                                                            |
+| user                | No       | The user to authenticate (and/or register) with the Matrix server.                                                                                                                                                                                                                                                 |
+| password            | No       | The password to authenticate (and/or register) with the Matrix server.                                                                                                                                                                                                                                             |
+| token               | No       | A pre-generated Matrix access token. Use this instead of **user** and **password** when your server disables password login (for example, SSO-only deployments). May also be supplied as `?token=` in the URL. When used without a username, place the token in the user position: `matrix://{token}@{hostname}/`. |
+| port                | No       | The server port Matrix is listening on. By default **matrixs://** uses port **443**, while **matrix://** uses port **80**.                                                                                                                                                                                         |
+| room_alias          | No       | The room alias to join and notify. It is recommended to prefix with **#**.                                                                                                                                                                                                                                         |
+| room_id             | No       | The room ID to join and notify. You must prefix this with **!**.                                                                                                                                                                                                                                                   |
+| thumbnail           | No       | Displays an image before each notification identifying the notification type. Default is **False**.                                                                                                                                                                                                                |
+| mode                | No       | Enables webhook mode. Valid values are **matrix** or **slack**.                                                                                                                                                                                                                                                    |
+| msgtype             | No       | Matrix message type: **text** or **notice**. Default is **text**.                                                                                                                                                                                                                                                  |
+| version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. May also be supplied as `?v=`.                                                                                                                                                                                    |
+| hsreq               | No       | When enabled (the default), Apprise automatically appends the authenticated homeserver to room identifiers that do not already include one. For example, `#room` becomes `#room:hostname`. Set to **no** to disable this and use room identifiers exactly as provided.                                             |
 
 **Note:** If neither a **{room_alias}** nor a **{room_id}** is specified, Apprise will query the server for currently joined rooms and notify all of them.
 
@@ -141,7 +154,7 @@ Or directly:
 
 ## Examples
 
-Send a secure Matrix notification:
+Send a secure Matrix notification using a username and password:
 
 ```bash
 # Assuming {hostname} is matrix.example.com
@@ -150,6 +163,16 @@ Send a secure Matrix notification:
 # Notify #general and #apprise
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    matrixs://nuxref:abc123@matrix.example.com/#general/#apprise
+```
+
+Send a notification using a pre-generated access token (useful when
+password login is disabled on the server):
+
+```bash
+# Assuming {hostname} is matrix.example.com
+# Assuming {token} is syt_abc123...
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "matrixs://syt_abc123@matrix.example.com/#general"
 ```
 
 Disable homeserver enforcement:
