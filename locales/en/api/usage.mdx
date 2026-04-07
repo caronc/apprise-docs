@@ -194,11 +194,15 @@ Append `[N]` directly after the key name to dereference index `N` of that array.
 ```bash
 # Payload from a forum / project-management webhook (e.g. Scoold / Para):
 # { "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ] }
-curl -X POST \
+curl -g -X POST \
   -H "Content-Type: application/json" \
   -d '{"items":[{"title":"New post","objectURI":"https://example.com/q/1234"}]}' \
   "http://localhost:8000/notify/my-alerts?:items[0].title=title&:items[0].objectURI=body"
 ```
+
+:::note
+`curl` treats brackets in URLs as globbing syntax, so `-g` (or `--globoff`) is required when using mapping paths such as `items[0].title`. Keep the URL quoted so your shell passes it through unchanged.
+:::
 
 Chained subscripts traverse nested arrays:
 
