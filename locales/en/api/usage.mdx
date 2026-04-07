@@ -169,9 +169,13 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:message=body&:severity=type"
 ```
 
-### Nested Field (Dot-Notation) Mapping
+### Nested Field Mapping
 
-When the incoming payload uses nested objects, reference them with a **dot-separated path** on the source side of the rule:
+When the incoming payload uses nested objects or arrays, reference them on the source side of the rule using **dot-notation** for nested objects and **bracket-notation** for array elements. Both can be freely combined.
+
+#### Nested Objects (Dot-Notation)
+
+Use a dot-separated path to walk into nested dictionaries:
 
 ```bash
 # Payload from a monitoring tool:
@@ -183,8 +187,37 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
 ```
 
+#### Array Elements (Bracket-Notation)
+
+Append `[N]` directly after the key name to dereference index `N` of that array. Multiple subscripts and mixing with dot-notation are both supported:
+
+```bash
+# Payload from a forum / project-management webhook (e.g. Scoold / Para):
+# { "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ] }
+curl -g -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"items":[{"title":"New post","objectURI":"https://example.com/q/1234"}]}' \
+  "http://localhost:8000/notify/my-alerts?:items[0].title=title&:items[0].objectURI=body"
+```
+
+:::note
+`curl` treats brackets in URLs as globbing syntax, so `-g` (or `--globoff`) is required when using mapping paths such as `items[0].title`. Keep the URL quoted so your shell passes it through unchanged.
+:::
+
+Chained subscripts traverse nested arrays:
+
+```text
+# Source key          What it resolves to
+items[0]              first element of the items array
+items[0].objectURI    .objectURI of the first element
+matrix[0][1]          row 0, column 1 of a 2-D array
+a[0][1][2].value[3]   nested arrays -> dict -> array
+```
+
 **Rules and limits:**
 
-- Only the **source** side may use dot-notation; the target must be a flat Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
-- If any step in the path cannot be resolved, the server returns **400** and logs a `WARNING` — no notification is sent. This lets you catch misconfigured rules without silently dropping messages.
-- The maximum traversal depth is **5** levels by default. Adjust it with the `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable. Setting it to `0` disables subfield mapping entirely.
+- Only the **source** side may use path notation; the target must be a flat Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
+- `N` in `[N]` must be a non-negative integer. Both `key[abc]` (non-integer) and `key[0` / `key0]` (unmatched bracket) are rejected with a `WARNING`.
+- If any step in the path cannot be resolved (missing key, index out of range, or a non-list node encountered at an index step), the server returns **400** and logs a `WARNING` — no notification is sent. This lets you catch misconfigured rules without silently dropping messages.
+- **Depth** is counted as the total number of individual traversal operations — each dict-key lookup _and_ each array-index dereference counts as one step. For example, `items[0].objectURI` is **3** steps (`items` -> `[0]` -> `objectURI`), and `a[0][1][2].b[3]` is **6** steps.
+- The maximum traversal depth defaults to **5**. Adjust it with the `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable.
