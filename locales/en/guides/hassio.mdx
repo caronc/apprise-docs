@@ -10,6 +10,14 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 This guide explains how to integrate **Apprise** with **[Home Assistant](https://www.home-assistant.io/)** using the built-in Apprise notification platform. This approach allows you to centralize all notification logic in a single configuration file (or Apprise API source) while letting Home Assistant focus purely on automation logic.
 
+:::note[Sending notifications to Home Assistant instead?]
+This guide covers using Apprise **from within** Home Assistant to deliver
+notifications to external services. If you want to use Apprise to send
+notifications **to** Home Assistant (persistent dashboard alerts or
+direct service calls), see the
+[Home Assistant service plugin](/services/homeassistant/) (`hassio://`).
+:::
+
 ## Why Use Apprise with Home Assistant
 
 Using Apprise provides several benefits:
@@ -214,7 +222,42 @@ You can combine tags in your `target` field to create powerful notification grou
 | `target: [devops, alarm]` | **OR**     | Notifies everything tagged `devops` **OR** `alarm`. |
 | `target: "devops alarm"`  | **AND**    | Notifies only services that have **BOTH** tags.     |
 
-## 4. Debugging & Logging
+## 4. Testing Your Configuration
+
+Before wiring Apprise into automations, verify it works from the
+command line:
+
+```bash
+apprise -vv -t "Test" -b "Hello from the CLI" \
+    tgram://YOUR_BOT_TOKEN/YOUR_CHAT_ID
+```
+
+Then confirm Home Assistant can reach the same service by triggering
+the `notify.apprise` service manually from **Developer Tools →
+Services**.
+
+## 5. Discovering Available Notify Services
+
+If you want Apprise to call back into Home Assistant itself (for
+example, to push to a mobile device registered in the HA companion
+app), you can use the `hassio://` plugin in your Apprise URLs. To find
+the exact service name:
+
+1. In Home Assistant, open **Developer Tools → Services**.
+2. Filter by domain **notify** — you will see entries like
+   `notify.mobile_app_johns_phone`.
+3. The portion after `notify.` is the service name to use in the
+   Apprise URL:
+
+```bash
+apprise -vv -t "Alert" -b "Test push" \
+    'hassio://ha.local/YOUR_TOKEN/notify.mobile_app_johns_phone'
+```
+
+See the [Home Assistant service plugin](/services/homeassistant/) for
+the full `hassio://` URL reference.
+
+## 6. Debugging & Logging
 
 If your notifications aren't sending, you can enable debug logging specifically for the Apprise component in Home Assistant. Add this to your `configuration.yaml`:
 
