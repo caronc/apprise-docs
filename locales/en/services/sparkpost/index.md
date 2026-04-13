@@ -39,7 +39,7 @@ You may also identify your region if you aren't using the US servers like so:
 
 You can adjust what the Name associated with the From email is set to as well:
 
-- `sparkpost://{user}@{domain}/{apikey}/?From=Darth%20Vader`
+- `sparkpost://{user}@{domain}/{apikey}/?name=Darth%20Vader`
 
 ### Email Extensions
 
@@ -116,7 +116,7 @@ SparkPost allows you to identify `{{tokens}}` that are wrapped in 2 curly braces
 # We already know our To {email} is bill.gates@microsoft.com
 # Assuming we want our email to come from noreply@example.com
 apprise -vv -t "Test Message Title" -b "Bill Gates works at {{software}}" \
-   "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?+software=Microsoft"
+   "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?:software=Microsoft"
 ```
 
 You can specify as many tokens as you like. Apprise automatically provides some default (out of the box) translated tokens if you wish to use them; they are as follows:

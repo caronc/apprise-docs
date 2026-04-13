@@ -35,7 +35,7 @@ Valid syntax is as follows:
 
 You can adjust what the Name associated with the From email is set to as well:
 
-- `smtp2go://{user}@{domain}/{apikey}/?from=Luke%20Skywalker`
+- `smtp2go://{user}@{domain}/{apikey}/?name=Luke%20Skywalker`
 
 ## Parameter Breakdown
 
