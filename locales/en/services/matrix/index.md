@@ -17,6 +17,7 @@ sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
   - matrixs://{token}@{hostname}/#{room_alias}
+  - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
   max_chars: 65000
@@ -48,18 +49,47 @@ You may also supply the token as a query parameter:
 
 - `matrixs://{hostname}/#{room_alias}?token={token}`
 
-You may specify multiple rooms:
+### Room Alias Targets
 
-- `matrixs://{user}:{password}@{matrixhost}/!{room_id}/#{room_alias}/`
+Room aliases are prefixed with `#`. You may specify multiple room aliases by separating them with a forward slash:
 
-To send a direct message (DM) to a Matrix user, prefix the target with `@`:
+- `matrixs://{user}:{password}@{hostname}/#{room_alias}`
+- `matrixs://{user}:{password}@{hostname}/#{room_alias1}/#{room_alias2}`
+- `matrixs://{token}@{hostname}/#{room_alias1}/#{room_alias2}`
+
+### Room ID Targets
+
+Room IDs are prefixed with `!`. You may specify multiple room IDs in the same way:
+
+- `matrixs://{user}:{password}@{hostname}/!{room_id}`
+- `matrixs://{user}:{password}@{hostname}/!{room_id1}/!{room_id2}`
+- `matrixs://{token}@{hostname}/!{room_id1}/!{room_id2}`
+
+### Direct Message Targets
+
+To send a direct message (DM) to a Matrix user, prefix the target with `@`. You may optionally include the homeserver component on the target:
 
 - `matrixs://{user}:{password}@{hostname}/@{target_user}`
 - `matrixs://{user}:{password}@{hostname}/@{target_user}:{homeserver}`
+- `matrixs://{token}@{hostname}/@{target_user}`
+- `matrixs://{token}@{hostname}/@{target_user}:{homeserver}`
 
-You may mix room targets and DM targets in a single URL:
+You may notify multiple DM users in a single URL:
+
+- `matrixs://{user}:{password}@{hostname}/@{user1}/@{user2}`
+- `matrixs://{token}@{hostname}/@{user1}/@{user2}`
+
+:::note
+Unlike room identifiers, DM user targets **always** have the authenticated homeserver appended when no explicit homeserver is provided. `@alice` is always resolved as `@alice:{home_server}`, regardless of the `hsreq` setting. To DM a user on a different server, include the homeserver explicitly: `@alice:otherhost.com`.
+:::
+
+### Mixing Target Types
+
+Room aliases (`#`), room IDs (`!`), and DM users (`@`) can be freely mixed and matched in any order in a single URL:
 
 - `matrixs://{user}:{password}@{hostname}/#{room_alias}/@{target_user}`
+- `matrixs://{user}:{password}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
+- `matrixs://{token}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
 
 :::note
 If no user and/or password is specified, the Matrix registration process may be invoked. Some Matrix servers allow automatic registration of temporary users, depending on server configuration. In most production environments you should always provide both **{user}** and **{password}**, or a pre-generated **{token}**.
@@ -99,6 +129,8 @@ You may disable homeserver enforcement by specifying `?hsreq=no`. In this settin
 - `#room` is used exactly as provided.
 - `!room` is used exactly as provided.
 
+`hsreq` applies only to room identifiers (`#` and `!`). DM user targets (`@`) are not affected -- they always have the authenticated homeserver applied when no explicit homeserver is included in the target.
+
 This is intended for environments where a reverse proxy, non-standard server behaviour, or strict URL routing makes `:homeserver` suffixing undesirable.
 
 If you are using room IDs (prefixed with `!`), note that many Matrix deployments expect fully-qualified room IDs. If your server rejects `!room:{hostname}` but accepts `!room` as-is, `hsreq=no` may be required.
@@ -122,6 +154,8 @@ matrix://user:pass@localhost/#room/!abc123?hsreq=no
 
 - `#room` is used as `#room`
 - `!abc123` is used as `!abc123`
+
+In both cases, a DM target such as `@alice` would become `@alice:localhost` regardless of `hsreq`.
 
 ## Webhook Mode
 
@@ -164,6 +198,10 @@ Or directly:
 
 :::note
 If neither a **{room_alias}**, **{room_id}**, nor a **{target_user}** is specified, Apprise will query the server for currently joined rooms and notify all of them.
+:::
+
+:::note
+When sending to a **{target_user}**, Apprise looks up an existing DM room via `m.direct` account data, or creates one if none exists. If the target user later leaves that room, Apprise will continue sending to it (the messages are accepted by the server but the user will not see them). There is no automatic re-invite. To recover, the target user should rejoin, or you should clear Apprise persistent storage so that a new DM room is created on the next send.
 :::
 
 :::note
@@ -238,6 +276,15 @@ Send a direct message to a Matrix user:
 # DM @bob on the same homeserver
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    matrixs://nuxref:abc123@matrix.example.com/@bob
+```
+
+Send a direct message using a pre-generated access token:
+
+```bash
+# Assuming {hostname} is matrix.example.com
+# Assuming {token} is syt_abc123...
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "matrixs://syt_abc123@matrix.example.com/@bob"
 ```
 
 Send a **t2bot.io** webhook request:
