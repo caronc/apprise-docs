@@ -11,6 +11,7 @@ schemas:
   - mmosts
 
 has_image: true
+has_attachments: true
 
 sample_urls:
   - mmosts://{hostname}/{token}
@@ -79,6 +80,18 @@ In bot mode you can target channels in two ways:
 2. Provide `#channel_name` only when a team name is also provided, since Apprise
    must perform a lookup to translate `#channel_name` into a `channel_id`.
 
+### File Attachments (Bot mode only)
+
+File attachments are supported in **bot mode** only. Apprise uploads each file
+to `/api/v4/files` first (one request per file per channel) and then includes
+the returned file IDs in the post payload.
+
+:::note
+Webhook mode does not support file attachments. If attachments are provided
+when using webhook mode, Apprise logs a warning and sends the text message
+without them.
+:::
+
 ## Syntax
 
 ### Webhook Mode (default)
@@ -124,20 +137,20 @@ Examples:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                |
-| -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The server Mattermost is listening on.                                                                                                                                                                                     |
-| token    | Yes      | **Webhook mode:** Incoming Webhook token. **Bot mode:** Bot or User access token (Bearer token).                                                                                                                           |
-| port     | No       | The server port Mattermost is listening on. If omitted, Apprise uses the default port associated with the scheme (for example 443 for `mmosts://`). Many Mattermost installs use port **8065**, so specify it when needed. |
-| path     | No       | You can identify a sub-path if you wish. The last element of the path must be the **token**.                                                                                                                               |
-| botname  | No       | **Webhook mode:** optional display name override. Requires the Mattermost admin setting "Enable integrations to override usernames". **Bot mode:** alias of `team`, used only for `#channel_name` lookup.                  |
-| team     | No       | **Bot mode only.** Team name used to resolve `#channel_name` targets into channel ids. This maps to the same internal value as `botname` and the URL user portion.                                                         |
-| image    | No       | **Webhook mode only.** Include the Apprise status image. Ignored when `icon_url` is set.                                                                                                                                   |
-| icon_url | No       | **Webhook mode only.** Override the avatar icon with a custom URL. Requires the Mattermost admin setting "Enable integrations to override profile picture icons".                                                          |
-| channels | No       | **Webhook mode:** channel names. **Bot mode:** channel ids (or `#channel_name` when `team` is provided). You can specify a comma separated list.                                                                           |
-| channel  | No       | Alias of `channels`.                                                                                                                                                                                                       |
-| to       | No       | Alias of `channels`. Useful for YAML config where `to:` is already a concept.                                                                                                                                              |
-| mode     | No       | `webhook` (default) or `bot`.                                                                                                                                                                                              |
+| Variable | Required | Description                                                                                                                                                                                                                                                                                |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname | Yes      | The server Mattermost is listening on.                                                                                                                                                                                                                                                     |
+| token    | Yes      | **Webhook mode:** Incoming Webhook token. **Bot mode:** Bot or User access token (Bearer token).                                                                                                                                                                                           |
+| port     | No       | The server port Mattermost is listening on. If omitted, Apprise uses the default port associated with the scheme (for example 443 for `mmosts://`). Many Mattermost installs use port **8065**, so specify it when needed.                                                                 |
+| path     | No       | You can identify a sub-path if you wish. The last element of the path must be the **token**.                                                                                                                                                                                               |
+| botname  | No       | **Webhook mode only.** Overrides the display name shown for the webhook message (the `username` field in the payload). Requires the Mattermost admin setting "Enable integrations to override usernames". Not applicable in bot mode -- bot posts appear under the bot account's own name. |
+| team     | No       | **Bot mode only.** Team name used to resolve `#channel_name` targets into channel IDs. Can also be supplied as the URL user portion (`{team}@{hostname}`). Not applicable in webhook mode.                                                                                                 |
+| image    | No       | **Webhook mode only.** Include the Apprise status image. Ignored when `icon_url` is set.                                                                                                                                                                                                   |
+| icon_url | No       | **Webhook mode only.** Override the avatar icon with a custom URL. Requires the Mattermost admin setting "Enable integrations to override profile picture icons".                                                                                                                          |
+| channels | No       | **Webhook mode:** channel names. **Bot mode:** channel ids (or `#channel_name` when `team` is provided). You can specify a comma separated list.                                                                                                                                           |
+| channel  | No       | Alias of `channels`.                                                                                                                                                                                                                                                                       |
+| to       | No       | Alias of `channels`. Useful for YAML config where `to:` is already a concept.                                                                                                                                                                                                              |
+| mode     | No       | `webhook` (default) or `bot`.                                                                                                                                                                                                                                                              |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -177,6 +190,17 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    mmost://mattermost.server.local/3ccdd113474722377935511fc85d3dd4?channels=support,general
 ```
 
+Send a webhook notification with a custom display name (botname):
+
+```bash
+# Assuming our {hostname} is mattermost.server.local
+# Assuming our {token} is 3ccdd113474722377935511fc85d3dd4
+# Assuming our desired display name is mybot
+
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   'mmosts://mybot@mattermost.server.local/3ccdd113474722377935511fc85d3dd4'
+```
+
 Post as a bot into a specific channel id:
 
 ```bash
@@ -209,4 +233,16 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Team provided via query string:
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    'mmosts://mattermost.server.local/abcd1234?mode=bot&team=myteam&to=#general'
+```
+
+Send a bot message with a file attachment:
+
+```bash
+# Assuming our {access_token} is abcd1234
+# Assuming our {channel_id} is f6g7ha13d4e58ib2c9aa
+# Assuming the file to attach is /path/to/report.pdf
+
+apprise -vv -t "Report" -b "See attached." \
+   --attach /path/to/report.pdf \
+   'mmosts://mattermost.server.local/abcd1234?mode=bot&to=f6g7ha13d4e58ib2c9aa'
 ```
