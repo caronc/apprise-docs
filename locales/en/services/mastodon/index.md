@@ -66,8 +66,25 @@ Simply use `mastodon://` or `toot://` if access in an insecure server and `masto
 | spoiler    | No       | Optionally provide _spoiler text_ that should be associated with the status message posted.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | language   | No       | Optionally provide a ISO 639 language code with your status post. E.g. `en`, `fr`, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | key        | No       | Prevent duplicate submissions of the same status. Idempotency keys are stored for up to 1 hour, and can be any arbitrary string. Consider using a hash or UUID generated client-side.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ping       | No       | Optionally append one or more Mastodon mentions or hashtags to the status. Mentions must begin with `@` (for example `@caronc` or `@alice@example.com`) and hashtags must begin with `#` (for example `#apprise`). Bare values such as `apprise` are ignored to avoid ambiguity.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+### Mentions and Hashtags
+
+Mastodon resolves mentions and hashtags from the final status text. You can include them directly in the message body, provide path entries, or use `ping=` to append fixed mentions and hashtags from the Apprise URL.
+
+User and hashtag path entries are preserved when the URL is rebuilt. Since `#` has special meaning in URLs, rebuilt URLs encode hashtag path entries as `%23tag`. Path entries and `ping=` entries are appended to the final status text when they are not already present, including when sending plain text.
+
+The `ping=` value accepts comma, space, semicolon, slash, or pipe separated entries. Mention entries must start with `@`, and hashtag entries must start with `#`:
+
+- `ping=@caronc` appends `@caronc`
+- `ping=@alice@example.com` appends `@alice@example.com`
+- `ping=#apprise,#notifications` appends `#apprise #notifications`
+- `/@caronc/%23apprise` appends `@caronc #apprise`
+- `/%23apprise/%23notifications` appends `#apprise #notifications`
+
+Bare values such as `ping=apprise` are ignored because they do not identify whether the value is intended to be a mention or a hashtag. Duplicate entries from the message body, hashtag path entries, and `ping=` are collapsed in the final status text. Hashtags must contain at least one non-numeric character.
 
 ### Smart Processing
 
@@ -137,6 +154,24 @@ Send a Mastodon toot:
 # Assuming our {Host} is noc.social
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social"
+```
+
+Send a Mastodon toot with path entries:
+
+```bash
+# Assuming our {AccessKey} is T1JJ3T3L2
+# Assuming our {Host} is noc.social
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "mastodons://T1JJ3T3L2@noc.social/@caronc/%23apprise"
+```
+
+Send a Mastodon toot with fixed pings appended:
+
+```bash
+# Assuming our {AccessKey} is T1JJ3T3L2
+# Assuming our {Host} is noc.social
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "mastodons://T1JJ3T3L2@noc.social?ping=#apprise,#notifications"
 ```
 
 Send a Mastodon DM to `@testaccount`:
