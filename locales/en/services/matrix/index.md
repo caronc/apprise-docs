@@ -29,7 +29,7 @@ limits:
 
 By default, Apprise communicates directly with your Matrix server using the official Client API.
 
-Alternatively, you may use the [Matrix Webhook service](https://matrix.org/docs/projects/bot/matrix-webhook.html). At the time of writing, this is still considered late beta. Webhook usage is enabled by specifying **?mode=matrix** or **?mode=slack**, assuming you have configured the webhook service (for example via <https://github.com/turt2live/matrix-appservice-webhooks>).
+Alternatively, you may use webhook mode instead of the Matrix Client API. Webhook usage is enabled by specifying **?mode=matrix**, **?mode=slack**, or **?mode=hookshot** depending on the webhook service you have configured.
 
 ## Syntax
 
@@ -165,6 +165,13 @@ When specifying the **?mode=** argument, the plugin switches entirely to webhook
 - `matrixs://{token}@{hostname}:{port}?mode=matrix`
 - `matrix://{user}:{token}@{hostname}?mode=slack&format=markdown`
 - `matrixs://{token}@{hostname}?mode=slack&format=markdown`
+- `matrix://{user}:{token}@{hostname}?mode=hookshot`
+- `matrixs://{user}:{token}@{hostname}?mode=hookshot&path=/webhook`
+
+When using **matrix-hookshot**, the webhook path is configurable and defaults to **/webhook**:
+
+- `matrixs://{user}:{token}@{hostname}?mode=hookshot`
+- `matrixs://{user}:{token}@{hostname}?mode=hookshot&path=/public-hooks`
 
 If you use [**t2bot.io**](https://t2bot.io/), you may use:
 
@@ -188,7 +195,8 @@ Or directly:
 | room_alias          | No       | The room alias to join and notify. It is recommended to prefix with **#**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | room_id             | No       | The room ID to join and notify. You must prefix this with **!**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | thumbnail           | No       | Displays an image before each notification identifying the notification type. Default is **False**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| mode                | No       | Enables webhook mode. Valid values are **matrix** or **slack**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| mode                | No       | Enables webhook mode. Valid values are **matrix**, **slack**, **t2bot**, and **hookshot**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| path                | No       | Used with **hookshot** mode to define the public webhook path. Defaults to **/webhook**. For example, if your hookshot instance is exposed at `https://hookshot.example/public-hooks/{token}`, then set `?mode=hookshot&path=/public-hooks`.                                                                                                                                                                                                                                                                                                                                                                                                     |
 | msgtype             | No       | Matrix message type: **text** or **notice**. Default is **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. May also be supplied as `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | hsreq               | No       | When enabled (the default), Apprise automatically appends the authenticated homeserver to room identifiers that do not already include one. For example, `#room` becomes `#room:hostname`. Set to **no** to disable this and use room identifiers exactly as provided.                                                                                                                                                                                                                                                                                                                                                                           |
@@ -293,4 +301,20 @@ Send a **t2bot.io** webhook request:
 # Assuming {webhook} is ABCDEFG12345
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    matrix://ABCDEFG12345
+```
+
+Send a **matrix-hookshot** webhook request:
+
+```bash
+# Assuming {hostname} is hookshot.example.com
+# Assuming {token} is ABCDEFG12345
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "matrixs://apprise:ABCDEFG12345@hookshot.example.com?mode=hookshot"
+```
+
+If your hookshot instance is exposed behind a custom public webhook path:
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "matrixs://apprise:ABCDEFG12345@hookshot.example.com?mode=hookshot&path=/public-hooks"
 ```
