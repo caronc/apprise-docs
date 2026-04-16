@@ -39,6 +39,7 @@ Valid syntax is as follows:
 - `exotel://{AccountSid}:{ApiToken}@{FromPhoneNo}/{PhoneNo}`
 - `exotel://{AccountSid}:{ApiToken}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 - `exotel://{AccountSid}:{ApiToken}@{SenderID}/{PhoneNo}?apikey={ApiKey}`
+- `exotel://{AccountSid}:{ApiToken}@{SenderID}/{PhoneNo1}/{PhoneNo2}?batch=yes`
 
 If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ will be messaged instead; hence the following is a valid URL:
 
@@ -61,6 +62,7 @@ You can also pass values as query parameters:
 | region      | No       | Can be either `us` or `in`. By default, the region is set to `us`. Use `in` for the Mumbai API endpoint.                                                                                                                          |
 | priority    | No       | Can be either `normal` or `high`. By default, priority is set to `normal`. Exotel recommends `high` only for OTP SMS messages.                                                                                                    |
 | unicode     | No       | Optionally tell Apprise whether the SMS should be sent as unicode. By default this is set to `yes`; set it to `no` to use plain text encoding.                                                                                    |
+| batch       | No       | Send multiple targets in a single Exotel bulk SMS API request. By default this is set to `no`, so Apprise sends one upstream request per target.                                                                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -93,4 +95,17 @@ Send through the India region using a separate API key and an approved sender ID
 # Assuming our {PhoneNo} is +91-98765-43210
 apprise -vv -b "Your verification code is 123456" \
    "exotel://acme123:exo-token@EXOTEL/919876543210?apikey=api-key&region=in&priority=high"
+```
+
+Send one message to multiple targets using Exotel bulk SMS:
+
+```bash
+# Assuming our {AccountSid} is acme123
+# Assuming our {ApiKey} is api-key
+# Assuming our {ApiToken} is exo-token
+# Assuming our {SenderID} is EXOTEL
+# Assuming our {PhoneNo1} is +91-98765-43210
+# Assuming our {PhoneNo2} is +91-98765-43211
+apprise -vv -b "Your scheduled reminder" \
+   "exotel://acme123:exo-token@EXOTEL/919876543210/919876543211?apikey=api-key&region=in&batch=yes"
 ```
