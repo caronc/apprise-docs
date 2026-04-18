@@ -416,13 +416,13 @@ Les chemins globaux suivants sont aussi recherchés si rien n'est trouvé ci-des
 
 En supposant que l'utilisateur soit `foobar` et que Microsoft Windows soit installé sur le lecteur `C:\`, cela donne :
 
-| Variable d'environnement | Exemple de traduction              |
-| ------------------------ | ---------------------------------- |
-| `%APPDATA%`              | `C:\Users\foobar\AppData\Roaming`  |
-| `%LOCALAPPDATA%`         | `C:\Users\foobar\AppData\Local`    |
-| `%ALLUSERSPROFILE%`      | `C:\ProgramData`                   |
-| `%PROGRAMFILES%`         | `C:\Program Files`                 |
-| `%COMMONPROGRAMFILES`    | `C:\Program Files\Common Files`    |
+| Variable d'environnement | Exemple de traduction             |
+| ------------------------ | --------------------------------- |
+| `%APPDATA%`              | `C:\Users\foobar\AppData\Roaming` |
+| `%LOCALAPPDATA%`         | `C:\Users\foobar\AppData\Local`   |
+| `%ALLUSERSPROFILE%`      | `C:\ProgramData`                  |
+| `%PROGRAMFILES%`         | `C:\Program Files`                |
+| `%COMMONPROGRAMFILES`    | `C:\Program Files\Common Files`   |
 
 </TabItem>
 </Tabs>
@@ -435,19 +435,19 @@ Apprise détermine automatiquement le format (TEXT ou YAML) à partir de l'exten
 
 Deux tags spéciaux permettent de contrôler le comportement des notifications.
 
-| Tag      | Description                                                                                                                                                          |
-| :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `always` | Si vous attribuez le tag `always` à une URL dans votre configuration, elle sera **TOUJOURS** déclenchée, même si vous filtrez sur un autre tag via la CLI.       |
+| Tag      | Description                                                                                                                                                       |
+| :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `always` | Si vous attribuez le tag `always` à une URL dans votre configuration, elle sera **TOUJOURS** déclenchée, même si vous filtrez sur un autre tag via la CLI.        |
 | `all`    | Utilisé lors de l'envoi d'une notification (par ex. `apprise --tag=all`). Cela demande à Apprise d'ignorer tous les filtres et de notifier **tous** les services. |
 
 ## Configuration Web privée
 
 Si vous hébergez votre configuration sur un serveur Web privé, Apprise détecte le format à partir de l'en-tête **Content-Type** renvoyé par le serveur, ou via un paramètre d'URL explicite.
 
-| Format   | HTTP Content-Type                  | Forçage par URL            |
-| :------- | :--------------------------------- | :------------------------- |
-| **YAML** | `text/yaml`, `application/x-yaml`  | `http://...?format=yaml`   |
-| **TEXT** | `text/plain`                       | `http://...?format=text`   |
+| Format   | HTTP Content-Type                 | Forçage par URL          |
+| :------- | :-------------------------------- | :----------------------- |
+| **YAML** | `text/yaml`, `application/x-yaml` | `http://...?format=yaml` |
+| **TEXT** | `text/plain`                      | `http://...?format=text` |
 
 :::note
 Si vous utilisez un hébergement Apprise API, vos URL `include` ressemblent à : `http://apprise-host/get/<key>`

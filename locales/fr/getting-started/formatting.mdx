@@ -15,12 +15,12 @@ Apprise ne **devine pas** automatiquement votre type de contenu. Vous indiquez p
 
 Apprise reconnait quatre **etats de format d'entree** :
 
-| Etat                   | Description                                                            |
-| :--------------------- | :--------------------------------------------------------------------- |
-| _(implicite)_ **none** | Aucun format declare. Le contenu est transmis tel quel.                |
+| Etat                   | Description                                                                                  |
+| :--------------------- | :------------------------------------------------------------------------------------------- |
+| _(implicite)_ **none** | Aucun format declare. Le contenu est transmis tel quel.                                      |
 | **text**               | Entree en texte brut. Apprise peut simplifier le contenu pour les services texte uniquement. |
-| **markdown**           | Entree en Markdown. Apprise peut convertir ou simplifier si necessaire. |
-| **html**               | Entree en HTML. Apprise peut retirer ou convertir le balisage si necessaire. |
+| **markdown**           | Entree en Markdown. Apprise peut convertir ou simplifier si necessaire.                      |
+| **html**               | Entree en HTML. Apprise peut retirer ou convertir le balisage si necessaire.                 |
 
 :::note
 
@@ -57,8 +57,8 @@ Cela rend les destinations plus compatibles _sans_ vous obliger a adapter manuel
 Si vous ne precisez **pas** de format, Apprise adopte un etat legerement different selon le composant utilise :
 
 | Interface                    | Format d'entree par defaut                                                                                                        |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                            |
 | [Python API](../../library/) | `none` - contenu transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou preconfigure dans `AppriseAsset()` |
 | [Apprise-API](../../api/)    | `none` - contenu transmis tel quel sauf si `format` est fourni dans le payload `/notify/`                                         |
 
