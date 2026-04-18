@@ -13,6 +13,10 @@ For example, in a URL, the **&**, **/**, and **%** all have extremely different 
 
 Now there is a workaround: you can replace these characters with special **%XX** character-set (URL encoded) values. These encoded characters won't cause the URL to be mis-interpreted allowing you to send notifications at will.
 
+:::tip[Need help assembling the URL?]
+If you'd rather not escape special characters by hand, try the [Apprise URL Builder](/tools/url-builder/). It helps assemble shareable Apprise URLs while keeping sensitive fields out of the generated link.
+:::
+
 Below is a chart of special characters and the value you should set them:
 
 | Character   | URL Encoded | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
