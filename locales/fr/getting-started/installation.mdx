@@ -1,0 +1,113 @@
+---
+title: Installation
+description: Installez Apprise sur Linux, Windows, macOS ou via Docker.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Apprise peut être installé comme paquet Python, comme paquet système sur Linux, ou exécuté dans un conteneur. Choisissez la méthode qui convient le mieux à votre environnement.
+
+<Tabs>
+<TabItem label="PyPI (standard)">
+
+La manière la plus courante d'installer Apprise est via `pip`. Cette méthode fonctionne sous Windows, macOS et Linux.
+
+```bash
+pip install apprise
+```
+
+Si vous n'utilisez pas d'environnement virtuel ou si vous n'avez pas les droits suffisants sur la machine, vous devrez peut-être utiliser `pip3` ou ajouter l'option `--user` :
+
+```bash
+pip3 install apprise --user
+```
+
+</TabItem>
+<TabItem label="Distributions Linux">
+
+Apprise est empaqueté au format RPM et disponible via [EPEL](https://docs.fedoraproject.org/en-US/epel/), avec prise en charge de CentOS, Red Hat, Rocky et Oracle Linux.
+
+### Red Hat / Rocky / Oracle / Fedora
+
+Commencez par activer les dépôts EPEL si ce n'est pas déjà fait :
+
+```bash
+sudo dnf install epel-release
+```
+
+Installez ensuite Apprise :
+
+```bash
+sudo dnf install apprise
+```
+
+</TabItem>
+
+<TabItem label="Docker">
+
+Apprise est disponible sous forme d'image Docker légère. C'est idéal si vous voulez exécuter l'API Apprise ou isoler la CLI de votre système hôte.
+
+### Télécharger l'image
+
+```bash
+docker pull caronc/apprise:latest
+```
+
+### Exécuter la CLI
+
+Vous pouvez lancer directement la commande `apprise` avec Docker sans installer Python sur votre machine :
+
+```bash
+# Send a notification via Docker
+docker run --rm -it caronc/apprise \
+    -t "Hello" -b "World" \
+    "discord://webhook_id/webhook_token"
+```
+
+### Exécuter le serveur API
+
+Vous pouvez aussi installer la version API avec interface graphique (Apprise API) depuis [ce dépôt](https://github.com/caronc/apprise-api) afin de centraliser votre configuration et vos notifications via une interface Web.
+
+```bash
+# /config    is used for a spot to write all of the configuration files
+#            generated through the API.
+#            The internal persistent store lives under /config/store so a
+#            single /config volume is sufficient.
+# /plugin    is used for a location you can add your own custom apprise plugins.
+#            You do not have to mount this if you don't intend to use it.
+# /attach    is used for file attachments
+#
+# /tmp       Temporary files, suitable for `tmpfs` in hardened deployments.
+#
+# The below example sets a the APPRISE_WORKER_COUNT to a small value (over-riding
+# a full production environment setting). This may be all that is needed for
+# a light-weight self hosted solution.
+#
+# setting APPRISE_STATEFUL_MODE to simple allows you to map your defined {key}
+# straight to a file found in the `/config` path. In simple home configurations
+# this is sometimes the ideal expectation.
+#
+# Set your User ID or Group ID if you wish to over-ride the default of 1000
+# in the below example, we make sure it runs as the user we created the container as
+
+# pre-create your directories
+mkdir -p /path/to/local/{config,plugin,attach}
+
+docker run --name apprise \
+   -p 8000:8000 \
+   --user "$(id -u):$(id -g)" \
+   -v /path/to/local/config:/config \
+   -v /path/to/local/plugin:/plugin \
+   -v /path/to/local/attach:/attach \
+   -e APPRISE_STATEFUL_MODE=simple \
+   -e APPRISE_WORKER_COUNT=1 \
+   -e APPRISE_ADMIN=y \
+   -d caronc/apprise:latest
+```
+
+Vous pouvez visiter votre nouvelle instance auto-hébergée d'Apprise API à l'adresse : [http://docker-host:8000](http://docker-host:8000)
+
+</TabItem>
+</Tabs>
