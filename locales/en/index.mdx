@@ -8,15 +8,14 @@ tableOfContents: false
 
 import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components";
 
-import PayPalIcon from "~/components/icons/PayPalIcon.astro";
 import GitHubIcon from "~/components/icons/GitHubIcon.astro";
-import HeartIcon from "~/components/icons/HeartIcon.astro";
 import ShowcaseIcon from "~/components/icons/ShowcaseIcon.astro";
 import TerminalIcon from "~/components/icons/TerminalIcon.astro";
 import ApiServerIcon from "~/components/icons/ApiServerIcon.astro";
 import SyntaxIcon from "~/components/icons/SyntaxIcon.astro";
 import CoreLibraryIcon from "~/components/icons/CoreLibraryIcon.astro";
 import DocsIcon from "~/components/icons/DocsIcon.astro";
+import SupportProject from "~/components/SupportProject.astro";
 import "~/styles/landing.css";
 
 <div class="apprise-landing">
@@ -238,42 +237,5 @@ import "~/styles/landing.css";
 
   </div>
 
-  <div class="apprise-support">
-    <div class="apprise-support__grid">
-      <div class="apprise-support__badge" aria-hidden="true">
-        <HeartIcon class="apprise-support__badge-icon" />
-      </div>
-
-      <div class="apprise-support__content">
-        <h2>Support the Project</h2>
-        <p>
-          Apprise is maintained on evenings and weekends. Your support helps
-          cover the costs of hosting and service testing.
-        </p>
-
-        <div class="apprise-support-actions">
-          <LinkButton
-            href="https://github.com/sponsors/caronc"
-            variant="secondary"
-          >
-            <span class="apprise-btn">
-              <GitHubIcon class="apprise-btn-icon" />
-              <span class="apprise-btn-text">GitHub Sponsors</span>
-            </span>
-          </LinkButton>
-
-          <LinkButton
-            href="https://www.paypal.com/donate/?hosted_button_id=CR6YF7KLQWQ5E"
-            variant="secondary"
-          >
-            <span class="apprise-btn">
-              <PayPalIcon class="apprise-btn-icon" />
-              <span class="apprise-btn-text">PayPal</span>
-            </span>
-          </LinkButton>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <SupportProject />
 </div>

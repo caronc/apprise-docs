@@ -13,22 +13,20 @@
       "library": "Python Library",
       "services": "Supported Services",
       "qa": "Troubleshooting",
-      "contributing": "Project & Community",
-      "tools": "Tools"
+      "contributing": "Project & Community"
     },
     "subcategories": {
       "api": {
         "reference": "Reference"
-		},
+      },
       "library": {
         "extending": "Extending"
-		}
+      }
     },
     "social": {
       "github": "GitHub",
-      "discord": "Apprise Discord Chat",
-      "url_builder": "URL Builder",
-      "sponsor": "Support Apprise"
+      "reddit": "Apprise Subreddit",
+      "discord": "Apprise Discord Chat"
     },
     "tools": {
       "title": "Tools",
@@ -51,8 +49,12 @@
   "tables": {
     "service": "Service",
     "schemas": "Schemas",
+    "feature_icon": "Feature Icon",
     "features": "Features",
+    "switch": "Switch",
     "description": "Description",
+    "protocol_icon": "Protocol Icon",
+    "encrypted_secure": "Encrypted/Secure",
     "examples": "Examples",
     "ended": "Ended"
   },
@@ -68,22 +70,83 @@
       "selfhosted": "Upstream App can be Self Hosted",
       "image": "Image Support"
     },
+    "feature_description": {
+      "attachments": "The notification service provides attachment support.",
+      "sms": "Offers a notification service focused on SMS/MMS delivery.",
+      "selfhosted": "Offers a notification service that supports a self-hosted solution.",
+      "image": "The notification service supports message delivery through graphical images."
+    },
+    "reference_break": {
+      "default": "End of Service List",
+      "filtered": "End of Filtered Service List"
+    },
+    "reference": {
+      "heading": "Reference",
+      "trigger": "Reference & Legend",
+      "close": "Close",
+      "features_intro": "The Features column identifies some useful 'at-a-glance' details about the URL should you be researching services from this page.",
+      "protocols_intro": "The protocols defined are additionally flagged with an icon for quick reference identifying if it is SSL/TLS encrypted or not:"
+    },
     "secure": "Secure",
     "insecure": "Insecure"
   },
   "help": {
-    "summary": "Questions or Feedback?",
-    "docs": { "title": "Documentation" },
-    "tech": { "title": "Technical Issues" }
+    "summary": "Questions or Feedback?"
   },
   "footer": {
-      "love": "Made with {love} from {flag}",
-      "love_sr": "Made with love from Canada"
+    "love": "Made with {love} from {flag}",
+    "love_sr": "Made with love from Canada"
   },
   "components": {
     "myip": {
       "detecting": "Detecting your IP...",
       "unavailable": "Unable to detect IP"
     }
+  },
+  "support": {
+    "title": "Support Apprise",
+    "description": "Apprise makes notification integration easy and keeps it free for everyone. If this project has saved you time or improved your workflow, consider a one-time or monthly contribution to keep it growing.",
+    "banner_message": "If Apprise helps you, please consider supporting the project: {github} or {paypal}.",
+    "banner_dismiss_aria": "Dismiss this message for one year",
+    "banner_dismiss_title": "Dismiss for 1 year",
+    "page_tagline": "Apprise is free and open source. Your contributions help fuel development, cover server costs, and keep the notifications flowing.",
+    "github_sponsors": "GitHub Sponsors",
+    "paypal": "PayPal"
+  },
+  "errors": {
+    "return_home": "Return Home",
+    "try_again": "Try Again",
+    "403": {
+      "title": "403 Access Denied",
+      "tagline": "You do not have permission to access this resource."
+    },
+    "404": {
+      "title": "404 Not Found",
+      "tagline": "We couldn't find the page you were looking for. Check the URL or try using the search bar."
+    },
+    "429": {
+      "title": "429 Too Many Requests",
+      "tagline": "You have sent too many requests in a short period. Please wait a moment and try again."
+    },
+    "500": {
+      "title": "500 Server Error",
+      "tagline": "Something went wrong on our end. We are tracking the problem."
+    },
+    "502": {
+      "title": "502 Bad Gateway",
+      "tagline": "We received an invalid response from the upstream server."
+    },
+    "503": {
+      "title": "503 Unavailable",
+      "tagline": "The service is currently unavailable. Please try again later."
+    }
+  },
+  "donate": {
+    "cancelled_title": "Donation Cancelled",
+    "cancelled_heading": "No Worries!",
+    "cancelled_tagline": "It really is the thought that counts. Apprise will still be here freely whenever you need it. Thank you for considering us!",
+    "success_title": "Thank You",
+    "success_heading": "Thank You!",
+    "success_tagline": "Your donation means the world to us. Your support keeps Apprise open source, running, and growing."
   }
 }

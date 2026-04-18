@@ -1,0 +1,152 @@
+{
+  "site": {
+    "title": "Documentation Apprise",
+    "description": "Documentation Apprise. Envoyez des notifications vers plus de 120 services, y compris des e-mails, des plateformes de clavardage et des fournisseurs SMS.",
+    "logo": "Apprise"
+  },
+  "nav": {
+    "categories": {
+      "getting-started": "Premiers pas",
+      "guides": "Intégrations et guides",
+      "cli": "CLI Apprise",
+      "api": "API Apprise",
+      "library": "Bibliothèque Python",
+      "services": "Services pris en charge",
+      "qa": "Dépannage",
+      "contributing": "Projet et communauté"
+    },
+    "subcategories": {
+      "api": {
+        "reference": "Référence"
+      },
+      "library": {
+        "extending": "Extension"
+      }
+    },
+    "social": {
+      "github": "GitHub",
+      "reddit": "Sous-reddit Apprise",
+      "discord": "Discussion Discord Apprise"
+    },
+    "tools": {
+      "title": "Outils",
+      "url_builder": "Générateur d’URL"
+    }
+  },
+  "common": {
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "service_details": {
+    "heading": "Aperçu",
+    "source": "Source",
+    "image_support": "Prise en charge des images",
+    "attachment_support": "Prise en charge des pièces jointes",
+    "message_character_limits": "Limites de caractères des messages",
+    "default_limit_name": "Corps",
+    "build_url": "Créer votre URL Apprise"
+  },
+  "tables": {
+    "service": "Service",
+    "schemas": "Schémas",
+    "feature_icon": "Icône de fonctionnalité",
+    "features": "Fonctionnalités",
+    "switch": "Option",
+    "description": "Description",
+    "protocol_icon": "Icône du protocole",
+    "encrypted_secure": "Chiffré/Sécurisé",
+    "examples": "Exemples",
+    "ended": "Terminé"
+  },
+  "service": {
+    "group": {
+      "general": "Notifications générales",
+      "custom": "Notifications personnalisées",
+      "desktop": "Notifications de bureau"
+    },
+    "feature": {
+      "attachments": "Pièces jointes",
+      "sms": "Prise en charge SMS/MMS",
+      "selfhosted": "Application auto-hébergeable",
+      "image": "Prise en charge des images"
+    },
+    "feature_description": {
+      "attachments": "Ce service de notification prend en charge les pièces jointes.",
+      "sms": "Propose un service de notification axé sur l’envoi de SMS/MMS.",
+      "selfhosted": "Propose un service de notification compatible avec une solution auto-hébergée.",
+      "image": "Ce service de notification prend en charge l’envoi de messages sous forme d’images."
+    },
+    "reference_break": {
+      "default": "Fin de la liste des services",
+      "filtered": "Fin de la liste filtrée des services"
+    },
+    "reference": {
+      "heading": "Référence",
+      "trigger": "Référence et légende",
+      "close": "Fermer",
+      "features_intro": "La colonne Fonctionnalités met en évidence quelques informations utiles en un coup d’œil pour vous aider à comparer les URL des services listés sur cette page.",
+      "protocols_intro": "Les protocoles définis sont également accompagnés d’une icône pour indiquer rapidement s’ils utilisent ou non le chiffrement SSL/TLS :"
+    },
+    "secure": "Sécurisé",
+    "insecure": "Non sécurisé"
+  },
+  "help": {
+    "summary": "Questions ou commentaires ?"
+  },
+  "footer": {
+    "love": "Conçu avec {love} depuis {flag}",
+    "love_sr": "Conçu avec amour depuis le Canada"
+  },
+  "components": {
+    "myip": {
+      "detecting": "Détection de votre IP…",
+      "unavailable": "Impossible de détecter l’IP"
+    }
+  },
+  "support": {
+    "title": "Soutenir Apprise",
+    "description": "Votre soutien aide à maintenir, tester et héberger Apprise.",
+    "banner_message": "Si Apprise vous aide, pensez à soutenir le projet : {github} ou {paypal}.",
+    "banner_dismiss_aria": "Masquer ce message pendant un an",
+    "banner_dismiss_title": "Masquer pendant 1 an",
+    "page_tagline": "Apprise est gratuit et open source. Vos contributions aident à financer le développement, les coûts serveur et l’évolution du projet.",
+    "github_sponsors": "GitHub Sponsors",
+    "paypal": "PayPal"
+  },
+  "errors": {
+    "return_home": "Retour à l’accueil",
+    "try_again": "Réessayer",
+    "403": {
+      "title": "403 Accès refusé",
+      "tagline": "Vous n’êtes pas autorisé à accéder à cette ressource."
+    },
+    "404": {
+      "title": "404 Introuvable",
+      "tagline": "Nous n’avons pas trouvé la page recherchée. Vérifiez l’URL ou essayez la barre de recherche."
+    },
+    "429": {
+      "title": "429 Trop de requêtes",
+      "tagline": "Vous avez envoyé trop de requêtes en peu de temps. Veuillez patienter un instant puis réessayer."
+    },
+    "500": {
+      "title": "500 Erreur serveur",
+      "tagline": "Une erreur s’est produite de notre côté. Nous suivons le problème."
+    },
+    "502": {
+      "title": "502 Mauvaise passerelle",
+      "tagline": "Nous avons reçu une réponse invalide du serveur en amont."
+    },
+    "503": {
+      "title": "503 Service indisponible",
+      "tagline": "Le service est actuellement indisponible. Veuillez réessayer plus tard."
+    }
+  },
+  "donate": {
+    "cancelled_title": "Don annulé",
+    "cancelled_heading": "Aucun souci !",
+    "cancelled_tagline": "C’est l’intention qui compte. Apprise restera disponible gratuitement chaque fois que vous en aurez besoin. Merci d’avoir pensé à nous !",
+    "success_title": "Merci",
+    "success_heading": "Merci !",
+    "success_tagline": "Votre don compte énormément pour nous. Votre soutien permet à Apprise de rester open source, en ligne et en constante évolution."
+  }
+}

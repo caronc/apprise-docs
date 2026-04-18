@@ -43,5 +43,18 @@
   "copied": "Copied!",
   "showUrl": "Show URL",
   "hideUrl": "Hide URL",
-  "selectServiceToBegin": "Select a service above to begin"
+  "selectServiceToBegin": "Select a service above to begin",
+
+  "privacyTrigger": "Privacy & Security",
+  "privacyTitle": "How the URL Builder Handles Data",
+  "privacyIntro": "The Apprise URL Builder is designed to prioritize your privacy while reducing accidental exposure of secrets.",
+  "privacyPointClientTitle": "Client-Side Assembly",
+  "privacyPointClientBody": "All logic runs locally in your browser, so Apprise URLs are assembled on your machine rather than on our servers.",
+  "privacyPointSharingTitle": "Safe Sharing",
+  "privacyPointSharingBody": "The page URL can preserve non-sensitive builder settings for bookmarking and sharing, but sensitive fields are intentionally excluded from the address bar.",
+  "privacyPointLoggingTitle": "Standard Logging",
+  "privacyPointLoggingBody": "Like most websites, standard web server logs may capture basic request metadata such as IP address and timestamps, but the builder is designed not to place sensitive credentials into shareable URLs or normal page requests.",
+  "privacyPointLocalTitle": "Local Responsibility",
+  "privacyPointLocalBody": "Because private credentials are not kept in shared links, they must be re-entered locally by the person completing the configuration.",
+  "privacyClose": "Close"
 }

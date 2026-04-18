@@ -1,0 +1,22 @@
+{
+  "filterLabel": "Filter",
+  "filterPlaceholder": "Filter by name or schema://\u2026",
+  "noResults": "No services match your filter.",
+  "noResultsHint": "Try a different schema, service name, or clear the active filters.",
+  "clearFilterTooltip": "Clear filter",
+  "clearFilterButton": "Clear",
+  "colService": "Service",
+  "colSchemas": "Schemas",
+  "colFeatures": "Features",
+  "colExamples": "Examples",
+  "secureLabel": "Secure",
+  "insecureLabel": "Insecure",
+  "loadError": "Failed to load service data.",
+  "urlBuilderBtn": "Build Your Apprise URL",
+  "resultsAllOne": "Showing all {total} service",
+  "resultsAllOther": "Showing all {total} services",
+  "resultsFilteredOne": "Showing {shown} of {total} matching service",
+  "resultsFilteredOther": "Showing {shown} of {total} matching services",
+  "resultsNoneOne": "No matches in {total} service",
+  "resultsNoneOther": "No matches in {total} services"
+}

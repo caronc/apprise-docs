@@ -1,0 +1,60 @@
+{
+  "notificationService": "Service de notification",
+  "searchPlaceholder": "Rechercher par nom ou sch\u00e9ma\u2026",
+  "clearSelection": "Effacer la s\u00e9lection",
+  "noServicesMatch": "Aucun service ne correspond \u00e0",
+  "allServices": "Tous les services",
+  "moreServicesSuffix": "de plus \u2014 affinez votre recherche",
+
+  "setupGuide": "Guide de configuration",
+  "serviceWebsite": "Site du service",
+  "secure": "S\u00e9curis\u00e9",
+  "alwaysSecure": "Toujours s\u00e9curis\u00e9",
+
+  "urlPattern": "Patron d\u2019URL",
+  "urlPatternHint": "Patron s\u00e9lectionn\u00e9 automatiquement. Modifiez manuellement si n\u00e9cessaire.",
+
+  "urlParameters": "Param\u00e8tres d\u2019URL",
+  "requiredNote": "* requis",
+  "boolDefaultYes": "\u2014 d\u00e9faut (oui) \u2014",
+  "boolDefaultNo": "\u2014 d\u00e9faut (non) \u2014",
+  "defaultPrefix": "\u2014 d\u00e9faut (",
+  "defaultSuffix": ") \u2014",
+  "listPlaceholder": "Un par ligne ou s\u00e9par\u00e9 par virgule",
+  "listCommaSeparated": "S\u00e9par\u00e9 par virgule",
+
+  "options": "Options",
+  "advancedOptions": "Options avanc\u00e9es",
+
+  "customParameters": "Param\u00e8tres personnalis\u00e9s",
+  "addRow": "+ Ajouter",
+  "removeRow": "\u00d7",
+  "keyPlaceholder": "cl\u00e9",
+  "valuePlaceholder": "valeur",
+
+  "stepSelectService": "S\u00e9lectionnez le service souhait\u00e9",
+  "stepConfigure": "Fournissez la configuration requise",
+  "stepGeneratedUrl": "Votre URL g\u00e9n\u00e9r\u00e9e",
+
+  "schemaVariant": "Sch\u00e9ma",
+
+  "fillRequired": "Remplissez les champs requis (*) pour compl\u00e9ter l\u2019URL",
+  "copy": "Copier",
+  "copied": "Copi\u00e9\u00a0!",
+  "showUrl": "Afficher l\u2019URL",
+  "hideUrl": "Masquer l\u2019URL",
+  "selectServiceToBegin": "S\u00e9lectionnez un service ci-dessus pour commencer",
+
+  "privacyTrigger": "Confidentialit\u00e9 et s\u00e9curit\u00e9",
+  "privacyTitle": "Comment le G\u00e9n\u00e9rateur d\u2019URL Traite les Donn\u00e9es",
+  "privacyIntro": "Le g\u00e9n\u00e9rateur d\u2019URL Apprise est con\u00e7u pour donner la priorit\u00e9 \u00e0 votre confidentialit\u00e9 tout en r\u00e9duisant l\u2019exposition accidentelle des secrets.",
+  "privacyPointClientTitle": "Assemblage c\u00f4t\u00e9 client",
+  "privacyPointClientBody": "Toute la logique s\u2019ex\u00e9cute localement dans votre navigateur, afin que les URL Apprise soient assembl\u00e9es sur votre machine plut\u00f4t que sur nos serveurs.",
+  "privacyPointSharingTitle": "Partage s\u00fbr",
+  "privacyPointSharingBody": "L\u2019URL de la page peut conserver des param\u00e8tres non sensibles du g\u00e9n\u00e9rateur pour les favoris ou le partage, mais les champs sensibles sont volontairement exclus de la barre d\u2019adresse.",
+  "privacyPointLoggingTitle": "Journalisation standard",
+  "privacyPointLoggingBody": "Comme pour la plupart des sites Web, la journalisation standard du serveur peut enregistrer des m\u00e9tadonn\u00e9es de requ\u00eate de base comme l\u2019adresse IP et les horodatages, mais le g\u00e9n\u00e9rateur est con\u00e7u pour ne pas placer d\u2019identifiants sensibles dans les URL partageables ni dans les requ\u00eates normales de la page.",
+  "privacyPointLocalTitle": "Responsabilit\u00e9 locale",
+  "privacyPointLocalBody": "Comme les informations d\u2019identification priv\u00e9es ne sont pas conserv\u00e9es dans les liens partag\u00e9s, elles doivent \u00eatre ressaisies localement par la personne qui finalise la configuration.",
+  "privacyClose": "Fermer"
+}

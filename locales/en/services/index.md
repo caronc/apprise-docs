@@ -1,41 +1,14 @@
 ---
-title: "Suported Services"
+title: "Supported Services"
 description: "Browse and search all supported Apprise services."
 tableOfContents: false
 sidebar:
   label: "Services"
 ---
 
-<!-- SERVICE:URL-BUILDER-BTN -->
+Here you can find a list of all of them and details about each.
 
-Apprise supports **<!-- SERVICES:COUNT -->** services. Here you can find a list of all of them and details about each.
-
-## General
-
-Apprise supports the following <!-- SERVICES:GENERAL:COUNT --> general services from email, Internet of Things (iot), to social media.
-
-<div class="services-table">
-<!-- SERVICES:GENERAL:BEGIN -->
-<!-- SERVICES:GENERAL:END -->
-</div>
-
-## Desktop
-
-Apprise supports the following <!-- SERVICES:DESKTOP:COUNT --> desktop services which only work locally on the same PC they're ran on.
-
-<div class="services-table">
-<!-- SERVICES:DESKTOP:BEGIN -->
-<!-- SERVICES:DESKTOP:END -->
-</div>
-
-## Custom
-
-Apprise supports the following <!-- SERVICES:CUSTOM:COUNT --> plugins which wrap a unique protocol, structure, flow, and/or format.
-
-<div class="services-table">
-<!-- SERVICES:CUSTOM:BEGIN -->
-<!-- SERVICES:CUSTOM:END -->
-</div>
+<!-- SERVICES:FILTER -->
 
 ## Reference
 

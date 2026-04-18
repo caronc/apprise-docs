@@ -1,0 +1,22 @@
+{
+  "filterLabel": "Filtre",
+  "filterPlaceholder": "Filtrer par nom ou schéma://…",
+  "noResults": "Aucun service ne correspond à votre filtre.",
+  "noResultsHint": "Essayez un autre schéma, un autre nom de service ou effacez les filtres actifs.",
+  "clearFilterTooltip": "Effacer le filtre",
+  "clearFilterButton": "Effacer",
+  "colService": "Service",
+  "colSchemas": "Schémas",
+  "colFeatures": "Fonctionnalités",
+  "colExamples": "Exemples",
+  "secureLabel": "Sécurisé",
+  "insecureLabel": "Non sécurisé",
+  "loadError": "Impossible de charger les données des services.",
+  "urlBuilderBtn": "Créer votre URL Apprise",
+  "resultsAllOne": "Affichage de l’unique service ({total})",
+  "resultsAllOther": "Affichage des {total} services",
+  "resultsFilteredOne": "Affichage de {shown} service correspondant sur {total}",
+  "resultsFilteredOther": "Affichage de {shown} services correspondants sur {total}",
+  "resultsNoneOne": "Aucun résultat parmi {total} service",
+  "resultsNoneOther": "Aucun résultat parmi {total} services"
+}

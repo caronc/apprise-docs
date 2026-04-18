@@ -1,0 +1,101 @@
+---
+title: Guide de démarrage rapide
+description: Soyez opérationnel avec Apprise en quelques minutes.
+sidebar:
+  order: 3
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Maintenant qu'Apprise est installé, envoyons votre première notification. Choisissez la méthode qui vous convient ci-dessous.
+
+<Tabs>
+<TabItem label="CLI">
+
+La manière la plus rapide de tester Apprise est la ligne de commande.
+
+```bash
+# Send a notification to a specific service
+apprise -t "Hello" -b "World" \
+    "discord://webhook_id/webhook_token"
+```
+
+</TabItem>
+<TabItem label="Python">
+
+Si vous êtes développeur, voici comment utiliser Apprise dans un script Python :
+
+```python
+import apprise
+
+# Create an Apprise instance
+apobj = apprise.Apprise()
+
+# Add notification services using URLs
+apobj.add('mailto://user:pass@gmail.com')
+apobj.add('discord://webhook_id/webhook_token')
+
+# Send a notification
+apobj.notify(
+    body='This is a test notification!',
+    title='Hello World',
+)
+```
+
+</TabItem>
+<TabItem label="Serveur API">
+
+Assurez-vous que votre conteneur Apprise API est en cours d'exécution (voir [Installation](/getting-started/installation/)).
+
+### 1. Sans état (le plus rapide)
+
+Vous pouvez envoyer une notification immédiatement sans rien configurer sur le serveur en passant les URL directement dans la requête.
+
+```bash
+# Send a notification via curl
+curl -X POST \
+  -d 'urls=discord://webhook_id/webhook_token' \
+  -d 'body=Hello World' \
+  http://localhost:8000/notify
+```
+
+### 2. L'interface Web
+
+L'API inclut un gestionnaire de configuration intégré disponible à l'adresse `http://localhost:8000`.
+
+#### Étape 1 : choisir une clé
+
+Les configurations sont stockées sous un **ID de configuration** (ou clé) unique. Choisissez un mot-clé (par exemple `mes-alertes`) pour commencer.
+
+![Connexion Apprise API](./images/api-screen-1.png)
+
+#### Étape 2 : ajouter une configuration
+
+Saisissez vos URL Apprise (au format texte ou YAML) puis enregistrez-les sous votre clé.
+
+![Configuration Apprise API](./images/api-screen-2.png)
+
+#### Étape 3 : vérifier et taguer
+
+Vérifiez que vos URL sont bien chargées. Vous pouvez voir les **tags** qui leur sont attribués, ce qui vous permettra ensuite de cibler des groupes précis.
+
+![Vérification Apprise API](./images/api-screen-3.png)
+
+#### Étape 4 : envoyer une notification
+
+Passez à l'onglet **Notifications**. Sélectionnez les tags à cibler (ou laissez vide pour notifier tout le monde), puis envoyez votre notification.
+
+![Envoi Apprise API](./images/api-screen-4.png)
+
+### API développeur (Swagger)
+
+Apprise API suit la spécification OpenAPI 3.0. Vous trouverez le fichier `swagger.yaml` [à la racine du dépôt](https://github.com/caronc/apprise-api/blob/master/swagger.yaml).
+
+</TabItem>
+</Tabs>
+
+## Étapes suivantes
+
+- **Apprendre la syntaxe :** comprenez comment fonctionnent les [URL Apprise](/getting-started/universal-syntax/).
+- **La configurer :** découvrez comment utiliser les [fichiers de configuration](/getting-started/configuration/) pour gérer vos URL.
+- **Trouver des services :** parcourez le catalogue des [services pris en charge](/services/).
