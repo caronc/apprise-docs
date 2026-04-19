@@ -25,7 +25,7 @@ Flock has a lot of similarities to Slack. Flock notifications require an _incomi
 
 ### Incoming Webhook
 
-You can generate an Incoming webhook from [here](<https://dev.flock.com/webhooks>](<https://dev.flock.com/webhooks>). Just follow the wizard to pre-determine the channel(s) you want your message to broadcast to. When you've completed this process you will receive a URL that looks something like this:
+You can generate an Incoming webhook from [here](https://dev.flock.com/webhooks). Just follow the wizard to pre-determine the channel(s) you want your message to broadcast to. When you've completed this process you will receive a URL that looks something like this:
 `https://api.flock.com/hooks/sendMessage/134b8gh0-eba0-4fa9-ab9c-257ced0e8221`
 
 This effectively equates to:

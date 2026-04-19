@@ -58,12 +58,12 @@ For self hosted solutions, you can use the following:
 
 A self hosted solution allows for a few more parameters:
 
-| Variable | Required | Description                                                                                                                       |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname.                                                                                                        |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references. |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                 |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                 |
+| Variable | Required | Description                                                                                                                             |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Yes      | The Web Server's hostname.                                                                                                              |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **notica://** and **443** for all **noticas://** references. |
+| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                       |
+| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                       |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

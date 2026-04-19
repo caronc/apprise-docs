@@ -22,7 +22,7 @@ limits:
 
 ## Configuration du compte
 
-Prowl requires users to pre-register themselves at [prowlapp.com](https://www.prowlapp.com/) first.
+Prowl exige que vous créiez d'abord un compte sur [prowlapp.com](https://www.prowlapp.com/).
 
 ## Syntaxe
 
@@ -34,17 +34,17 @@ La syntaxe valide est la suivante :
 
 ## Detail des parametres
 
-| Variable    | Required | Description                                                                                                                    |
-| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| apikey      | Yes      | The API Key provided to you after you create yourself a Prowl account.                                                         |
-| providerkey | No       | The Provider Key is only required if you have been whitelisted.                                                                |
-| priority    | No       | Can be **low**, **moderate**, **normal**, **high**, or **emergency**; the default is **normal** if a priority isn't specified. |
+| Variable    | Required | Description                                                                                                                         |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| apikey      | Yes      | La clé API qui vous est fournie après la création de votre compte Prowl.                                                            |
+| providerkey | No       | La clé fournisseur n'est requise que si vous avez été explicitement autorisé.                                                       |
+| priority    | No       | Peut être **low**, **moderate**, **normal**, **high** ou **emergency** ; la valeur par défaut est **normal** si rien n'est précisé. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Prowl notification to our server
+Envoyer une notification Prowl à notre serveur
 
 ```bash
 # Assuming our {apikey} is adf9dfjkj24jkafkljkf6f

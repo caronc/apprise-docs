@@ -28,7 +28,7 @@ limits:
 First set up a Guilded account on the website. From there you will need to generate a webhook.
 
 The webhook will end up looking something like this:
-`https:/media.guilded.gg/webhooks/4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js`
+`https://media.guilded.gg/webhooks/4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js`
 
 This effectively equates to:
 `https://media.guilded.gg/webhooks/{WebhookID}/{WebhookToken}`

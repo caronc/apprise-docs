@@ -56,9 +56,9 @@ Assurez-vous d’etre a l’aise avec les [fichiers de configuration Apprise](/g
 
 ```ini
 # /etc/fail2ban/apprise.conf
-# Define our fail2ban configuration tag, and assign it to a Discord webhook
-# as an example for the purpose of this guide.  But you can use any
-# service you want.
+# Definissez ici le tag de configuration fail2ban et assignez-le, par exemple,
+# a un webhook Discord pour les besoins de ce guide. Vous pouvez toutefois
+# utiliser n'importe quel service de notification pris en charge.
 fail2ban=discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js
 
 ```
@@ -77,15 +77,16 @@ Ajoutez ce qui suit a `/etc/fail2ban/jail.local`
 # /etc/fail2ban/jail.local
 [DEFAULT]
 
-# ignoreip acts as a safelist; requests coming from these IPs are imune to
-# Fail2Ban monitoring. Each entry is separated by a space (' ').
-# You only want to specify safe access points:
-#   - 127.0.0.1/8 : Localhost (this PC); you don't want Fail2Ban banning internal
-#                   requests.. this one is safe to add. the `/8` is safe to leave
-#                   on the end of the IP for this entry.
-#   - YOUR_IP/32  : If you are accessing your server running Fail2Ban remotely, then
-#                   replace the 'YOUR_IP/32' entry below with 'your actual IP address'.
-#                   make sure to add `/32` if an IPv4 address or `/128` if it is an
+# ignoreip agit comme une liste d'autorisation ; les requetes provenant de ces
+# IP ne seront pas surveillees par Fail2Ban. Chaque entree est separee par un
+# espace (' ').
+# Indiquez uniquement des points d'acces de confiance :
+#   - 127.0.0.1/8 : localhost (ce poste) ; cela evite que Fail2Ban ne bloque
+#                   des requetes internes. Le suffixe `/8` peut etre conserve.
+#   - YOUR_IP/32  : si vous accedez a distance au serveur executant Fail2Ban,
+#                   remplacez 'YOUR_IP/32' ci-dessous par votre adresse IP
+#                   reelle. Ajoutez `/32` pour une adresse IPv4 ou `/128` pour
+#                   une adresse IPv6.
 #                   IPv6 address.
 ignoreip = 127.0.0.1/8 YOUR_IP/32
 

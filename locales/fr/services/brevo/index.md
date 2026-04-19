@@ -90,8 +90,7 @@ Envoyer to multiple recipients with CC, BCC and a Reply-To header:
 
 ```bash
 apprise -vv -t "Incident Report" -b "See attached logs for details." \
-
- "brevo://APIToken:alerts@example.com/oncall@example.comto=dev1@example.com,dev2@example.com&cc=teamlead@example.com&bcc=manager@example.com&reply=Support%20Desk%20<support@example.com>"
+   "brevo://APIToken:alerts@example.com/oncall@example.com?to=dev1@example.com,dev2@example.com&cc=teamlead@example.com&bcc=manager@example.com&reply=Support%20Desk%20<support@example.com>"
 ```
 
 Envoyer with an attachment:

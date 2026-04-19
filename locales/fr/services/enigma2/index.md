@@ -1,8 +1,8 @@
 ---
-title: "Notifications Enimga2"
-description: "Envoyer Enimga2 notifications."
+title: "Notifications Enigma2"
+description: "Envoyer des notifications Enigma2."
 sidebar:
-  label: "Enimga2"
+  label: "Enigma2"
 
 schemas:
   - enigma2: insecure
@@ -65,7 +65,7 @@ La syntaxe valide est la suivante :
 | Variable | Required | Description                                                                                                                               |
 | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | hostname | Yes      | The Enigma2 devices IP/hostname                                                                                                           |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **enigma2s://** and **443** for all **enigma2://** references. |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **enigma2://** and **443** for all **enigma2s://** references. |
 | user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                         |
 | password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                         |
 | timeout  | No       | The number of seconds delivered notification stay on the screen for. The default value is 13.                                             |
