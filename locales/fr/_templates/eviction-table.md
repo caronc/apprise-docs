@@ -1,12 +1,12 @@
-| Library        | Used By                               | Freed Memory |
-| :------------- | :------------------------------------ | :----------: |
-| `slixmpp`      | `xmpp://`                             |    ~20 MB    |
-| `paho`         | `mqtt://`                             |    ~4 MB     |
-| `gntp`         | `growl://`                            |    ~2 MB     |
-| `smpplib`      | `smpp://`, `smpps://`                 |    ~2 MB     |
-| `pgpy`         | `mailto://`, `mailtos://` (PGP only)  |    ~10 MB    |
-| `cryptography` | `simplepush://`, `fcm://`, `vapid://` |   partial†   |
+| Bibliothèque   | Utilisée Par                               | Mémoire Libérée |
+| :------------- | :----------------------------------------- | :-------------: |
+| `slixmpp`      | `xmpp://`                                  |     ~20 MB      |
+| `paho`         | `mqtt://`                                  |      ~4 MB      |
+| `gntp`         | `growl://`                                 |      ~2 MB      |
+| `smpplib`      | `smpp://`, `smpps://`                      |      ~2 MB      |
+| `pgpy`         | `mailto://`, `mailtos://` (PGP uniquement) |     ~10 MB      |
+| `cryptography` | `simplepush://`, `fcm://`, `vapid://`      |   partielle†    |
 
-†`cryptography` links against OpenSSL natively. The Python wrapper objects are
-released, but the underlying shared library remains mapped by the OS for the
-process lifetime.
+†`cryptography` s'appuie nativement sur OpenSSL. Les objets d'encapsulation
+Python sont libérés, mais la bibliothèque partagée sous-jacente reste chargée
+par le système d'exploitation pendant toute la durée de vie du processus.
