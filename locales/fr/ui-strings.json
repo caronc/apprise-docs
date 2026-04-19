@@ -6,14 +6,14 @@
   },
   "nav": {
     "categories": {
-      "getting-started": "Premiers pas",
-      "guides": "Intégrations et guides",
+    "getting-started": "Premiers Pas",
+    "guides": "Intégrations et Guides",
       "cli": "CLI Apprise",
       "api": "API Apprise",
       "library": "Bibliothèque Python",
-      "services": "Services pris en charge",
+    "services": "Services Pris en Charge",
       "qa": "Dépannage",
-      "contributing": "Projet et communauté"
+    "contributing": "Projet et Communauté"
     },
     "subcategories": {
       "api": {
@@ -105,11 +105,11 @@
   },
   "support": {
     "title": "Soutenir Apprise",
-    "description": "Votre soutien aide à maintenir, tester et héberger Apprise.",
+    "description": "Apprise facilite l’intégration des notifications tout en restant gratuit pour tout le monde. Si ce projet vous a fait gagner du temps ou a amélioré votre flux de travail, envisagez une contribution ponctuelle ou mensuelle pour l’aider à continuer de grandir.",
     "banner_message": "Si Apprise vous aide, pensez à soutenir le projet : {github} ou {paypal}.",
     "banner_dismiss_aria": "Masquer ce message pendant un an",
     "banner_dismiss_title": "Masquer pendant 1 an",
-    "page_tagline": "Apprise est gratuit et open source. Vos contributions aident à financer le développement, les coûts serveur et l’évolution du projet.",
+    "page_tagline": "Apprise est gratuit et open source. Vos contributions aident à faire avancer le développement, à couvrir les coûts serveur et à maintenir le flux de notifications.",
     "github_sponsors": "GitHub Sponsors",
     "paypal": "PayPal"
   },

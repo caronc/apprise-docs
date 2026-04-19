@@ -1,138 +1,238 @@
 ---
-title: Introduction
-description: Qu'est-ce qu'Apprise et comment fonctionne-t-il ?
-sidebar:
-  label: Qu'est-ce qu'Apprise ?
-  order: 1
+title: Bienvenue dans Apprise
+description: >
+  Apprise vous permet d'envoyer une notification vers presque n'importe quel service populaire grace a un format d'URL unique et coherent.
+tableOfContents: false
 ---
 
+import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components";
+
+import GitHubIcon from "~/components/icons/GitHubIcon.astro";
+import ShowcaseIcon from "~/components/icons/ShowcaseIcon.astro";
+import TerminalIcon from "~/components/icons/TerminalIcon.astro";
+import ApiServerIcon from "~/components/icons/ApiServerIcon.astro";
+import SyntaxIcon from "~/components/icons/SyntaxIcon.astro";
+import CoreLibraryIcon from "~/components/icons/CoreLibraryIcon.astro";
+import DocsIcon from "~/components/icons/DocsIcon.astro";
 import SupportProject from "~/components/SupportProject.astro";
+import "~/styles/landing.css";
 
-<style>{`
-  .theme-aware-a1-diagram img {
-    display: block;
-    width: 100%;
-  }
+<div class="apprise-landing">
+  <div class="apprise-hero">
+    <img
+      src="/assets/apprise-logo.png"
+      alt="Documentation Apprise"
+      width="1080"
+      height="464"
+      class="apprise-hero-logo"
+    />
 
-  :root[data-theme="dark"] .theme-aware-a1-diagram img {
-    content: url("./images/apprise-notifications-dark.svg");
-  }
+    <div class="apprise-definition">
+      <div class="apprise-definition-head">
+        <strong>ap·prise</strong> <span class="apprise-definition-meta">/ verbe</span>
+      </div>
+      <div class="apprise-definition-text">
+        Informer ou avertir (quelqu'un).
+        Rendre quelqu'un conscient de quelque chose.
+      </div>
+    </div>
 
-  :root[data-theme="light"] .theme-aware-a1-diagram img {
-    content: url("./images/apprise-notifications-light.svg");
-  }
-`}</style>
+    <p class="apprise-tagline">
+      <em>Apprise</em> vous permet d'envoyer des notifications vers la plupart des services populaires via un format d'URL unique et coherent, pour vos applications, automatisations et infrastructures.
+    </p>
 
-Le nom **Apprise** (/əˈpraɪz/) se prononce comme « uh-prise », proche de _surprise_ ou _arise_, avec l'accent sur la deuxieme syllabe.
+    <div class="apprise-cta">
+      <LinkButton href="/getting-started/" variant="primary" icon="right-arrow">
+        Commencer
+      </LinkButton>
+      <LinkButton href="/services/" variant="secondary" icon="list-format">
+        Services pris en charge
+      </LinkButton>
+    </div>
 
-**Apprise** est une bibliotheque d'acheminement de notifications qui normalise la facon dont les messages sont remis a plus de 100 services differents. Elle retire la complexite de l'envoi de notifications.
+    <div class="apprise-badges" aria-label="Fonctionnalites cles">
+      <span class="apprise-badge">
+        <strong class="apprise-badge-count"><!-- SERVICES:COUNT --></strong>
+        <span>services pris en charge</span>
+      </span>
+      <span class="apprise-badge">Bibliotheque Python et CLI</span>
+      <span class="apprise-badge">Passerelle API auto-hebergee</span>
+      <span class="apprise-badge">Pieces jointes et texte enrichi</span>
+    </div>
 
-<picture class="theme-aware-a1-diagram">
-  <source
-    srcset="./images/apprise-notifications-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="./images/apprise-notifications-light.svg"
-    alt="Integration API sans etat"
-    loading="lazy"
-  />
-</picture>
+  </div>
 
-Elle ne remplace pas les plateformes de discussion, les fournisseurs de messagerie ou les systemes d'alerte. Elle fournit plutot une maniere unique et coherente de leur envoyer des notifications.
+  <CardGrid>
+    <Card>
+      <div class="apprise-card-title">
+        <span class="apprise-card-icon"><SyntaxIcon /></span>
+        <span class="apprise-card-title-text">Syntaxe universelle</span>
+      </div>
 
-Que vous soyez administrateur systeme en train d'automatiser des scripts, developpeur en train de construire une application ou ingenieur DevOps gerant des services distribues, Apprise supprime le besoin d'apprendre et de maintenir des dizaines d'API propres a chaque fournisseur.
+      <p class="apprise-card-body">
+      Cessez d'apprendre des dizaines d'API differentes.
+      Utilisez un format d'URL unique et coherent pour tous les services.
+      </p>
 
-## Une syntaxe unique pour tout piloter
+      <code class="apprise-code-sample">service://credentials/direction/?parameter=value</code>
 
-Au coeur d'Apprise se trouve l'**URL universelle de notification**.
+      <div class="apprise-card-actions">
+        <LinkButton href="/getting-started/universal-syntax/" variant="minimal">
+          <span class="apprise-card-action">
+            <span class="apprise-card-action-label">Bases des URL</span>
+            <span class="apprise-card-action-icon">
+             <DocsIcon />
+            </span>
+          </span>
+        </LinkButton>
+        <LinkButton href="/tools/url-builder/" variant="minimal">
+          <span class="apprise-card-action">
+            <span class="apprise-card-action-label">Generateur d'URL</span>
+            <span class="apprise-card-action-icon">
+             <DocsIcon />
+            </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
 
-Au lieu d'apprendre un format de charge utile propre a chaque service, vous configurez vos destinations a l'aide d'une syntaxe unique et previsible :
+    <Card>
+      <div class="apprise-card-title">
+        <span class="apprise-card-icon"><CoreLibraryIcon /></span>
+        <span class="apprise-card-title-text">Bibliotheque principale et CLI</span>
+      </div>
 
-```text
-service://credentials/direction/?parameter=value
-```
+      <p class="apprise-card-body">
+      Integrez Apprise dans vos applications, ou utilisez la CLI pour l'administration et l'automatisation.
+      </p>
 
-Si vous decidez plus tard de passer d'un service a un autre, la logique de votre application ne change pas. Il vous suffit de mettre a jour la configuration de l'URL.
+      <div class="apprise-card-actions">
+        <LinkButton href="/library/" variant="minimal">
+          <span class="apprise-card-action">
+            <span class="apprise-card-action-label">Documentation bibliotheque</span>
+            <span class="apprise-card-action-icon">
+              <DocsIcon />
+            </span>
+          </span>
+        </LinkButton>
 
-Cette approche rend les notifications portables, faciles a maintenir et simples a comprendre.
+        <LinkButton href="/cli/" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Documentation CLI</span>
+           <span class="apprise-card-action-icon">
+              <TerminalIcon />
+           </span>
+          </span>
+        </LinkButton>
 
-## Les trois piliers d'Apprise
+        <LinkButton href="https://github.com/caronc/apprise" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Repo</span>
+           <span class="apprise-card-action-icon">
+            <GitHubIcon />
+           </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
 
-Apprise est unique parce qu'il ne s'agit pas seulement d'une bibliotheque : c'est une plateforme disponible sous trois formes complementaires.
+    <Card>
+      <div class="apprise-card-title">
+        <span class="apprise-card-icon"><ApiServerIcon /></span>
+        <span class="apprise-card-title-text">Serveur API Apprise</span>
+      </div>
 
-### 1. La bibliotheque Python
+      <p class="apprise-card-body">
+        Auto-hebergez une passerelle de notifications sans etat avec interface Web, ideale comme service compagnon.
+      </p>
 
-_Pour les developpeurs_
+      <div class="apprise-card-actions">
+        <LinkButton href="/api/" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Documentation API</span>
+           <span class="apprise-card-action-icon">
+            <DocsIcon />
+           </span>
+          </span>
+        </LinkButton>
+        <LinkButton href="https://github.com/caronc/apprise-api" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Repo</span>
+           <span class="apprise-card-action-icon">
+            <GitHubIcon />
+           </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
 
-Au coeur du projet, Apprise est une bibliotheque Python legere. Vous l'integrez directement dans votre application et vous envoyez des notifications en seulement quelques lignes de code.
+    <Card>
+      <div class="apprise-card-title">
+        <span class="apprise-card-icon"><DocsIcon /></span>
+        <span class="apprise-card-title-text">Documentation et contributions</span>
+      </div>
 
-```python
-import apprise
+      <p class="apprise-card-body">
+      Aidez a ameliorer ces guides, corriger des problemes et ajouter la prise en charge de nouveaux services.
+      </p>
 
-apobj = apprise.Apprise()
+      <div class="apprise-card-actions">
+        <LinkButton href="/contributing/" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Contribuer</span>
+           <span class="apprise-card-action-icon">
+            <DocsIcon />
+           </span>
+          </span>
+        </LinkButton>
 
-# Add a service
-apobj.add("tgram://credentials")
+        <LinkButton href="/contributing/showcase/" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Vitrine</span>
+           <span class="apprise-card-action-icon">
+            <ShowcaseIcon />
+           </span>
+          </span>
+        </LinkButton>
 
-# Notification destinations are configured separately
-apobj.notify(
-    body="Hello World",
-    title="My Notification",
-)
-```
+        <LinkButton href="https://github.com/caronc/apprise-docs" variant="minimal">
+          <span class="apprise-card-action">
+           <span class="apprise-card-action-label">Repo</span>
+           <span class="apprise-card-action-icon">
+             <GitHubIcon />
+            </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
 
-Le meme code fonctionne quel que soit le service de notification configure.
+  </CardGrid>
 
-### 2. L'interface en ligne de commande (CLI)
+  <div class="apprise-why-wrapper">
+    <div class="apprise-why-visual" aria-hidden="true">
+      <img
+        src="/assets/apprise-notifications.png"
+        alt="Apprise Notifications"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
 
-_Pour les administrateurs systeme et l'automatisation_
+    <div class="apprise-why-content">
+      <h2>Pourquoi Apprise ?</h2>
 
-Apprise est livre avec une puissante CLI qui expose les memes fonctionnalites sans necessiter de code Python. C'est ideal pour les taches cron, les scripts de sauvegarde, les hooks de supervision et les pipelines CI/CD.
+      <p>Une seule bibliotheque de notifications pour tout gerer.</p>
 
-```bash
-# e.g: Send a notification to Discord
-apprise -t "Backup Complete" -b "The server is safe" \
-  "discord://webhook_id/webhook_token"
-```
+      <ul>
+        <li><strong>Universel :</strong> un format d'URL unique et intuitif pour de nombreux fournisseurs de notification.</li>
+        <li><strong>Contenu riche :</strong> prise en charge des pieces jointes et des images lorsque le service amont le permet.</li>
+        <li><strong>Leger :</strong> concu pour les flux d'automatisation avec un minimum de surcharge.</li>
+        <li><strong>Reactif :</strong> excellents temps de reponse grace a l'envoi asynchrone de tous les messages.</li>
+        <li><strong>Flexible :</strong> fonctionne comme bibliotheque, outil CLI ou service API auto-heberge.</li>
+      </ul>
+    </div>
 
-### 3. Le serveur API
+  </div>
 
-_Pour les environnements centralises et distribues_
-
-Apprise est aussi disponible sous la forme d'un serveur API conteneurise et sans etat. Cela vous permet d'exploiter une « passerelle de notifications » centralisee pour plusieurs systemes.
-
-Vous pouvez :
-
-- Envoyer des notifications directement a chaque requete (sans etat)
-- Stocker les configurations cote serveur et les referencer par cle (avec etat)
-
-Cette approche est particulierement utile pour les microservices, les infrastructures partagees et les equipes qui veulent centraliser le controle.
-
-## Fonctionnalites cles
-
-- **{/_ SERVICES:COUNT _/} services pris en charge**, des plateformes de discussion populaires aux passerelles specialisees
-- **Diffusion adaptee au format**, avec prise en charge du Markdown, du HTML et du texte brut
-- **Prise en charge des pieces jointes**, adaptee automatiquement aux capacites de chaque service
-- **Hautes performances**, avec livraison parallele des notifications
-- **Dependances minimales**, pour rester leger
-
-## Quelle approche choisir ?
-
-| Si vous etes…                                               | Commencez par…                      |
-| ----------------------------------------------------------- | ----------------------------------- |
-| Vous developpez une application Python                      | [La bibliotheque Python](/library/) |
-| Vous automatisez des scripts ou des taches systeme          | [L'outil CLI](/cli/)                |
-| Vous centralisez les notifications entre plusieurs systemes | [Le serveur API](/api/)             |
-
-## Pourquoi Apprise ?
-
-Une seule bibliotheque de notifications pour tout gerer.
-
-- **Universel :** Un format d'URL unique et intuitif pour de nombreux fournisseurs de notifications.
-- **Contenu riche :** Pieces jointes et images pris en charge si le service cible le permet.
-- **Leger :** Conçu pour les flux d'automatisation avec un minimum de surcharge.
-- **Reactif :** Temps de reponse excellents grace a l'envoi asynchrone de tous les messages.
-- **Flexible :** Fonctionne comme bibliotheque, outil CLI ou service API auto-heberge.
-
-<SupportProject />
+  <SupportProject />
+</div>

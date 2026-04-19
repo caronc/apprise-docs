@@ -9,11 +9,10 @@ source: https://dot.mindreset.tech
 schemas:
   - dot
 
-has_sms: true
-has_image: true
+has_attachments: true
 
 sample_urls:
-  - dot://{apitoken}@{device_id}/text
+  - dot://{apitoken}@{device_id}
 ---
 
 ## Dot. Notifications
@@ -30,77 +29,84 @@ sample_urls:
 
 Valid syntax is as follows:
 
-- **Text API**
-  `dot://{token}@{device_id}/text/?signature={footer}&icon={base64_icon}&task_key={key}`
+- `dot://{token}@{device_id}/`
+- `dot://{token}@{device_id}/?mode=image`
 
-  Title and message can be provided at runtime via `apprise.notify(title="...", body="...")`.
+The default mode is **text**. In text mode, body and title are sent to the Text API, and any attachment or `image=` parameter is sent to the Image API. When both are present, text is dispatched first, then image.
 
-- **Image API**
-  `dot://{token}@{device_id}/image/?image={base64_png}&link={tap_url}&border={0|1}&dither_type={type}&dither_kernel={kernel}&task_key={key}`
+:::note
+Old-style URLs with `/text/` or `/image/` in the path continue to work for backward compatibility but are no longer generated.
+:::
+
+## Mode Behavior
+
+| Mode             | Behavior                                                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text` (default) | Body and title go to the Text API. Any attachment or `image=` parameter also goes to the Image API. When both are present, text is sent first, then image. |
+| `image`          | Only the Image API is called. Body and title are ignored. Requires `image=` or an attachment.                                                              |
 
 ## Attachment Support
 
-The plugin supports file attachments that are automatically converted to base64 encoding:
-
-- **Text mode**: The first attachment is automatically used as the `icon` parameter (40×40 PNG) if no `icon` is provided via URL or configuration
-- **Image mode**: The first attachment is automatically used as the `image` parameter (296×152 PNG) if no `image` is provided via URL or configuration
-- If multiple attachments are provided, only the first one is used and a warning is logged
-- If `icon` (text mode) or `image` (image mode) is already provided via URL/configuration, attachments are ignored
+- **Text mode** (default): The attachment is sent as a full-screen image (296×152 PNG) to the Image API. If body or title are also present, text is sent first. The `icon=` URL parameter can still be used independently to set the 40×40 corner icon in the text card.
+- **Image mode**: The first attachment is used as the full-screen image (296×152 PNG) if no `image=` is supplied in the URL.
+- In all modes, only the first attachment is used; extra attachments trigger a warning.
+- If `image=` is already supplied via URL, attachments are ignored.
 
 ## Parameter Breakdown
 
-| Variable     | Required    | Description                                                                                                                         |
-| ------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| token        | Yes         | Dot. API token (`dot_app_...`)                                                                                                      |
-| device_id    | Yes         | Dot. device serial number (12 hex characters)                                                                                       |
-| refresh      | No          | Set to `no` to defer content display until the next scheduled refresh (default: `yes`)                                              |
-| title        | No (text)   | Title shown on device                                                                                                               |
-| message      | No (text)   | Body text shown on device                                                                                                           |
-| signature    | No (text)   | Footer text shown on device                                                                                                         |
-| icon         | No (text)   | Base64 PNG icon (40×40) for the lower-left corner. Can be provided via URL parameter or first attachment (auto-converted to base64) |
-| image        | Yes (image) | Base64 PNG image (296×152) rendered full-screen. Can be provided via URL parameter or first attachment (auto-converted to base64)   |
-| link         | No          | Tap-to-interact target (http/https or custom scheme)                                                                                |
-| border       | No (image)  | 0=white (default), 1=black frame                                                                                                    |
-| ditherType   | No (image)  | DIFFUSION, ORDERED, or NONE                                                                                                         |
-| ditherKernel | No (image)  | THRESHOLD, ATKINSON, BURKES, FLOYD_STEINBERG, SIERRA2, STUCKI, JARVIS_JUDICE_NINKE, DIFFUSION_ROW, DIFFUSION_COLUMN, DIFFUSION_2D   |
-| task_key     | No          | Specify which content slot to update when multiple Text or Image API contents exist on a device                                     |
+| Variable      | Required    | Description                                                                                                                                                     |
+| ------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token         | \*Yes       | Dot. API token (`dot_app_...`)                                                                                                                                  |
+| device_id     | \*Yes       | Dot. device serial number (12 hex characters)                                                                                                                   |
+| mode          | No          | `text` (default) or `image`. Controls which API endpoint is used. In `text` mode, both APIs may be called in a single send.                                     |
+| refresh       | No          | Set to `no` to defer display until the next scheduled refresh (default: `yes`)                                                                                  |
+| title         | No (text)   | Title shown on device                                                                                                                                           |
+| message       | No (text)   | Body text shown on device                                                                                                                                       |
+| signature     | No (text)   | Footer text shown on device                                                                                                                                     |
+| icon          | No (text)   | Base64 PNG icon (40×40) for the lower-left corner of the text card.                                                                                             |
+| image         | Yes (image) | Base64 PNG image (296×152) rendered full-screen. Can be provided via URL parameter or first attachment (auto-converted to base64).                              |
+| link          | No          | Tap-to-interact target (http/https or custom scheme)                                                                                                            |
+| border        | No (image)  | `0`=white frame (default), `1`=black frame                                                                                                                      |
+| dither_type   | No (image)  | `DIFFUSION` (default), `ORDERED`, or `NONE`                                                                                                                     |
+| dither_kernel | No (image)  | `FLOYD_STEINBERG` (default), `THRESHOLD`, `ATKINSON`, `BURKES`, `SIERRA2`, `STUCKI`, `JARVIS_JUDICE_NINKE`, `DIFFUSION_ROW`, `DIFFUSION_COLUMN`, `DIFFUSION_2D` |
+| task_key      | No          | Specify which content slot to update when multiple Text or Image API contents exist on a device                                                                 |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Examples
 
-**Send a text reminder (via URL parameters):**
+**Send a text reminder:**
 
 ```bash
 apprise -vv -t "Morning Routine" -b "Remember to water the plants" \
-  dot://dot_app_TOKEN@A1B2C3D4E5F6/text/?signature=Apprise
+  "dot://dot_app_TOKEN@A1B2C3D4E5F6/?signature=Apprise"
 ```
 
-**Send a text reminder with icon via attachment:**
+**Send text and image together (text first, then image):**
 
 ```bash
 apprise -vv -t "Morning Routine" -b "Remember to water the plants" \
-  -a /path/to/icon.png \
-  dot://dot_app_TOKEN@A1B2C3D4E5F6/text/?signature=Apprise
+  -a /path/to/image.png \
+  "dot://dot_app_TOKEN@A1B2C3D4E5F6/"
 ```
 
 **Update a specific content slot using task_key:**
 
 ```bash
 apprise -vv -t "Server Status" -b "All systems operational" \
-  dot://dot_app_TOKEN@A1B2C3D4E5F6/text/?task_key=status_monitor
+  "dot://dot_app_TOKEN@A1B2C3D4E5F6/?task_key=status_monitor"
 ```
 
 **Push an image card (via URL parameter):**
 
 ```bash
 apprise -vv \
-  dot://dot_app_TOKEN@A1B2C3D4E5F6/image/?image=$(base64 -w0 poster.png)&link=https://example.com
+  "dot://dot_app_TOKEN@A1B2C3D4E5F6/?mode=image&image=$(base64 -w0 poster.png)&link=https://example.com"
 ```
 
 **Push an image card via attachment:**
 
 ```bash
 apprise -vv -a /path/to/image.png \
-  dot://dot_app_TOKEN@A1B2C3D4E5F6/image/?link=https://example.com
+  "dot://dot_app_TOKEN@A1B2C3D4E5F6/?mode=image&link=https://example.com"
 ```

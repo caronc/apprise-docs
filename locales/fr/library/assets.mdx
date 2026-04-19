@@ -1,0 +1,252 @@
+---
+title: "Ressources et image de marque"
+description: "Branding, storage, safety, and global behaviour for an Apprise session"
+sidebar:
+  order: 3
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+`AppriseAsset` defines the **global execution context** for an Apprise session.
+
+It is not limited to branding or theming. An asset instance influences behaviour across:
+
+- All notification plugins
+- All delivery threads
+- Persistent storage and key material
+- Global safety boundaries (log redaction and recursion protection)
+
+Under usual conditions, an asset is created once and then passed into `Apprise(...)` during its instantiation.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(app_id="My Application", theme="default")
+apobj = Apprise(asset=asset)
+```
+
+If no asset is provided, Apprise creates a default one.
+
+## Lifecycle and Scope
+
+- Created once, typically at application startup
+- Shared across all loaded plugins and configuration processing
+- Intended to be treated as immutable for the lifetime of an `Apprise` instance
+
+Mutating an asset after it has been bound to `Apprise` can produce inconsistent results across plugins.
+
+## Object Initialization
+
+`AppriseAsset.__init__()` accepts a small number of explicit arguments, plus `**kwargs`.
+
+- The explicit arguments (`plugin_paths`, `storage_*`, `timezone`) are validated and normalised.
+- `**kwargs` can override any _existing_ asset attribute, and will raise if an invalid key is provided.
+
+This is intentional. It prevents configuration files from quietly setting unknown fields and it keeps the surface area strict.
+
+---
+
+## Defaults and Field Reference
+
+This table documents the **actual defaults** from the implementation, plus where each field is used.
+Fields prefixed with `_` or `__` are intentionally **not** configuration-file addressable.
+
+### Identity and Presentation
+
+| Field                | Type              |                             Default | Used by                              | Remarques                                                                                  |
+| -------------------- | ----------------- | ----------------------------------: | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `app_id`             | `str`             |                           `Apprise` | Plugin headers, key generation names | Used as a human-facing application identifier and as a default name in PGP key generation. |
+| `app_desc`           | `str`             |             `Apprise Notifications` | Metadata / Presentation              | Used by tooling and services that display an application description.                      |
+| `app_url`            | `str`             | `https://github.com/caronc/apprise` | Metadata / Presentation              | Provider URL exposed in docs and some plugin metadata.                                     |
+| `theme`              | `str`             |                           `default` | Icon URL/path resolution             | Drives `{THEME}` substitution for icon lookup.                                             |
+| `default_extension`  | `str`             |                              `.png` | Icon URL/path resolution             | Used when `extension` is not provided to `image_url()` or `image_path()`.                  |
+| `default_image_size` | `NotifyImageSize` |                            `XY_256` | Icon URL resolution                  | Used when size is omitted.                                                                 |
+| `image_url_mask`     | `str`             |                      GitHub raw URL | `image_url()`                        | Produces a themed image URL for `NotifyType` + size.                                       |
+| `image_url_logo`     | `str`             |                      GitHub raw URL | `image_url(logo=True)`               | Used for the application logo.                                                             |
+| `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`       | Used for local icon resolution and raw bytes loading.                                      |
+
+### Type Mapping Helpers
+
+| Field                 | Type                   |        Default | Used by   | Remarques                                         |
+| --------------------- | ---------------------- | -------------: | --------- | ------------------------------------------------- |
+| `html_notify_map`     | `dict[NotifyType,str]` |   type→hex map | `color()` | Default colour mapping for HTML-capable services. |
+| `default_html_color`  | `str`                  |      `#888888` | `color()` | Used when a mapping is missing.                   |
+| `ascii_notify_map`    | `dict[NotifyType,str]` | type→token map | `ascii()` | Default ASCII tokens for text-only contexts.      |
+| `default_ascii_chars` | `str`                  |          `[?]` | `ascii()` | Used when a mapping is missing.                   |
+
+### Content Interpretation
+
+| Field               | Type           | Default | Used by                | Remarques                                                                                                                                                   |
+| ------------------- | -------------- | ------: | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body_format`       | `NotifyFormat` |  `None` | `None`                 | Formatting pipeline If `None`, no pre-formatting is applied by default.                                                                                     |
+| `interpret_emojis`  | `bool`         |  `None` | `None`                 | Message pre-processing. If `None`, it defers to per-service configuration (for example, `emojis=yes` at the URL level).                                     |
+| `interpret_escapes` | `bool`         | `False` | Message pre-processing | Enables `\n`, `\t`, etc. prior to sending.                                                                                                                  |
+| `encoding`          | `str`          | `utf-8` | Encoding               | Used when encoding internal strings for processing. Plays a roll in how some services output their content upstream. It is advised to leave this at `utf-8` |
+
+### Concurrency and Delivery
+
+| Field        | Type   | Default | Used by                | Remarques                                   |
+| ------------ | ------ | ------: | ---------------------- | ------------------------------------------- |
+| `async_mode` | `bool` |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch. |
+
+### Plugin Discovery
+
+| Field          | Type        | Default | Used by               | Remarques                                               |
+| -------------- | ----------- | ------: | --------------------- | ------------------------------------------------------- |
+| `plugin_paths` | `list[str]` |    `[]` | Custom plugin loading | Triggers module detection at asset initialisation time. |
+
+### Persistent Storage
+
+| Field           | Type                  | Default | Used by                   | Remarques                                                                                       |
+| --------------- | --------------------- | ------: | ------------------------- | ----------------------------------------------------------------------------------------------- |
+| `storage_path`  | `str                  |   None` | `None`                    | PersistentStore root. If unset, Apprise operates memory-only for storage-backed features.       |
+| `storage_mode`  | `PersistentStoreMode` |  `auto` | PersistentStore behaviour | `auto`, `flush`, `memory`.                                                                      |
+| `storage_idlen` | `int`                 |     `8` | Namespace generation      | Controls how long generated namespace directories are.                                          |
+| `storage_salt`  | `bytes`               |   `b""` | Namespace generation      | Provides optional salting for namespace generation, string values are encoded using `encoding`. |
+
+### Key Material Management
+
+| Field         | Type   | Default | Used by        | Remarques                                                                          |
+| ------------- | ------ | ------: | -------------- | ---------------------------------------------------------------------------------- |
+| `pgp_autogen` | `bool` |  `True` | PGP controller | Enables auto-generation of PGP keys when storage allows it and no key is provided. |
+| `pem_autogen` | `bool` |  `True` | PEM controller | Enables auto-generation of PEM keys when storage allows it and no key is provided. |
+
+### Safety Boundaries
+
+| Field            | Type     |      Default | Used by                     | Remarques                                                                    |
+| ---------------- | -------- | -----------: | --------------------------- | ---------------------------------------------------------------------------- |
+| `secure_logging` | `bool`   |       `True` | Logging pipeline            | Adds overhead to redact secrets from logs, recommended to keep enabled.      |
+| `_recursion`     | `int`    |          `0` | API Apprise recursion guard | Prevents loops when one instance API Apprise calls another.                  |
+| `_uid`           | `str`    | random UUID4 | Correlation / identity      | Internal identifier, intended for internal correlation.                      |
+| `_tzinfo`        | `tzinfo` |    system tz | Time-based behaviour        | The resolved timezone object used by plugins that need localised timestamps. |
+
+## Common Usage Patterns
+
+<Tabs>
+
+<TabItem value="identity" label="Identity & Branding">
+
+Configures the Apprise instance to use an altered branding.
+
+```python
+from apprise import AppriseAsset
+
+asset = AppriseAsset(
+    app_id="StatsBot",
+    app_desc="Metrics Aggregation Service",
+    app_url="https://example.com",
+)
+```
+
+</TabItem>
+
+<TabItem value="concurrency" label="Concurrency">
+
+Disables concurrent delivery and forces sequential notification dispatch.
+
+```python
+from apprise import AppriseAsset
+
+# Force sequential sending (no concurrency)
+asset = AppriseAsset(async_mode=False)
+```
+
+</TabItem>
+
+<TabItem value="plugins" label="Custom Plugins">
+
+When `plugin_paths` is set, module detection occurs during asset initialization.
+
+```python
+from apprise import AppriseAsset
+
+asset = AppriseAsset(
+    plugin_paths=[
+        "/opt/apprise/plugins",
+        "/srv/myapp/apprise_plugins",
+    ]
+)
+```
+
+</TabItem>
+
+<TabItem value="storage" label="Persistent Storage">
+
+Controls disk-backed caching and plugin state.
+
+```python
+from apprise import AppriseAsset
+from apprise.common import PersistentStoreMode
+
+asset = AppriseAsset(
+    storage_path="/var/lib/apprise",
+    storage_mode=PersistentStoreMode.AUTO,
+    storage_idlen=12,
+    storage_salt="my-namespace-salt",
+)
+```
+
+`storage_salt` may be `bytes` or `str`. String values are encoded using the asset `encoding`.
+
+</TabItem>
+
+<TabItem value="timezone" label="Timezone Control" >
+
+Plugins that generate timestamps (for example email Date headers) use the resolved `tzinfo`.
+
+```python
+from apprise import AppriseAsset
+
+asset = AppriseAsset(timezone="America/Toronto")
+```
+
+  </TabItem>
+
+</Tabs>
+
+## Icon and Image Resolution
+
+Apprise resolves icons using configurable masks.
+
+```python
+asset = AppriseAsset(
+    image_path_mask="/icons/{THEME}/{TYPE}-{XY}{EXTENSION}",
+    image_url_mask="https://cdn.example.com/{TYPE}-{XY}{EXTENSION}",
+)
+```
+
+| Token         | Description                     |
+| ------------- | ------------------------------- |
+| `{THEME}`     | Active theme                    |
+| `{TYPE}`      | info, success, warning, failure |
+| `{XY}`        | Image size                      |
+| `{EXTENSION}` | File extension                  |
+
+---
+
+## Security and Safety Controls
+
+### Secure Logging
+
+When enabled, secrets are redacted from all logging output.
+
+```python
+asset = AppriseAsset(secure_logging=True)
+```
+
+Disabling this is strongly discouraged outside isolated environments.
+
+### Recursion Protection
+
+The asset internally tracks recursion depth to prevent notification loops,
+particularly when Apprise instances interact with one another.
+
+## Configuration File Boundaries
+
+The following fields **cannot** be set via configuration files:
+
+- `plugin_paths`
+- `storage_*`
+- Internal flags prefixed with `_`
+
+These must be provided programmatically to prevent untrusted code execution.

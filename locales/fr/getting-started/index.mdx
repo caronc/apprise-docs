@@ -24,9 +24,9 @@ sidebar:
   }
 `}</style>
 
-Le nom **Apprise** (/əˈpraɪz/) se prononce comme « uh-prise », proche de _surprise_ ou _arise_, avec l'accent sur la deuxième syllabe.
+Le nom **Apprise** (/əˈpraɪz/) se prononce comme "uh-prise", un peu comme _surprise_ ou _arise_, avec l'accent sur la deuxième syllabe.
 
-**Apprise** est une bibliothèque d'acheminement de notifications qui normalise la manière dont les messages sont remis à plus de 100 services différents. Elle retire la complexité de l'envoi de notifications.
+**Apprise** est une bibliothèque d'acheminement de notifications qui normalise la manière dont les messages sont envoyés vers plus de 100 services différents. Elle élimine la complexité liée à l'envoi de notifications.
 
 <picture class="theme-aware-a1-diagram">
   <source
@@ -35,93 +35,93 @@ Le nom **Apprise** (/əˈpraɪz/) se prononce comme « uh-prise », proche de _s
   />
   <img
     src="./images/apprise-notifications-light.svg"
-    alt="Intégration API sans état"
+    alt="Intégration d'API sans état"
     loading="lazy"
   />
 </picture>
 
-Elle ne remplace pas les plateformes de discussion, les fournisseurs de messagerie ou les systèmes d'alerte. Elle fournit plutôt une manière unique et cohérente de leur envoyer des notifications.
+Apprise ne remplace pas les plateformes de discussion, les fournisseurs de messagerie ou les systèmes d'alerte. Elle fournit plutôt une façon unique et cohérente de leur envoyer des notifications.
 
-Que vous soyez administrateur système en train d'automatiser des scripts, développeur en train de construire une application ou ingénieur DevOps gérant des services distribués, Apprise supprime le besoin d'apprendre et de maintenir des dizaines d'API propres à chaque fournisseur.
+Que vous soyez administrateur système exécutant des scripts, développeur construisant une application ou ingénieur DevOps gérant des services distribués, Apprise vous évite d'apprendre et de maintenir des dizaines d'API spécifiques à chaque fournisseur.
 
-## Une syntaxe unique pour tout piloter
+## Une Syntaxe pour Toutes les Gouverner
 
-Au cœur d'Apprise se trouve l'**URL universelle de notification**.
+Au cœur d'Apprise se trouve l'**URL Universelle de Notification**.
 
-Au lieu d'apprendre un format de charge utile propre à chaque service, vous configurez vos destinations à l'aide d'une syntaxe unique et prévisible :
+Au lieu d'apprendre un format de charge utile propre à chaque service, vous configurez vos destinations à l'aide d'une syntaxe unique, prévisible et cohérente :
 
 ```text
 service://credentials/direction/?parameter=value
 ```
 
-Si vous décidez plus tard de passer d'un service à un autre, la logique de votre application ne change pas. Il vous suffit de mettre à jour la configuration de l'URL.
+Si vous décidez plus tard de passer d'un service à un autre, votre logique applicative ne change pas. Il suffit de mettre à jour la configuration de l'URL.
 
-Cette approche rend les notifications portables, faciles à maintenir et simples à comprendre.
+Les notifications restent ainsi portables, maintenables et faciles à raisonner.
 
-## Les trois piliers d'Apprise
+## Les Trois Piliers d'Apprise
 
-Apprise est unique parce qu'il ne s'agit pas seulement d'une bibliothèque : c'est une plateforme disponible sous trois formes complémentaires.
+Apprise est unique parce que ce n'est pas seulement une bibliothèque ; c'est une plateforme disponible sous trois formes complémentaires.
 
-### 1. La bibliothèque Python
+### 1. La Bibliothèque Python
 
 _Pour les développeurs_
 
-Au cœur du projet, Apprise est une bibliothèque Python légère. Vous l'intégrez directement dans votre application et vous envoyez des notifications en seulement quelques lignes de code.
+À sa base, Apprise est une bibliothèque Python légère. Vous l'intégrez directement dans votre application et vous envoyez des notifications en seulement quelques lignes de code.
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
 
-# Add a service
+# Ajouter un service
 apobj.add("tgram://credentials")
 
-# Notification destinations are configured separately
+# Les destinations de notification sont configurées séparément
 apobj.notify(
-    body="Hello World",
-    title="My Notification",
+    body="Bonjour le monde",
+    title="Ma notification",
 )
 ```
 
 Le même code fonctionne quel que soit le service de notification configuré.
 
-### 2. L'interface en ligne de commande (CLI)
+### 2. L'Interface en Ligne de Commande (CLI)
 
 _Pour les administrateurs système et l'automatisation_
 
-Apprise est livré avec une puissante CLI qui expose les mêmes fonctionnalités sans nécessiter de code Python. C'est idéal pour les tâches cron, les scripts de sauvegarde, les hooks de supervision et les pipelines CI/CD.
+Apprise est livré avec un puissant outil en ligne de commande qui expose les mêmes fonctionnalités sans nécessiter de code Python. C'est idéal pour les tâches cron, les scripts de sauvegarde, les hooks de supervision et les pipelines CI/CD.
 
 ```bash
-# e.g: Send a notification to Discord
-apprise -t "Backup Complete" -b "The server is safe" \
+# Exemple : envoyer une notification vers Discord
+apprise -t "Sauvegarde terminée" -b "Le serveur est sain et sauf" \
   "discord://webhook_id/webhook_token"
 ```
 
-### 3. Le serveur API
+### 3. Le Serveur API
 
-_Pour les environnements centralisés et distribués_
+_Pour les environnements centralisés et connectés_
 
-Apprise est aussi disponible sous la forme d'un serveur API conteneurisé et sans état. Cela vous permet d'exploiter une « passerelle de notifications » centralisée pour plusieurs systèmes.
+Apprise est également disponible sous la forme d'un serveur API conteneurisé et sans état. Cela vous permet d'exploiter une "passerelle de notifications" centralisée pour plusieurs systèmes.
 
 Vous pouvez :
 
 - Envoyer des notifications directement à chaque requête (sans état)
-- Stocker les configurations côté serveur et les référencer par clé (avec état)
+- Stocker les configurations côté serveur et les référencer via une clé (avec état)
 
-Cette approche est particulièrement utile pour les microservices, les infrastructures partagées et les équipes qui veulent centraliser le contrôle.
+Cette approche est particulièrement utile pour les microservices, les infrastructures partagées et les équipes qui souhaitent un point de contrôle centralisé.
 
-## Fonctionnalités clés
+## Fonctionnalités Clés
 
 - **{/_ SERVICES:COUNT _/} services pris en charge**, des plateformes de discussion populaires aux passerelles spécialisées
-- **Diffusion adaptée au format**, avec prise en charge du Markdown, du HTML et du texte brut
-- **Prise en charge des pièces jointes**, adaptée automatiquement aux capacités de chaque service
-- **Hautes performances**, avec livraison parallèle des notifications
-- **Dépendances minimales**, pour rester léger
+- **Diffusion adaptée au format**, y compris Markdown, HTML et texte brut
+- **Prise en charge des pièces jointes**, automatiquement adaptée aux capacités de chaque service
+- **Haute performance**, avec envoi parallèle des notifications
+- **Dépendances minimales**, afin de rester léger
 
-## Quelle approche choisir ?
+## Quelle Approche Utiliser ?
 
-| Si vous êtes…                                               | Commencez par…                      |
-| ----------------------------------------------------------- | ----------------------------------- |
-| Vous développez une application Python                      | [La bibliothèque Python](/library/) |
-| Vous automatisez des scripts ou des tâches système          | [L'outil CLI](/cli/)                |
-| Vous centralisez les notifications entre plusieurs systèmes | [Le serveur API](/api/)             |
+| Si vous êtes…                                                      | Commencez par…                      |
+| ------------------------------------------------------------------ | ----------------------------------- |
+| En train de créer une application Python                           | [La Bibliothèque Python](/library/) |
+| En train d'automatiser des scripts ou des tâches système           | [L'Outil CLI](/cli/)                |
+| En train de centraliser des notifications entre plusieurs systèmes | [Le Serveur API](/api/)             |
