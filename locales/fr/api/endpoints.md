@@ -1,24 +1,24 @@
 ---
 title: Points de Terminaison de l'API
-description: Compact reference of API Apprise endpoints.
+description: Référence condensée des points de terminaison de l'API Apprise.
 sidebar:
   order: 4
 ---
 
-This section details the available endpoints for the API Apprise.
+Cette section détaille les points de terminaison disponibles dans l'API Apprise.
 
-## Health Checks
+## Vérifications d'État
 
-You can perform status or health checks on your server configuration.
+Vous pouvez effectuer des contrôles d'état ou de santé de la configuration de votre serveur.
 
-| Path      | Method | Description                                                                                                          |
-| :-------- | :----- | :------------------------------------------------------------------------------------------------------------------- |
-| `/status` | `GET`  | Returns a server status. The server HTTP response code is `200` if working correctly, or `417` if there is an issue. |
+| Chemin    | Méthode | Description                                                                                                                 |
+| :-------- | :------ | :-------------------------------------------------------------------------------------------------------------------------- |
+| `/status` | `GET`   | Renvoie l'état du serveur. Le code de réponse HTTP vaut `200` si tout fonctionne correctement, ou `417` en cas de problème. |
 
-**Response Exemples:**
+**Exemples de réponse :**
 
-- **Text**: `OK` (if healthy) or `ATTACH_PERMISSION_ISSUE`, `CONFIG_PERMISSION_ISSUE`.
-- **JSON**:
+- **Texte** : `OK` (si le service est sain) ou `ATTACH_PERMISSION_ISSUE`, `CONFIG_PERMISSION_ISSUE`.
+- **JSON** :
 
   ```json
   {
@@ -33,41 +33,41 @@ You can perform status or health checks on your server configuration.
   }
   ```
 
-## Notifications sans etat
+## Notifications sans État
 
-Envoyer notifications without using persistent storage.
+Envoyez des notifications sans utiliser de stockage persistant.
 
-| Path       | Method | Description                                                                                            |
-| :--------- | :----- | :----------------------------------------------------------------------------------------------------- |
-| `/notify/` | `POST` | Sends one or more notifications to the URLs identified in the payload or via `APPRISE_STATELESS_URLS`. |
+| Chemin     | Méthode | Description                                                                                                     |
+| :--------- | :------ | :-------------------------------------------------------------------------------------------------------------- |
+| `/notify/` | `POST`  | Envoie une ou plusieurs notifications aux URL identifiées dans la charge utile ou via `APPRISE_STATELESS_URLS`. |
 
-**Payload Parameters:**
+**Paramètres de charge utile :**
 
-- `urls`: (Required) One or more URLs to send to.
-- `body`: (Required) The message body.
-- `title`: (Optional) The message title.
-- `type`: (Optional) Message type: `info` (default), `success`, `warning`, `failure`.
-- `format`: (Optional) Text format: `text` (default), `markdown`, `html`.
+- `urls` : obligatoire. Une ou plusieurs URL de destination.
+- `body` : obligatoire. Corps du message.
+- `title` : facultatif. Titre du message.
+- `type` : facultatif. Type de message : `info` (par défaut), `success`, `warning`, `failure`.
+- `format` : facultatif. Format du texte : `text` (par défaut), `markdown`, `html`.
 
-## Persistent (Stateful) Endpoints
+## Points de terminaison Persistants avec État
 
-Manage and use saved configurations associated with a `{KEY}`.
+Gérez et utilisez des configurations enregistrées associées à une clé `{KEY}`.
 
-| Path               | Method | Description                                                                                                             |
-| :----------------- | :----- | :---------------------------------------------------------------------------------------------------------------------- |
-| `/add/{KEY}`       | `POST` | Saves Apprise configuration to the persistent store. Payload: `urls`, `config`, `format`.                               |
-| `/del/{KEY}`       | `POST` | Removes Apprise configuration from the persistent store.                                                                |
-| `/get/{KEY}`       | `POST` | Returns the Apprise configuration. Alias: `/cfg/{KEY}` (web UI uses this).                                              |
-| `/notify/{KEY}`    | `POST` | Sends notifications to endpoints associated with `{KEY}`. Payload: `body` (required), `title`, `type`, `tag`, `format`. |
-| `/json/urls/{KEY}` | `GET`  | Returns a JSON object containing all URLs and tags associated with the key.                                             |
+| Chemin             | Méthode | Description                                                                                                                           |
+| :----------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `/add/{KEY}`       | `POST`  | Enregistre la configuration Apprise dans le stockage persistant. Charge utile : `urls`, `config`, `format`.                           |
+| `/del/{KEY}`       | `POST`  | Supprime la configuration Apprise du stockage persistant.                                                                             |
+| `/get/{KEY}`       | `POST`  | Renvoie la configuration Apprise. Alias : `/cfg/{KEY}`, utilisé par l'interface Web.                                                  |
+| `/notify/{KEY}`    | `POST`  | Envoie des notifications aux destinations associées à `{KEY}`. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`. |
+| `/json/urls/{KEY}` | `GET`   | Renvoie un objet JSON contenant toutes les URL et tous les tags associés à cette clé.                                                 |
 
-## Observability
+## Observabilité
 
-| Path       | Method | Description                                                                                     |
-| :--------- | :----- | :---------------------------------------------------------------------------------------------- |
-| `/details` | `GET`  | Retrieve a JSON object containing all supported Apprise URLs (send `Accept: application/json`). |
-| `/metrics` | `GET`  | Prometheus endpoint for basic metrics collection.                                               |
+| Chemin     | Méthode | Description                                                                                                   |
+| :--------- | :------ | :------------------------------------------------------------------------------------------------------------ |
+| `/details` | `GET`   | Récupère un objet JSON contenant toutes les URL Apprise prises en charge. Envoyez `Accept: application/json`. |
+| `/metrics` | `GET`   | Point de terminaison Prometheus pour la collecte de métriques de base.                                        |
 
-## Response codes
+## Codes de Réponse
 
-For a full list (including UI-only codes and common error responses), see [Response Codes](/api/reference/response-codes/).
+Pour la liste complète, y compris les codes propres à l'interface Web et les réponses d'erreur courantes, consultez [Codes de Réponse](/api/reference/response-codes/).

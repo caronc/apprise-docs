@@ -30,7 +30,8 @@ The table below maps your usage level to the right settings. For most personal a
 The following provides an example of how you can apply the settings to your deployment. Choose the tab that matches your setup.
 
 <Tabs>
-  <TabItem label="Docker">```bash
+  <TabItem label="Docker">
+```bash
 docker run --name apprise \
   -e APPRISE_WORKER_COUNT=1 \
   -e APPRISE_WORKER_MAX_REQUESTS=50 \
@@ -39,7 +40,8 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
   </TabItem>
-  <TabItem label="Docker Compose">```yaml
+  <TabItem label="Docker Compose">
+```yaml
 services:
   apprise:
     image: caronc/apprise:latest

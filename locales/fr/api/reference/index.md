@@ -1,15 +1,14 @@
 ---
 title: Référence
-description: Detailed API Apprise reference material for operators and integrators.
+description: Références détaillées de l'API Apprise pour les opérateurs et les intégrateurs.
 sidebar:
   hidden: true
   order: 10
 ---
 
-This section contains detailed reference material for API Apprise.
+Cette section regroupe les documents de référence détaillés pour l'API Apprise.
 
-- [API Endpoints](/api/endpoints/)
-- [Endpoints](/api/endpoints/)
-- [Environment variables](/api/reference/environment/)
-- [Response codes](/api/reference/response-codes/)
-- [OpenAPI specification](/api/reference/openapi/)
+- [Points de terminaison de l'API](/api/endpoints/)
+- [Variables d'environnement](/api/reference/environment/)
+- [Codes de réponse](/api/reference/response-codes/)
+- [Spécification OpenAPI](/api/reference/openapi/)

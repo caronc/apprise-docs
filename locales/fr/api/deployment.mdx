@@ -36,7 +36,8 @@ The service is safe to run:
 Choose one deployment method below to get API Apprise running quickly.
 
 <Tabs>
-  <TabItem label="Docker">```bash
+  <TabItem label="Docker">
+```bash
 docker run --name apprise \
   -p 8000:8000 \
   -v ./config:/config \
@@ -114,7 +115,8 @@ services:
 </TabItem>
 <TabItem label="Kubernetes">
   <Tabs>
-<TabItem label="Minimal Example">```yaml
+<TabItem label="Minimal Example">
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
