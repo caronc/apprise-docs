@@ -1,6 +1,6 @@
 ---
 title: "Microsoft"
-description: "Using Apprise with Fastmail and supported Fastmail domains."
+description: "Using Apprise with Microsoft and supported Microsoft domains."
 ---
 
 :::caution[SMTP and App Passwords No Longer Work for Microsoft]
@@ -46,6 +46,5 @@ As of recent Azure changes:
 - This often requires creating a free Azure subscription
 
 This is a Microsoft requirement, not an Apprise one.
-:::
 
 Please use the [`azure://` Apprise plugin](/services/office365/) instead.

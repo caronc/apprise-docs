@@ -1,8 +1,8 @@
 ---
-title: "IFTTT (If This Than That) Notifications"
-description: "Send IFTTT (If This Than That) notifications."
+title: "IFTTT (If This Then That) Notifications"
+description: "Send IFTTT (If This Then That) notifications."
 sidebar:
-  label: "IFTTT (If This Than That)"
+  label: "IFTTT (If This Then That)"
 
 source: https://ifttt.com/
 

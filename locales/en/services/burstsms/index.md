@@ -57,5 +57,5 @@ Send a Burst SMS Notification:
 # Assuming our {PhoneNo} - is in the US somewhere making our country code +1
 #                        - identifies as 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   nexmo://bc1451bd:gank339l7jk3cjaE@19005559999/18005551223
+   burstsms://bc1451bd:gank339l7jk3cjaE@19005559999/18005551223
 ```
