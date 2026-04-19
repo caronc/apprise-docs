@@ -1,0 +1,258 @@
+---
+title: "Intégration de Home Assistant (HASS.IO) avec Apprise"
+description: "Intégrez Apprise à Home Assistant"
+sidebar:
+  label: "Home Assistant"
+  order: 100
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Ce guide explique comment intégrer **Apprise** à **[Home Assistant](https://www.home-assistant.io/)** à l'aide de la plateforme de notification Apprise intégrée. Cette approche vous permet de centraliser toute la logique de notification dans un seul fichier de configuration, ou dans une source Apprise API, tout en laissant Home Assistant se concentrer sur la logique d'automatisation.
+
+:::note[Envoyer des notifications vers Home Assistant à la place ?]
+Ce guide explique comment utiliser Apprise **depuis** Home Assistant pour envoyer des notifications vers des services externes. Si vous souhaitez utiliser Apprise pour envoyer des notifications **vers** Home Assistant lui-même, par exemple des alertes persistantes sur le tableau de bord ou des appels de service directs, consultez le [plugin de service Home Assistant](/services/homeassistant/) (`hassio://`).
+:::
+
+## Pourquoi Utiliser Apprise avec Home Assistant
+
+Utiliser Apprise apporte plusieurs avantages :
+
+- un seul fichier de configuration pour tous vos services de notification ;
+- la prise en charge de dizaines de fournisseurs, comme l'e-mail, Telegram, ntfy, Kodi, et bien d'autres ;
+- un routage basé sur les tags pour cibler les notifications avec souplesse ;
+- aucune dépendance forte à un fournisseur au niveau de vos automatisations.
+
+Home Assistant n'a pas besoin de connaître les détails propres à chaque fournisseur. Il transmet simplement les messages à Apprise, qui se charge du reste.
+
+---
+
+## 1. Installation
+
+Apprise est intégré à Home Assistant Core. Vous n'avez pas besoin d'installer un composant personnalisé ni un module complémentaire. Il est disponible immédiatement via la plateforme `notify`.
+
+## 2. Configuration
+
+Choisissez la méthode de configuration qui correspond le mieux à votre usage.
+
+<Tabs>
+<TabItem label="Méthode 1 : Inline (Démarrage Rapide)">
+Cette méthode est idéale si vous n'avez qu'un **seul** service de notification ou si vous souhaitez démarrer rapidement sans créer de fichiers supplémentaires.
+
+**Modifiez `configuration.yaml`**
+
+Ajoutez l'entrée suivante à votre fichier de configuration. Remplacez l'URL par celle de votre service.
+
+```yaml
+# /config/configuration.yaml
+notify:
+  - name: apprise_quick
+    platform: apprise
+    # Définissez directement ici l'URL Apprise
+    url: tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
+```
+
+</TabItem>
+
+<TabItem label="Méthode 2 : Configuration Locale (Standard)">
+Cette méthode est la plus adaptée pour gérer **plusieurs** services de notification, des groupes complexes et une logique basée sur les tags.
+
+Apprise détecte automatiquement le type de fichier utilisé. Vous pouvez employer des fichiers **YAML** (structurés) ou **TEXT** (liste simple).
+
+**Étape A : Modifiez `configuration.yaml`**
+
+Pointez Home Assistant vers le fichier de configuration de votre choix.
+
+```yaml
+# /config/configuration.yaml
+notify:
+  - name: apprise
+    platform: apprise
+    # Vous pouvez référencer un fichier YAML...
+    config: /config/apprise.yaml
+
+    # ...OU un fichier texte simple
+    # config: /config/apprise.conf
+```
+
+**Étape B : Créez votre fichier de configuration**
+
+<Tabs>
+<TabItem label="Option A : YAML (Structuré)">
+Créez `/config/apprise.yaml`. Cette option convient le mieux aux configurations complexes.
+
+```yaml
+# /config/apprise.yaml
+urls:
+  - tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz:
+      tag: telegram
+  - mailtos://user:pass@smtp.gmail.com:
+      tag: mail
+```
+
+:::tip[Configuration Hybride]
+Vous pouvez aussi utiliser la directive `include` dans votre fichier local pour intégrer des configurations distantes tout en conservant des entrées locales.
+
+```yaml
+# /config/apprise.yaml
+
+# Pointer vers une instance Apprise API :
+include http://apprise.host/get/my-profile-key
+
+urls:
+  # Plus des surcharges locales
+  - mailtos://local-user@example.com
+```
+
+:::
+
+</TabItem>
+<TabItem label="Option B : TEXT (Simple)">
+Créez `/config/apprise.conf`. Cette option convient mieux aux listes d'URL simples.
+
+```text
+# /config/apprise.conf
+
+# Tag défini par préfixe
+telegram=tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
+
+# Plusieurs tags définis par des virgules
+mail,devops=mailtos://user:pass@smtp.gmail.com
+```
+
+:::tip[Configuration Hybride]
+Vous pouvez aussi utiliser la directive `include` dans votre fichier local pour intégrer des configurations distantes tout en conservant des entrées locales.
+
+```text
+# /config/apprise.conf
+
+# Pointer vers une instance Apprise API :
+include http://apprise.host/get/my-profile-key
+
+# Plus des surcharges locales
+mailtos://local-user@example.com
+```
+
+:::
+
+</TabItem>
+
+</Tabs>
+:::note
+La directive `include` ne fonctionne que si votre serveur Apprise API n'a pas `APPRISE_CONFIG_LOCK` défini à `yes`.
+:::
+
+</TabItem>
+
+<TabItem label="Méthode 3 : Configuration Distante (API)">
+Cette méthode est idéale pour des **configurations itinérantes**. Si vous gérez plusieurs instances Home Assistant ou d'autres services, vous pouvez centraliser toute votre logique de notification dans une instance [Apprise API](/api/) auto-hébergée.
+
+**Modifiez `configuration.yaml`**
+
+Au lieu de référencer un fichier local, pointez directement le paramètre `config` vers votre point de terminaison API.
+
+```yaml
+# /config/configuration.yaml
+notify:
+  - name: apprise_api
+    platform: apprise
+    # Apprise récupérera la configuration depuis cette URL
+    config: https://apprise.host/get/my-profile-key
+```
+
+:::caution[Restriction d'Accès]
+Si votre serveur Apprise API fonctionne avec `APPRISE_CONFIG_LOCK` activé, cette méthode ne fonctionnera pas.
+:::
+
+</TabItem>
+</Tabs>
+
+## 3. Utilisation dans les Automatisations
+
+Une fois la configuration en place et Home Assistant redémarré, vous pouvez envoyer des notifications à l'aide du service `notify`.
+
+### Exemple : Utiliser la Méthode 1 (Inline)
+
+Si vous avez utilisé la **Méthode 1**, votre service s'appelle probablement `notify.apprise_quick`. Vous n'avez pas besoin de fournir un champ `target`, car la destination est codée en dur dans votre configuration.
+
+```yaml
+- alias: "[Interactive] - Sunset Notice"
+  trigger:
+    platform: sun
+    event: sunset
+
+  action:
+    # Correspond au champ 'name' défini dans configuration.yaml
+    service: notify.apprise_quick
+    data:
+      title: "Bonsoir"
+      message: "Le soleil se couche."
+```
+
+### Exemple : Utiliser les Méthodes 2 et 3 (Basées sur la Configuration)
+
+Si vous avez utilisé la **Méthode 2** ou la **Méthode 3**, vous pouvez contrôler précisément qui reçoit les notifications en utilisant le champ `target`, qui doit correspondre aux tags définis dans votre fichier YAML ou votre configuration API.
+
+```yaml
+- alias: "[Interactive] - Sunset Notice"
+  trigger:
+    platform: sun
+    event: sunset
+
+  action:
+    service: notify.apprise
+    data:
+      # Ce 'target' correspond au 'tag' de votre configuration
+      target: email
+      title: "Bonsoir"
+      message: "Le soleil se couche."
+```
+
+### Logique Avancée avec les Tags
+
+Vous pouvez combiner les tags dans votre champ `target` afin de créer à la volée des groupes de notification puissants.
+
+| Valeur de `target`        | Logique    | Description                                                      |
+| :------------------------ | :--------- | :--------------------------------------------------------------- |
+| `target: devops`          | **Simple** | Notifie tous les services tagués `devops`.                       |
+| `target: [devops, alarm]` | **OU**     | Notifie tous les services tagués `devops` **OU** `alarm`.        |
+| `target: "devops alarm"`  | **ET**     | Notifie uniquement les services qui possèdent **LES DEUX** tags. |
+
+## 4. Tester Votre Configuration
+
+Avant d'intégrer Apprise dans vos automatisations, vérifiez qu'il fonctionne bien depuis la ligne de commande :
+
+```bash
+apprise -vv -t "Test" -b "Bonjour depuis la CLI" \
+    tgram://YOUR_BOT_TOKEN/YOUR_CHAT_ID
+```
+
+Confirmez ensuite que Home Assistant peut joindre le même service en déclenchant manuellement le service `notify.apprise` depuis **Outils de développement → Services**.
+
+## 5. Découvrir les Services `notify` Disponibles
+
+Si vous souhaitez qu'Apprise appelle Home Assistant lui-même en retour, par exemple pour envoyer une notification push vers un appareil mobile enregistré dans l'application compagnon HA, vous pouvez utiliser le plugin `hassio://` dans vos URL Apprise. Pour trouver le nom exact du service :
+
+1. Dans Home Assistant, ouvrez **Outils de développement → Services**.
+2. Filtrez sur le domaine **notify**. Vous verrez des entrées comme `notify.mobile_app_johns_phone`.
+3. La partie située après `notify.` correspond au nom de service à utiliser dans l'URL Apprise :
+
+```bash
+apprise -vv -t "Alerte" -b "Test push" \
+    'hassio://ha.local/YOUR_TOKEN/notify.mobile_app_johns_phone'
+```
+
+Consultez le [plugin de service Home Assistant](/services/homeassistant/) pour la référence complète de l'URL `hassio://`.
+
+## 6. Débogage et Journalisation
+
+Si vos notifications ne partent pas, vous pouvez activer la journalisation de débogage spécifiquement pour le composant Apprise dans Home Assistant. Ajoutez ceci à votre `configuration.yaml` :
+
+```yaml
+logger:
+  default: info
+  logs:
+    homeassistant.components.apprise: debug
+```
+
+Après redémarrage, consultez les journaux de Home Assistant. Vous verrez Apprise tenter de charger votre configuration et d'envoyer les messages, ce qui vous aidera à repérer les URL invalides ou les problèmes réseau.

@@ -1,0 +1,231 @@
+---
+title: Utilisation de l'API
+description: Apprenez a envoyer des notifications sans etat et avec etat via l'API Apprise.
+sidebar:
+  order: 3
+---
+
+<style>{`
+  /* Existing styling to ensure block behavior */
+  .theme-aware-sf-diagram img,
+  .theme-aware-sl-diagram img {
+    display: block;
+    width: 100%;
+  }
+
+  /* Force Dark SVG when the Astro Starlight toggle is set to 'dark' */
+  :root[data-theme="dark"] .theme-aware-sl-diagram img {
+    content: url("../images/stateless-api-integration-dark.svg");
+  }
+  :root[data-theme="dark"] .theme-aware-sf-diagram img {
+    content: url("../images/stateful-api-integration-dark.svg");
+  }
+
+  /* Force Light SVG when the Astro Starlight toggle is set to 'light' */
+  :root[data-theme="light"] .theme-aware-sl-diagram img {
+    content: url("../images/stateless-api-integration-light.svg");
+  }
+  :root[data-theme="light"] .theme-aware-sf-diagram img {
+    content: url("../images/stateful-api-integration-light.svg");
+  }
+`}</style>
+
+Ce guide couvre la fonctionnalite principale de l'API Apprise : l'envoi de notifications. Vous pouvez envoyer des notifications de deux manieres :
+
+1. **Sans etat :** vous fournissez les URL de configuration dans la charge utile de la requete.
+1. **Avec etat :** vous referencez une cle de configuration deja enregistree.
+
+## Formats de reponse
+
+Par defaut, les points de terminaison renvoient `text/plain`. Si vous preferez JSON, envoyez `Accept: application/json`.
+
+Pour les points de terminaison de notification (`/notify` et `/notify/{KEY}`), vous pouvez aussi demander une vue HTML simple du journal en envoyant `Accept: text/html`. Cela sert surtout pour les tests manuels dans un navigateur.
+
+## Notifications sans etat
+
+<picture class="theme-aware-sl-diagram">
+  <source
+    srcset="../images/stateless-api-integration-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="../images/stateless-api-integration-light.svg"
+    alt="Stateless API Integration"
+    loading="lazy"
+  />
+</picture>
+
+Les notifications sans etat sont ideales pour un usage de type "sidecar" lorsque vous ne souhaitez pas gerer de configuration persistante sur le serveur. Vous devez fournir le parametre `urls` a chaque requete.
+
+### Requete JSON de base
+
+La methode la plus courante consiste a envoyer une charge utile JSON a `/notify`.
+
+**Point de terminaison :** `POST /notify`
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "urls": "mailto://user:pass@gmail.com",
+    "body": "Backup completed successfully.",
+    "title": "System Status"
+  }' \
+  http://localhost:8000/notify
+```
+
+### Pieces jointes
+
+Pour envoyer des pieces jointes, utilisez `multipart/form-data`. L'API accepte les televersements de fichiers standard ou des URL distantes. Vous pouvez utiliser `attach` (recommande) ou `attachment` comme nom de champ.
+
+```bash
+# Upload a local file
+curl -X POST \
+    -F "urls=discord://webhook_id/token" \
+    -F "body=See attached log." \
+    -F "attach=@/var/log/syslog" \
+    http://localhost:8000/notify
+
+# Reference a remote URL (Apprise will download and forward it)
+curl -X POST \
+    -F "urls=discord://webhook_id/token" \
+    -F "body=Security Camera Snapshot" \
+    -F "attach=http://camera-ip/snapshot.jpg" \
+    http://localhost:8000/notify
+```
+
+## Notifications avec etat
+
+<picture class="theme-aware-sf-diagram">
+  <source
+    srcset="../images/stateful-api-integration-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="../images/stateful-api-integration-light.svg"
+    alt="Stateful API Integration"
+    loading="lazy"
+  />
+</picture>
+
+Les notifications avec etat vous permettent de simplifier votre code client. Vous stockez une fois les URL complexes sur le serveur, associees a une **cle**, puis votre client se contente de referencer cette cle.
+
+**Point de terminaison :** `POST /notify/{KEY}`
+
+### Envoyer vers une cle
+
+Si vous avez enregistre une configuration sous la cle `my-alerts` :
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "body": "Database connection failed",
+    "type": "warning"
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+### Etiquetage
+
+Les configurations avec etat prennent en charge les tags, ce qui permet de notifier des sous-groupes precis de vos URL enregistrees.
+
+La valeur transmise dans le champ `tag` suit les regles suivantes :
+
+| Valeur `tag`       | Services selectionnes                        |
+| ------------------ | -------------------------------------------- |
+| `"TagA"`           | Possede `TagA`                               |
+| `"TagA TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA+TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA&TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA,TagB"`      | Possede `TagA` **OU** `TagB`                 |
+| `"TagA\|TagB"`     | Possede `TagA` **OU** `TagB`                 |
+| `"TagA TagC,TagB"` | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
+
+```bash
+# Notify services tagged "devops" OR "admin"
+curl -X POST -d '{"tag": "devops,admin", "body": "..."}' ...
+
+# Notify services tagged "devops" AND "critical"
+curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
+
+# Notify services matching ('comment' AND 'create') OR 'admin'
+curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
+```
+
+## Correspondance de charge utile (hooks)
+
+Il arrive que vous ne puissiez pas changer le format de charge utile envoye par un outil tiers (par ex. Grafana, Prometheus). L'API Apprise vous permet de mapper les champs entrants vers des champs compatibles Apprise a l'aide de parametres de requete prefixes par deux-points (`:`).
+
+:::note
+Les cles de correspondance sont transmises dans la chaine de requete et doivent etre encodees dans l’URL si elles contiennent des caracteres speciaux.
+:::
+
+### Regles de correspondance
+
+| Syntaxe                          | Effet                                          |
+| -------------------------------- | ---------------------------------------------- |
+| `?:incoming_field=apprise_field` | Renomme `incoming_field` vers le champ Apprise |
+| `?:incoming_field=`              | Supprime `incoming_field` de la charge utile   |
+| `?:apprise_field=literal value`  | Force `apprise_field` a une chaine fixe        |
+
+**Exemple** — votre outil envoie `{"message": "Server Down", "severity": "high"}`, mais Apprise attend `body` et `type` :
+
+```bash
+curl -X POST \
+  -d '{"message": "Server Down", "severity": "high"}' \
+  "http://localhost:8000/notify/my-alerts?:message=body&:severity=type"
+```
+
+### Correspondance de champs imbriques
+
+Lorsque la charge utile entrante utilise des objets imbriques ou des tableaux, referencez-les du cote source de la regle en utilisant la **notation par points** pour les objets et la **notation entre crochets** pour les elements de tableau. Les deux peuvent etre combinees librement.
+
+#### Objets imbriques (notation par points)
+
+Utilisez un chemin separe par des points pour naviguer dans des dictionnaires imbriques :
+
+```bash
+# Payload from a monitoring tool:
+# { "event": { "title": "CPU spike", "state": "critical" },
+#   "component": { "name": "web-server-01" } }
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"event":{"title":"CPU spike","state":"critical"},"component":{"name":"web-server-01"}}' \
+  "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
+```
+
+#### Elements de tableau (notation entre crochets)
+
+Ajoutez `[N]` directement apres le nom de la cle pour dereferencer l’indice `N` de ce tableau. Plusieurs indices et le melange avec la notation par points sont pris en charge :
+
+```bash
+# Payload from a forum / project-management webhook (e.g. Scoold / Para):
+# { "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ] }
+curl -g -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"items":[{"title":"New post","objectURI":"https://example.com/q/1234"}]}' \
+  "http://localhost:8000/notify/my-alerts?:items[0].title=title&:items[0].objectURI=body"
+```
+
+:::note
+`curl` traite les crochets dans les URL comme une syntaxe de globbing, donc `-g` (ou `--globoff`) est requis lorsque vous utilisez des chemins de correspondance comme `items[0].title`. Gardez l’URL entre guillemets afin que votre shell la transmette telle quelle.
+:::
+
+Les indices chaines parcourent des tableaux imbriques :
+
+```text
+# Source key          What it resolves to
+items[0]              first element of the items array
+items[0].objectURI    .objectURI of the first element
+matrix[0][1]          row 0, column 1 of a 2-D array
+a[0][1][2].value[3]   nested arrays -> dict -> array
+```
+
+**Regles et limites :**
+
+- Seul le cote **source** peut utiliser une notation de chemin ; la cible doit etre un champ Apprise plat (`title`, `body`, `type`, `format`, `tag`, etc.).
+- `N` dans `[N]` doit etre un entier positif ou nul. `key[abc]` (non entier) et `key[0` / `key0]` (crochet non appaire) sont rejetes avec un `WARNING`.
+- Si une etape du chemin ne peut pas etre resolue (cle manquante, indice hors plage ou noeud non liste rencontre lors d’un acces par indice), le serveur renvoie **400** et journalise un `WARNING` — aucune notification n’est envoyee. Cela permet de detecter les regles mal configurees sans perdre silencieusement des messages.
+- La **profondeur** correspond au nombre total d’operations de parcours individuelles — chaque acces a une cle de dictionnaire _et_ chaque dereferencement d’indice de tableau compte pour une etape. Par exemple, `items[0].objectURI` represente **3** etapes (`items` -> `[0]` -> `objectURI`), et `a[0][1][2].b[3]` represente **6** etapes.
+- La profondeur maximale de parcours est de **5** par defaut. Ajustez-la avec la variable d’environnement `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH`.

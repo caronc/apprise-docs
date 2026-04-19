@@ -53,5 +53,5 @@ Send a SMS Manager Message:
 # Assuming our {apikey} is hard-to-guess
 # Assuming our {PhoneNo} we wish to notify is +134-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   atalk://user123@hard-to-guess@+134-555-1223
+   atalk://user123@hard-to-guess/+134-555-1223
 ```

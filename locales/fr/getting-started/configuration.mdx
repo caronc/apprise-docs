@@ -1,38 +1,38 @@
 ---
 title: Configuration
-description: Découvrez comment configurer Apprise avec les formats YAML ou texte.
+description: Découvrez comment configurer Apprise avec les formats YAML ou TEXT.
 sidebar:
   order: 4
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-La configuration vous permet de regrouper tous vos services de notification au même endroit, tout en prenant en charge les groupes, les tags et la protection de vos secrets hors de l'historique du shell.
+La configuration permet de définir tous vos services de notification au même endroit, tout en prenant en charge les groupes, les tags et la protection des secrets hors de l'historique de votre shell.
 
-La configuration Apprise est **portable**. Le même fichier peut être utilisé par la CLI, le serveur API et la bibliothèque Python sans modification.
+La configuration Apprise est **portable**. Le même fichier de configuration peut être utilisé sans modification avec le CLI, le serveur API et la bibliothèque Python.
 
-Pensez à utiliser des fichiers de configuration lorsque :
+Envisagez d'utiliser des fichiers de configuration si :
 
-- Vous voulez réutiliser la même configuration de notification sur plusieurs scripts ou systèmes
-- Vous voulez garder vos identifiants hors de l'historique du shell
-- Vous voulez regrouper des services ou simplifier la référence à vos URL Apprise avec des tags
-- Vous voulez qu'une même configuration fonctionne avec la CLI, l'API et la bibliothèque Python
+- vous souhaitez réutiliser la même configuration de notification sur plusieurs scripts ou systèmes ;
+- vous voulez garder les identifiants hors de l'historique de votre shell ;
+- vous voulez regrouper des services ou simplifier les références à vos URL Apprise à l'aide de tags ;
+- vous voulez que la même configuration fonctionne avec le CLI, l'API et Python.
 
-Si vous n'avez besoin que d'une notification ponctuelle, des URL inline suffisent. Pour tout usage plus avancé, les fichiers de configuration sont recommandés.
+Si vous n'avez besoin que d'une notification ponctuelle, des URL en ligne suffisent. Pour tout ce qui va au-delà, les fichiers de configuration sont recommandés.
 
-## Formats de configuration pris en charge
+## Formats de Configuration Pris en Charge
 
-Apprise prend en charge deux formats de configuration. Les deux décrivent la même information, mais YAML permet d'exprimer une structure plus riche.
+Apprise prend en charge deux formats de configuration. Tous deux décrivent les mêmes informations, mais YAML permet d'exprimer davantage de structure.
 
-- **TEXT** : simple, ligne par ligne et facile à lire. Idéal pour les petites configurations ou les usages manuels.
-- **YAML** : structuré et standardisé. Mieux adapté aux configurations plus importantes et aux outils d'automatisation.
+- **TEXT** : simple, basé sur des lignes et facile à lire. Idéal pour les petites configurations ou les réglages manuels.
+- **YAML** : structuré et normalisé. Mieux adapté aux configurations plus volumineuses et aux outils d'automatisation.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
 ## Configuration TEXT
 
-La configuration TEXT fonctionne ligne par ligne.
+La configuration TEXT est basée sur des lignes.
 
 - Les lignes vides sont ignorées
 - Les commentaires commencent par `#` ou `;`
@@ -40,68 +40,68 @@ La configuration TEXT fonctionne ligne par ligne.
 - Vous pouvez définir des groupes de tags
 - Vous pouvez inclure d'autres sources de configuration
 
-Le format TEXT est idéal lorsque :
+La configuration TEXT est idéale si :
 
-- Vous voulez la configuration la plus simple possible
-- Vous ne gérez qu'un petit nombre de services
-- Vous préférez une syntaxe minimale
+- vous voulez la configuration la plus simple possible ;
+- vous ne gérez qu'un petit nombre de services ;
+- vous préférez une syntaxe minimale.
 
-### Syntaxe TEXT de base
+### Syntaxe TEXT de Base
 
 ```apache
-# Email notifications
+# Notifications email
 mailto://user:password@gmail.com
 
-# Discord notifications
+# Notifications Discord
 discord://webhook_id/webhook_token
 ```
 
-## Tags et groupes en TEXT
+## Tags et Groupement en TEXT
 
-Les tags vous permettent d'organiser les services de notification dans des groupes logiques comme `personnel`, `ops` ou `critique`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
+Les tags vous permettent d'organiser vos services de notification en groupes logiques tels que `personal`, `ops` ou `critical`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
 
-### Exemples de tags en TEXT
+### Exemples de Tags en TEXT
 
-Vous pouvez classer les services en plaçant des tags avant l'URL, séparés par un signe égal (`=`).
+Vous pouvez catégoriser les services en plaçant des tags avant l'URL, séparés par un signe égal (`=`).
 
 ```apache
-# Syntax: tag=url
-# Associates the 'desktop' tag with this notification
+# Syntaxe : tag=url
+# Associe le tag 'desktop' à cette notification
 desktop=gnome://
 
-# You can assign multiple tags using commas or spaces
-# This URL is part of 'tv' AND 'kitchen'
+# Vous pouvez attribuer plusieurs tags en utilisant des virgules ou des espaces
+# Cette URL fait partie de 'tv' ET de 'kitchen'
 tv,kitchen=kodi://user:pass@kitchen.host
 ```
 
-### Groupes de tags en configuration TEXT
+### Regrouper des Tags avec une Configuration TEXT
 
-Vous pouvez inclure d'autres fichiers de configuration pour garder une configuration claire. C'est très pratique pour séparer les secrets de la logique générale.
+Vous pouvez inclure d'autres fichiers de configuration afin de garder votre configuration propre. C'est excellent pour séparer les secrets de la logique générale.
 
 ```apache
-# 1. Define your base services
+# 1. Définir vos services de base
 user1=mailto://credentials
 user2=mailto://credentials
 
-# 2. Define a group
-# Notifying 'friends' will notify 'user1' and 'user2'
+# 2. Définir un groupe
+# Notifier 'friends' notifiera 'user1' et 'user2'
 friends = user1, user2
 ```
 
-### Includes en TEXT
+### Includes TEXT
 
-Vous pouvez importer d'autres fichiers de configuration (locaux ou distants) avec le mot-clé `include`.
+Vous pouvez importer d'autres fichiers de configuration (locaux ou distants) à l'aide du mot-clé `include`.
 
 ```apache
-# Read from another Apprise configuation file on the local server
+# Lire depuis un autre fichier de configuration Apprise sur le serveur local
 include /etc/apprise/secrets.conf
 
-# Read from an Apprise API server
+# Lire depuis un serveur API Apprise
 include https://my-config-server.com/get/my-key/
 ```
 
 :::note
-Le serveur Apprise API n'autorisera pas l'inclusion de fichiers locaux au serveur pour des raisons de sécurité.
+Le serveur API Apprise n'autorisera pas l'utilisation de `include` pour des fichiers stockés localement sur le serveur pour des raisons de sécurité.
 :::
 
 </TabItem>
@@ -110,11 +110,11 @@ Le serveur Apprise API n'autorisera pas l'inclusion de fichiers locaux au serveu
 
 ## Configuration YAML
 
-La configuration YAML est structurée et convient particulièrement aux configurations plus importantes. Elle permet aussi d'ajouter une configuration `asset` (branding et valeurs par défaut), ce qui n'est pas disponible avec le format TEXT.
+La configuration YAML est structurée et convient mieux aux installations plus importantes. Elle fournit aussi une configuration `asset` optionnelle (image de marque et valeurs par défaut), indisponible avec le format TEXT.
 
-### Syntaxe YAML de base
+### Syntaxe YAML de Base
 
-Tous les services sont listés dans une liste `urls`.
+Tous les services sont listés sous une liste `urls`.
 
 ```yaml
 urls:
@@ -122,11 +122,11 @@ urls:
   - slack://tokenA/tokenB/tokenC
 ```
 
-## Tags et groupes en YAML
+## Tags et Groupement en YAML
 
-Les tags vous permettent d'organiser les services de notification dans des groupes logiques comme `personnel`, `ops` ou `critique`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
+Les tags vous permettent d'organiser vos services de notification en groupes logiques tels que `personal`, `ops` ou `critical`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
 
-### Exemples de tags en YAML
+### Exemples de Tags en YAML
 
 Attribuer un tag :
 
@@ -148,9 +148,9 @@ urls:
         - after-hours
 ```
 
-### Groupes de tags en YAML
+### Regrouper des Tags avec une Configuration YAML
 
-Vous pouvez appliquer des tags à toutes les URL d'un fichier avec `tag` (ou `tags`) à la racine :
+Vous pouvez appliquer des tags à chaque URL d'un fichier en utilisant `tag` (ou `tags`) à la racine :
 
 ```yaml
 version: 1
@@ -175,7 +175,7 @@ urls:
       tag: ops
 ```
 
-Vous pouvez aussi utiliser la directive `groups` pour créer de nouveaux identifiants de tags et y associer des tags existants.
+Vous pouvez également utiliser la directive `groups` pour créer de nouveaux identifiants de tags et indiquer quels tags existants ils englobent.
 
 ```yaml
 version: 1
@@ -192,74 +192,74 @@ urls:
       tag: after-hours
 ```
 
-### Configuration des assets
+### Configuration des Assets
 
-La configuration des assets vous permet d'ajuster les valeurs par défaut et le branding. Concrètement, vous pouvez remplacer l'identité visuelle par défaut d'Apprise (icônes, identifiant d'application) envoyée aux services en amont.
+La configuration des assets vous permet d'ajuster les valeurs par défaut et l'image de marque. En pratique, vous pouvez remplacer l'identité visuelle par défaut d'Apprise (icônes, App ID) envoyée au service amont.
 
 :::note
-Le branding n'est disponible qu'avec la configuration YAML.
+L'image de marque n'est disponible qu'avec la configuration YAML.
 :::
 
 Les clés d'asset suivent quelques règles :
 
-- Les clés qui commencent par `_` ou se terminent par `_` sont ignorées
-- Seules les clés d'asset déjà existantes et de type chaîne ou booléen peuvent être définies
-- Les valeurs doivent être des chaînes ou des booléens, avec conversion automatique des chaînes vers booléen si la valeur sous-jacente est booléenne
+- les clés qui commencent par `_` ou se terminent par `_` sont ignorées ;
+- seules les clés d'asset déjà existantes, de type chaîne ou booléen, peuvent être définies ;
+- les valeurs doivent être des chaînes ou des booléens ; les chaînes sont converties en booléens lorsque la valeur par défaut sous-jacente est booléenne.
 
-Un sous-ensemble pratique de clés fréquemment utilisées est présenté ci-dessous ; si vous ne surchargez pas une entrée, sa valeur par défaut est conservée.
+Un sous-ensemble pratique de clés couramment utilisées est présenté ci-dessous ; si vous ne remplacez pas une entrée, sa valeur par défaut est conservée.
 
 ```yaml
 version: 1
 
 asset:
   #
-  # Branding
+  # Image de marque
   #
 
-  # A shortened identify to describe the application
+  # Un identifiant court pour décrire l'application
   app_id: Apprise
-  # A default description of the notification (used in some upstream services)
+  # Une description par défaut de la notification (utilisée par certains services amont)
   app_desc: Apprise Notifications
-  # Where can people go to get more information on your application?
+  # Où obtenir plus d'informations sur votre application ?
   app_url: https://github.com/caronc/apprise
 
   #
-  # Behaviour defaults
+  # Comportements par défaut
   #
 
-  # notifications are issued sequentially if this is set to false (default = true)
+  # les notifications sont émises séquentiellement si la valeur est false (par défaut = true)
   async_mode: true
 
-  # Convert \r or \n into their actual <CR> and <LF> characters when processing body string
-  # (default = false)
+  # Convertir \r ou \n en véritables caractères <CR> et <LF> lors du traitement du corps
+  # (par défaut = false)
   interpret_escapes: false
 
-  # credentials are protected when written to logging (default = true)
+  # les identifiants sont protégés lorsqu'ils sont écrits dans les journaux (par défaut = true)
   secure_logging: true
 
-  # Encoding used when reading configuration from disk
+  # Encodage utilisé lors de la lecture de la configuration sur disque
   encoding: utf-8
 
   #
-  # Themes
+  # Thèmes
   #
 
-  # The default theme used when resolving icons
+  # Thème par défaut utilisé lors de la résolution des icônes
   theme: default
 
-  # Optionaly override icon URL paths (advanced)
-  # Defaults are pullled from:
+  # Remplacement optionnel des chemins d'URL d'icônes (avancé)
+  # Les valeurs par défaut sont récupérées depuis :
   #   http://github.com/caronc/apprise/tree/master/apprise/assets/themes/default
   image_url_mask: https://example.local/assets/themes/{THEME}/apprise-{TYPE}-{XY}{EXTENSION}
   image_url_logo: https://example.local/assets/themes/{THEME}/apprise-logo.png
   image_path_mask: /apprise/installation/assets/themes/{THEME}/apprise-{TYPE}-{XY}{EXTENSION}
 
-  # Let Apprise know in advance what you will be feeding it;
-  # Values are:
-  #   - null: (default) pass content along as is
-  #   - "text": content being passed in is in a "text" format (default for CLI tool)
-  #   - "html": content being passed in is HTML
-  #   - "markdown": content being provided is in Markdown format.
+  # Indiquez à Apprise à l'avance quel type de contenu vous allez lui fournir ;
+  # Les valeurs sont :
+  #   - null: (par défaut) transmet le contenu tel quel
+  #   - "text": le contenu fourni est au format "text" (valeur par défaut pour le CLI)
+  #   - "html": le contenu fourni est en HTML
+  #   - "markdown": le contenu fourni est au format Markdown
   body_format: null
 
 urls:
@@ -270,17 +270,17 @@ urls:
       tag: after-hours
 ```
 
-Le fuseau horaire peut aussi être défini dans `asset` via `timezone` (ou `tz`) afin de contrôler le fuseau horaire par défaut utilisé par Apprise.
+Le fuseau horaire peut également être défini sous `asset` via `timezone` (ou `tz`) afin de contrôler le fuseau horaire par défaut utilisé par Apprise.
 
-### Groupes
+### Groupement
 
-YAML autorise des définitions de groupes récursives (des groupes qui contiennent d'autres groupes).
+YAML permet des définitions de groupes récursives (des groupes contenant d'autres groupes).
 
 ```yaml
 groups:
   - finance: user1, user2
   - devteam: user3, user4
-  # Recursive group
+  # Groupe récursif
   - company: finance, devteam, boss
 
 urls:
@@ -288,30 +288,30 @@ urls:
       - tag: user1
 ```
 
-### Includes en YAML
+### Includes YAML
 
 Vous pouvez importer d'autres configurations en utilisant la section optionnelle `include:`
 
 ```yaml
 include:
-  # Read from another Apprise configuation file on the local server
+  # Lire depuis un autre fichier de configuration Apprise sur le serveur local
   - /etc/apprise/secrets.yml
-  # Read from an Apprise API server
+  # Lire depuis un serveur API Apprise
   - https://my-config-server.com/get/my-key/
 ```
 
 :::note
-Vous ne pouvez pas configurer le serveur Apprise API pour inclure des fichiers locaux
+Vous ne pouvez pas configurer le serveur API Apprise pour inclure un fichier local.
 :::
 
 </TabItem>
 </Tabs>
 
-## Cibler des tags lors de l'envoi
+## Cibler des Tags lors de l'Envoi
 
-Le filtrage par tags est cohérent d'un outil à l'autre. Par exemple, avec la CLI, vous pouvez cibler un groupe par tag :
+Le filtrage par tag reste cohérent entre les outils. Par exemple, avec le CLI vous pouvez cibler un groupe via son tag :
 
-Les expressions de filtre générales fonctionnent ainsi :
+Les expressions de filtre générales suivent ces règles :
 
 | Filtre                        | Services sélectionnés                        |
 | ----------------------------- | -------------------------------------------- |
@@ -321,42 +321,42 @@ Les expressions de filtre générales fonctionnent ainsi :
 | `--tag 'TagA,TagC --tag TagB` | Possède (`TagA` **ET** `TagC`) **OU** `TagB` |
 
 :::note
-Quand vous utilisez une virgule, vous appliquez un filtre : vous demandez à Apprise de réduire la liste aux seuls services qui possèdent tous les tags indiqués. Pour élargir la liste et inclure plusieurs groupes différents, répétez simplement l'option `--tag` (`-g`).
+Lorsque vous utilisez une virgule, vous appliquez un filtre : vous demandez à Apprise de restreindre la liste aux seuls services possédant tous les tags indiqués. Pour élargir la liste et inclure plusieurs groupes différents, répétez simplement l'option `--tag` (`-g`).
 :::
 
 Exemple :
 
 ```bash
 apprise --tag="ops,critical" \
-   --body="Notify services that have the tag ops AND critical associated with it"
+   --body="Notifier les services qui possèdent à la fois les tags ops ET critical"
 
 apprise --tag="ops" --tag "critical" \
-   --body="Notify all services that have either 'ops' AND/OR 'critical' associated with it"
+   --body="Notifier tous les services qui possèdent soit 'ops', soit 'critical', soit les deux"
 ```
 
-## Chargement de la configuration
+## Charger une Configuration
 
-Que vous utilisiez TEXT ou YAML, le chargement de la configuration dans la CLI ou la bibliothèque se fait de la même façon.
+Que vous utilisiez TEXT ou YAML, le chargement de la configuration dans le CLI ou la bibliothèque se fait de la même manière.
 
-### Utilisation en CLI
+### Utilisation CLI
 
-Vous pouvez charger un fichier avec l'option `--config` (ou `-c`). Vous pouvez la répéter plusieurs fois pour charger plusieurs fichiers.
+Vous pouvez charger un fichier avec l'option `--config` (ou `-c`). Vous pouvez la préciser plusieurs fois pour charger plusieurs fichiers.
 
 ```bash
-# Load a local file
+# Charger un fichier local
 apprise --config=/etc/apprise/config.yml --body="test"
 
-# Load from a URL
+# Charger depuis une URL
 apprise --config=https://myserver.com/cfg/apprise --body="test"
 ```
 
-## Emplacements de configuration par défaut
+## Emplacements de Configuration par Défaut
 
-Si vous ne précisez pas de fichier de configuration via la CLI (`--config`), Apprise charge automatiquement un fichier de configuration par défaut.
+Si vous ne précisez aucun fichier de configuration via le CLI (`--config`), Apprise charge automatiquement un fichier de configuration par défaut pour vous.
 
 <Tabs syncKey="config-search-path">
 <TabItem label="Linux/BSD/Apple">
-Les fichiers de configuration suivants sont analysés dans l'ordre ci-dessous ; le premier trouvé est chargé et aucune recherche supplémentaire n'est effectuée.
+Les fichiers de configuration suivants sont recherchés dans l'ordre indiqué ci-dessous ; la première correspondance trouvée est chargée, et rien d'autre n'est ensuite traité.
 
 1. `~/.apprise`
 1. `~/.apprise.conf`
@@ -388,7 +388,7 @@ Les chemins globaux suivants sont aussi recherchés si rien n'est trouvé ci-des
 </TabItem>
 
 <TabItem label="Microsoft Windows">
-Les fichiers de configuration suivants sont analysés dans l'ordre ci-dessous ; le premier trouvé est chargé et aucune recherche supplémentaire n'est effectuée.
+Les fichiers de configuration suivants sont recherchés dans l'ordre indiqué ci-dessous ; la première correspondance trouvée est chargée, et rien d'autre n'est ensuite traité.
 
 1. `%APPDATA%\Apprise\apprise`
 1. `%APPDATA%\Apprise\apprise.conf`
@@ -414,7 +414,7 @@ Les chemins globaux suivants sont aussi recherchés si rien n'est trouvé ci-des
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yml`
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yaml`
 
-En supposant que l'utilisateur soit `foobar` et que Microsoft Windows soit installé sur le lecteur `C:\`, cela donne :
+En supposant que l'utilisateur soit `foobar` et que Microsoft Windows soit installé sur le lecteur `C:\`, cela peut être interprété comme suit :
 
 | Variable d'environnement | Exemple de traduction             |
 | ------------------------ | --------------------------------- |
@@ -428,21 +428,21 @@ En supposant que l'utilisateur soit `foobar` et que Microsoft Windows soit insta
 </Tabs>
 
 :::tip[Le saviez-vous ?]
-Apprise détermine automatiquement le format (TEXT ou YAML) à partir de l'extension du fichier (`.yml` ou `.yaml`). Si le fichier n'a pas d'extension, il est traité comme TEXT par défaut, sauf si une structure YAML valide est détectée.
+Apprise détermine automatiquement le format (TEXT ou YAML) à partir de l'extension du fichier (`.yml` ou `.yaml`). Si votre fichier n'a pas d'extension, il est traité comme du TEXT par défaut, sauf si une structure YAML valide est détectée.
 :::
 
-## Tags réservés
+## Tags Réservés
 
-Deux tags spéciaux permettent de contrôler le comportement des notifications.
+Il existe deux tags spéciaux que vous pouvez utiliser pour contrôler le comportement des notifications.
 
-| Tag      | Description                                                                                                                                                       |
-| :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `always` | Si vous attribuez le tag `always` à une URL dans votre configuration, elle sera **TOUJOURS** déclenchée, même si vous filtrez sur un autre tag via la CLI.        |
-| `all`    | Utilisé lors de l'envoi d'une notification (par ex. `apprise --tag=all`). Cela demande à Apprise d'ignorer tous les filtres et de notifier **tous** les services. |
+| Tag      | Description                                                                                                                                                                     |
+| :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `always` | Si vous attribuez le tag `always` à une URL dans votre configuration, elle sera **TOUJOURS** déclenchée, même si vous filtrez sur un autre tag via le CLI.                      |
+| `all`    | Utilisé lors de l'_envoi_ d'une notification (par exemple `apprise --tag=all`). Cela demande à Apprise d'ignorer tous les filtres et de notifier **tous** les services définis. |
 
-## Configuration Web privée
+## Configuration Web Hébergée en Privé
 
-Si vous hébergez votre configuration sur un serveur Web privé, Apprise détecte le format à partir de l'en-tête **Content-Type** renvoyé par le serveur, ou via un paramètre d'URL explicite.
+Si vous hébergez votre configuration sur un serveur web privé, Apprise détecte le format en fonction de l'en-tête **Content-Type** renvoyé par le serveur, ou via un paramètre d'URL explicite.
 
 | Format   | HTTP Content-Type                 | Forçage par URL          |
 | :------- | :-------------------------------- | :----------------------- |
@@ -450,5 +450,5 @@ Si vous hébergez votre configuration sur un serveur Web privé, Apprise détect
 | **TEXT** | `text/plain`                      | `http://...?format=text` |
 
 :::note
-Si vous utilisez un hébergement Apprise API, vos URL `include` ressemblent à : `http://apprise-host/get/<key>`
+Si vous utilisez une instance de l'API Apprise, vos URL `include` ressemblent à ceci : `http://apprise-host/get/<key>`
 :::

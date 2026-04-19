@@ -1,0 +1,756 @@
+---
+title: Déploiement
+description: How to deploy and operate the API Apprise using containers, Docker Compose, or Kubernetes.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+The **API Apprise** is designed to run as a containerized service.  
+This page explains **how to deploy and operate it**, not how to use the API endpoints.
+
+If you are looking to:
+
+- send notifications, see **API Usage**
+- integrate with the CLI or Python library, see **Integration**
+- understand keys, storage, or locking, see **Configuration**
+
+## Deployment Model
+
+API Apprise is a **stateless-first** service with **optional persistent state**.
+
+- Stateless usage sends notifications directly without saving configuration.
+- Stateful usage persists configuration under a `{KEY}` for reuse.
+- The built-in web interface is optional and provided for convenience only.
+
+The service is safe to run:
+
+- locally
+- behind a reverse proxy
+- in Docker or Docker Compose
+- in Kubernetes, including hardened and rootless environments
+
+## Quick Start
+
+Choose one deployment method below to get API Apprise running quickly.
+
+<Tabs>
+  <TabItem label="Docker">```bash
+docker run --name apprise \
+  -p 8000:8000 \
+  -v ./config:/config \
+  -v ./attach:/attach \
+  -e APPRISE_STATEFUL_MODE=simple \
+  -e APPRISE_WORKER_COUNT=1 \
+  -e APPRISE_ADMIN=y \
+  -d caronc/apprise:latest
+```
+
+The following will set the same container up but leverage health check monitoring:
+
+```bash
+docker run --name apprise \
+  -p 8000:8000 \
+  -v ./config:/config \
+  -v ./attach:/attach \
+  -e APPRISE_STATEFUL_MODE=simple \
+  -e APPRISE_WORKER_COUNT=1 \
+  -e APPRISE_ADMIN=y \
+  --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
+  --health-interval=30s \
+  --health-timeout=5s \
+  --health-retries=3 \
+  --health-start-period=20s \
+  -d caronc/apprise:latest
+```
+
+</TabItem>
+<TabItem label="Docker Compose">
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    container_name: apprise
+    ports:
+      - "8000:8000"
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_ADMIN: "y"
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+```
+
+The following will set the same container up but leverage health check monitoring:
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise-api:latest
+    container_name: apprise
+    ports:
+      - "8000:8000"
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_ADMIN: "y"
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+```
+
+</TabItem>
+<TabItem label="Kubernetes">
+  <Tabs>
+<TabItem label="Minimal Example">```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: 1
+            - name: APPRISE_ADMIN
+              value: y
+```
+
+The following example expands on the above and offers a **liveness** and **readiness** probe:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: 1
+            - name: APPRISE_ADMIN
+              value: y
+
+          # Ready only when /status returns 200
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Restart the container if /status stops returning 200
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+```
+
+</TabItem>
+
+<TabItem label="Full Example">
+Here is a more complete Kubernetes example. Note that this uses the legacy `PGID` and `PUID` environment variables:
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: apprise
+  name: apprise-api-override-conf-config
+  namespace: apprise
+data:
+  location-override.conf: |
+    auth_basic            "Apprise API Restricted Area";
+    auth_basic_user_file  /etc/nginx/.htpasswd;
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    name: apprise
+  name: apprise-api-htpasswd-secret
+  namespace: apprise
+data:
+  .htpasswd: <base64_encoded> # add output of: htpasswd -c apprise_api.htpasswd <USERNAME> && cat apprise_api.htpasswd | base64
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    name: apprise
+  name: apprise-data
+  namespace: apprise
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    name: apprise
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: apprise
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: apprise
+    spec:
+      containers:
+        - env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          image: caronc/apprise:1.1
+          name: apprise
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: apprise-data
+            - mountPath: /plugin
+              name: apprise-data
+            - mountPath: /attach
+              name: apprise-data
+            # the following mountPath can be removed if not wanted/used
+            - mountPath: /etc/nginx/.htpasswd
+              name: apprise-api-htpasswd-secret-volume
+              readOnly: true
+              subPath: .htpasswd
+            # the following mountPath can be removed if not wanted/used
+            - mountPath: /etc/nginx/location-override.conf
+              name: apprise-api-override-conf-config-volume
+              readOnly: true
+              subPath: location-override.conf
+      restartPolicy: Always
+      volumes:
+        - name: apprise-data
+          persistentVolumeClaim:
+            claimName: apprise-data
+        # the following volume can be removed if not wanted/used
+        - name: apprise-api-htpasswd-secret-volume
+          secret:
+            secretName: apprise-api-htpasswd-secret
+        # the following volume can be removed if not wanted/used
+        - name: apprise-api-override-conf-config-volume
+          configMap:
+            name: apprise-api-override-conf-config
+```
+
+Credit goes to: [@steled](https://github.com/steled) for the above. The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the last section with the following instead:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: apprise
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: apprise
+    spec:
+      containers:
+        - env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          image: caronc/apprise:1.1
+          name: apprise
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: apprise-data
+            - mountPath: /plugin
+              name: apprise-data
+            - mountPath: /attach
+              name: apprise-data
+            - mountPath: /etc/nginx/.htpasswd
+              name: apprise-api-htpasswd-secret-volume
+              readOnly: true
+              subPath: .htpasswd
+            - mountPath: /etc/nginx/location-override.conf
+              name: apprise-api-override-conf-config-volume
+              readOnly: true
+              subPath: location-override.conf
+      restartPolicy: Always
+      volumes:
+        - name: apprise-data
+          persistentVolumeClaim:
+            claimName: apprise-data
+        - name: apprise-api-htpasswd-secret-volume
+          secret:
+            secretName: apprise-api-htpasswd-secret
+        - name: apprise-api-override-conf-config-volume
+          configMap:
+            name: apprise-api-override-conf-config
+```
+
+</TabItem>
+
+<TabItem label="Hardened (Rootless + Read-only)">
+For a more security conscious setup, you can run API Apprise as a non-root user with a read only root filesystem and explicit ephemeral volumes.
+
+The following example assumes you already created persistent volume claims for `/config`, `/plugin`, and `/attach`.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        readOnlyRootFilesystem: true
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: "1"
+            - name: APPRISE_ADMIN
+              value: "y"
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            # Persistent data
+            - name: config
+              mountPath: /config
+            - name: plugin
+              mountPath: /plugin
+            - name: attach
+              mountPath: /attach
+
+            # Ephemeral runtime and temp files
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: apprise-config
+        - name: plugin
+          persistentVolumeClaim:
+            claimName: apprise-plugin
+        - name: attach
+          persistentVolumeClaim:
+            claimName: apprise-attach
+
+        # The deployment mounts /tmp as an in-memory emptyDir, which is where nginx,
+        # gunicorn, and supervisord store pids, sockets, and temporary files.
+        # This is configured as an ephemeral volume, stored in memory.
+        - name: tmp
+          emptyDir:
+            medium: Memory
+```
+
+The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the section with the following instead:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apprise
+  name: apprise
+  namespace: apprise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apprise
+  template:
+    metadata:
+      labels:
+        app: apprise
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        readOnlyRootFilesystem: true
+      containers:
+        - name: apprise
+          image: caronc/apprise:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: APPRISE_STATEFUL_MODE
+              value: simple
+            - name: APPRISE_WORKER_COUNT
+              value: "1"
+            - name: APPRISE_ADMIN
+              value: "y"
+          ports:
+            - containerPort: 8000
+              name: http
+
+          # Health checks: /status must return HTTP 200
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          volumeMounts:
+            # Persistent data
+            - name: config
+              mountPath: /config
+            - name: plugin
+              mountPath: /plugin
+            - name: attach
+              mountPath: /attach
+
+            # Ephemeral runtime and temp files
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: apprise-config
+        - name: plugin
+          persistentVolumeClaim:
+            claimName: apprise-plugin
+        - name: attach
+          persistentVolumeClaim:
+            claimName: apprise-attach
+
+        # The deployment mounts /tmp as an in-memory emptyDir, which is where nginx,
+        # gunicorn, and supervisord store pids, sockets, and temporary files.
+        # This is configured as an ephemeral volume, stored in memory.
+        - name: tmp
+          emptyDir:
+            medium: Memory
+```
+
+</TabItem>
+</Tabs>
+</TabItem>
+</Tabs>
+
+Once deployed, the API and optional web interface are available at:
+
+```text
+http://localhost:8000/
+```
+
+## Persistent Storage
+
+API Apprise supports persistent storage for:
+
+- saved configurations
+- cached authentication metadata
+- uploaded attachments
+
+The container expects the following writable paths:
+
+| Path      | Purpose                                     |
+| --------- | ------------------------------------------- |
+| `/config` | Saved configurations and internal state     |
+| `/attach` | Uploaded attachments                        |
+| `/plugin` | Optional custom plugins                     |
+| `/tmp`    | Runtime files (sockets, buffers, temp data) |
+
+For most deployments, mounting **only `/config` and `/attach`** is sufficient.
+
+## Hardened Deployments
+
+For public or multi-tenant environments, API Apprise supports hardened execution.
+
+Example hardened container configuration:
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    container_name: apprise
+    user: "1000:1000"
+    read_only: true
+
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_ADMIN: "y"
+
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+
+    tmpfs:
+      - /tmp
+```
+
+Important Remarques:
+
+- `/tmp` must remain writable
+- No files are written under `/var/log`
+- All logs are written to stdout and stderr
+
+### Kubernetes Hardening Remarques
+
+If you deploy in Kubernetes, see **Quick Start -> Kubernetes -> Hardened (rootless + read-only)** for a ready-to-apply example that:
+
+- runs as a non-root user
+- drops all Linux capabilities
+- disables privilege escalation
+- uses a read only root filesystem
+- mounts `/tmp` as an in-memory `emptyDir`
+
+## Health checks
+
+API Apprise exposes a health endpoint:
+
+```text
+GET /status
+```
+
+- Returns HTTP `200` when healthy
+- Returns HTTP `417` if a blocking issue is detected
+
+Exemple :
+
+```bash
+curl http://localhost:8000/status
+```
+
+This endpoint is suitable for:
+
+- Docker health checks
+- Kubernetes liveness probes
+- external monitoring systems
+
+## Reverse Proxies and Base Paths
+
+If API Apprise is hosted behind a reverse proxy or served under a subpath, set `APPRISE_BASE_URL` to accommodate this.
+
+Exemple :
+
+```bash
+APPRISE_BASE_URL=/apprise
+```
+
+This ensures:
+
+- correct URL generation
+- correct web UI routing
+- correct OpenAPI links
+
+## Authentication and access control
+
+API Apprise does **not** implement authentication internally.
+
+This is by design.
+
+Recommended approaches:
+
+- place the API behind a reverse proxy
+- use HTTP basic authentication
+- restrict access at the network or ingress level
+
+Nginx override files may be injected into the container to enforce access control.
+
+A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `ConfigMap` (nginx `location-override.conf`) is available under **Quick Start -> Kubernetes -> Full example**.
+
+## Logging and Observability
+
+- All logs are emitted to stdout and stderr
+- No log files are written to disk
+- Prometheus metrics are available at `/metrics`
+
+## Development Deployments
+
+For local development, the repository includes Docker Compose overrides that:
+
+- mount the local source tree
+- reload UI and template changes without rebuilding
+- expose the API on port `8000`
+
+This mode is intended for development only and is **not recommended for production**.
+
+## Next Steps
+
+Once deployed, you can:
+
+- save configuration keys using the web UI or API
+- send notifications using `/notify` or `/notify/{KEY}`
+- integrate external systems using HTTP or the Apprise CLI

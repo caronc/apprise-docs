@@ -1,0 +1,481 @@
+---
+title: Pièces jointes
+description: Envoyer files, in-memory content, and hosted URLs through Apprise services that support attachments.
+sidebar:
+  order: 7
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+When you pass `attach=` into `Apprise.notify()`, Apprise normalizes every entry into an
+`AppriseAttachment` object (internally backed by `AttachBase`
+implementations). Plugins that opt in (by setting
+`attachment_support = True`) receive a list of attachment objects through
+the `attach` argument of `send()`.
+
+From a plugin author perspective, an attachment is a small, uniform API
+that lets you:
+
+- Validate availability (`if not attachment: ...`)
+- Read from disk (`attachment.path`, `attachment.open()`, `attachment.chunk()`)
+- Get metadata (`attachment.name`, `attachment.mimetype`, `len(attachment)`)
+- Convert to base64 (`attachment.base64()`), for APIs that require inline payloads
+- Control privacy in logs (`attachment.url(privacy=True)`)
+
+## Ce que recoivent les plugins
+
+When a plugin declares attachment support:
+
+```python
+class NotifyFooBar(NotifyBase):
+    # Declare awareness to the Apprise library that this service supports
+    # attachments
+    attachment_support = True
+
+    def send(self, body, title="", notify_type=NotifyType.INFO, attach=None, **kwargs):
+
+        # Add 'attach' into your send() call as it will be populated when one
+        # or more attachments exist.
+        if attach:
+            for a in attach:
+                # ...
+                pass
+```
+
+`attach` is either:
+
+- `None` or an empty list when no attachments were provided
+- A list of `AttachBase` objects (for example: `AttachFile`, `AttachHTTP`,
+  `AttachMemory`)
+
+A quick rule of thumb:
+
+- `if not a:` means the attachment is not currently usable.
+- `a.path` triggers a download or validation step when needed.
+- `len(a)` returns the attachment size in bytes, when known.
+
+## Sources des pieces jointes
+
+Apprise supports multiple attachment sources. These are all normalized to
+the same API surface.
+
+<Tabs>
+<TabItem value="file" label="Local File (file://)">
+
+**`AttachFile`** — local files reference server-side paths. The simplest usage is passing a path string directly — Apprise converts it to a `file://` URL internally:
+
+```python
+# Single path — Apprise wraps it in AttachFile automatically
+apobj.notify(body="See log", attach="/var/log/syslog")
+
+# Multiple paths
+apobj.notify(
+    body="Build artifacts",
+    attach=["/var/log/syslog", "/tmp/report.pdf"],
+)
+```
+
+:::note
+`file://` is the default schema if one isn't provided. The path `/var/log/syslog` is treated identically to `file:///var/log/syslog`.
+:::
+
+**Direct constructor** — use `AttachFile` when you need to override the filename or MIME type presented to the upstream service without renaming the file on disk:
+
+```python
+from apprise.attachment import AttachFile
+
+# Override the filename and MIME type the service sees
+a = AttachFile(
+    "/var/log/app.log",
+    name="2026-03-20-app.log",   # presented name, not a rename
+    mimetype="text/plain",
+)
+
+apobj.notify(body="Nightly log", attach=a)
+```
+
+**Key Behaviours:**
+
+- Content is validated in-place — it is not copied or moved.
+- `name=` and `mimetype=` override what the plugin sends upstream; the file on disk is unchanged.
+- Size limits are enforced via `max_file_size` (defaults to 1 GB).
+- `attachment.path` returns the absolute path to the file.
+- `attachment.open()` returns a readable file handle and is the correct way to stream content in plugins.
+
+</TabItem>
+
+<TabItem value="http" label="Hosted URL (http://, https://)">
+
+**`AttachHTTP`** — hosted URLs are fetched to a temporary file before being provided to plugins. Pass a URL string directly — Apprise creates an `AttachHTTP` internally:
+
+```python
+# Single URL
+apobj.notify(
+    body="Latest report",
+    attach="https://example.com/report.pdf",
+)
+
+# Multiple URLs
+apobj.notify(
+    body="Spec documents",
+    attach=(
+        "https://example.com/widget-ICD.pdf",
+        "https://example.com/draft-manual.pdf",
+    ),
+)
+```
+
+**Authenticated fetch** — embed credentials directly in the URL:
+
+```python
+# Apprise authenticates before downloading
+apobj.notify(
+    body="Security camera snapshot",
+    attach="https://admin:secret@camera.local/snapshot.jpg",
+)
+```
+
+:::caution
+Treat attachment URLs with embedded credentials as secrets. Never log or commit them.
+:::
+
+**Direct constructor** — use `AttachHTTP` when you need fine-grained control over caching, timeouts, or custom headers:
+
+```python
+from apprise.attachment import AttachHTTP
+
+# Disable caching so the URL is always re-fetched on each notify() call
+a = AttachHTTP(
+    "https://reports.internal/latest.pdf",
+    cache=False,
+    name="latest-report.pdf",   # override filename presented to the service
+)
+
+apobj.notify(body="Fresh report", attach=a)
+```
+
+**Custom HTTP headers** — use the `+Key=Value` URL syntax to forward headers with the fetch request:
+
+```python
+# Bearer token forwarded when downloading the asset
+apobj.notify(
+    body="Private asset",
+    attach="https://cdn.example.com/asset.zip?+Authorization=Bearer%20TOKEN",
+)
+```
+
+**Key Behaviours:**
+
+- The download is stored in a temporary file and cleaned up automatically when the attachment is invalidated or goes out of scope.
+- A per-URL cache applies (default 600 seconds). Use `cache=no` to always re-fetch, or `cache=<seconds>` for a custom TTL.
+- SSL verification is on by default; set `verify=no` for trusted internal endpoints only.
+- `cto=` and `rto=` control connection and read timeouts respectively.
+
+### Reserved Parameters
+
+The following parameters are consumed by Apprise and are not forwarded upstream:
+
+- `cache`
+- `verify`
+- `mime`
+- `name`
+- `cto`
+- `rto`
+
+All other query parameters are forwarded verbatim.
+
+### Custom Headers
+
+Custom HTTP headers may be specified using the `+Header=Value` syntax.
+
+Exemple :
+
+```text
+https://example.com/file.png?+Authorization=Bearer%20TOKEN
+```
+
+These entries become HTTP headers, not query parameters.
+
+### Certificate Verification
+
+The `verify=` parameter controls TLS certificate verification for HTTPS-based
+attachments.
+
+- `verify=yes` (default): TLS certificates are validated using the system trust
+  store.
+- `verify=no`: TLS certificate verification is disabled. This should only be
+  used for testing or when interacting with trusted internal endpoints.
+
+### Timeouts
+
+HTTP attachments support explicit timeout configuration:
+
+- `cto=` Connection timeout (seconds)
+- `rto=` Read timeout (seconds)
+
+Timeout values persist with the attachment.
+
+### Caching
+
+Controls how long a downloaded attachment is considered valid before it is
+re-fetched. This is useful for things like security cameras where if your
+application is holding onto an AppriseAttachment object for a long time, you
+can always be guaranteed a fresh update.
+
+- `cache=yes` caches indefinitely
+- `cache=no` disables caching (hosted URLs are fetched every time)
+- `cache=<seconds>` caches for the specified duration (time to live in seconds); default is 600.
+
+:::note
+Cache is always deleted from the filesystem once the AppriseAttachment instance goes out of scope or the object is deleted.
+:::
+
+### Filename and MIME Detection Order
+
+1. Explicit `name=` or `mime=`
+1. `Content-Disposition` header
+1. URL path filename
+1. Generated fallback values
+
+### Streaming and Limits
+
+HTTP attachments are streamed to disk and validated incrementally. When
+`Content-Length` is missing or invalid, size limits are enforced during
+streaming.
+
+### Fetch Reuse
+
+When caching is enabled, a single HTTP fetch may be reused across many
+notification sends.
+
+</TabItem>
+
+<TabItem value="memory" label="In-Memory (memory://)">
+
+**`AttachMemory`** — stores content entirely in a `BytesIO` buffer, with no temporary files written to disk. This is the right choice when you generate content on the fly — reports, rendered HTML, chart images, or any bytes you already have in memory.
+
+`AttachMemory` must always be constructed directly; there is no URL shorthand for it.
+
+```python
+from apprise.attachment import AttachMemory
+```
+
+**From a `bytes` object:**
+
+```python
+data = b"<html><body><h1>Report</h1></body></html>"
+
+apobj.notify(
+    body="Monthly report attached",
+    attach=AttachMemory(
+        content=data,
+        name="report.html",
+        mimetype="text/html",
+    ),
+)
+```
+
+**From a `str` object** — encoded to UTF-8 automatically:
+
+```python
+csv_text = "date,value\n2026-03-20,42\n"
+
+apobj.notify(
+    body="Today's readings",
+    attach=AttachMemory(
+        content=csv_text,
+        name="readings.csv",
+        mimetype="text/csv",
+    ),
+)
+```
+
+**From a `BytesIO` buffer** — read the buffer before passing:
+
+```python
+import io
+
+buf = io.BytesIO()
+buf.write(b"%PDF-1.4 ...")   # write your content into the buffer
+buf.seek(0)
+
+apobj.notify(
+    body="Generated PDF",
+    attach=AttachMemory(
+        content=buf.read(),
+        name="invoice.pdf",
+        mimetype="application/pdf",
+    ),
+)
+```
+
+**Multiple in-memory attachments:**
+
+```python
+apobj.notify(
+    body="Build summary",
+    attach=[
+        AttachMemory(content=summary_bytes, name="summary.txt", mimetype="text/plain"),
+        AttachMemory(content=chart_bytes,   name="chart.png",   mimetype="image/png"),
+    ],
+)
+```
+
+**Practical example — Plotly / Matplotlib chart:**
+
+```python
+import io
+import apprise
+from apprise.attachment import AttachMemory
+
+# --- generate your chart however you like ---
+try:
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    ax.plot([1, 2, 3], [4, 5, 6])
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    chart_bytes = buf.getvalue()
+except ImportError:
+    chart_bytes = b""   # graceful fallback
+
+# --- send it ---
+apobj = apprise.Apprise()
+apobj.add("tgram://bottoken/ChatID")
+
+apobj.notify(
+    body="Nightly trend",
+    attach=AttachMemory(
+        content=chart_bytes,
+        name="trend.png",
+        mimetype="image/png",
+    ),
+)
+```
+
+**Key Behaviours:**
+
+- Accepts `bytes`, `str` (encoded to UTF-8 by default), but **not** a `BytesIO` directly — call `.read()` or `.getvalue()` first.
+- `name=` defaults to a UUID-based filename if omitted; always set it explicitly so the service receives a meaningful filename.
+- `mimetype=` defaults to `text/plain` for strings and `application/octet-stream` for bytes if not set; set it explicitly when the upstream service inspects MIME type (e.g. Telegram routes images and documents differently).
+- No disk I/O occurs at any point. `attachment.open()` returns the internal `BytesIO` directly.
+- `len(attachment)` returns the buffer size in bytes, which you can compare against a service's upload limit before calling `notify()`.
+
+</TabItem>
+</Tabs>
+
+### Content Location Modes
+
+Attachment handling is governed by content location rules:
+
+| Value          | Description                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| `LOCAL`        | Allows local files, memory attachments, and hosted content.                                   |
+| `HOSTED`       | Intended for hosted services. Local file and memory attachments are rejected.                 |
+| `INACCESSIBLE` | Pieces jointes are disabled entirely. All downloads fail and attachments evaluate to `False`. |
+
+## URL Parameters Shared by Attachment Types
+
+| Value  | Description                                                                                                                                                                                           |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mime` | Attachment URLs support a small set of common query parameters. <br/>Forces the attachment MIME type, bypassing detection. This is useful when the upstream API chooses behaviour based on MIME type. |
+| `name` | Forces the filename presented to the plugin. This does not rename local files, it only changes the metadata (`attachment.name`) and what the plugin might send upstream.                              |
+
+## Working with Pieces jointes in Plugins
+
+### Validate Access
+
+Always verify attachments are available before using them:
+
+```python
+for attachment in attach:
+    if not attachment:
+        self.logger.error(
+            "Could not access attachment %s.",
+            attachment.url(privacy=True),
+        )
+        return False
+```
+
+An attachment can fail because it is missing, exceeds size limits, is inaccessible for the current runtime location, or could not be downloaded.
+
+### Prefer `attachment.open()` for upload APIs
+
+Many services require multipart uploads. Use `attachment.open()` to get a file-like object — this works correctly for **all** attachment types, including `AttachMemory` which has no path on disk:
+
+```python
+filename = attachment.name
+mimetype = attachment.mimetype
+
+fh = attachment.open()
+try:
+    files = {"file": (filename, fh, mimetype)}
+    r = requests.post(url, files=files, ...)
+finally:
+    fh.close()
+```
+
+Or using the context manager form:
+
+```python
+with attachment as f:
+    files = {"file": (attachment.name, f, attachment.mimetype)}
+    r = requests.post(url, files=files, ...)
+```
+
+:::caution
+Do **not** call `open(attachment.path, "rb")` directly. `attachment.path` returns `None` for remote attachments that have not yet been downloaded, and returns only a bare filename (not a full path) for `AttachMemory` objects — both will raise an `OSError`. Always use `attachment.open()` or `with attachment as f:` instead.
+:::
+
+### Base64 When The Upstream Requires It
+
+All attachment types support Base64 export. Some APIs require base64 encoded attachments. Use `attachment.base64()`:
+
+```python
+encoded = attachment.base64()  # returns a str by default
+payload["base64_attachments"].append(encoded)
+```
+
+- `base64()` returns a string
+- `base64(encoding=None)` returns raw bytes
+
+If the attachment cannot be read, `base64()` raises an Apprise exception. Catch it and fail gracefully.
+
+This is commonly used by APIs that do not support multipart uploads.
+
+### Stream in Chunks When Needed
+
+If you must avoid reading a full file into memory, use `attachment.chunk()`:
+
+```python
+for chunk in attachment.chunk(size=5 * 1024 * 1024):
+    # upload / write chunk
+    ...
+```
+
+### Cleanup and Lifecycle
+
+Plugins do not usually need to manually delete downloaded temporary files. Attachment objects manage their own cleanup through `invalidate()` and destructors.
+
+If you hold on to attachment objects beyond `send()`, you are responsible for understanding the lifecycle. In general, treat attachments as ephemeral.
+
+## Limits and Safety
+
+- Size limits are enforced by `AttachBase.max_file_size`. If your service has a smaller limit, enforce it in your plugin using `len(attachment)` and fail early.
+- Attachment support is opt-in per plugin using `attachment_support = True`. If your service cannot accept files, leave this disabled.
+- Use `attachment.url(privacy=True)` in logs. This ensures any embedded secrets are redacted.
+
+## Guidance For Plugin Authors
+
+Plugins should validate attachment size and count early and handle inaccessible
+attachments gracefully
+
+## Practical Exemples in Core Plugins
+
+The core project includes common patterns you can copy.
+
+- Uploading attachments as files (multipart) with MIME-based selection.
+- Converting attachments to base64 for JSON APIs.
+- Iterating attachments and reporting partial failure.
+
+See the [Telegram](https://github.com/caronc/apprise/blob/master/apprise/plugins/telegram.py) and [Signal API](https://github.com/caronc/apprise/blob/master/apprise/plugins/signal_api.py) plugins for real-world implementations of both patterns.

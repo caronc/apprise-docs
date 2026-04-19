@@ -1,8 +1,8 @@
 ---
-title: "Enimga2 Notifications"
-description: "Send Enimga2 notifications."
+title: "Enigma2 Notifications"
+description: "Send Enigma2 notifications."
 sidebar:
-  label: "Enimga2"
+  label: "Enigma2"
 
 schemas:
   - enigma2: insecure
@@ -29,7 +29,7 @@ A [_E2OpenPlugin_](https://github.com/E2OpenPlugins) called [OpenWebif](https://
 
 Once [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) is installed, Apprise can utilize its API to send notifications to your Enigma2 device.
 
-Installation instructions on how to install OpenWebif onto your Engima2 device can be found on its [GitHub Page](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
+Installation instructions on how to install OpenWebif onto your Enigma2 device can be found on its [GitHub Page](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
 
 ## Syntax
 
@@ -65,7 +65,7 @@ Valid syntax is as follows:
 | Variable | Required | Description                                                                                                                               |
 | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | hostname | Yes      | The Enigma2 devices IP/hostname                                                                                                           |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **enigma2s://** and **443** for all **enigma2://** references. |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **enigma2://** and **443** for all **enigma2s://** references. |
 | user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                         |
 | password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                         |
 | timeout  | No       | The number of seconds delivered notification stay on the screen for. The default value is 13.                                             |

@@ -89,5 +89,5 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Assuming our {source} is node01.local
 # Assuming our {component} is drive_sda
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB&"+disk_space_total=500GB"
+   "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB&+disk_space_total=500GB"
 ```

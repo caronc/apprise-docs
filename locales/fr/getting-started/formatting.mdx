@@ -1,99 +1,99 @@
 ---
-title: Formatage et pieces jointes
-description: Envoyez du texte brut, du Markdown, du HTML et des fichiers joints avec des replis elegants.
+title: Formatage et Pièces Jointes
+description: Envoyez du texte brut, du Markdown, du HTML et des fichiers joints avec des replis élégants.
 sidebar:
   order: 6
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Apprise peut distribuer du **texte brut**, du **Markdown**, du **HTML** et des **pieces jointes**, puis adapter ce que vous envoyez a ce que chaque service est reellement capable d'accepter. Par exemple, un service qui ne prend en charge que le texte recevra quand meme votre notification, mais toute mise en forme riche sera reduite de maniere appropriee.
+Apprise peut envoyer du **texte brut**, du **Markdown**, du **HTML** et des **pièces jointes**, puis adapter ce que vous transmettez à ce que chaque service peut réellement accepter. Par exemple, un service qui ne prend en charge que du texte recevra tout de même votre notification, mais tout format enrichi sera réduit de manière appropriée.
 
-## Formats de message
+## Formats de Message
 
-Apprise ne **devine pas** automatiquement votre type de contenu. Vous indiquez plutot a Apprise **le type de contenu que vous fournissez**, et Apprise utilise cette information pour prendre des decisions de diffusion intelligentes selon chaque service.
+Apprise ne **devine pas** automatiquement votre type de contenu. À la place, vous lui indiquez **le type de contenu fourni**, et Apprise utilise cette information pour prendre des décisions intelligentes, service par service.
 
-Apprise reconnait quatre **etats de format d'entree** :
+Apprise reconnaît quatre **états de format d'entrée** :
 
-| Etat                   | Description                                                                                  |
+| État                   | Description                                                                                  |
 | :--------------------- | :------------------------------------------------------------------------------------------- |
-| _(implicite)_ **none** | Aucun format declare. Le contenu est transmis tel quel.                                      |
-| **text**               | Entree en texte brut. Apprise peut simplifier le contenu pour les services texte uniquement. |
-| **markdown**           | Entree en Markdown. Apprise peut convertir ou simplifier si necessaire.                      |
-| **html**               | Entree en HTML. Apprise peut retirer ou convertir le balisage si necessaire.                 |
+| _(implicite)_ **none** | Aucun format déclaré. Le contenu est transmis tel quel.                                      |
+| **text**               | Entrée en texte brut. Apprise peut simplifier le contenu pour les services texte uniquement. |
+| **markdown**           | Entrée en Markdown. Apprise peut convertir ou simplifier selon le besoin.                    |
+| **html**               | Entrée en HTML. Apprise peut supprimer ou convertir le balisage si nécessaire.               |
 
 :::note
 
-- L'etat `none` est implicite. Il est utilise automatiquement lorsqu'aucun format n'est fourni.
-- L'etat `none` ne peut pas etre defini explicitement via la CLI, la bibliotheque ou l'API.
+- L'état `none` est implicite. Il est utilisé automatiquement lorsqu'aucun format n'est fourni.
+- L'état `none` ne peut pas être défini explicitement via le CLI, la bibliothèque ou l'API.
 
 :::
 
-**En resume** : Apprise preserve votre contenu chaque fois que possible, et ne l'adapte que lorsqu'une destination ne peut pas prendre en charge ce que vous avez fourni.
+**En bref** : Apprise préserve votre contenu autant que possible et ne l'adapte que lorsqu'une destination ne peut pas prendre en charge ce que vous avez fourni.
 
-### Declarer l'entree vs transformer la sortie
+### Déclarer l'Entrée vs Transformer la Sortie
 
-Quand vous specifiez un format (tel que `text`, `markdown` ou `html`), vous **decrivez votre entree**, vous ne forcez pas un format de sortie donne.
+Lorsque vous spécifiez un format (comme `text`, `markdown` ou `html`), vous **décrivez votre entrée**, vous ne forcez pas un format de sortie particulier.
 
-Apprise utilise cette information pour determiner **si une transformation est necessaire** pour une destination donnee.
+Apprise utilise cette information pour déterminer **si une transformation est nécessaire** pour une destination donnée.
 
-- Si le service de destination prend en charge nativement le format declare, le contenu est transmis tel quel
-- Si la destination ne prend pas en charge le format declare, Apprise effectue la conversion minimale necessaire
+- Si le service de destination prend nativement en charge le format déclaré, le contenu est transmis tel quel
+- Si la destination ne peut pas prendre en charge le format déclaré, Apprise effectue la conversion minimale nécessaire
 - Si aucune conversion n'est requise, aucune transformation n'a lieu
 
-Autrement dit, Apprise n'intervient **que lorsqu'il y a un decalage** entre le format d'entree declare et ce que le fournisseur amont peut accepter. Il ne peut le faire que si vous lui avez fourni un format d'entree.
+Autrement dit, Apprise n'intervient **que lorsqu'il existe un décalage** entre le format d'entrée déclaré et ce que le fournisseur amont peut gérer. Cela n'est possible que si vous avez fourni un format d'entrée à exploiter.
 
 Par exemple :
 
-- Un message **HTML** envoye par e-mail peut etre remis en HTML enrichi
-- Le **meme HTML** envoye par SMS sera converti en texte brut lisible
-- Un message **Markdown** envoye a un service de clavardage peut conserver sa mise en forme
-- Ce **meme Markdown** envoye a un service texte uniquement sera simplifie automatiquement
+- Un message **HTML** envoyé par email peut être remis sous forme de HTML enrichi
+- Le **même HTML** envoyé par SMS sera converti en texte brut lisible
+- Un message **Markdown** envoyé à un service de discussion peut conserver sa mise en forme
+- Ce **même Markdown** envoyé à un service texte uniquement sera automatiquement simplifié
 
-Cela rend les destinations plus compatibles _sans_ vous obliger a adapter manuellement le contenu pour chaque service.
+Cela rend les destinations plus compatibles _sans_ vous obliger à adapter manuellement le contenu pour chaque service.
 
-### Que se passe-t-il si vous ne specifiez pas de format ?
+### Que se Passe-t-il si Vous ne Précisez Aucun Format ?
 
-Si vous ne precisez **pas** de format, Apprise adopte un etat legerement different selon le composant utilise :
+Si vous ne précisez **pas** de format, Apprise suppose des états légèrement différents selon le composant utilisé :
 
-| Interface                    | Format d'entree par defaut                                                                                                        |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                            |
-| [Python API](../../library/) | `none` - contenu transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou preconfigure dans `AppriseAsset()` |
-| [Apprise-API](../../api/)    | `none` - contenu transmis tel quel sauf si `format` est fourni dans le payload `/notify/`                                         |
+| Interface                    | Format d'entrée par défaut                                                                                                         |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                             |
+| [Python API](../../library/) | `none` - le contenu est transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou défini dans `AppriseAsset()` |
+| [Apprise-API](../../api/)    | `none` - le contenu est transmis tel quel sauf si `format` est fourni dans la charge utile `/notify/`                              |
 
-A l'exception de la CLI, si aucun `input_format` n'est specifie :
+À l'exception du CLI, si aucun `input_format` n'est précisé :
 
 - Le contenu est transmis **tel quel**
 - Aucune conversion ni assainissement n'a lieu dans Apprise
-- Tout balisage (HTML, Markdown, etc.) est traite comme du texte litteral
+- Tout balisage (HTML, Markdown, etc.) est traité comme du texte littéral
 
-Ce comportement est intentionnel et utile lorsque :
+Ce comportement est intentionnel et utile si :
 
-- Vous savez deja que la destination ne prend en charge que le texte
-- Vous voulez un controle exact sur ce qui est envoye
+- vous savez déjà que la destination ne prend en charge que du texte ;
+- vous voulez un contrôle exact sur ce qui est envoyé.
 
-Declarer le bon format d'entree est facultatif, mais cela permet a Apprise de vous aider plus efficacement sur des destinations mixtes.
+Déclarer le bon format d'entrée est facultatif, mais cela permet à Apprise d'aider plus efficacement sur des destinations mixtes.
 
 ## Exemples CLI
 
-Utilisez `--input-format` pour indiquer a Apprise comment interpreter le contenu du corps du message.
+Utilisez `--input-format` pour indiquer à Apprise comment interpréter le contenu du corps du message.
 
 ```bash
-# Markdown body
-apprise -t "Release" -b "**v1.2.3** is now live" \
+# Corps en Markdown
+apprise -t "Publication" -b "**v1.2.3** est maintenant en ligne" \
   --input-format=markdown \
   "discord://..."
 
-# HTML body
-apprise -t "Build Report" -b "<b>Success</b>: artifacts uploaded" \
+# Corps en HTML
+apprise -t "Rapport de build" -b "<b>Succès</b> : artefacts téléversés" \
   --input-format=html \
   "mailto://user:pass@example.com"
 ```
 
-## Exemples avec la bibliotheque Python
+## Exemples pour la Bibliothèque Python
 
-Utilisez `body_format` pour preciser le format du message que vous fournissez.
+Utilisez `body_format` pour préciser le format du message que vous fournissez.
 
 ```python
 from apprise import Apprise
@@ -102,61 +102,61 @@ from apprise import NotifyFormat
 apobj = Apprise()
 apobj.add("discord://...")
 
-# Markdown input
+# Entrée Markdown
 apobj.notify(
-    title="Status",
-    body="**All checks passed**",
+    title="Statut",
+    body="**Tous les contrôles sont passés**",
     body_format=NotifyFormat.MARKDOWN,
 )
 
-# HTML input
+# Entrée HTML
 apobj.notify(
-    title="Build Report",
-    body="<b>Success</b>: artifacts uploaded",
+    title="Rapport de build",
+    body="<b>Succès</b> : artefacts téléversés",
     body_format=NotifyFormat.HTML,
 )
 ```
 
 ## Exemples Apprise-API
 
-Pour les payloads JSON, utilisez le champ `format` :
+Pour les charges utiles JSON, utilisez le champ `format` :
 
 ```bash
-# Stateless Example
+# Exemple sans état
 curl -X POST http://localhost:8000/notify/ \
   -d 'urls=["discord://..."]' \
-  -d 'title=Status' \
-  -d 'body=**All checks passed**' \
+  -d 'title=Statut' \
+  -d 'body=**Tous les contrôles sont passés**' \
   -d 'format=markdown'
 
-# Stateful Example
+# Exemple avec état
 curl -X POST http://localhost:8000/notify/team-alerts/\
   -d 'tags=outage' \
   -d 'type=failure' \
-  -d 'title=Outage Report' \
-  -d 'body=<strong>File Server is no longer responding</strong>' \
+  -d 'title=Rapport d''incident' \
+  -d 'body=<strong>Le serveur de fichiers ne répond plus</strong>' \
   -d 'format=html'
 ```
 
-Si vous utilisez deja Apprise, pensez a utiliser simplement le [service Apprise API](../../services/apprise_api/) pour simplifier les requetes avec etat :
+Si vous utilisez déjà Apprise, envisagez simplement d'utiliser le [service API Apprise](../../services/apprise_api/) pour simplifier les requêtes avec état :
 
 ```bash
-# --config= allows you to source an upstream Apprise API for your
+# --config= vous permet de pointer vers une API Apprise amont pour votre
 # configuration.
 apprise --config=http://localhost:8000/cfg/team-alerts/ \
   --tag=outage \
   --input-format=html \
   --notification-type=failure \
-  --title "Outage Report" \
-  --body "<strong>File Server is no longer responding</strong>"
+  --title "Rapport d'incident" \
+  --body "<strong>Le serveur de fichiers ne répond plus</strong>"
 ```
 
-:::tip[Pour les developpeurs]
-Si vous utilisez deja l'API de maniere intensive, surtout pour les exemples multilingues et les uploads multipart, la page [Integrations API](../../api/integrations/) reste la reference canonique.
+:::tip[Pour les Développeurs]
+Si vous utilisez déjà l'API de manière intensive (en particulier pour les exemples multilingues et les envois multipart), la page [Intégrations API](../../api/integrations/) reste la référence canonique.
 :::
 
-:::tip[Pour les administrateurs]
-Si le serveur Apprise API n'a pas active `APPRISE_CONFIG_LOCK`, vous pouvez placer l'URL de configuration de votre API Apprise dans l'un des fichiers de configuration par defaut recherches par la CLI afin de simplifier encore plus vos commandes :
+:::tip[Pour les Administrateurs]
+À condition que le serveur API Apprise n'ait pas activé `APPRISE_CONFIG_LOCK`, vous pouvez placer l'URL de configuration de votre API Apprise dans l'un des emplacements de configuration par défaut recherchés par le CLI Apprise pour simplifier encore davantage vos appels :
 
 ```yaml
 # ~/.config/apprise/apprise.yaml
@@ -167,92 +167,92 @@ Votre commande CLI devient alors beaucoup plus simple :
 
 ```bash
 apprise --tag=outage --input-format=html --notification-type=failure \
-  --title "Outage Report" \
-  --body "<strong>File Server is no longer responding</strong>"
+  --title "Rapport d'incident" \
+  --body "<strong>Le serveur de fichiers ne répond plus</strong>"
 ```
 
 :::
 
-## Choisir un format de sortie (diffusion amont)
+## Sélectionner un Format de Sortie (Diffusion Amont)
 
-En plus de declarer le **format d'entree**, certains services permettent de choisir la maniere dont le contenu est envoye **en amont** en precisant un parametre `format=` directement dans l'URL du service.
+En plus de déclarer le **format d'entrée**, certains services vous permettent de choisir la manière dont le contenu est livré **en amont** en précisant un paramètre `format=` directement dans l'URL du service.
 
-Cela ne decrit **pas** votre entree. Cela indique au plugin du service quelle route de diffusion ou quelle representation utiliser, _si elle est prise en charge_.
+Cela ne décrit **pas** l'entrée que vous fournissez. Cela indique plutôt au plugin de service quelle route de diffusion ou quelle représentation utiliser, _si elle est prise en charge_.
 
-### Comment les formats d'entree et de sortie interagissent
+### Comment les Formats d'Entrée et de Sortie Fonctionnent Ensemble
 
-- **Format d'entree** (`body_format`, `--input-format`, API `format`)  
-  Indique a Apprise _quel type de contenu vous fournissez_
+- **Format d'entrée** (`body_format`, `--input-format`, API `format`)  
+  Indique à Apprise _quel type de contenu vous fournissez_
 
-- **Format de sortie** (`?format=` sur l'URL d'un service)  
-  Indique au plugin du service _comment livrer ce contenu en amont_
+- **Format de sortie** (`?format=` dans une URL de service)  
+  Indique au plugin de service _comment livrer ce contenu au fournisseur amont_
 
-Quand les deux sont specifies, Apprise adapte correctement le contenu si necessaire avant de le transmettre a la route de livraison amont selectionnee.
+Lorsque les deux sont précisés, Apprise adapte correctement le contenu si nécessaire avant de le transmettre à la route de diffusion amont sélectionnée.
 
-Si le service amont ne prend **pas** en charge le format de sortie demande, celui-ci est silencieusement ignore et le comportement par defaut du service est utilise.
+Si le service amont ne prend **pas** en charge le format de sortie demandé, il est ignoré silencieusement et le comportement par défaut du service est utilisé à la place.
 
 ### Exemples
 
-#### E-mail
+#### Email
 
-L'e-mail prend en charge plusieurs formats de diffusion.
+L'email prend en charge plusieurs formats de diffusion.
 
 ```text
-# Default behaviour (HTML email)
+# Comportement par défaut (email HTML)
 mailto://user:pass@example.com
 
-# Force plain-text email delivery
+# Forcer une diffusion en texte brut
 mailto://user:pass@example.com?format=text
 ```
 
 Dans ce cas :
 
-- `format=html` n'est pas necessaire, car le HTML est le comportement par defaut
-- `format=text` selectionne explicitement la diffusion en texte brut
-- `format=markdown` est ignore, car l'e-mail ne prend pas en charge une diffusion Markdown
+- `format=html` est inutile car le HTML est le comportement par défaut
+- `format=text` sélectionne explicitement la voie de diffusion en texte brut
+- `format=markdown` est ignoré car l'email ne prend pas en charge la diffusion Markdown
 
-#### Services avec plusieurs endpoints
+#### Services avec Plusieurs Endpoints
 
-Certains services exposent differentes API selon le format pris en charge.
+Certains services exposent plusieurs endpoints API selon la prise en charge du format.
 
-Dans ce cas, definir `format=` peut :
+Dans ces cas, définir `format=` peut :
 
-- Selectionner un endpoint amont different
-- Changer la maniere dont le contenu est rendu par le service
-- Bypasser completement certaines transformations de format
+- sélectionner un endpoint amont différent ;
+- modifier la manière dont le contenu est rendu par le service ;
+- contourner complètement les transformations de format.
 
-Ce comportement est **specifique au plugin** et ne s'applique que lorsque le service prend explicitement en charge plusieurs formats de sortie.
+Ce comportement est **spécifique au plugin** et ne s'applique que lorsque le service prend explicitement en charge plusieurs formats de sortie.
 
-### Quand est-ce utile ?
+### Quand est-ce Utile ?
 
-Preciser un format de sortie est utile lorsque :
+Préciser un format de sortie est utile si :
 
-- Vous voulez forcer un type de diffusion particulier (par exemple un e-mail texte uniquement)
-- Le service prend en charge plusieurs representations de contenu
-- Vous envoyez du contenu _tel quel_ et devez l'acheminer via un chemin amont precis
+- vous voulez imposer un type de diffusion spécifique (par exemple un email en texte brut) ;
+- le service prend en charge plusieurs représentations du contenu ;
+- vous envoyez du contenu _tel quel_ et devez le faire passer par un chemin amont précis.
 
-Si un service ne prend pas en charge le format demande, Apprise revient automatiquement a son comportement par defaut.
+Si un service ne prend pas en charge le format de sortie demandé, Apprise revient en toute sécurité au comportement par défaut.
 
-## Pieces jointes
+## Pièces Jointes
 
-Les pieces jointes permettent d'envoyer des fichiers comme des images, des journaux, des PDF ou des artefacts en plus de votre message. Leur reception comme veritables pieces jointes depend de ce que le service de destination prend en charge.
+Les pièces jointes vous permettent d'envoyer des fichiers tels que des images, des journaux, des PDF et des artefacts en même temps que votre message. Leur arrivée sous forme de véritables pièces jointes dépend de ce que le service de destination prend en charge.
 
-### Pieces jointes en CLI
+### Pièces jointes via le CLI
 
 Utilisez `--attach` une ou plusieurs fois :
 
 ```bash
-apprise -t "System Alert" -b "See attached log" \
+apprise -t "Alerte système" -b "Voir le journal en pièce jointe" \
   --attach /var/log/syslog \
   "mailto://user:pass@example.com"
 
-apprise -b "Here are the files" \
+apprise -b "Voici les fichiers" \
   --attach /tmp/photo1.jpg \
   --attach /tmp/photo2.jpg \
   "tgram://..."
 ```
 
-### Pieces jointes avec Python
+### Pièces Jointes en Python
 
 Passez un chemin unique ou une liste de chemins via `attach` :
 
@@ -262,12 +262,12 @@ from apprise import Apprise
 apobj = Apprise()
 apobj.add("tgram://...")
 
-# Single attachment
-apobj.notify(body="See attached", attach="/path/to/file.txt")
+# Pièce jointe unique
+apobj.notify(body="Voir la pièce jointe", attach="/path/to/file.txt")
 
-# Multiple attachments
+# Plusieurs pièces jointes
 apobj.notify(
-    body="Artifacts attached",
+    body="Artefacts joints",
     attach=[
         "/path/to/build.log",
         "/path/to/report.pdf",
@@ -275,32 +275,32 @@ apobj.notify(
 )
 ```
 
-### Pieces jointes distantes (URL)
+### Pièces Jointes Distantes (URLs)
 
-Vous pouvez aussi fournir une URL, et Apprise la telechargera avant livraison :
+Vous pouvez également fournir une URL et Apprise la récupérera avant la diffusion :
 
 ```python
-# Apprise will download this image and send it to the destination
-# if you provide a user/pass combo, it will even authenticate for you
-# prior to retrieving the attachment
+# Apprise téléchargera cette image et l'enverra à la destination
+# si vous fournissez un couple user/pass, il s'authentifiera même
+# avant de récupérer la pièce jointe
 apobj.notify(
-    body="Security Camera Snapshot",
+    body="Capture de la caméra de sécurité",
     attach="http://admin:pass@example.local/cam/snapshot.jpg"
 )
 ```
 
 :::caution
-Si l'URL d'une piece jointe distante contient des identifiants, traitez-la comme un secret. Evitez de la versionner dans un depot ou de la consigner dans des logs.
+Si l'URL d'une pièce jointe distante contient des identifiants, traitez-la comme un secret. Évitez de la versionner dans un dépôt ou de l'écrire dans les journaux.
 :::
 
-### Pieces jointes en memoire (AttachMemory)
+### Pièces Jointes en Mémoire (AttachMemory)
 
-Quand vous generez du contenu a la volee — HTML rendu, graphiques, CSV, PDF — vous pouvez le transmettre directement sous forme d'objet `AttachMemory` sans rien ecrire sur disque.
+Lorsque vous générez du contenu à la volée — HTML rendu, graphiques, CSV, PDF — vous pouvez le transmettre directement sous forme d'objet `AttachMemory` sans écrire quoi que ce soit sur disque.
 
 <Tabs>
-<TabItem label="CSV (general)">
+<TabItem label="CSV (général)">
 
-Passez directement une chaine ou des `bytes` : aucun fichier temporaire n'est cree.
+Passez directement une chaîne ou des `bytes` — aucun fichier temporaire n'est créé :
 
 ```python
 import apprise
@@ -310,7 +310,7 @@ apobj = apprise.Apprise()
 apobj.add("discord://webhook_id/webhook_token/")
 
 apobj.notify(
-    body="Today's readings are attached.",
+    body="Les relevés du jour sont en pièce jointe.",
     attach=AttachMemory(
         content="date,value\n2026-03-20,42\n2026-03-21,38\n",
         name="readings.csv",
@@ -319,12 +319,12 @@ apobj.notify(
 )
 ```
 
-Le contenu `str` est encode automatiquement en UTF-8. Utilisez `bytes` si vous avez deja des donnees binaires.
+Le contenu `str` est automatiquement encodé en UTF-8. Utilisez `bytes` si vous disposez déjà de données binaires.
 
 </TabItem>
 <TabItem label="Pillow (image)">
 
-Generez une image avec [Pillow](https://pillow.readthedocs.io/) et envoyez-la sans l'enregistrer sur disque :
+Générez une image avec [Pillow](https://pillow.readthedocs.io/) et envoyez-la sans l'enregistrer sur disque :
 
 ```python
 import io
@@ -332,12 +332,12 @@ import apprise
 from apprise.attachment import AttachMemory
 from PIL import Image, ImageDraw
 
-# Draw a simple image
+# Dessiner une image simple
 img = Image.new("RGB", (400, 200), color=(30, 30, 30))
 draw = ImageDraw.Draw(img)
-draw.text((20, 80), "Hello from Apprise!", fill=(255, 255, 0))
+draw.text((20, 80), "Bonjour depuis Apprise !", fill=(255, 255, 0))
 
-# Render to an in-memory buffer
+# Rendre dans un tampon mémoire
 buf = io.BytesIO()
 img.save(buf, format="PNG")
 
@@ -345,7 +345,7 @@ apobj = apprise.Apprise()
 apobj.add("tgram://bottoken/ChatID")
 
 apobj.notify(
-    body="Generated image attached.",
+    body="Image générée en pièce jointe.",
     attach=AttachMemory(
         content=buf.getvalue(),
         name="hello.png",
@@ -357,7 +357,7 @@ apobj.notify(
 </TabItem>
 <TabItem label="Matplotlib (graphique)">
 
-Generez un graphique avec [Matplotlib](https://matplotlib.org/) et joignez-le directement :
+Générez un graphique avec [Matplotlib](https://matplotlib.org/) et joignez-le directement :
 
 ```python
 import io
@@ -365,14 +365,14 @@ import apprise
 from apprise.attachment import AttachMemory
 import matplotlib.pyplot as plt
 
-# Build the chart
+# Construire le graphique
 fig, ax = plt.subplots()
 ax.plot([1, 2, 3, 4], [10, 24, 18, 32])
-ax.set_title("Daily metric")
-ax.set_xlabel("Day")
-ax.set_ylabel("Value")
+ax.set_title("Mesure quotidienne")
+ax.set_xlabel("Jour")
+ax.set_ylabel("Valeur")
 
-# Render to an in-memory buffer
+# Rendre dans un tampon mémoire
 buf = io.BytesIO()
 fig.savefig(buf, format="png")
 plt.close(fig)
@@ -381,7 +381,7 @@ apobj = apprise.Apprise()
 apobj.add("tgram://bottoken/ChatID")
 
 apobj.notify(
-    body="Nightly trend chart attached.",
+    body="Graphique de tendance nocturne en pièce jointe.",
     attach=AttachMemory(
         content=buf.getvalue(),
         name="trend.png",
@@ -394,5 +394,5 @@ apobj.notify(
 </Tabs>
 
 :::tip
-Pour plus de details sur les trois types de pieces jointes (`AttachFile`, `AttachHTTP`, `AttachMemory`) et les recommandations pour les auteurs de plugins, consultez la [reference sur les pieces jointes](../../library/attachments/).
+Pour tous les détails sur les trois types de pièces jointes (`AttachFile`, `AttachHTTP`, `AttachMemory`) ainsi que les recommandations pour les auteurs de plugins, consultez la [référence sur les pièces jointes](../../library/attachments/).
 :::

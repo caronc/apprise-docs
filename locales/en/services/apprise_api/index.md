@@ -77,26 +77,28 @@ apprise -vv --body="Test Message" \
 
 You can also leverage the Logic of AND and OR when passing Tags:
 
+| `tags=` value    | Selected services                         |
+| ---------------- | ----------------------------------------- |
+| `TagA`           | Has `TagA`                                |
+| `TagA TagB`      | Has `TagA` **AND** `TagB`                 |
+| `TagA+TagB`      | Has `TagA` **AND** `TagB`                 |
+| `TagA&TagB`      | Has `TagA` **AND** `TagB`                 |
+| `TagA,TagB`      | Has `TagA` **OR** `TagB`                  |
+| `TagA\|TagB`     | Has `TagA` **OR** `TagB`                  |
+| `TagA TagC,TagB` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
+
 ```bash
-#
-# OR Example
-#
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
-# Assuming we want to trigger any Notification associated with notifications
-# that have either (OR) devops and finance
+# OR example
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=devops,finance"
 
-#
-# AND Example
-#
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
-# Assuming we want to trigger any Notification associated with notifications
-# that have all of the following tags associated with them:
+# AND example
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=devops alerts"
+
+# Mixed example: (comment AND create) OR admin
+apprise -vv --body="Test Message" \
+   "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
 
 ### Header Manipulation

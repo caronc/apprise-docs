@@ -1,0 +1,1595 @@
+---
+title: Intégrations
+description: Call Apprise API from curl, Go, Rust, JavaScript, TypeScript, PHP, or Python.
+sidebar:
+  order: 5
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<style>{`
+  /* Existing styling to ensure block behavior */
+  .theme-aware-sf-diagram img,
+  .theme-aware-sl-diagram img {
+    display: block;
+    width: 100%;
+  }
+
+  /* Force Dark SVG when the Astro Starlight toggle is set to 'dark' */
+  :root[data-theme="dark"] .theme-aware-sl-diagram img {
+    content: url("../images/stateless-api-integration-dark.svg");
+  }
+  :root[data-theme="dark"] .theme-aware-sf-diagram img {
+    content: url("../images/stateful-api-integration-dark.svg");
+  }
+
+  /* Force Light SVG when the Astro Starlight toggle is set to 'light' */
+  :root[data-theme="light"] .theme-aware-sl-diagram img {
+    content: url("../images/stateless-api-integration-light.svg");
+  }
+  :root[data-theme="light"] .theme-aware-sf-diagram img {
+    content: url("../images/stateful-api-integration-light.svg");
+  }
+`}</style>
+
+Apprise API is meant to be a single notification gateway.
+Instead of building direct webhooks to Discord, Slack, email, and SMS in every project, send to Apprise API and let it route the message.
+
+## Endpoints
+
+:::note
+**Apprise does not require you to add Python in your application.**  
+Apprise itself is written in Python, but most integrations interact with it purely over HTTP using the Apprise API. Applications in any language can send notifications without embedding Python or managing notification logic locally.
+:::
+
+| If you want to...                                   | Recommended Approach                                                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Avoid embedding Python in your application          | Apprise API (Stateful or Stateless)                                                                   |
+| Keep notification logic out of your codebase        | Apprise API (Stateful)                                                                                |
+| Use Apprise as a simple HTTP gateway                | Apprise API (Stateless)                                                                               |
+| Send notifications from scripts or the command line | [Apprise CLI](../../cli/getting-started/) or [Apprise Python Library](../../library/getting-started/) |
+
+### Stateless
+
+<picture class="theme-aware-sl-diagram">
+  <source
+    srcset="../images/stateless-api-integration-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="../images/stateless-api-integration-light.svg"
+    alt="Stateless API Integration"
+    loading="lazy"
+  />
+</picture>
+
+If you cannot (or do not want to) store configuration server-side, you can also use
+stateless notifications:
+
+- `POST /notify`
+
+Stateless calls include the destination Apprise URLs in the request payload.
+
+See the endpoint reference for the full list of supported paths.
+
+### Stateful
+
+<picture class="theme-aware-sf-diagram">
+  <source
+    srcset="../images/stateful-api-integration-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="../images/stateful-api-integration-light.svg"
+    alt="Stateful API Integration"
+    loading="lazy"
+  />
+</picture>
+
+For stateful notifications (recommended for most integrations), you call one endpoint:
+
+- `POST /notify/{KEY}`
+
+Where `{KEY}` identifies a configuration saved on the server.
+Your client code stays small and stable, while the Apprise API instance holds the actual
+notification URLs and any routing tags.
+
+## Build the Request URL
+
+Given:
+
+- `scheme`: `http` or `https`
+- `host`: the Apprise API hostname or IP
+- `port`: optional, omit for 80 (http) or 443 (https)
+- `key`: your saved configuration key
+
+Construct:
+
+- `BASE = {scheme}://{host}`
+- If a non-default port is used: `BASE = {scheme}://{host}:{port}`
+- `NOTIFY = {BASE}/notify/{key}`
+
+:::note
+If your Apprise API is hosted behind a reverse proxy under a subpath, you may need to
+prefix your base URL with that path (for example, `https://example.com/apprise`).
+:::
+
+## Common Payload Fields
+
+Apprise API accepts both form and JSON payloads in many cases.
+For integrations, JSON is usually easiest.
+
+- `body` (required): message content
+- `title` (optional): message title
+- `type` (optional): `info` (default), `success`, `warning`, or `failure`
+- `format` (optional): `text` (default), `markdown`, or `html`
+- `tag` (optional, stateful): route to a subset of saved URLs
+
+### Tags
+
+Tags are only meaningful for stateful calls (`/notify/{KEY}`), because the server already
+knows which URLs belong to that key.
+
+The `tag` value follows these rules:
+
+| `tag` value        | Selected services                         |
+| ------------------ | ----------------------------------------- |
+| `"TagA"`           | Has `TagA`                                |
+| `"TagA TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA+TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA&TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA,TagB"`      | Has `TagA` **OR** `TagB`                  |
+| `"TagA\|TagB"`     | Has `TagA` **OR** `TagB`                  |
+| `"TagA TagC,TagB"` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
+
+## Attachments
+
+To send attachments, use `multipart/form-data`.
+
+- Use `attach` (recommended) or `attachment` as the field name
+- The attachment value can be:
+  - a local file upload
+  - a remote URL that Apprise API downloads and forwards
+
+## Payload Mapping Hooks
+
+If a third-party tool cannot change its JSON keys, Apprise API can map incoming fields
+to Apprise fields using query parameters prefixed with a colon (`:`).
+
+### Mapping Rules
+
+| Syntax                           | Effect                                      |
+| -------------------------------- | ------------------------------------------- |
+| `?:incoming_field=apprise_field` | Rename `incoming_field` to `apprise_field`  |
+| `?:incoming_field=`              | Remove `incoming_field` from the payload    |
+| `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string |
+
+**Flat field example** — a tool sends `{"message": "Server Down"}`:
+
+```text
+POST /notify/{KEY}?:message=body
+```
+
+### Nested / Subfield Mapping
+
+When a third-party payload contains nested objects or arrays, Apprise API can reach into
+them using **dot-notation** for nested objects and **bracket-notation** for array elements.
+Both syntaxes can be freely mixed on the source side of the mapping rule.
+
+#### Nested Objects (Dot-Notation)
+
+Walk into nested dictionaries with a dot-separated path:
+
+```bash
+# Payload from a monitoring tool:
+# {
+#   "event":     { "title": "CPU spike", "state": "critical" },
+#   "component": { "name": "web-server-01" }
+# }
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"event":{"title":"CPU spike","state":"critical"},"component":{"name":"web-server-01"}}' \
+  "http://apprise-host/notify/{KEY}?:event.title=title&:event.state=type&:component.name=body"
+```
+
+#### Array Elements (Bracket-Notation)
+
+Append `[N]` after a key name to dereference index `N` of that array. Multiple subscripts
+and mixing with dot-notation are both supported:
+
+```bash
+# Payload from a forum / project-management webhook (e.g. Scoold / Para):
+# {
+#   "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ]
+# }
+curl -g -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"items":[{"title":"New post","objectURI":"https://example.com/q/1234"}]}' \
+  "http://apprise-host/notify/{KEY}?:items[0].title=title&:items[0].objectURI=body"
+```
+
+:::note
+`curl` treats brackets in URLs as globbing syntax, so `-g` (or `--globoff`) is required when using mapping paths such as `items[0].title`. Keep the URL quoted so your shell passes it through unchanged.
+:::
+
+Quick-reference for path expressions:
+
+| Source key            | Resolves to                                        |
+| --------------------- | -------------------------------------------------- |
+| `items[0]`            | First element of `items`                           |
+| `items[0].objectURI`  | `.objectURI` property of the first element         |
+| `matrix[0][1]`        | Row 0, column 1 of a 2-D array                     |
+| `a[0][1][2].value[3]` | Nested arrays -> dict -> array (6 traversal steps) |
+
+**Rules and limits:**
+
+- Only the **source** side of the rule may use path notation; the target must be a flat
+  Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
+- `N` in `[N]` must be a non-negative integer. Both `key[abc]` (non-integer) and
+  `key[0` / `key0]` (unmatched bracket) are rejected immediately.
+- If any step is unresolvable — missing key, index out of range, or a non-list node at
+  an index step — the server returns **400** and logs a `WARNING`. No notification is sent,
+  so misconfigured rules are visible in logs rather than silently dropped.
+- **Depth** is the total number of traversal operations: each dict-key lookup _and_ each
+  array-index dereference counts as one step. `items[0].objectURI` = 3 steps;
+  `a[0][1][2].value[3]` = 6 steps.
+- The maximum traversal depth defaults to **5**. Set
+  `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` to change this limit.
+
+## Examples
+
+<Tabs>
+<TabItem value="sl" label="Stateless Examples">
+
+<Tabs>
+<TabItem value="sl-curl" label="curl">
+
+```bash
+# Minimal stateless notification using curl
+curl -X POST "http://localhost:8000/notify" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "urls": [
+      "discord://TOKEN/CHANNEL",
+      "mailto://user:pass@example.com"
+    ],
+    "body": "Hello from Apprise (stateless)"
+  }'
+```
+
+```bash
+# Stateless notification with an attachment
+curl -X POST "http://localhost:8000/notify" \
+  -F 'payload={
+    "urls": ["discord://TOKEN/CHANNEL"],
+    "title": "Build Complete",
+    "body": "Artifact attached"
+  };type=application/json' \
+  -F "attach=@/path/to/file.txt"
+```
+
+</TabItem>
+<TabItem value="sl-python" label="Python">
+
+:::note
+The first example uses `requests` for synchronous calls.
+The second example uses `aiohttp` for async workflows and also shows multipart attachments.
+:::
+
+The following leverages the `requests` library:
+
+```python
+# python_requests_example.py
+from __future__ import annotations
+
+from dataclasses import dataclass
+from urllib.parse import quote
+
+import requests
+
+
+@dataclass(frozen=True)
+class AppriseStatelessApi:
+    scheme: str
+    host: str
+    port: int | None = None
+    base_path: str = ""
+
+    @property
+    def notify_url(self) -> str:
+        origin = f"{self.scheme}://{self.host}:{self.port}" if self.port else f"{self.scheme}://{self.host}"
+        prefix = self.base_path.strip("/")
+        path = f"/{prefix}/notify/" if prefix else f"/notify/"
+        return f"{origin}{path}"
+
+api = AppriseStatelessApi(scheme="http", host="localhost", port=8000)
+payload = {
+    "urls": ["discord://TOKEN/CHANNEL", "mailto://user:pass@example.com"],
+    "body": "Hello from Apprise (stateless)",
+}
+
+resp = requests.post(
+    api.notify_url,
+    json=payload,
+    headers={"Accept": "application/json"},
+    timeout=30,
+)
+resp.raise_for_status()
+
+# An attachment example:
+
+files = {
+    "attach": open("/path/to/file.txt", "rb")
+}
+payload = {
+    "urls": "discord://TOKEN/CHANNEL,mailto://user:pass@example.com",
+    "body": "Artifact attached"
+}
+
+resp = requests.post(
+    api.url,
+    json=payload,
+    headers={"Accept": "application/json"},
+    files=files,
+    timeout=30,
+)
+resp.raise_for_status()
+```
+
+The following leverages the `aiohttp` library:
+
+```python
+# python_aiohttp_example.py
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+from urllib.parse import quote
+
+import asyncio
+import aiohttp
+
+@dataclass(frozen=True)
+class AppriseStatelessApi:
+    scheme: str
+    host: str
+    port: int | None = None
+    base_path: str = ""
+
+    @property
+    def notify_url(self) -> str:
+        origin = f"{self.scheme}://{self.host}:{self.port}" if self.port else f"{self.scheme}://{self.host}"
+        prefix = self.base_path.strip("/")
+        path = f"/{prefix}/notify/" if prefix else f"/notify/"
+        return f"{origin}{path}"
+
+
+async def apprise_notify_json(url: str, payload: dict[str, Any]) -> None:
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession(timeout=timeout, headers={"Accept": "application/json"}) as session:
+        async with session.post(url, json=payload) as resp:
+            resp.raise_for_status()
+
+
+async def apprise_notify_with_attachment(url: str, body: str, file_path: str) -> None:
+    path = Path(file_path)
+    form = aiohttp.FormData()
+    form.add_field("body", body)
+    # Field name can be attach or attachment
+    form.add_field("attach", path.read_bytes(), filename=path.name)
+
+    timeout = aiohttp.ClientTimeout(total=60)
+    async with aiohttp.ClientSession(timeout=timeout, headers={"Accept": "application/json"}) as session:
+        async with session.post(url, data=form) as resp:
+            resp.raise_for_status()
+
+
+# Usage:
+api = AppriseStatelessApi(scheme="http", host="localhost", port=8000)
+
+# Send our notification:
+asyncio.run(apprise_notify_json(api.notify_url, {"body": "Hello"}))
+
+# Send our notification with an attachment:
+asyncio.run(apprise_notify_with_attachment(
+    api.notify_url, {
+        "title": "Strange abuse detected",
+        "body": "See logs for details",
+        "type": "warning",
+        "tag": "cyber-team",
+    },
+    '/var/log/nginx/access.log'))
+```
+
+</TabItem>
+
+<TabItem value="sl-ts" label="TypeScript">
+
+```ts
+// Stateless Apprise API call using fetch (TypeScript)
+const scheme = "http";
+const host = "localhost";
+const port = 8000;
+
+const url = `${scheme}://${host}:${port}/notify`;
+
+const payload = {
+  urls: ["discord://TOKEN/CHANNEL", "slack://TOKEN/CHANNEL"],
+  body: "Hello from Apprise (stateless)",
+};
+
+await fetch(url, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
+```
+
+</TabItem>
+
+<TabItem value="sl-js" label="JavaScript">
+
+```js
+// Stateless Apprise API call using fetch (Vanilla JS)
+const scheme = "http";
+const host = "localhost";
+const port = 8000;
+
+fetch(`${scheme}://${host}:${port}/notify`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    urls: ["discord://TOKEN/CHANNEL"],
+    body: "Hello from Apprise (stateless)",
+  }),
+});
+```
+
+</TabItem>
+
+<TabItem value="sl-php" label="PHP">
+
+```php
+<?php
+// Stateless Apprise API call using PHP cURL
+
+$payload = json_encode([
+    "urls" => [
+        "discord://TOKEN/CHANNEL",
+        "mailto://user:pass@example.com"
+    ],
+    "body" => "Hello from Apprise (stateless)"
+]);
+
+$ch = curl_init("http://localhost:8000/notify");
+curl_setopt_array($ch, [
+    CURLOPT_POST => true,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+    CURLOPT_POSTFIELDS => $payload,
+]);
+
+curl_exec($ch);
+curl_close($ch);
+```
+
+</TabItem>
+
+<TabItem value="sl-go" label="Go">
+
+```go
+package main
+
+import (
+ "bytes"
+ "encoding/json"
+ "net/http"
+)
+
+func main() {
+ payload := map[string]any{
+  "urls": []string{
+   "discord://TOKEN/CHANNEL",
+   "mailto://user:pass@example.com",
+  },
+  "body": "Hello from Apprise (stateless)",
+ }
+
+ data, _ := json.Marshal(payload)
+
+ http.Post(
+  "http://localhost:8000/notify",
+  "application/json",
+  bytes.NewBuffer(data),
+ )
+}
+```
+
+</TabItem>
+
+<TabItem value="sl-java" label="Java">
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
+
+public class AppriseNotifyStateless {
+    public static void main(String[] args) {
+        String url = "http://localhost:8000/notify";
+
+        // JSON payload with multiple URLs
+        String jsonPayload = """
+            {
+                "urls": [
+                    "discord://TOKEN/CHANNEL",
+                    "mailto://user:pass@example.com"
+                ],
+                "body": "Hello from Apprise (stateless)"
+            }
+        """;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Content-Type", "application/json")
+            .POST(BodyPublishers.ofString(jsonPayload))
+            .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenApply(HttpResponse::body)
+            .thenAccept(System.out::println)
+            .join();
+    }
+}
+```
+
+Here is an example using attachments:
+
+```java
+// Note: We construct a manual multipart body here for standard Java 11+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.UUID;
+
+public class AppriseAttachment {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String url = "http://localhost:8000/notify";
+        String boundary = "---Boundary" + UUID.randomUUID().toString();
+        Path file = Path.of("/path/to/file.txt");
+
+        // Comma-separated list of URLs
+        String targetUrls = "discord://TOKEN/CHANNEL,mailto://user:pass@example.com";
+
+        // Build Multipart Body
+        String body = "--" + boundary + "\r\n" +
+            "Content-Disposition: form-data; name=\"urls\"\r\n\r\n" +
+            targetUrls + "\r\n" +
+            "--" + boundary + "\r\n" +
+            "Content-Disposition: form-data; name=\"body\"\r\n\r\n" +
+            "Artifact attached (Stateless)\r\n" +
+            "--" + boundary + "\r\n" +
+            "Content-Disposition: form-data; name=\"attach\"; filename=\"" + file.getFileName() + "\"\r\n" +
+            "Content-Type: application/octet-stream\r\n\r\n" +
+            Files.readString(file) + "\r\n" +
+            "--" + boundary + "--";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+            .build();
+
+        client.send(request, HttpResponse.BodyHandlers.discarding());
+    }
+}
+```
+
+</TabItem>
+
+<TabItem value="sl-csharp" label="C# (.NET)">
+
+```csharp
+using System.Text;
+using System.Text.Json;
+
+var url = "http://localhost:8000/notify";
+
+var payload = new
+{
+    urls = new[]
+    {
+        "discord://TOKEN/CHANNEL",
+        "mailto://user:pass@example.com"
+    },
+    body = "Hello from Apprise (stateless)"
+};
+
+using var client = new HttpClient();
+var json = JsonSerializer.Serialize(payload);
+var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+var response = await client.PostAsync(url, content);
+response.EnsureSuccessStatusCode();
+```
+
+Here is an example leveraging attachments:
+
+```csharp
+using System.Net.Http.Headers;
+
+var url = "http://localhost:8000/notify";
+var filePath = "/path/to/file.txt";
+
+using var client = new HttpClient();
+using var form = new MultipartFormDataContent();
+
+// 1. Add URLs (Comma separated string)
+form.Add(new StringContent("discord://TOKEN/CHANNEL,mailto://user:pass@example.com"), "urls");
+
+// 2. Add Body
+form.Add(new StringContent("Artifact attached (Stateless)"), "body");
+
+// 3. Add Attachment
+var fileBytes = await File.ReadAllBytesAsync(filePath);
+var fileContent = new ByteArrayContent(fileBytes);
+fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+form.Add(fileContent, "attach", Path.GetFileName(filePath));
+
+var response = await client.PostAsync(url, form);
+response.EnsureSuccessStatusCode();
+```
+
+</TabItem>
+
+<TabItem value="sl-powershell" label="PowerShell">
+
+```powershell
+$Uri = "http://localhost:8000/notify"
+$Payload = @{
+    urls = @(
+        "discord://TOKEN/CHANNEL",
+        "mailto://user:pass@example.com"
+    )
+    body = "Hello from Apprise (stateless)"
+}
+
+Invoke-RestMethod -Uri $Uri `
+    -Method Post `
+    -Body ($Payload | ConvertTo-Json) `
+    -ContentType "application/json"
+```
+
+Here is an example leveraging attachments:
+
+```powershell
+$Uri = "http://localhost:8000/notify"
+$FilePath = "/path/to/file.txt"
+
+# PowerShell 6.1+ automatically handles multipart if you use a Hash Table
+$Form = @{
+    # Pass URLs as a comma-separated string
+    urls   = "discord://TOKEN/CHANNEL,mailto://user:pass@example.com"
+    body   = "Artifact attached (Stateless)"
+    attach = Get-Item -Path $FilePath
+}
+
+Invoke-RestMethod -Uri $Uri -Method Post -Form $Form
+```
+
+</TabItem>
+
+<TabItem value="sl-ruby" label="Ruby">
+
+```ruby
+require 'net/http'
+require 'json'
+require 'uri'
+
+uri = URI('http://localhost:8000/notify')
+http = Net::HTTP.new(uri.host, uri.port)
+request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
+
+request.body = {
+  urls: [
+    'discord://TOKEN/CHANNEL',
+    'mailto://user:pass@example.com'
+  ],
+  body: 'Hello from Apprise (stateless)'
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+Here is an example leveraging attachments:
+
+```ruby
+require 'net/http/post/multipart' # gem install multipart-post
+require 'uri'
+
+url = URI.parse('http://localhost:8000/notify')
+file_path = '/path/to/file.txt'
+
+File.open(file_path) do |file|
+  req = Net::HTTP::Post::Multipart.new(url.path,
+    # Pass URLs as a comma-separated string
+    "urls" => "discord://TOKEN/CHANNEL,mailto://user:pass@example.com",
+    "body" => "Artifact attached (Stateless)",
+    "attach" => UploadIO.new(file, "application/octet-stream", File.basename(file_path))
+  )
+
+  Net::HTTP.start(url.host, url.port) do |http|
+    http.request(req)
+  end
+end
+```
+
+</TabItem>
+
+<TabItem label="Rust">
+
+```rust
+use reqwest::blocking::Client;
+use serde_json::json;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new();
+
+    let payload = json!({
+        "urls": [
+            "discord://TOKEN/CHANNEL",
+            "slack://TOKEN/CHANNEL"
+        ],
+        "body": "Hello from Apprise (stateless)"
+    });
+
+    client
+        .post("http://localhost:8000/notify")
+        .json(&payload)
+        .send()?;
+
+    Ok(())
+}
+```
+
+</TabItem>
+</Tabs>
+</TabItem>
+<TabItem value="sf" label="Stateful Examples">
+<Tabs>
+<TabItem value="sf-curl" label="curl">
+
+```bash
+# JSON payload (recommended)
+SCHEME=http
+HOST=localhost
+PORT=8000
+KEY=my-alerts
+
+BASE="$SCHEME://$HOST"
+if [ ! -z "$PORT" ]; then
+   BASE="$SCHEME://$HOST:$PORT"
+fi
+URL="$BASE/notify/$KEY"
+
+curl -X POST \
+  -F "title=Build" \
+  -F "type=success" \
+  -F "body=Build complete" \
+  "$URL"
+```
+
+:::note
+The above could have also been written like this:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Build","body":"Build complete","type":"success"}' \
+  "$URL"
+```
+
+:::
+
+Here is another example tha routes based on defined tags:
+
+```bash
+curl -X POST \
+  -F "type=warning" \
+  -F "tag=devops critical" \
+  -F "body=Disk space low" \
+  "$URL"
+```
+
+:::note
+The above could have also been written like this:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"tag":"devops critical","body":"Disk space low","type":"warning"}' \
+  "$URL"
+```
+
+:::
+
+```bash
+# Attachment (multipart)
+curl -X POST \
+  -F "body=See attached log" \
+  -F "attach=@/var/log/syslog" \
+  "$URL"
+```
+
+</TabItem>
+
+<TabItem value="sf-python" label="Python">
+
+:::note
+The first example uses `requests` for synchronous calls.
+The second example uses `aiohttp` for async workflows and also shows multipart attachments.
+:::
+
+The following leverages the `requests` library:
+
+```python
+# python_requests_example.py
+from __future__ import annotations
+
+from dataclasses import dataclass
+from urllib.parse import quote
+
+import requests
+
+
+@dataclass(frozen=True)
+class AppriseApi:
+    scheme: str
+    host: str
+    key: str
+    port: int | None = None
+    base_path: str = ""
+
+    @property
+    def notify_url(self) -> str:
+        origin = f"{self.scheme}://{self.host}:{self.port}" if self.port else f"{self.scheme}://{self.host}"
+        prefix = self.base_path.strip("/")
+        path = f"/{prefix}/notify/{quote(self.key)}" if prefix else f"/notify/{quote(self.key)}"
+        return f"{origin}{path}"
+
+# Usage:
+api = AppriseApi(scheme="http", host="localhost", port=8000, key="my-alerts")
+payload = {
+    "title": "Deploy",
+    "body": "Deployed to production",
+    "type": "success",
+    "tag": "devops,admin",
+}
+
+resp = requests.post(
+    api.url,
+    json=payload,
+    headers={"Accept": "application/json"},
+    timeout=30,
+)
+resp.raise_for_status()
+
+```
+
+The following leverages the `aiohttp` library:
+
+```python
+# python_aiohttp_example.py
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+from urllib.parse import quote
+
+import asyncio
+import aiohttp
+
+
+@dataclass(frozen=True)
+class AppriseApi:
+    scheme: str
+    host: str
+    key: str
+    port: int | None = None
+    base_path: str = ""
+
+    @property
+    def notify_url(self) -> str:
+        origin = f"{self.scheme}://{self.host}:{self.port}" if self.port else f"{self.scheme}://{self.host}"
+        prefix = self.base_path.strip("/")
+        path = f"/{prefix}/notify/{quote(self.key)}" if prefix else f"/notify/{quote(self.key)}"
+        return f"{origin}{path}"
+
+
+async def apprise_notify_json(url: str, payload: dict[str, Any]) -> None:
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession(timeout=timeout, headers={"Accept": "application/json"}) as session:
+        async with session.post(url, json=payload) as resp:
+            resp.raise_for_status()
+
+
+async def apprise_notify_with_attachment(url: str, body: str, file_path: str) -> None:
+    path = Path(file_path)
+    form = aiohttp.FormData()
+    form.add_field("body", body)
+    # Field name can be attach or attachment
+    form.add_field("attach", path.read_bytes(), filename=path.name)
+
+    timeout = aiohttp.ClientTimeout(total=60)
+    async with aiohttp.ClientSession(timeout=timeout, headers={"Accept": "application/json"}) as session:
+        async with session.post(url, data=form) as resp:
+            resp.raise_for_status()
+
+
+# Usage:
+api = AppriseApi(scheme="http", host="localhost", port=8000, key="my-alerts")
+
+# Send our notification:
+asyncio.run(apprise_notify_json(api.notify_url, {"body": "Hello"}))
+
+# Send our notification with an attachment:
+asyncio.run(apprise_notify_with_attachment(
+    api.notify_url, {
+        "title": "Strange abuse detected",
+        "body": "See logs for details",
+        "type": "warning",
+        "tag": "cyber-team",
+    },
+    '/var/log/nginx/access.log'))
+
+```
+
+</TabItem>
+
+<TabItem value="sf-ts" label="TypeScript">
+
+```ts
+type AppriseType = "info" | "success" | "warning" | "failure";
+type AppriseFormat = "text" | "markdown" | "html";
+
+interface NotifyPayload {
+  body: string;
+  title?: string;
+  type?: AppriseType;
+  format?: AppriseFormat;
+  tag?: string;
+}
+
+function buildNotifyUrl(
+  scheme: "http" | "https",
+  host: string,
+  key: string,
+  port?: number,
+  basePath: string = "",
+): string {
+  const origin = port ? `${scheme}://${host}:${port}` : `${scheme}://${host}`;
+  const prefix = basePath ? `/${basePath.replace(/^\/+|\/+$/g, "")}` : "";
+  return `${origin}${prefix}/notify/${encodeURIComponent(key)}`;
+}
+
+export async function appriseNotifyJson(
+  url: string,
+  payload: NotifyPayload,
+): Promise<void> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Apprise API failed: ${res.status} ${text}`);
+  }
+}
+
+export async function appriseNotifyWithAttachment(
+  url: string,
+  payload: NotifyPayload,
+  file: File,
+): Promise<void> {
+  const form = new FormData();
+  if (payload.title) form.append("title", payload.title);
+  if (payload.type) form.append("type", payload.type);
+  if (payload.format) form.append("format", payload.format);
+  if (payload.tag) form.append("tag", payload.tag);
+  form.append("body", payload.body);
+
+  // Field name can be attach or attachment
+  form.append("attach", file);
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: form,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Apprise API failed: ${res.status} ${text}`);
+  }
+}
+
+// Example:
+const notifyUrl = buildNotifyUrl(
+  "https",
+  "apprise.example.net",
+  "my-alerts",
+  443,
+);
+await appriseNotifyJson(notifyUrl, {
+  title: "Deploy",
+  body: "Deployed to production",
+  type: "success",
+  tag: "devops,admin",
+});
+```
+
+</TabItem>
+
+<TabItem value="sf-js" label="JavaScript">
+
+```js
+function buildNotifyUrl({ scheme, host, port, key, basePath = "" }) {
+  const origin = port ? `${scheme}://${host}:${port}` : `${scheme}://${host}`;
+  const prefix = basePath ? `/${basePath.replace(/^\/+|\/+$/g, "")}` : "";
+  return `${origin}${prefix}/notify/${encodeURIComponent(key)}`;
+}
+
+async function appriseNotify(url, payload) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Apprise API failed: ${res.status} ${text}`);
+  }
+}
+
+// Example:
+const url = buildNotifyUrl({
+  scheme: "http",
+  host: "localhost",
+  port: 8000,
+  key: "my-alerts",
+});
+
+await appriseNotify(url, {
+  title: "Backup",
+  body: "Backup completed successfully.",
+  type: "success",
+});
+```
+
+</TabItem>
+
+<TabItem value="sf-php" label="PHP">
+
+```php
+<?php
+
+function build_notify_url(string $scheme, string $host, string $key, ?int $port = null, string $base_path = ''): string {
+    $origin = $port ? sprintf('%s://%s:%d', $scheme, $host, $port) : sprintf('%s://%s', $scheme, $host);
+    $prefix = trim($base_path, '/');
+    $path = $prefix ? sprintf('/%s/notify/%s', $prefix, rawurlencode($key)) : sprintf('/notify/%s', rawurlencode($key));
+    return $origin . $path;
+}
+
+function apprise_notify_json(string $url, array $payload): void {
+    $ch = curl_init($url);
+    if ($ch === false) {
+        throw new RuntimeException('Failed to init curl');
+    }
+
+    $json = json_encode($payload);
+    if ($json === false) {
+        throw new RuntimeException('Failed to encode JSON');
+    }
+
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ],
+        CURLOPT_POSTFIELDS => $json,
+    ]);
+
+    $resp = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+    if ($resp === false) {
+        $err = curl_error($ch);
+        curl_close($ch);
+        throw new RuntimeException('Apprise API request failed: ' . $err);
+    }
+
+    curl_close($ch);
+
+    if ($code < 200 || $code >= 300) {
+        throw new RuntimeException(sprintf('Apprise API failed: %d %s', $code, trim((string)$resp)));
+    }
+}
+
+function apprise_notify_with_attachment(string $url, string $body, string $file_path): void {
+    $ch = curl_init($url);
+    if ($ch === false) {
+        throw new RuntimeException('Failed to init curl');
+    }
+
+    $post = [
+        'body' => $body,
+        // Field name can be attach or attachment
+        'attach' => new CURLFile($file_path),
+    ];
+
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Accept: application/json',
+        ],
+        CURLOPT_POSTFIELDS => $post,
+    ]);
+
+    $resp = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+    if ($resp === false) {
+        $err = curl_error($ch);
+        curl_close($ch);
+        throw new RuntimeException('Apprise API request failed: ' . $err);
+    }
+
+    curl_close($ch);
+
+    if ($code < 200 || $code >= 300) {
+        throw new RuntimeException(sprintf('Apprise API failed: %d %s', $code, trim((string)$resp)));
+    }
+}
+
+// Example:
+$url = build_notify_url('http', 'localhost', 'my-alerts', 8000);
+
+apprise_notify_json($url, [
+    'title' => 'Deploy',
+    'body'  => 'Deployed to production',
+    'type'  => 'success',
+    'tag'   => 'devops,admin',
+]);
+
+apprise_notify_with_attachment($url, 'See attached log', '/var/log/syslog');
+```
+
+</TabItem>
+
+<TabItem value="sf-go" label="Go">
+
+```go
+package main
+
+import (
+  "bytes"
+  "encoding/json"
+  "fmt"
+  "io"
+  "mime/multipart"
+  "net/http"
+  "net/url"
+  "os"
+  "path"
+  "strings"
+)
+
+type NotifyPayload struct {
+  Body   string `json:"body"`
+  Title  string `json:"title,omitempty"`
+  Type   string `json:"type,omitempty"`
+  Format string `json:"format,omitempty"`
+  Tag    string `json:"tag,omitempty"`
+}
+
+func buildNotifyURL(scheme, host, key string, port int, basePath string) (string, error) {
+  u := &url.URL{Scheme: scheme, Host: host}
+  if port != 0 {
+    u.Host = fmt.Sprintf("%s:%d", host, port)
+  }
+  cleanBase := strings.Trim(basePath, "/")
+  if cleanBase != "" {
+    u.Path = "/" + cleanBase
+  }
+  u.Path = path.Join(u.Path, "notify", key)
+  return u.String(), nil
+}
+
+func notifyJSON(endpoint string, payload NotifyPayload) error {
+  b, err := json.Marshal(payload)
+  if err != nil {
+    return err
+  }
+
+  req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewReader(b))
+  if err != nil {
+    return err
+  }
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("Accept", "application/json")
+
+  res, err := http.DefaultClient.Do(req)
+  if err != nil {
+    return err
+  }
+  defer res.Body.Close()
+
+  if res.StatusCode < 200 || res.StatusCode >= 300 {
+    body, _ := io.ReadAll(res.Body)
+    return fmt.Errorf("apprise api failed: %d %s", res.StatusCode, strings.TrimSpace(string(body)))
+  }
+
+  return nil
+}
+
+func notifyWithAttachment(endpoint string, payload NotifyPayload, filePath string) error {
+  var buf bytes.Buffer
+  w := multipart.NewWriter(&buf)
+
+  // Fields
+  _ = w.WriteField("body", payload.Body)
+  if payload.Title != "" {
+    _ = w.WriteField("title", payload.Title)
+  }
+  if payload.Type != "" {
+    _ = w.WriteField("type", payload.Type)
+  }
+  if payload.Format != "" {
+    _ = w.WriteField("format", payload.Format)
+  }
+  if payload.Tag != "" {
+    _ = w.WriteField("tag", payload.Tag)
+  }
+
+  // File
+  f, err := os.Open(filePath)
+  if err != nil {
+    return err
+  }
+  defer f.Close()
+
+  part, err := w.CreateFormFile("attach", path.Base(filePath))
+  if err != nil {
+    return err
+  }
+  if _, err = io.Copy(part, f); err != nil {
+    return err
+  }
+
+  if err = w.Close(); err != nil {
+    return err
+  }
+
+  req, err := http.NewRequest(http.MethodPost, endpoint, &buf)
+  if err != nil {
+    return err
+  }
+  req.Header.Set("Content-Type", w.FormDataContentType())
+  req.Header.Set("Accept", "application/json")
+
+  res, err := http.DefaultClient.Do(req)
+  if err != nil {
+    return err
+  }
+  defer res.Body.Close()
+
+  if res.StatusCode < 200 || res.StatusCode >= 300 {
+    body, _ := io.ReadAll(res.Body)
+    return fmt.Errorf("apprise api failed: %d %s", res.StatusCode, strings.TrimSpace(string(body)))
+  }
+
+  return nil
+}
+
+func main() {
+  endpoint, err := buildNotifyURL("http", "localhost", "my-alerts", 8000, "")
+  if err != nil {
+    panic(err)
+  }
+
+  _ = notifyJSON(endpoint, NotifyPayload{
+    Title: "Deploy",
+    Body:  "Deployed to production",
+    Type:  "success",
+    Tag:   "devops,admin",
+  })
+
+  _ = notifyWithAttachment(endpoint, NotifyPayload{Body: "See attached log"}, "/var/log/syslog")
+}
+```
+
+</TabItem>
+
+<TabItem value="sf-java" label="Java">
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
+
+public class AppriseNotify {
+    public static void main(String[] args) {
+        String url = "http://localhost:8000/notify/my-alerts";
+        String jsonPayload = """
+            {
+                "title": "Deploy",
+                "body": "Deployed to production",
+                "type": "success",
+                "tag": "devops,admin"
+            }
+        """;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .POST(BodyPublishers.ofString(jsonPayload))
+            .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenApply(HttpResponse::body)
+            .thenAccept(System.out::println)
+            .join();
+    }
+}
+```
+
+</TabItem>
+
+<TabItem value="sf-csharp" label="C# (.NET)">
+
+```csharp
+using System.Text;
+using System.Text.Json;
+
+var url = "<http://localhost:8000/notify/my-alerts>";
+var payload = new
+{
+title = "Deploy",
+body = "Deployed to production",
+type = "success",
+tag = "devops,admin"
+};
+
+using var client = new HttpClient();
+var json = JsonSerializer.Serialize(payload);
+var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+var response = await client.PostAsync(url, content);
+response.EnsureSuccessStatusCode();
+```
+
+Below is an attachment example:
+
+```csharp
+using var client = new HttpClient();
+using var form = new MultipartFormDataContent();
+
+form.Add(new StringContent("See attached log"), "body");
+// Open the file stream
+using var fileStream = File.OpenRead("/var/log/syslog");
+using var fileContent = new StreamContent(fileStream);
+form.Add(fileContent, "attach", "syslog.txt");
+
+var response = await client.PostAsync("http://localhost:8000/notify/my-alerts", form);
+response.EnsureSuccessStatusCode();
+```
+
+</TabItem>
+
+<TabItem value="sf-powershell" label="PowerShell">
+
+```powershell
+$Uri = "http://localhost:8000/notify/my-alerts"
+$Payload = @{
+    title  = "Deploy"
+    body   = "Deployed to production"
+    type   = "success"
+    tag    = "devops,admin"
+}
+
+Invoke-RestMethod -Uri $Uri -Method Post -Body ($Payload | ConvertTo-Json) -ContentType "application/json"
+
+```
+
+Below is an attachment example:
+
+```powershell
+$Uri = "http://localhost:8000/notify/my-alerts"
+$Form = @{
+    body   = "See attached log"
+    attach = Get-Item -Path "/var/log/syslog"
+}
+
+Invoke-RestMethod -Uri $Uri -Method Post -Form $Form
+```
+
+</TabItem>
+
+<TabItem value="sf-ruby" label="Ruby">
+
+```ruby
+require 'net/http'
+require 'json'
+require 'uri'
+
+uri = URI('<http://localhost:8000/notify/my-alerts>')
+http = Net::HTTP.new(uri.host, uri.port)
+request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
+
+request.body = {
+title: 'Deploy',
+body: 'Deployed to production',
+type: 'success',
+tag: 'devops,admin'
+}.to_json
+
+response = http.request(request)
+puts response.body
+
+```
+
+Below is an attachment example:
+
+```ruby
+require 'net/http/post/multipart' # gem install multipart-post
+
+url = URI.parse('http://localhost:8000/notify/my-alerts')
+
+File.open('/var/log/syslog') do |file|
+  req = Net::HTTP::Post::Multipart.new(url.path,
+    "body" => "See attached log",
+    "attach" => UploadIO.new(file, "text/plain", "syslog.txt")
+  )
+
+  res = Net::HTTP.start(url.host, url.port) do |http|
+    http.request(req)
+  end
+end
+```
+
+</TabItem>
+
+<TabItem value="sf-rust" label="Rust">
+
+```rust
+use reqwest::multipart;
+use reqwest::Client;
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct NotifyPayload<'a> {
+  body: &'a str,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  title: Option<&'a str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  r#type: Option<&'a str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  format: Option<&'a str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  tag: Option<&'a str>,
+}
+
+fn build_notify_url(scheme: &str, host: &str, key: &str, port: Option<u16>, base_path: Option<&str>) -> String {
+  let origin = match port {
+    Some(p) => format!("{}://{}:{}", scheme, host, p),
+    None => format!("{}://{}", scheme, host),
+  };
+
+  let prefix = base_path
+    .unwrap_or("")
+    .trim_matches('/')
+    .to_string();
+
+  if prefix.is_empty() {
+    format!("{}/notify/{}", origin, urlencoding::encode(key))
+  } else {
+    format!("{}/{}/notify/{}", origin, prefix, urlencoding::encode(key))
+  }
+}
+
+async fn notify_json(endpoint: &str, payload: NotifyPayload<'_>) -> Result<(), reqwest::Error> {
+  let res = Client::new()
+    .post(endpoint)
+    .header("Accept", "application/json")
+    .json(&payload)
+    .send()
+    .await?;
+
+  if !res.status().is_success() {
+    let text = res.text().await.unwrap_or_default();
+    panic!("Apprise API failed: {} {}", res.status(), text);
+  }
+
+  Ok(())
+}
+
+async fn notify_with_attachment(endpoint: &str, body: &str, file_path: &str) -> Result<(), reqwest::Error> {
+  let form = multipart::Form::new()
+    .text("body", body.to_string())
+    .file("attach", file_path)?;
+
+  let res = Client::new()
+    .post(endpoint)
+    .header("Accept", "application/json")
+    .multipart(form)
+    .send()
+    .await?;
+
+  if !res.status().is_success() {
+    let text = res.text().await.unwrap_or_default();
+    panic!("Apprise API failed: {} {}", res.status(), text);
+  }
+
+  Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+  let endpoint = build_notify_url("http", "localhost", "my-alerts", Some(8000), None);
+
+  notify_json(
+    &endpoint,
+    NotifyPayload {
+      title: Some("Deploy"),
+      body: "Deployed to production",
+      r#type: Some("success"),
+      format: None,
+      tag: Some("devops,admin"),
+    },
+  )
+  .await?;
+
+  notify_with_attachment(&endpoint, "See attached log", "/var/log/syslog").await?;
+
+  Ok(())
+}
+```
+
+:::note
+The example uses `reqwest`, `serde`, `tokio`, and `urlencoding` crates.
+If you prefer fewer dependencies, you can do the same POST with `hyper` or `ureq`.
+:::
+
+</TabItem>
+</Tabs>
+</TabItem>
+</Tabs>

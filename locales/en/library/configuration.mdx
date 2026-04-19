@@ -246,6 +246,20 @@ Filtering may be applied to:
 
 Tag resolution is performed at notification time, not during configuration loading.
 
+When sending through the Python library, `notify(tag=...)` follows these rules:
+
+| `notify(tag=...)` expression | Selected services                         |
+| ---------------------------- | ----------------------------------------- |
+| `"TagA"`                     | Has `TagA`                                |
+| `"TagA,TagB"`                | Has `TagA` **AND** `TagB`                 |
+| `["TagA", "TagB"]`           | Has `TagA` **OR** `TagB`                  |
+| `["TagA,TagC", "TagB"]`      | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
+
+:::note
+Lists are evaluated as **OR** groups. To express **AND** programmatically,
+use a comma-separated string inside the `tag` argument.
+:::
+
 ## Next Steps
 
 - For CLI usage and flags, see the [CLI documentation](../../cli/)

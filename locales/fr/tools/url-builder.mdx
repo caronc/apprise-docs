@@ -1,0 +1,27 @@
+---
+title: Générateur d’URL Apprise
+description: Outil interactif pour construire des URL de notification Apprise pour n'importe lequel des services pris en charge.
+sidebar:
+  label: "Générateur d’URL"
+tableOfContents: false
+---
+
+import SupportProject from "~/components/SupportProject.astro";
+
+Assemblez facilement en temps réel l'un des [**{/* SERVICES:COUNT */}** services pris en charge](/services/).
+
+<details>
+<summary>Instructions</summary>
+1. **Recherchez** un service de notification par nom ou par schéma, par exemple `discord`, `email` ou `slack`.
+1. **Configurez** les champs requis à l'aide du formulaire :
+   - les champs **obligatoires** sont marqués d'un astérisque (`*`) et doivent être remplis pour que l'URL soit valide ;
+   - les champs **sensibles** comme les tokens, mots de passe et clés API sont masqués par défaut. Cliquez sur l'icône en forme d'oeil pour les afficher.
+1. **Copiez** l'URL générée dans votre presse-papiers puis collez-la dans n'importe quelle configuration compatible avec Apprise.
+
+Pour plus de détails sur la syntaxe des URL, consultez le guide [Syntaxe URL Universelle](/getting-started/universal-syntax/).
+
+</details>
+
+<!-- URL_BUILDER:COMPONENT -->
+
+<SupportProject />
