@@ -246,6 +246,21 @@ Filtering may be applied to:
 
 Tag resolution is performed at notification time, not during configuration loading.
 
+Lors de l'envoi via la bibliotheque Python, `notify(tag=...)` suit les regles suivantes :
+
+| Expression `notify(tag=...)` | Services selectionnes                        |
+| ---------------------------- | -------------------------------------------- |
+| `"TagA"`                     | Possede `TagA`                               |
+| `"TagA,TagB"`                | Possede `TagA` **ET** `TagB`                 |
+| `["TagA", "TagB"]`           | Possede `TagA` **OU** `TagB`                 |
+| `["TagA,TagC", "TagB"]`      | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
+
+:::note
+Les listes sont evaluees comme des groupes **OU**. Pour exprimer un **ET**
+de maniere programmatique, utilisez une chaine separee par des virgules dans
+l'argument `tag`.
+:::
+
 ## Next Steps
 
 - For CLI usage and flags, see the [CLI documentation](../../cli/)

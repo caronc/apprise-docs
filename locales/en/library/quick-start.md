@@ -82,6 +82,31 @@ apobj.notify(title="Deploying", body="...", tag="devops")
 apobj.notify(title="Update", body="...", tag=["devops", "management"])
 ```
 
+Programmatic tag expressions follow:
+
+| `notify(tag=...)` expression | Selected services                         |
+| ---------------------------- | ----------------------------------------- |
+| `"TagA"`                     | Has `TagA`                                |
+| `"TagA,TagB"`                | Has `TagA` **AND** `TagB`                 |
+| `["TagA", "TagB"]`           | Has `TagA` **OR** `TagB`                  |
+| `["TagA,TagC", "TagB"]`      | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
+
+:::note
+In Python, a list means **OR**, while a comma-separated string means **AND**.
+This is the most important difference from what many people intuitively try first.
+:::
+
+```python
+# Notify services tagged 'product' AND 'create'
+apobj.notify(title="Created", body="...", tag="product,create")
+
+# Notify services tagged 'devops' OR 'finance'
+apobj.notify(title="Report", body="...", tag=["devops", "finance"])
+
+# Notify services matching ('comment' AND 'create') OR 'admin'
+apobj.notify(title="Comment Created", body="...", tag=["comment,create", "admin"])
+```
+
 ### Loading Configuration Files
 
 You can use the `AppriseConfig` object to load URLs from external YAML or Text files instead of hardcoding them.

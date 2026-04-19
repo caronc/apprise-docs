@@ -82,6 +82,31 @@ apobj.notify(title="Deploying", body="...", tag="devops")
 apobj.notify(title="Update", body="...", tag=["devops", "management"])
 ```
 
+Les expressions de tags programmatiques suivent les regles suivantes :
+
+| Expression `notify(tag=...)` | Services selectionnes                        |
+| ---------------------------- | -------------------------------------------- |
+| `"TagA"`                     | Possede `TagA`                               |
+| `"TagA,TagB"`                | Possede `TagA` **ET** `TagB`                 |
+| `["TagA", "TagB"]`           | Possede `TagA` **OU** `TagB`                 |
+| `["TagA,TagC", "TagB"]`      | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
+
+:::note
+En Python, une liste signifie **OU**, tandis qu'une chaine separee par des virgules signifie **ET**.
+C'est la difference la plus importante a retenir pour `notify(tag=...)`.
+:::
+
+```python
+# Notify services tagged 'product' AND 'create'
+apobj.notify(title="Created", body="...", tag="product,create")
+
+# Notify services tagged 'devops' OR 'finance'
+apobj.notify(title="Report", body="...", tag=["devops", "finance"])
+
+# Notify services matching ('comment' AND 'create') OR 'admin'
+apobj.notify(title="Comment Created", body="...", tag=["comment,create", "admin"])
+```
+
 ### Chargement de la configuration Files
 
 You can use the `AppriseConfig` object to load URLs from external YAML or Text files instead of hardcoding them.

@@ -130,12 +130,17 @@ curl -X POST \
 
 Les configurations avec etat prennent en charge les tags, ce qui permet de notifier des sous-groupes precis de vos URL enregistrees.
 
-**Logique :**
+La valeur transmise dans le champ `tag` suit les regles suivantes :
 
-- **Espace, + ou &:** ET (intersection)
-- **Virgule ou | :** OU (union)
-
-Les exemples ci-dessous montrent les deux motifs les plus courants.
+| Valeur `tag`       | Services selectionnes                        |
+| ------------------ | -------------------------------------------- |
+| `"TagA"`           | Possede `TagA`                               |
+| `"TagA TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA+TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA&TagB"`      | Possede `TagA` **ET** `TagB`                 |
+| `"TagA,TagB"`      | Possede `TagA` **OU** `TagB`                 |
+| `"TagA\|TagB"`     | Possede `TagA` **OU** `TagB`                 |
+| `"TagA TagC,TagB"` | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
 
 ```bash
 # Notify services tagged "devops" OR "admin"
@@ -143,6 +148,9 @@ curl -X POST -d '{"tag": "devops,admin", "body": "..."}' ...
 
 # Notify services tagged "devops" AND "critical"
 curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
+
+# Notify services matching ('comment' AND 'create') OR 'admin'
+curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
 
 ## Correspondance de charge utile (hooks)

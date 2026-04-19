@@ -130,12 +130,17 @@ curl -X POST \
 
 Stateful configurations support tagging, allowing you to notify specific subgroups of your saved URLs.
 
-**Logic:**
+The value passed in the `tag` field follows these rules:
 
-- **Space, +, or &:** AND (intersection)
-- **Comma or |:** OR (union)
-
-Examples below show the two most common patterns.
+| `tag` value        | Selected services                         |
+| ------------------ | ----------------------------------------- |
+| `"TagA"`           | Has `TagA`                                |
+| `"TagA TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA+TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA&TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA,TagB"`      | Has `TagA` **OR** `TagB`                  |
+| `"TagA\|TagB"`     | Has `TagA` **OR** `TagB`                  |
+| `"TagA TagC,TagB"` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
 
 ```bash
 # Notify services tagged "devops" OR "admin"
@@ -143,6 +148,9 @@ curl -X POST -d '{"tag": "devops,admin", "body": "..."}' ...
 
 # Notify services tagged "devops" AND "critical"
 curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
+
+# Notify services matching ('comment' AND 'create') OR 'admin'
+curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
 
 ## Payload Mapping (Hooks)

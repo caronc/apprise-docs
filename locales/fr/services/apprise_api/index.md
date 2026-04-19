@@ -77,26 +77,28 @@ apprise -vv --body="Test Message" \
 
 Vous pouvez aussi utiliser la logique ET et OU lorsque vous transmettez des tags :
 
+| Valeur `tags=`   | Services selectionnes                        |
+| ---------------- | -------------------------------------------- |
+| `TagA`           | Possede `TagA`                               |
+| `TagA TagB`      | Possede `TagA` **ET** `TagB`                 |
+| `TagA+TagB`      | Possede `TagA` **ET** `TagB`                 |
+| `TagA&TagB`      | Possede `TagA` **ET** `TagB`                 |
+| `TagA,TagB`      | Possede `TagA` **OU** `TagB`                 |
+| `TagA\|TagB`     | Possede `TagA` **OU** `TagB`                 |
+| `TagA TagC,TagB` | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
+
 ```bash
-#
-# OR Example
-#
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
-# Assuming we want to trigger any Notification associated with notifications
-# that have either (OR) devops and finance
+# Exemple OU
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=devops,finance"
 
-#
-# AND Example
-#
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
-# Assuming we want to trigger any Notification associated with notifications
-# that have all of the following tags associated with them:
+# Exemple ET
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=devops alerts"
+
+# Exemple mixte : (comment AND create) OR admin
+apprise -vv --body="Test Message" \
+   "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
 
 ### Manipulation des en-tetes

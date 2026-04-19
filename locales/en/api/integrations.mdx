@@ -130,15 +130,17 @@ For integrations, JSON is usually easiest.
 Tags are only meaningful for stateful calls (`/notify/{KEY}`), because the server already
 knows which URLs belong to that key.
 
-Tag matching logic:
+The `tag` value follows these rules:
 
-- Space, `+`, or `&` means AND (intersection)
-- Comma or `|` means OR (union)
-
-Examples:
-
-- `"devops,admin"` notifies URLs tagged `devops` OR `admin`
-- `"devops critical"` notifies URLs tagged `devops` AND `critical`
+| `tag` value        | Selected services                         |
+| ------------------ | ----------------------------------------- |
+| `"TagA"`           | Has `TagA`                                |
+| `"TagA TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA+TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA&TagB"`      | Has `TagA` **AND** `TagB`                 |
+| `"TagA,TagB"`      | Has `TagA` **OR** `TagB`                  |
+| `"TagA\|TagB"`     | Has `TagA` **OR** `TagB`                  |
+| `"TagA TagC,TagB"` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
 
 ## Attachments
 
