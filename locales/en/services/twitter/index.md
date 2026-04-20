@@ -36,8 +36,8 @@ X Direct Messages are slightly more complicated then some of the other notificat
 
 When you registered to X developer account, you may have already created a default project and app. You can use this app and it's through an X App we will be able to send our DMs.
 
-1. First off, you'll need to **regenerate the API Keys**. This is done by accessing the app name under **Projects & Apps** (on left menu), then under the **Consumer Keys** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place. This is **Consumer Keys**.<br/>![X Generate Tokens](https://room.taikun.blog/wp-content/uploads/2025/05/X-Generate-Tokens.png)
-2. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](https://room.taikun.blog/wp-content/uploads/2025/05/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
+1. First off, you'll need to **regenerate the API Keys**. This is done by accessing the app name under **Projects & Apps** (on left menu), then under the **Consumer Keys** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place. This is **Consumer Keys**.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
+2. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
    - **App permissions**\
      Select **Read and write** if you want to post only. If you want to send DMs, select **Read and write and Direct message**.
    - **Type of App**\
@@ -47,13 +47,13 @@ When you registered to X developer account, you may have already created a defau
 
    Once you entered them all, click **Save**.
 
-3. Lastly, you'll need to **regenerate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](https://room.taikun.blog/wp-content/uploads/2025/05/X-Generate-Tokens.png)
+3. Lastly, you'll need to **regenerate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
 
 ### If there is no Project and App
 
-1. First off, you need to create a project and an X App (not Standalone apps) from [developer.x.com](https://developer.x.com/en/portal/projects-and-apps). It's through an X App we will be able to send our DMs.<br/>![X Create Project](https://room.taikun.blog/wp-content/uploads/2025/05/X-Create-Project.png)<br/>X asks you to justify why you need it as long as you specify the purpose of your app in detail.
-2. Once you created the app, you'll see the **API Tokens** on the screen, so copy it to a safe place. This is **Consumer Keys**.<br/>![X App API Key](https://room.taikun.blog/wp-content/uploads/2025/05/X-App-API-Key.png)
-3. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](https://room.taikun.blog/wp-content/uploads/2025/05/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
+1. First off, you need to create a project and an X App (not Standalone apps) from [developer.x.com](https://developer.x.com/en/portal/projects-and-apps). It's through an X App we will be able to send our DMs.<br/>![X Create Project](./images/X-Create-Project.png)<br/>X asks you to justify why you need it as long as you specify the purpose of your app in detail.
+2. Once you created the app, you'll see the **API Tokens** on the screen, so copy it to a safe place. This is **Consumer Keys**.<br/>![X App API Key](./images/X-App-API-Key.png)
+3. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
    - **App permissions**\
      Select **Read and write** if you want to post only. If you want to send DMs, select **Read and write and Direct message**.
    - **Type of App**\
@@ -63,7 +63,7 @@ When you registered to X developer account, you may have already created a defau
 
    Once you entered them all, click **Save**.
 
-4. Lastly, you'll need to **generate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](https://room.taikun.blog/wp-content/uploads/2025/05/X-Generate-Tokens.png)
+4. Lastly, you'll need to **generate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
 
 You should now have the following 4 tokens ready to use.
 
