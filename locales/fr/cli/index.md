@@ -16,7 +16,7 @@ La plupart des utilisateurs l'installent via `pip install apprise`.
 
 Les images Docker ciblent principalement **Apprise API**, meme si la CLI reste disponible dans le conteneur pour un usage operationnel.
 
-Pour toutes les options d'installation, consultez [Installation](/getting-started/installation/).
+Pour toutes les options d'installation, consultez [Installation](../getting-started/installation/).
 
 ## Utilisation de base
 
@@ -72,4 +72,4 @@ Bien que vous puissiez passer les URL directement a la commande, il est souvent 
 apprise --config "/etc/apprise/config.yml"     --body "System is going down for maintenance"
 ```
 
-Pour plus de details sur la structure des fichiers de configuration, consultez le guide [Configuration](/getting-started/configuration/).
+Pour plus de details sur la structure des fichiers de configuration, consultez le guide [Configuration](../getting-started/configuration/).

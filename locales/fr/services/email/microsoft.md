@@ -47,4 +47,4 @@ As of recent Azure changes:
 
 This is a Microsoft requirement, not an Apprise one.
 
-Please use the [`azure://` Apprise plugin](/services/office365/) instead.
+Please use the [`azure://` Apprise plugin](../office365/) instead.

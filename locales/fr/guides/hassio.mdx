@@ -11,7 +11,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 Ce guide explique comment intégrer **Apprise** à **[Home Assistant](https://www.home-assistant.io/)** à l'aide de la plateforme de notification Apprise intégrée. Cette approche vous permet de centraliser toute la logique de notification dans un seul fichier de configuration, ou dans une source Apprise API, tout en laissant Home Assistant se concentrer sur la logique d'automatisation.
 
 :::note[Envoyer des notifications vers Home Assistant à la place ?]
-Ce guide explique comment utiliser Apprise **depuis** Home Assistant pour envoyer des notifications vers des services externes. Si vous souhaitez utiliser Apprise pour envoyer des notifications **vers** Home Assistant lui-même, par exemple des alertes persistantes sur le tableau de bord ou des appels de service directs, consultez le [plugin de service Home Assistant](/services/homeassistant/) (`hassio://`).
+Ce guide explique comment utiliser Apprise **depuis** Home Assistant pour envoyer des notifications vers des services externes. Si vous souhaitez utiliser Apprise pour envoyer des notifications **vers** Home Assistant lui-même, par exemple des alertes persistantes sur le tableau de bord ou des appels de service directs, consultez le [plugin de service Home Assistant](../services/homeassistant/) (`hassio://`).
 :::
 
 ## Pourquoi Utiliser Apprise avec Home Assistant
@@ -145,7 +145,7 @@ La directive `include` ne fonctionne que si votre serveur Apprise API n'a pas `A
 </TabItem>
 
 <TabItem label="Méthode 3 : Configuration Distante (API)">
-Cette méthode est idéale pour des **configurations itinérantes**. Si vous gérez plusieurs instances Home Assistant ou d'autres services, vous pouvez centraliser toute votre logique de notification dans une instance [Apprise API](/api/) auto-hébergée.
+Cette méthode est idéale pour des **configurations itinérantes**. Si vous gérez plusieurs instances Home Assistant ou d'autres services, vous pouvez centraliser toute votre logique de notification dans une instance [Apprise API](../api/) auto-hébergée.
 
 **Modifiez `configuration.yaml`**
 
@@ -242,7 +242,7 @@ apprise -vv -t "Alerte" -b "Test push" \
     'hassio://ha.local/YOUR_TOKEN/notify.mobile_app_johns_phone'
 ```
 
-Consultez le [plugin de service Home Assistant](/services/homeassistant/) pour la référence complète de l'URL `hassio://`.
+Consultez le [plugin de service Home Assistant](../services/homeassistant/) pour la référence complète de l'URL `hassio://`.
 
 ## 6. Débogage et Journalisation
 

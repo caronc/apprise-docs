@@ -27,7 +27,7 @@ sample_urls:
 This page covers sending notifications **to** Home Assistant from Apprise.
 If you want to use Apprise **from within** Home Assistant to fan out to
 other services (email, Telegram, etc.), see the
-[Home Assistant Integration Guide](/guides/hassio/).
+[Home Assistant Integration Guide](../../guides/hassio/).
 :::
 
 ## Configuration du compte

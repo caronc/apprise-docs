@@ -23,7 +23,7 @@ Le `schema` détermine quel plugin Apprise doit charger.
 - **`tgram://`** → Telegram
 - **`slack://`** → Slack
 
-[Voir la liste complète des services pris en charge](/services/).
+[Voir la liste complète des services pris en charge](../services/).
 
 ### 2. Identifiants et Hôte
 

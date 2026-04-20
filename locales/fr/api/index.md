@@ -20,7 +20,7 @@ L'**API Apprise** est une passerelle Web vers la bibliotheque Apprise. Elle four
 
 L'API Apprise est concue pour etre executee dans un conteneur.
 
-1. **Deployez-la :** configurez le conteneur avec [Docker ou Kubernetes](/api/deployment/).
+1. **Deployez-la :** configurez le conteneur avec [Docker ou Kubernetes](./deployment/).
 2. **Configurez-la :** enregistrez vos URL et attribuez-leur une cle (par exemple `my-alerts`).
 3. **Notifiez :** declenchez vos alertes avec une simple requete HTTP.
 

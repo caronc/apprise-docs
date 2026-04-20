@@ -70,4 +70,4 @@ Gérez et utilisez des configurations enregistrées associées à une clé `{KEY
 
 ## Codes de Réponse
 
-Pour la liste complète, y compris les codes propres à l'interface Web et les réponses d'erreur courantes, consultez [Codes de Réponse](/api/reference/response-codes/).
+Pour la liste complète, y compris les codes propres à l'interface Web et les réponses d'erreur courantes, consultez [Codes de Réponse](./reference/response-codes/).

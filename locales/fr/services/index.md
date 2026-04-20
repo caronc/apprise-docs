@@ -29,5 +29,5 @@ Les protocoles definis sont egalement accompagnes d'une icone indiquant rapideme
 | 🔓            | Non              |
 
 :::note
-Pour consulter la liste des services qui ne sont plus pris en charge et savoir pourquoi, visitez le [cimetiere des services](/services/graveyard/).
+Pour consulter la liste des services qui ne sont plus pris en charge et savoir pourquoi, visitez le [cimetiere des services](./graveyard/).
 :::

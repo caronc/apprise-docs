@@ -61,7 +61,7 @@ Dans la plupart des cas, vous n’avez qu’a fournir votre adresse e-mail et vo
 | **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` must use a validated sender identity.                                                                             |
 | **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Provider defaults are applied automatically.                                                                              |
 | **163.com**                                  | `mailto://user:password@163.com`                                    | Provider defaults are applied automatically.                                                                              |
-| **Microsoft (Outlook, Hotmail, Office 365)** | _Use `azure://` instead_                                            | Microsoft disabled SMTP basic authentication. Use the [`azure://` plugin](/services/office365/).                          |
+| **Microsoft (Outlook, Hotmail, Office 365)** | _Use `azure://` instead_                                            | Microsoft disabled SMTP basic authentication. Use the [`azure://` plugin](../office365/).                                 |
 
 > Cette liste n’est pas exhaustive. Des domaines supplementaires sont automatiquement detectes lorsqu’ils sont pris en charge.
 

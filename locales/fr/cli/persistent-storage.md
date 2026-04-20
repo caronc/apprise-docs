@@ -37,7 +37,7 @@ apprise --dry-run --tag=all
 ```
 
 **Example Output:**
-![Apprise Dry Run Output](/cli/images/01abafebf75ad38d.jpeg)
+![Apprise Dry Run Output](./images/01abafebf75ad38d.jpeg)
 
 _Note how some plugins (like `dbus://`) display `- n/a -`, indicating they do not use persistent storage._
 
@@ -50,7 +50,7 @@ apprise storage
 ```
 
 **Example Output:**
-![Apprise Storage List](/cli/images/3993e3ece1157fec.jpeg)
+![Apprise Storage List](./images/3993e3ece1157fec.jpeg)
 
 The output shows:
 
