@@ -1,82 +1,83 @@
 ---
 title: "Problèmes de Formatage"
-description: "Understand how Apprise manages HTML, TEXT, and Markdown"
+description: "Comprendre comment Apprise gère HTML, TEXT et Markdown"
 sidebar:
   order: 10
 ---
 
 ## Introduction
 
-If your upstream server is not correctly interpreting the information you're passing it, it could be a simple tweak to Apprise you need to make to help it along.
+Si votre service amont n'interprète pas correctement les informations que vous lui transmettez, il s'agit peut-être simplement d'un petit ajustement à faire dans Apprise.
 
-The thing with Apprise is it doesn't know what you're feeding it (the format the text is in); so by default it just passes exactly what you hand it right along to the upstream service. Since Email operates using HTML formatting (by default), if you feed it raw text, it may not interpret the new lines correctly (because HTML ignores these charaters).
+Le point important avec Apprise, c'est qu'il ne sait pas ce que vous lui donnez (c'est-à-dire le format du texte). Par défaut, il transmet donc exactement ce que vous lui fournissez au service amont. Comme l'email utilise du formatage HTML par défaut, si vous lui envoyez du texte brut, il peut mal interpréter les retours à la ligne (car HTML ignore ces caractères).
 
-## Apprise URL Manipulation
+## Manipulation des URL Apprise
 
-You can force the upstream service you're working with to push its content using `text`, `html`, or `markdown` by specifying it on the Apprise URL you construct. For example, the below tells the mailto:// to transmit the content it's provided as `text`:
+Vous pouvez forcer le service amont avec lequel vous travaillez à diffuser son contenu en `text`, `html` ou `markdown` en le précisant dans l'URL Apprise que vous construisez. Par exemple, l'URL ci-dessous indique à `mailto://` de transmettre le contenu fourni en `text` :
 
 - `mailtos://example.com?user=username&pass=password&to=myspy@example.com&format=text`
 
 :::note
-This does not work in every case; the service needs to support the action. It is harmless to enforce a `format=` not supported by a service; it's simply ignored if this is the case.
+Cela ne fonctionne pas dans tous les cas ; le service doit prendre en charge cette fonctionnalité. Forcer un `format=` non pris en charge est sans danger ; il sera simplement ignoré.
 :::
 
-## Apprise CLI
+## CLI Apprise
 
-By default, the `apprise` tool interprets everything it receives as `text`. If you know that the data you're feeding it is of `markdown`, or `html`, you can let Apprise know this by specifying `--input-format <format>` (`-i <format>`). Doing so allows Apprise to make smart decisions with the data it's passed.
+Par défaut, l'outil `apprise` interprète tout ce qu'il reçoit comme du `text`. Si vous savez que les données que vous lui transmettez sont en `markdown` ou en `html`, vous pouvez le préciser à Apprise avec `--input-format <format>` (`-i <format>`). Cela permet à Apprise de prendre de meilleures décisions sur les données reçues.
 
-## Developers
+## Développeurs
 
-For developers, your call to `notify()` to include should include the `body_format` value set:
+Pour les développeurs, votre appel à `notify()` devrait inclure une valeur `body_format` :
 
 ```python
-# one more include to keep your code clean
+# un import supplémentaire pour garder votre code propre
 from apprise import NotifyFormat
 
 apobj.notify(
     body=message,
-    title='My Notification Title',
+    title='Mon titre de notification',
     body_format=NotifyFormat.TEXT,
 )
 ```
 
-You can actually make a global variable out of the `body_format` so you don't have to keep setting it every time you call `notify` (in-case you intend to call this throughout your code in several locations):
+Vous pouvez aussi définir `body_format` comme variable globale afin de ne pas devoir le préciser à chaque appel de `notify()` si vous utilisez cela à plusieurs endroits dans votre code :
 
 ```python
 import apprise
 from apprise import NotifyFormat
 from apprise import AppriseAsset
 
-# Create your Apprise Asset
+# Créer votre asset Apprise
 asset = apprise.Asset(body_format=apprise.NotifyFormat.TEXT)
 
-# Create your Apprise object (pass in the asset):
+# Créer votre objet Apprise (en lui passant l'asset)
 apobj = apprise.Apprise(asset=asset)
 
-# Add your objects (like you're already doing)
+# Ajouter vos objets comme d'habitude
 apobj.add('mailtos://example.com?user=username&pass=password&to=myspy@example.com')
 
-# And your multi-line message
+# Et votre message multilignes
 message = """
-This message will self-destruct in 10 seconds...
+Ce message s'autodétruira dans 10 secondes...
 
-Or not... (... yeah it probably won't at all)
+Ou pas... (... oui, probablement pas du tout)
 
 Chris
 """
 
-# The big difference here is now all calls to notify already have the body_format
-# set to be TEXT.  Apprise knows everything you're feeding it will always be this
-# You can still specify body_format here in the future and over-ride if you ever
-# need to, but your notify stays simple like you had it (but the multi line will work
-# this time):
+# La grande différence ici, c'est que tous les appels à notify ont déjà
+# body_format défini sur TEXT. Apprise sait donc que tout ce que vous lui
+# transmettez sera toujours dans ce format.
+# Vous pouvez quand même préciser body_format plus tard si vous devez le
+# surcharger, mais votre appel à notify reste simple comme avant
+# (et cette fois le multilignes fonctionnera) :
 apobj.notify(
     body=message,
-    title='My Notification Title',
+    title='Mon titre de notification',
 )
 ```
 
-**What it boils down to is:**
+**En résumé :**
 
-- Developers can use the `body_format` tag which is telling Apprise what the **INPUT source** is. If a Apprise knows this it can go ahead and make special accommodations for the services that are expecting another format. By default the `body_format` is `None` and no modifications to the data fed to Apprise is touched at all (it's just passed right through to the upstream provider).
-- End User can modify their URL to specify a `format=` which can be either `text`, `markdown`, or `html` which sets the **OUTPUT source**. Notification Plugins can use this information to accommodate the data it's being fed and behave differently to help accommodate your situation.
+- Les développeurs peuvent utiliser l'attribut `body_format`, qui indique à Apprise quel est le format de la **source d'entrée**. Si Apprise le connaît, il peut effectuer les adaptations nécessaires pour les services qui attendent un autre format. Par défaut, `body_format` vaut `None` et aucune modification n'est apportée aux données fournies à Apprise.
+- L'utilisateur final peut modifier son URL pour préciser `format=` avec l'une des valeurs `text`, `markdown` ou `html`, ce qui définit le format de la **sortie**. Les plugins de notification peuvent utiliser cette information pour adapter leur comportement à votre cas.

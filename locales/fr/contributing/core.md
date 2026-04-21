@@ -1,101 +1,101 @@
 ---
 title: "Bibliothèque Principale"
-description: "Contribuer to the Apprise Core library"
+description: "Contribuer à la bibliothèque principale d'Apprise"
 sidebar:
   order: 2
 ---
 
-## Contribuer to the Apprise Core Library
+## Contribuer à la Bibliothèque Principale d'Apprise
 
-Thank you for your interest in contributing to Apprise.
+Merci pour votre intérêt à contribuer à Apprise.
 
-Contributions are welcome across code, bug fixes, CLI improvements, documentation, and deployment tooling.
+Les contributions sont bienvenues pour le code, les corrections de bugs, les améliorations de la CLI, la documentation et l'outillage de déploiement.
 
-This repository is the core application and CLI layer that makes up the heart of Apprise.
+Ce dépôt correspond à l'application cœur et à la couche CLI qui constituent le cœur d'Apprise.
 
-## Development Requirements
+## Exigences de Développement
 
-### Supported Python Versions
+### Versions Python Prises en Charge
 
-Apprise supports **Python 3.9 and newer**. All contributions must remain compatible with the lowest supported version unless explicitly discussed.
+Apprise prend en charge **Python 3.9 et plus récent**. Toutes les contributions doivent rester compatibles avec la version minimale prise en charge, sauf discussion explicite.
 
-### Tooling Expectations
+### Attentes côté Outillage
 
-Apprise development uses a small toolchain:
+Le développement d'Apprise s'appuie sur une petite chaîne d'outils :
 
-- **tox** for environment orchestration. It leverages the following:
-  - **pytest** for testing;
-  - **ruff** for linting and formatting
-  - **coverage** for reporting
-- **pyproject.toml** as the authoritative project definition
+- **tox** pour l'orchestration des environnements. Il s'appuie sur :
+  - **pytest** pour les tests ;
+  - **ruff** pour le linting et le formatage ;
+  - **coverage** pour les rapports ;
+- **pyproject.toml** comme définition de projet faisant autorité.
 
-Local development environments are expected to mirror CI behaviour.
+Les environnements de développement locaux doivent refléter le comportement de la CI.
 
-## Retrieve from GitHub
+## Récupérer depuis GitHub
 
 ```bash
 git clone git@github.com:caronc/apprise.git
 cd apprise
 ```
 
-## Install Tox
+## Installer Tox
 
-The most common way to install this dependency is:
+La manière la plus courante d'installer cette dépendance est :
 
 ```bash
 pip install tox
 ```
 
-If you are not using a virtual environment or have proper rights on the machine you're using, you may need to use `pip3` or add the `--user` flag:
+Si vous n'utilisez pas d'environnement virtuel ou n'avez pas les droits nécessaires sur la machine, vous devrez peut-être utiliser `pip3` ou ajouter le flag `--user` :
 
 ```bash
 pip3 install tox --user
 ```
 
-## Development Environment
+## Environnement de Développement
 
-Apprise works best just using a simple bare metal setup. The following commands can assist you:
+Apprise fonctionne très bien avec un simple environnement bare metal. Les commandes suivantes peuvent vous aider :
 
-Run the `apprise` cli from within the pulled code against any changes you made:
+Exécuter la CLI `apprise` depuis le code local avec vos modifications :
 
 ```bash
-# Print version and exit
+# Afficher la version et quitter
 tox -e apprise -- -v
 ```
 
-Simply use `tox -e apprise --` to act equivalently to the `apprise` CLI in an installed environment:
+Utilisez simplement `tox -e apprise --` pour obtenir un comportement équivalent à la CLI `apprise` dans un environnement installé :
 
 ```bash
-# Test a new or modified plugin (example: foobar://)
-tox -e apprise -- -t "my title" -b "my body" \
+# Tester un plugin nouveau ou modifié (exemple : foobar://)
+tox -e apprise -- -t "mon titre" -b "mon corps" \
     "foobar://credentials/direction?options="
 ```
 
-### Running Tests
+### Exécuter les Tests
 
-Test your added test coverage in `tests/` a similar way:
+Testez votre couverture ajoutée dans `tests/` de manière similaire :
 
 ```bash
-# 'minimal' just pulls in less dependencies which is usually adequate:
+# 'minimal' installe moins de dépendances, ce qui suffit généralement :
 tox -e minimal
 ```
 
-A Full QA can be run by swapping `minimal` with `qa`.
+Une QA complète peut être lancée en remplaçant `minimal` par `qa`.
 
 ```bash
-# 'qa' loads all dev libraries
+# 'qa' charge toutes les bibliothèques de développement
 tox -e qa
 ```
 
-There is a 'lot' of tests; Apprise aims to maintain 100% test coverage. To avoid running through everything and only focus on your new tests, you can scope the tests runner to do this like so;
+Il y a _beaucoup_ de tests ; Apprise vise à maintenir une couverture de 100 %. Pour éviter d'exécuter tout l'ensemble et vous concentrer seulement sur vos nouveaux tests, vous pouvez restreindre l'exécuteur ainsi :
 
 ```bash
-# use -k to filter the tests are run:
+# utiliser -k pour filtrer les tests à lancer :
 tox -e minimal -- -k "test_foobar"
 ```
 
 :::note
-`-k test_foobar` performs substring matching and would match:
+`-k test_foobar` effectue un filtrage par sous-chaîne et correspondrait à :
 
 ```text "test_foobar"
 - tests/test_plugin_foobar.py
@@ -103,7 +103,7 @@ tox -e minimal -- -k "test_foobar"
     └── def test_foobar_advance():
 ```
 
-You could add `-k test_foobar_urls` to just test 1 specific test:
+Vous pouvez utiliser `-k test_foobar_urls` pour ne lancer qu'un seul test précis :
 
 ```text "test_foobar_urls"
 - tests/test_plugin_foobar.py
@@ -113,64 +113,64 @@ You could add `-k test_foobar_urls` to just test 1 specific test:
 
 :::
 
-## Quality Assurance and Testing
+## Assurance Qualité et Tests
 
-Keep linting and formatting consistent across contributor environments:
+Gardez un linting et un formatage cohérents d'un environnement contributeur à l'autre :
 
 ```bash
-# Lint (calls ruff under the hood)
+# Lint (appelle ruff en interne)
 tox -e lint
 ```
 
-If you get an error with the above, you can use the auto-formatting which fixes most mistakes.
+Si la commande ci-dessus échoue, vous pouvez utiliser le formatage automatique qui corrige la plupart des erreurs.
 
 ```bash
-# Auto-format
+# Formatage automatique
 tox -e format
 ```
 
-## Test Expectations
+## Attentes concernant les Tests
 
-Changes to core behaviour **must** include tests unless there is a strong justification.
+Les changements touchant au comportement du cœur **doivent** inclure des tests, sauf justification solide.
 
-General expectations:
+Attentes générales :
 
-- Test coverage for Apprise to remain at 100%
-- Tests should reflect actual runtime behaviour
-- Edge cases should be explicitly covered
-- Existing test patterns should be followed
-- Logging noise should be avoided in tests
+- maintenir la couverture de test d'Apprise à 100 % ;
+- faire en sorte que les tests reflètent le comportement réel à l'exécution ;
+- couvrir explicitement les cas limites ;
+- suivre les patterns de test existants ;
+- éviter le bruit de logs dans les tests.
 
-Tests are part of the public contract of the project.
+Les tests font partie du contrat public du projet.
 
-## Pull Request Guidelines
+## Recommandations pour les Pull Requests
 
-Before submitting a pull request:
+Avant de soumettre une pull request :
 
-- Tests pass locally for relevant environments
-- Linting and formatting checks pass
-- Changes are scoped and well-described
-- Behavioural changes include rationale
+- les tests passent localement dans les environnements pertinents ;
+- les vérifications de linting et de formatage passent ;
+- les changements sont bien cadrés et correctement décrits ;
+- les changements de comportement incluent leur justification.
 
-If you added a new plugin, ensure that:
+Si vous avez ajouté un nouveau plugin, assurez-vous que :
 
-- The `README.md` in the root of the Apprise Repository is updated to reflect the change if necessary.
-- The `packaging/redhat/apprise.spec` is updated to reflect the new service
-- The `pyproject.toml` section called `keywords` includes the name of the new plugin
-- Documentation has been prepared for the [Apprise Docs](https://github.com/caronc/apprise-docs) Repository (later reflected on <https://appriseit.com>).
+- le `README.md` à la racine du dépôt Apprise est mis à jour si nécessaire ;
+- `packaging/redhat/apprise.spec` est mis à jour pour refléter le nouveau service ;
+- la section `keywords` de `pyproject.toml` inclut le nom du nouveau plugin ;
+- la documentation a été préparée pour le dépôt [Apprise Docs](https://github.com/caronc/apprise-docs) (puis reflétée sur <https://appriseit.com>).
 
-Pull requests are reviewed for correctness, maintainability, and long-term impact.
+Les pull requests sont évaluées sur la correction, la maintenabilité et l'impact à long terme.
 
-## Quick Checklist Before You Submit
+## Checklist Rapide Avant Soumission
 
-- Your change includes tests when practical.
-- `tox -e qa` passes locally.
-- `tox -e lint` passes locally.
-- You run `tox -e format` when formatting changes are needed.
-- Your pull request description clearly explains what changed and why.
+- Votre changement inclut des tests lorsque c'est pertinent.
+- `tox -e qa` passe localement.
+- `tox -e lint` passe localement.
+- Vous exécutez `tox -e format` lorsque des changements de formatage sont nécessaires.
+- La description de votre pull request explique clairement ce qui a changé et pourquoi.
 
-## Licensing and Attribution
+## Licence et Attribution
 
-Apprise is released under the BSD 2-Clause licence.
+Apprise est publié sous licence BSD 2-Clause.
 
-All contributions must be compatible with this licence, and new files should include appropriate headers where required.
+Toutes les contributions doivent être compatibles avec cette licence, et les nouveaux fichiers doivent inclure les en-têtes appropriés lorsque cela est requis.

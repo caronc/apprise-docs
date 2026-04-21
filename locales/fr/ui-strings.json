@@ -28,9 +28,8 @@
       "reddit": "Sous-reddit Apprise",
       "discord": "Discussion Discord Apprise"
     },
-    "tools": {
-      "title": "Outils",
-      "url_builder": "Générateur d’URL"
+    "url_builder": {
+      "title": "Générateur d’URL"
     }
   },
   "common": {

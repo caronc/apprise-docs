@@ -1,39 +1,39 @@
 ---
 title: Déploiement
-description: How to deploy and operate the API Apprise using containers, Docker Compose, or Kubernetes.
+description: Comment déployer et exploiter l'API Apprise avec des conteneurs, Docker Compose ou Kubernetes.
 sidebar:
   order: 2
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-The **API Apprise** is designed to run as a containerized service.  
-This page explains **how to deploy and operate it**, not how to use the API endpoints.
+L'**API Apprise** est conçue pour fonctionner comme un service conteneurisé.  
+Cette page explique **comment la déployer et l'exploiter**, pas comment utiliser les endpoints de l'API.
 
-If you are looking to:
+Si vous cherchez à :
 
-- send notifications, see **API Usage**
-- integrate with the CLI or Python library, see **Integration**
-- understand keys, storage, or locking, see **Configuration**
+- envoyer des notifications, consultez **Utilisation de l'API**
+- l'intégrer avec la CLI ou la bibliothèque Python, consultez **Intégrations**
+- comprendre les clés, le stockage ou le verrouillage, consultez **Configuration**
 
-## Deployment Model
+## Modèle de Déploiement
 
-API Apprise is a **stateless-first** service with **optional persistent state**.
+L'API Apprise est un service **stateless-first** avec un **état persistant optionnel**.
 
-- Stateless usage sends notifications directly without saving configuration.
-- Stateful usage persists configuration under a `{KEY}` for reuse.
-- The built-in web interface is optional and provided for convenience only.
+- L'usage stateless envoie les notifications directement sans sauvegarder de configuration.
+- L'usage stateful persiste la configuration sous une clé `{KEY}` afin de la réutiliser.
+- L'interface web intégrée est optionnelle et fournie uniquement par commodité.
 
-The service is safe to run:
+Le service peut être exécuté en toute sécurité :
 
-- locally
-- behind a reverse proxy
-- in Docker or Docker Compose
-- in Kubernetes, including hardened and rootless environments
+- localement ;
+- derrière un reverse proxy ;
+- dans Docker ou Docker Compose ;
+- dans Kubernetes, y compris dans des environnements durcis et rootless.
 
-## Quick Start
+## Démarrage Rapide
 
-Choose one deployment method below to get API Apprise running quickly.
+Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.
 
 <Tabs>
   <TabItem label="Docker">
@@ -48,7 +48,7 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
 
-The following will set the same container up but leverage health check monitoring:
+La commande suivante configure le même conteneur, mais avec une surveillance par health check :
 
 ```bash
 docker run --name apprise \
@@ -68,6 +68,7 @@ docker run --name apprise \
 
 </TabItem>
 <TabItem label="Docker Compose">
+
 ```yaml
 services:
   apprise:
@@ -84,7 +85,7 @@ services:
       - ./attach:/attach
 ```
 
-The following will set the same container up but leverage health check monitoring:
+La configuration suivante met en place le même conteneur, mais avec surveillance par health check :
 
 ```yaml
 services:
@@ -115,7 +116,7 @@ services:
 </TabItem>
 <TabItem label="Kubernetes">
   <Tabs>
-<TabItem label="Minimal Example">
+<TabItem label="Exemple Minimal">
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -145,7 +146,7 @@ spec:
               value: y
 ```
 
-The following example expands on the above and offers a **liveness** and **readiness** probe:
+L'exemple suivant reprend cette base et ajoute des probes de **liveness** et **readiness** :
 
 ```yaml
 apiVersion: apps/v1
@@ -175,7 +176,7 @@ spec:
             - name: APPRISE_ADMIN
               value: y
 
-          # Ready only when /status returns 200
+          # Prêt uniquement lorsque /status renvoie 200
           readinessProbe:
             httpGet:
               path: /status
@@ -185,7 +186,7 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
 
-          # Restart the container if /status stops returning 200
+          # Redémarre le conteneur si /status cesse de renvoyer 200
           livenessProbe:
             httpGet:
               path: /status
@@ -198,8 +199,9 @@ spec:
 
 </TabItem>
 
-<TabItem label="Full Example">
-Here is a more complete Kubernetes example. Note that this uses the legacy `PGID` and `PUID` environment variables:
+<TabItem label="Exemple Complet">
+Voici un exemple Kubernetes plus complet. Notez qu'il utilise encore les variables d'environnement héritées `PGID` et `PUID` :
+
 ```yaml
 apiVersion: v1
 kind: Namespace
@@ -228,7 +230,7 @@ metadata:
   name: apprise-api-htpasswd-secret
   namespace: apprise
 data:
-  .htpasswd: <base64_encoded> # add output of: htpasswd -c apprise_api.htpasswd <USERNAME> && cat apprise_api.htpasswd | base64
+  .htpasswd: <base64_encoded> # ajoutez la sortie de : htpasswd -c apprise_api.htpasswd <USERNAME> && cat apprise_api.htpasswd | base64
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -307,12 +309,12 @@ spec:
               name: apprise-data
             - mountPath: /attach
               name: apprise-data
-            # the following mountPath can be removed if not wanted/used
+            # Le mountPath suivant peut être supprimé si non souhaité / non utilisé
             - mountPath: /etc/nginx/.htpasswd
               name: apprise-api-htpasswd-secret-volume
               readOnly: true
               subPath: .htpasswd
-            # the following mountPath can be removed if not wanted/used
+            # Le mountPath suivant peut être supprimé si non souhaité / non utilisé
             - mountPath: /etc/nginx/location-override.conf
               name: apprise-api-override-conf-config-volume
               readOnly: true
@@ -322,17 +324,17 @@ spec:
         - name: apprise-data
           persistentVolumeClaim:
             claimName: apprise-data
-        # the following volume can be removed if not wanted/used
+        # Le volume suivant peut être supprimé si non souhaité / non utilisé
         - name: apprise-api-htpasswd-secret-volume
           secret:
             secretName: apprise-api-htpasswd-secret
-        # the following volume can be removed if not wanted/used
+        # Le volume suivant peut être supprimé si non souhaité / non utilisé
         - name: apprise-api-override-conf-config-volume
           configMap:
             name: apprise-api-override-conf-config
 ```
 
-Credit goes to: [@steled](https://github.com/steled) for the above. The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the last section with the following instead:
+Merci à [@steled](https://github.com/steled) pour l'exemple ci-dessus. La même configuration peut être étendue avec des probes de **liveness** et **readiness** simplement en remplaçant la dernière section par celle-ci :
 
 ```yaml
 apiVersion: apps/v1
@@ -423,10 +425,10 @@ spec:
 
 </TabItem>
 
-<TabItem label="Hardened (Rootless + Read-only)">
-For a more security conscious setup, you can run API Apprise as a non-root user with a read only root filesystem and explicit ephemeral volumes.
+<TabItem label="Durci (Rootless + Lecture Seule)">
+Pour une configuration davantage orientée sécurité, vous pouvez exécuter l'API Apprise comme utilisateur non-root avec un système de fichiers racine en lecture seule et des volumes éphémères explicites.
 
-The following example assumes you already created persistent volume claims for `/config`, `/plugin`, and `/attach`.
+L'exemple suivant suppose que vous avez déjà créé des persistent volume claims pour `/config`, `/plugin` et `/attach`.
 
 ```yaml
 apiVersion: apps/v1
@@ -470,7 +472,7 @@ spec:
             - containerPort: 8000
               name: http
           volumeMounts:
-            # Persistent data
+            # Données persistantes
             - name: config
               mountPath: /config
             - name: plugin
@@ -478,7 +480,7 @@ spec:
             - name: attach
               mountPath: /attach
 
-            # Ephemeral runtime and temp files
+            # Fichiers runtime et temporaires éphémères
             - name: tmp
               mountPath: /tmp
 
@@ -493,15 +495,15 @@ spec:
           persistentVolumeClaim:
             claimName: apprise-attach
 
-        # The deployment mounts /tmp as an in-memory emptyDir, which is where nginx,
-        # gunicorn, and supervisord store pids, sockets, and temporary files.
-        # This is configured as an ephemeral volume, stored in memory.
+        # Le déploiement monte /tmp en emptyDir en mémoire ; c'est là que nginx,
+        # gunicorn et supervisord stockent leurs pid, sockets et fichiers temporaires.
+        # Ce volume est éphémère et stocké en mémoire.
         - name: tmp
           emptyDir:
             medium: Memory
 ```
 
-The same setup can be further expanded offering a **liveness** and **readiness** probe by just replacing the section with the following instead:
+La même configuration peut être étendue avec des probes de **liveness** et **readiness** en remplaçant la section par celle-ci :
 
 ```yaml
 apiVersion: apps/v1
@@ -545,7 +547,7 @@ spec:
             - containerPort: 8000
               name: http
 
-          # Health checks: /status must return HTTP 200
+          # Les health checks exigent que /status renvoie HTTP 200
           readinessProbe:
             httpGet:
               path: /status
@@ -565,7 +567,7 @@ spec:
             failureThreshold: 3
 
           volumeMounts:
-            # Persistent data
+            # Données persistantes
             - name: config
               mountPath: /config
             - name: plugin
@@ -573,7 +575,7 @@ spec:
             - name: attach
               mountPath: /attach
 
-            # Ephemeral runtime and temp files
+            # Fichiers runtime et temporaires éphémères
             - name: tmp
               mountPath: /tmp
 
@@ -588,9 +590,9 @@ spec:
           persistentVolumeClaim:
             claimName: apprise-attach
 
-        # The deployment mounts /tmp as an in-memory emptyDir, which is where nginx,
-        # gunicorn, and supervisord store pids, sockets, and temporary files.
-        # This is configured as an ephemeral volume, stored in memory.
+        # Le déploiement monte /tmp en emptyDir en mémoire ; c'est là que nginx,
+        # gunicorn et supervisord stockent leurs pid, sockets et fichiers temporaires.
+        # Ce volume est éphémère et stocké en mémoire.
         - name: tmp
           emptyDir:
             medium: Memory
@@ -601,36 +603,36 @@ spec:
 </TabItem>
 </Tabs>
 
-Once deployed, the API and optional web interface are available at:
+Une fois déployés, l'API et l'interface web optionnelle sont disponibles à l'adresse :
 
 ```text
 http://localhost:8000/
 ```
 
-## Persistent Storage
+## Stockage Persistant
 
-API Apprise supports persistent storage for:
+L'API Apprise prend en charge le stockage persistant pour :
 
-- saved configurations
-- cached authentication metadata
-- uploaded attachments
+- les configurations enregistrées ;
+- les métadonnées d'authentification mises en cache ;
+- les pièces jointes téléversées.
 
-The container expects the following writable paths:
+Le conteneur attend les chemins inscriptibles suivants :
 
-| Path      | Purpose                                     |
+| Chemin    | Rôle                                        |
 | --------- | ------------------------------------------- |
-| `/config` | Saved configurations and internal state     |
-| `/attach` | Uploaded attachments                        |
-| `/plugin` | Optional custom plugins                     |
-| `/tmp`    | Runtime files (sockets, buffers, temp data) |
+| `/config` | Configurations enregistrées et état interne |
+| `/attach` | Pièces jointes téléversées                  |
+| `/plugin` | Plugins personnalisés optionnels            |
+| `/tmp`    | Fichiers runtime (sockets, buffers, temp)   |
 
-For most deployments, mounting **only `/config` and `/attach`** is sufficient.
+Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** suffit.
 
-## Hardened Deployments
+## Déploiements Durcis
 
-For public or multi-tenant environments, API Apprise supports hardened execution.
+Pour des environnements publics ou multi-tenant, l'API Apprise prend en charge une exécution durcie.
 
-Example hardened container configuration:
+Exemple de configuration conteneur durci :
 
 ```yaml
 services:
@@ -662,32 +664,32 @@ services:
       - /tmp
 ```
 
-Important Remarques:
+Points importants :
 
-- `/tmp` must remain writable
-- No files are written under `/var/log`
-- All logs are written to stdout and stderr
+- `/tmp` doit rester inscriptible ;
+- aucun fichier n'est écrit sous `/var/log` ;
+- tous les logs sont écrits vers stdout et stderr.
 
-### Kubernetes Hardening Remarques
+### Notes de Durcissement pour Kubernetes
 
-If you deploy in Kubernetes, see **Quick Start -> Kubernetes -> Hardened (rootless + read-only)** for a ready-to-apply example that:
+Si vous déployez dans Kubernetes, consultez **Démarrage Rapide -> Kubernetes -> Durci (rootless + lecture seule)** pour un exemple prêt à l'emploi qui :
 
-- runs as a non-root user
-- drops all Linux capabilities
-- disables privilege escalation
-- uses a read only root filesystem
-- mounts `/tmp` as an in-memory `emptyDir`
+- s'exécute avec un utilisateur non-root ;
+- supprime toutes les capacités Linux ;
+- désactive l'escalade de privilèges ;
+- utilise un système de fichiers racine en lecture seule ;
+- monte `/tmp` comme `emptyDir` en mémoire.
 
 ## Health checks
 
-API Apprise exposes a health endpoint:
+L'API Apprise expose un endpoint de santé :
 
 ```text
 GET /status
 ```
 
-- Returns HTTP `200` when healthy
-- Returns HTTP `417` if a blocking issue is detected
+- Renvoie HTTP `200` lorsque le service est sain
+- Renvoie HTTP `417` si un problème bloquant est détecté
 
 Exemple :
 
@@ -695,15 +697,15 @@ Exemple :
 curl http://localhost:8000/status
 ```
 
-This endpoint is suitable for:
+Cet endpoint convient pour :
 
-- Docker health checks
-- Kubernetes liveness probes
-- external monitoring systems
+- les health checks Docker ;
+- les probes de liveness Kubernetes ;
+- les systèmes de supervision externes.
 
-## Reverse Proxies and Base Paths
+## Reverse Proxies et Chemins de Base
 
-If API Apprise is hosted behind a reverse proxy or served under a subpath, set `APPRISE_BASE_URL` to accommodate this.
+Si l'API Apprise est hébergée derrière un reverse proxy ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
 
 Exemple :
 
@@ -711,48 +713,48 @@ Exemple :
 APPRISE_BASE_URL=/apprise
 ```
 
-This ensures:
+Cela garantit :
 
-- correct URL generation
-- correct web UI routing
-- correct OpenAPI links
+- une génération correcte des URL ;
+- un routage correct de l'interface web ;
+- des liens OpenAPI corrects.
 
-## Authentication and access control
+## Authentification et Contrôle d'Accès
 
-API Apprise does **not** implement authentication internally.
+L'API Apprise **n'implémente pas** d'authentification en interne.
 
-This is by design.
+C'est intentionnel.
 
-Recommended approaches:
+Approches recommandées :
 
-- place the API behind a reverse proxy
-- use HTTP basic authentication
-- restrict access at the network or ingress level
+- placer l'API derrière un reverse proxy ;
+- utiliser une authentification HTTP basic ;
+- restreindre l'accès au niveau réseau ou ingress.
 
-Nginx override files may be injected into the container to enforce access control.
+Des fichiers de surcharge Nginx peuvent être injectés dans le conteneur pour imposer un contrôle d'accès.
 
-A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `ConfigMap` (nginx `location-override.conf`) is available under **Quick Start -> Kubernetes -> Full example**.
+Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `ConfigMap` (nginx `location-override.conf`) est disponible dans **Démarrage Rapide -> Kubernetes -> Exemple Complet**.
 
-## Logging and Observability
+## Logging et Observabilité
 
-- All logs are emitted to stdout and stderr
-- No log files are written to disk
-- Prometheus metrics are available at `/metrics`
+- Tous les logs sont émis vers stdout et stderr
+- Aucun fichier log n'est écrit sur disque
+- Des métriques Prometheus sont disponibles sur `/metrics`
 
-## Development Deployments
+## Déploiements de Développement
 
-For local development, the repository includes Docker Compose overrides that:
+Pour le développement local, le dépôt inclut des surcharges Docker Compose qui :
 
-- mount the local source tree
-- reload UI and template changes without rebuilding
-- expose the API on port `8000`
+- montent l'arborescence source locale ;
+- rechargent les changements d'UI et de templates sans rebuild ;
+- exposent l'API sur le port `8000`.
 
-This mode is intended for development only and is **not recommended for production**.
+Ce mode est destiné uniquement au développement et **n'est pas recommandé en production**.
 
-## Next Steps
+## Étapes Suivantes
 
-Once deployed, you can:
+Une fois l'application déployée, vous pouvez :
 
-- save configuration keys using the web UI or API
-- send notifications using `/notify` or `/notify/{KEY}`
-- integrate external systems using HTTP or the Apprise CLI
+- enregistrer des clés de configuration via l'interface web ou l'API ;
+- envoyer des notifications avec `/notify` ou `/notify/{KEY}` ;
+- intégrer des systèmes externes via HTTP ou la CLI Apprise.

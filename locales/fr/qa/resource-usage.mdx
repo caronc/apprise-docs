@@ -1,6 +1,6 @@
 ---
 title: "Utilisation des Ressources"
-description: "Depannage high memory, RAM, and CPU usage in API Apprise Docker containers. Learn how to reduce resource consumption for low-traffic deployments."
+description: "Dépannage d'une forte consommation de mémoire, RAM et CPU dans les conteneurs Docker Apprise API. Apprenez à réduire la consommation de ressources pour les déploiements à faible trafic."
 sidebar:
   label: "Resource Usage"
   order: 7
@@ -8,26 +8,26 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-**Is the API Apprise Docker container using more RAM or memory than you expect?**
-The table below maps your usage level to the right settings. For most personal and hobbyist deployments, a few environment variables are all it takes.
+**Le conteneur Docker Apprise API utilise-t-il plus de RAM ou de mémoire que prévu ?**
+Le tableau ci-dessous associe votre niveau d'utilisation aux réglages adaptés. Pour la plupart des déploiements personnels et hobbyistes, quelques variables d'environnement suffisent.
 
-## Quick Reference
+## Référence rapide
 
-| Profile         | Daily Notifications | `APPRISE_WORKER_COUNT` | `APPRISE_WORKER_MAX_REQUESTS` | Expected RAM |
-| :-------------- | :-----------------: | :--------------------: | :---------------------------: | :----------: |
-| **Hobbyist**    |       1 – 50        |          `1`           |             `50`              | ~150–180 MB  |
-| **Light**       |      51 – 500       |          `1`           |             `200`             | ~180–220 MB  |
-| **Medium**      |     501 – 5,000     |          `2`           |             `500`             | ~330–400 MB  |
-| **Heavy**       |   5,001 – 20,000    |         `3–4`          |      `1000` _(default)_       | ~500–700 MB  |
-| **High-volume** |       20,000+       |        _(auto)_        |      `1000` _(default)_       |    varies    |
+| Profil         | Notifications quotidiennes | `APPRISE_WORKER_COUNT` | `APPRISE_WORKER_MAX_REQUESTS` | RAM attendue |
+| :------------- | :------------------------: | :--------------------: | :---------------------------: | :----------: |
+| **Hobbyiste**  |           1 – 50           |          `1`           |             `50`              | ~150–180 MB  |
+| **Léger**      |          51 – 500          |          `1`           |             `200`             | ~180–220 MB  |
+| **Moyen**      |        501 – 5,000         |          `2`           |             `500`             | ~330–400 MB  |
+| **Lourd**      |       5,001 – 20,000       |         `3–4`          |     `1000` _(par défaut)_     | ~500–700 MB  |
+| **Très élevé** |          20,000+           |        _(auto)_        |     `1000` _(par défaut)_     |   variable   |
 
-:::tip[Hobbyist / Home server]
-`APPRISE_WORKER_COUNT=1` with `APPRISE_WORKER_MAX_REQUESTS=50` keeps memory use low. **~150–180 MB is the realistic minimum** for this stack — it is the fixed cost of running Python, Django, and Apprise's full plugin suite, and cannot be reduced further through tuning alone.
+:::tip[Hobbyiste / serveur perso]
+`APPRISE_WORKER_COUNT=1` avec `APPRISE_WORKER_MAX_REQUESTS=50` permet de garder une consommation mémoire faible. **~150–180 MB est le minimum réaliste** pour cette pile : c'est le coût fixe d'exécution de Python, Django et de la suite complète de plugins Apprise, et ce plancher ne peut pas être réduit davantage par du simple tuning.
 :::
 
-## Applying the Settings
+## Appliquer ces réglages
 
-The following provides an example of how you can apply the settings to your deployment. Choose the tab that matches your setup.
+Voici un exemple de la manière dont vous pouvez appliquer ces paramètres à votre déploiement. Choisissez l'onglet correspondant à votre configuration.
 
 <Tabs>
   <TabItem label="Docker">
@@ -54,69 +54,69 @@ services:
       - ./config:/config
 ```
 
-To cap the container's RAM and prevent unbounded growth, add a memory limit:
+Pour plafonner la RAM du conteneur et éviter une croissance sans borne, ajoutez une limite mémoire :
 
 ```yaml
-mem_limit: 256m # safe floor for 1-worker deployments
+mem_limit: 256m # plancher sûr pour un déploiement à 1 worker
 ```
 
 :::caution
-If the container hits its memory limit, Docker will terminate it with an out-of-memory (OOM) error. **256 MB** is a safe floor for single-worker deployments; **384 MB** provides a comfortable margin.
+Si le conteneur atteint sa limite mémoire, Docker le terminera avec une erreur d'out-of-memory (OOM). **256 MB** constitue un plancher sûr pour les déploiements à un seul worker ; **384 MB** offre une marge plus confortable.
 :::
 
   </TabItem>
 </Tabs>
 
-## Why Is ~150 MB the Minimum?
+## Pourquoi ~150 MB est le minimum ?
 
-The container always runs three processes regardless of settings:
+Le conteneur exécute toujours trois processus, quels que soient les réglages :
 
-| Process         |     RAM     | Remarques                             |
-| :-------------- | :---------: | :------------------------------------ |
-| Nginx           |   ~25 MB    | Reverse proxy                         |
-| Supervisord     |   ~10 MB    | Process manager                       |
-| Gunicorn worker | ~115–145 MB | Python + Django + all Apprise plugins |
+| Processus       |     RAM     | Notes                                      |
+| :-------------- | :---------: | :----------------------------------------- |
+| Nginx           |   ~25 MB    | Reverse proxy                              |
+| Supervisord     |   ~10 MB    | Gestionnaire de processus                  |
+| Gunicorn worker | ~115–145 MB | Python + Django + tous les plugins Apprise |
 
-The worker is the main driver. Apprise loads **all {/_ SERVICES:COUNT _/} notification services at startup** — even ones you will never use. This is what creates the fixed baseline. The core Python, Django, and service scaffolding always loads; however, optional third-party libraries used only by specific services can be evicted at startup if those services are disabled (see [Reducing Memory Further with Service Filtering](#advanced-reducing-memory-further-with-service-filtering)).
+Le worker est le principal poste de dépense. Apprise charge **les {/_ SERVICES:COUNT _/} services de notification au démarrage** même ceux que vous n'utiliserez jamais. C'est ce qui crée ce socle fixe. Le cœur Python, Django et l'infrastructure de services sont toujours chargés ; en revanche, certaines bibliothèques tierces optionnelles utilisées uniquement par des services spécifiques peuvent être évincées au démarrage si ces services sont désactivés (voir [Réduire davantage la mémoire avec le filtrage de services](#avancé--réduire-davantage-la-mémoire-avec-le-filtrage-de-services)).
 
-The default worker count is `(2 × CPU cores) + 1`. On a 2-core host that is **5 workers**, which can push usage to 700 MB or more before a single notification is sent. Reducing to `APPRISE_WORKER_COUNT=1` has the most effect on memory use.
+Le nombre de workers par défaut vaut `(2 × nombre de cœurs CPU) + 1`. Sur une machine à 2 cœurs, cela fait **5 workers**, ce qui peut pousser l'utilisation mémoire à 700 MB ou plus avant même l'envoi d'une seule notification. Réduire à `APPRISE_WORKER_COUNT=1` est le levier le plus efficace.
 
-## Why Does Memory Grow Over Time?
+## Pourquoi la mémoire augmente-t-elle avec le temps ?
 
-Python's internal allocator retains freed memory rather than returning it to the OS immediately — this is normal, not a leak. Memory is only fully released when a worker **restarts**.
+L'allocateur interne de Python conserve une partie de la mémoire libérée au lieu de la rendre immédiatement au système d'exploitation. C'est normal, pas forcément une fuite. La mémoire n'est complètement relâchée que lorsqu'un worker **redémarre**.
 
-`APPRISE_WORKER_MAX_REQUESTS` controls how many requests a worker handles before restarting. With the default of `1000` and only a handful of notifications per day, workers may run for months without ever recycling. Setting this to a lower value (e.g., `50`) ensures periodic restarts that keep memory closer to the startup baseline.
+`APPRISE_WORKER_MAX_REQUESTS` contrôle combien de requêtes un worker traite avant de redémarrer. Avec la valeur par défaut `1000` et seulement quelques notifications par jour, les workers peuvent rester actifs pendant des mois sans recyclage. Définir une valeur plus basse (par exemple `50`) garantit des redémarrages périodiques qui maintiennent la mémoire plus proche du niveau initial.
 
-## Advanced: Jitter
+## Avancé : Jitter
 
-`APPRISE_WORKER_MAX_REQUESTS_JITTER` adds a random offset to each worker's restart threshold to prevent all workers from recycling simultaneously.
+`APPRISE_WORKER_MAX_REQUESTS_JITTER` ajoute un décalage aléatoire au seuil de redémarrage de chaque worker afin d'éviter qu'ils se recyclent tous en même temps.
 
-- **Single-worker deployments**: jitter has no effect. The default of `50` is harmless, or you can set it to `0`.
-- **Multi-worker deployments**: leave jitter at the default `50`, or scale it proportionally if you lower `APPRISE_WORKER_MAX_REQUESTS` significantly (e.g., `MAX_REQUESTS=50` → `JITTER=10`).
+- **Déploiements à un seul worker** : le jitter n'a pas d'effet. La valeur par défaut `50` est sans danger, ou vous pouvez la fixer à `0`.
+- **Déploiements à plusieurs workers** : laissez le jitter à sa valeur par défaut `50`, ou réduisez-le proportionnellement si vous baissez fortement `APPRISE_WORKER_MAX_REQUESTS` (par ex. `MAX_REQUESTS=50` → `JITTER=10`).
 
-Jitter does not affect memory usage — only `APPRISE_WORKER_COUNT` and `APPRISE_WORKER_MAX_REQUESTS` do.
+Le jitter n'affecte pas l'usage mémoire ; seuls `APPRISE_WORKER_COUNT` et `APPRISE_WORKER_MAX_REQUESTS` ont un impact direct.
 
-## Related Environment Variables
+## Variables d'environnement liées
 
-| Variable                             |    Default     | Description                                                                        |
-| :----------------------------------- | :------------: | :--------------------------------------------------------------------------------- |
-| `APPRISE_WORKER_COUNT`               | `(2×CPUs) + 1` | Number of Gunicorn workers. Set to `1` for low-resource deployments.               |
-| `APPRISE_WORKER_MAX_REQUESTS`        |     `1000`     | Requests before a worker restarts and releases accumulated memory.                 |
-| `APPRISE_WORKER_MAX_REQUESTS_JITTER` |      `50`      | Random offset per worker to stagger restarts. Irrelevant for single-worker setups. |
-| `APPRISE_WORKER_TIMEOUT`             |     `300`      | Worker timeout in seconds.                                                         |
+| Variable                             |     Défaut     | Description                                                                                      |
+| :----------------------------------- | :------------: | :----------------------------------------------------------------------------------------------- |
+| `APPRISE_WORKER_COUNT`               | `(2×CPUs) + 1` | Nombre de workers Gunicorn. Réglez à `1` pour les déploiements à faibles ressources.             |
+| `APPRISE_WORKER_MAX_REQUESTS`        |     `1000`     | Nombre de requêtes avant redémarrage d'un worker et libération de la mémoire accumulée.          |
+| `APPRISE_WORKER_MAX_REQUESTS_JITTER` |      `50`      | Décalage aléatoire par worker pour étaler les redémarrages. Sans importance avec un seul worker. |
+| `APPRISE_WORKER_TIMEOUT`             |     `300`      | Timeout du worker en secondes.                                                                   |
 
-See the [Environment Variables reference](../reference/environment/) for a full list.
+Consultez la [référence des variables d'environnement](../reference/environment/) pour la liste complète.
 
-## Advanced: Reducing Memory Further with Service Filtering
+## Avancé : réduire davantage la mémoire avec le filtrage de services
 
-If you only use a small set of notification services, you can reclaim additional memory by telling the API which services you actually need. The API Apprise will evict the optional libraries used exclusively by the disabled plugins from memory at startup.
+Si vous n'utilisez qu'un petit ensemble de services de notification, vous pouvez récupérer encore un peu de mémoire en indiquant à l'API quels services vous utilisez réellement. L'API Apprise évincera alors au démarrage les bibliothèques optionnelles utilisées exclusivement par les plugins désactivés.
 
 ```bash
 APPRISE_ALLOW_SERVICES=tgram,ntfy
 ```
 
-Libraries that are no longer needed by any enabled plugin are automatically removed from Python's module cache (`sys.modules`). The savings compound with `APPRISE_WORKER_COUNT=1`:
+Les bibliothèques dont plus aucun plugin activé n'a besoin sont automatiquement supprimées du cache de modules Python (`sys.modules`). Les gains s'additionnent avec `APPRISE_WORKER_COUNT=1` :
 
 <!-- TEMPLATE:EVICTION-TABLE -->
 
-For full details on how this works and configuration examples, see [Memory Impact of Service Filtering](../../api/reference/environment/#memory-impact-of-service-filtering).
+Pour tous les détails sur le fonctionnement et des exemples de configuration, consultez [Impact mémoire du filtrage de services](../../api/reference/environment/#memory-impact-of-service-filtering).

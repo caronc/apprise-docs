@@ -1,5 +1,5 @@
 ---
-title: Variables d'Environnement
+title: Variables d’Environnement
 description: Référence complète de toutes les variables d'environnement prises en charge par le conteneur API Apprise.
 sidebar:
   order: 10

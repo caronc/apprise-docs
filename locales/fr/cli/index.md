@@ -1,5 +1,5 @@
 ---
-title: Interface en ligne de commande
+title: Interface en Ligne de Commande
 description: Envoyez des notifications directement depuis votre terminal avec la CLI Apprise.
 sidebar:
   label: "Introduction"

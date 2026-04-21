@@ -1,16 +1,16 @@
 ---
 title: "Support de PyInstaller"
-description: "PyInstaller Remarques"
+description: "Notes sur PyInstaller"
 sidebar:
   order: 10
   title: "PyInstaller"
 ---
 
-[Pyinstaller](https://pyinstaller.org/) allows to package a python application with its dependencies in a single exe.
+[PyInstaller](https://pyinstaller.org/) permet d'empaqueter une application Python avec ses dépendances dans un seul exécutable.
 
-It is possible to package an application that is using Apprise but there is a trick.
+Il est possible d'empaqueter une application qui utilise Apprise, mais il y a une petite subtilité.
 
-Let's take a simple script:
+Prenons un script simple :
 
 ```python
 from apprise import Apprise
@@ -19,19 +19,19 @@ apobj.add('<SCHEME>://<FQDN>/<TOKEN>')
 apobj.notify(title="a title", body="this is the body of the notification")
 ```
 
-Then package with `pytinstaller`:
+Puis empaquetez-le avec `pyinstaller` :
 
 ```bash
 pyinstaller -F myscript.py
 ```
 
-And launch it:
+Et lancez-le :
 
 ```bash
 ./dist/myscript
 ```
 
-We get:
+On obtient :
 
 ```text
 FileNotFoundError: [Errno 2] No such file or directory: '/tmp/_MEIEbGkgo/apprise/attachment'
@@ -41,7 +41,7 @@ or
 FileNotFoundError: [Errno 2] No such file or directory: '/tmp/_MEIEbGkgo/apprise/config'
 ```
 
-We have to use `--collect-all` option which, according to documentation:
+Il faut utiliser l'option `--collect-all` qui, d'après la documentation :
 
 > Collect all submodules, data files, and binaries from the specified package or module. This option can be used multiple times.
 
@@ -49,4 +49,4 @@ We have to use `--collect-all` option which, according to documentation:
 pyinstaller -F --collect-all apprise myscript.py
 ```
 
-No more errors, notifications are sent.
+Plus d'erreurs, les notifications sont envoyées.

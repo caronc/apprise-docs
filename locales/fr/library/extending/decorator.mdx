@@ -1,111 +1,111 @@
 ---
-title: Décorateur de notification personnalisé
-description: Extend Apprise by mapping your own Python functions to custom schema:// notification URLs.
+title: Décorateur de Notification Personnalisé
+description: Étendez Apprise en reliant vos propres fonctions Python à des URL de notification personnalisées en `schema://`.
 sidebar:
   order: 4
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Apprise supports **lightweight, file-based notification handlers** via the `@notify()` decorator.
-This is ideal when you want a quick integration without creating and publishing a full Apprise plugin.
+Apprise prend en charge des **gestionnaires de notification légers, basés sur des fichiers** via le décorateur `@notify()`.
+C'est idéal lorsque vous voulez une intégration rapide sans créer puis publier un plugin Apprise complet.
 
-The decorator system works by importing a Python module and collecting any functions registered with `@notify()`.
-Those functions are then exposed as Apprise schemas.
+Le système de décorateurs fonctionne en important un module Python et en collectant toute fonction enregistrée avec `@notify()`.
+Ces fonctions sont ensuite exposées comme des schémas Apprise.
 
-## When to use a decorator
+## Quand utiliser un décorateur
 
-Use a decorator-based handler when:
+Utilisez un gestionnaire basé sur décorateur lorsque :
 
-- You need a quick, local integration for personal or controlled environments.
-- You want to glue Apprise to local automation, scripts, or a private service.
-- You do not want to maintain a full plugin lifecycle (tests, packaging, release cadence).
+- vous avez besoin d'une intégration rapide et locale dans un environnement personnel ou maîtrisé ;
+- vous voulez relier Apprise à une automatisation locale, à des scripts ou à un service privé ;
+- vous ne voulez pas maintenir le cycle de vie complet d'un plugin (tests, packaging, cadence de publication).
 
-Avoid a decorator-based handler when:
+Évitez cette approche lorsque :
 
-- You want to ship a service to Apprise itself (upstream contribution).
-- You need strict parsing, templates, native URL reversal, batching, or robust retry logic.
-- You require long-term stability, public distribution, or third-party usage.
+- vous voulez intégrer le service directement dans Apprise (contribution upstream) ;
+- vous avez besoin d'un parsing strict, de modèles, de reconstruction native d'URL, de batch ou d'une logique de retry robuste ;
+- vous avez besoin d'une stabilité à long terme, d'une distribution publique ou d'un usage tiers.
 
-## Critical Security Note
+## Note de sécurité critique
 
-The decorator system requires importing a Python module to discover the decorated functions.
-**Importing a module executes code at import time.**
+Le système de décorateur nécessite d'importer un module Python pour découvrir les fonctions décorées.
+**Importer un module exécute du code au moment de l'import.**
 
-That means:
+Cela signifie :
 
-- Any code at module scope will run, not just the decorated function.
-- Any imports inside that module will execute.
-- Any side effects, file access, network calls, or subprocess calls can occur during load.
+- tout code défini à la portée du module sera exécuté, pas seulement la fonction décorée ;
+- tous les imports internes au module seront exécutés ;
+- des effets de bord, accès fichiers, appels réseau ou sous-processus peuvent se produire au chargement.
 
-Only use decorator-based handlers for **trusted code** in **controlled environments**.
-Do not point Apprise at a shared or untrusted filesystem location.
+N'utilisez des gestionnaires basés sur décorateur qu'avec du **code de confiance** dans des **environnements contrôlés**.
+Ne pointez pas Apprise vers un emplacement partagé ou non fiable sur le système de fichiers.
 
-## Decorator vs Full Plugin
+## Décorateur vs plugin complet
 
-Here is the practical decision rule.
+Voici la règle pratique.
 
-| Capability                   | `@notify()` Decorator |                                     Full Apprise Plugin |
-| ---------------------------- | --------------------: | ------------------------------------------------------: |
-| Time to implement            |               Minutes |                                           Hours to days |
-| Packaging and distribution   |            Local file |                         PyPI, distro packages, upstream |
-| URL templates and validation |               Minimal |    Built-in patterns (tokens, args, and strict parsing) |
-| Privacy handling in `url()`  |                Manual |                     Standardized (`PrivacyMode.Secret`) |
-| Native URL reversal          |                  Rare |                                  Expected when feasible |
-| Attachments support          |         You implement |                 Built-in patterns (`AppriseAttachment`) |
-| Throttling, retry patterns   |         You implement |            Standardized (`throttle()`, request helpers) |
-| Testability                  |                Ad-hoc | Built-in patterns (`AppriseURLTester`, and error paths) |
-| Best for                     |    Private automation |                        Upstream services and public use |
+| Capacité                      |  Décorateur `@notify()` |                                        Plugin Apprise complet |
+| ----------------------------- | ----------------------: | ------------------------------------------------------------: |
+| Temps d'implémentation        |                 Minutes |                                                Heures à jours |
+| Packaging et distribution     |           Fichier local |                     PyPI, paquets système, contribution amont |
+| Modèles d'URL et validation   |                 Minimal |            Patterns intégrés (jetons, args et parsing strict) |
+| Confidentialité dans `url()`  |                  Manuel |                           Standardisée (`PrivacyMode.Secret`) |
+| Reconstruction native d'URL   |                    Rare |                                 Attendue quand c'est faisable |
+| Support des pièces jointes    | À implémenter vous-même |                       Patterns intégrés (`AppriseAttachment`) |
+| Limitation de débit / retries | À implémenter vous-même |               Standardisé (`throttle()`, helpers de requêtes) |
+| Testabilité                   |                  Ad hoc | Patterns intégrés (`AppriseURLTester`, erreurs standardisées) |
+| Idéal pour                    |   Automatisation privée |                                Services amont et usage public |
 
-If your handler is likely to be reused by other people, becomes business-critical, or needs strong URL parsing, an Apprise plugin is usually more appropriate.
+Si votre gestionnaire a vocation à être réutilisé, devient critique pour le métier ou requiert un parsing d'URL solide, un vrai plugin Apprise est généralement plus adapté.
 
-## Basic Usage
+## Utilisation de base
 
-At minimum, you must define a **unique schema** and a Python function.
+Au minimum, vous devez définir un **schéma unique** et une fonction Python.
 
 ```python
 from apprise.decorators import notify
 
-# Maps 'foobar://' to this function and prints to stdout
+# Associe 'foobar://' à cette fonction et écrit sur stdout
 @notify(on="foobar")
 def my_wrapper(body, title, notify_type, *args, **kwargs):
     print(f"{notify_type}: {title} - {body}")
 ```
 
-Once loaded, Apprise can trigger this function using:
+Une fois chargé, Apprise peut déclencher cette fonction avec :
 
 ```bash
 apprise -b "Hello world" foobar://
 ```
 
-### Return Values
+### Valeurs de retour
 
-A decorated function should return:
+Une fonction décorée doit renvoyer :
 
-- `True` to indicate success
-- `False` to indicate failure
-- `None` (or no return), which is treated as success
+- `True` pour indiquer un succès ;
+- `False` pour indiquer un échec ;
+- `None` (ou aucun `return`), ce qui est traité comme un succès.
 
-Failures propagate back to Apprise and affect overall notification status.
+Les échecs remontent à Apprise et affectent le statut global de la notification.
 
-## Function Signature
+## Signature de fonction
 
-Your wrapper function may accept the following parameters.
+Votre fonction wrapper peut accepter les paramètres suivants.
 
-| Parameter     | Required | Description                                                                                                                               |
-| ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `body`        | Yes      | Notification body                                                                                                                         |
-| `title`       | No       | Notification title                                                                                                                        |
-| `notify_type` | No       | One of `info`, `success`, `warning`, `failure`                                                                                            |
-| `body_format` | No       | `text`, `html`, or `markdown`                                                                                                             |
-| `meta`        | No       | Parsed and merged URL metadata                                                                                                            |
-| `attach`      | No       | List of `AppriseAttachment` objects<br/> See [Attachments](../attachments/) for how to read, validate, and forward files from decorators. |
-| `*args`       | Yes      | Required for forward compatibility                                                                                                        |
-| `**kwargs`    | Yes      | Required for forward compatibility                                                                                                        |
+| Paramètre     | Requis | Description                                                                                                                                         |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`        | Oui    | Corps de la notification                                                                                                                            |
+| `title`       | Non    | Titre de la notification                                                                                                                            |
+| `notify_type` | Non    | L'une des valeurs `info`, `success`, `warning`, `failure`                                                                                           |
+| `body_format` | Non    | `text`, `html` ou `markdown`                                                                                                                        |
+| `meta`        | Non    | Métadonnées d'URL analysées et fusionnées                                                                                                           |
+| `attach`      | Non    | Liste d'objets `AppriseAttachment`<br/> Voir [Pièces jointes](../attachments/) pour lire, valider et transmettre des fichiers depuis un décorateur. |
+| `*args`       | Oui    | Requis pour la compatibilité future                                                                                                                 |
+| `**kwargs`    | Oui    | Requis pour la compatibilité future                                                                                                                 |
 
-**Always include `*args` and `**kwargs`\*\* to remain compatible with future Apprise releases.
+Incluez toujours `*args` et `**kwargs` afin de rester compatible avec les futures versions d'Apprise.
 
-A minimal wrapper may look like:
+Un wrapper minimal peut ressembler à ceci :
 
 ```python
 from apprise.decorators import notify
@@ -115,14 +115,14 @@ def my_wrapper(body, *args, **kwargs):
     print(body)
 ```
 
-## The `meta` dictionary
+## Le dictionnaire `meta`
 
-The `meta` parameter provides a fully parsed and merged view of:
+Le paramètre `meta` fournit une vue entièrement analysée et fusionnée de :
 
-1. The decorator declaration URL
-2. The user-supplied initialization URL
+1. l'URL de déclaration du décorateur ;
+1. l'URL d'initialisation fournie par l'utilisateur.
 
-Example structure:
+Exemple de structure :
 
 ```python
 {
@@ -141,11 +141,11 @@ Example structure:
 }
 ```
 
-Only fields present in the URL are included. At minimum, `schema`, `url`, `asset`, and `tag` are always present.
+Seuls les champs présents dans l'URL sont inclus. Au minimum, `schema`, `url`, `asset` et `tag` sont toujours présents.
 
-## Complex Declarations
+## Déclarations complexes
 
-The decorator can preload defaults by specifying a full URL.
+Le décorateur peut précharger des valeurs par défaut en spécifiant une URL complète.
 
 ```python
 @notify(on="foobar://localhost:234?notify_on_complete=0")
@@ -153,13 +153,13 @@ def my_wrapper(body, meta, *args, **kwargs):
     pass
 ```
 
-Users may override these values at runtime:
+Les utilisateurs peuvent surcharger ces valeurs à l'exécution :
 
 ```bash
 apprise -b "override" foobar://example.com?notify_on_complete=1
 ```
 
-Merged result:
+Résultat fusionné :
 
 ```json
 {
@@ -173,12 +173,12 @@ Merged result:
 }
 ```
 
-## Plugin Examples
+## Exemples de plugins
 
 <Tabs>
-<TabItem value="logger" label="Simple Logger">
-This example appends a time to the end of a file when called
-**Usage:** `demo://`
+<TabItem value="logger" label="Logger simple">
+Cet exemple ajoute une ligne horodatée à la fin d'un fichier lorsqu'il est appelé.
+**Utilisation :** `demo://`
 
 ```python
 # apprise/plugins/mylogger.py
@@ -188,25 +188,25 @@ import logging
 @notify(on="demo")
 def my_wrapper(body, title, notify_type, *args, **kwargs):
 
-    # Configure the logging system
+    # Configurer le système de logs
     logging.basicConfig(
         filename='/tmp/my-demo.log',
         level=logging.DEBUG, filemode='w',
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # Create a logger instance
+    # Créer une instance de logger
     logger = logging.getLogger(__name__)
 
-    # Log a simple message at the INFO level
+    # Journaliser un message simple au niveau INFO
     logger.info("f{title} - {body}")
 ```
 
 </TabItem>
 
-<TabItem value="web" label="Web Request">
-This example sends a JSON payload to a remote server. It demonstrates parsing URL tokens (like `apikey`).
+<TabItem value="web" label="Requête web">
+Cet exemple envoie une charge utile JSON à un serveur distant. Il montre comment analyser des jetons d'URL (comme `apikey`).
 
-**Usage:** `myapi://hostname/apikey`
+**Utilisation :** `myapi://hostname/apikey`
 
 ```python
 # apprise/plugins/myapi.py
@@ -216,16 +216,16 @@ import requests
 @notify(on="demo://localhost/")
 def my_wrapper(body, title, notify_type, *args, **kwargs):
     print(f"{notify_type}: {title} - {body}")
-        # Get our host and prepare our url to post to
+        # Récupérer l'hôte et préparer l'URL de destination
         host = meta.get('host')
         url = f'https://{host}/api/v1/send'
 
-        # Get our API Key or abort
+        # Récupérer la clé API ou abandonner
         apikey = meta.get('path', '').split('/')[0]
         if not apikey:
             return False
 
-        # Prepare a payload we want to use:
+        # Préparer la charge utile à envoyer
         payload = {'key': apikey, 'msg': body}
 
         try:
@@ -238,12 +238,12 @@ def my_wrapper(body, title, notify_type, *args, **kwargs):
 ```
 
 </TabItem>
-<TabItem value="shell" label="Shell Triggers">
+<TabItem value="shell" label="Déclencheurs shell">
 :::caution
-This is an example only:
- - Never pass user-controlled strings directly to the shell unless this is a very controlled environment.
- - Use a strict allowlist of commands and fixed arguments.
- - Consider running as a dedicated low-privilege user.
+Ceci n'est qu'un exemple :
+ - Ne passez jamais directement au shell des chaînes contrôlées par l'utilisateur sauf dans un environnement très maîtrisé.
+ - Utilisez une liste blanche stricte de commandes et d'arguments fixes.
+ - Envisagez une exécution avec un utilisateur dédié à faibles privilèges.
 :::
 
 ```python
@@ -254,8 +254,8 @@ import subprocess
 from apprise.decorators import notify
 
 
-# Only allow a very small set of commands.
-# Never build these from user input.
+# N'autoriser qu'un très petit ensemble de commandes.
+# Ne construisez jamais ces valeurs depuis une entrée utilisateur.
 ALLOWED = {
     "puppet": ["/usr/bin/puppet", "agent", "-t"],
     "reload-nginx": ["/usr/bin/systemctl", "reload", "nginx"],
@@ -271,17 +271,17 @@ def ops_notify(
     **kwargs,
 ) -> bool:
     """
-    Example usage:
+    Exemple d'utilisation :
       ops://?allow=yes
 
-    Trigger pattern:
-      title: "run: puppet"       -> runs puppet agent -t
-      title: "run: reload-nginx" -> reloads nginx
+    Motif de déclenchement :
+      title: "run: puppet"       -> exécute puppet agent -t
+      title: "run: reload-nginx" -> recharge nginx
     """
     meta = meta or {}
     qsd = meta.get("qsd") or {}
 
-    # Guardrail, require explicit opt-in in the URL.
+    # Garde-fou : exiger un opt-in explicite dans l'URL.
     allow = str(qsd.get("allow", "")).lower() in ("1", "yes", "true", "on")
     if not allow:
         return True
@@ -310,11 +310,11 @@ def ops_notify(
 ```
 
 </TabItem>
-<TabItem value="postgres" label="PostgreSQL Write">
+<TabItem value="postgres" label="Écriture PostgreSQL">
 :::caution
-This is an example only:
-- Connection values should come from your environment or the declaration URL.
-- This is only examples, do not hardcode secrets in source.
+Ceci n'est qu'un exemple :
+- Les valeurs de connexion devraient venir de votre environnement ou de l'URL de déclaration.
+- Ce ne sont que des exemples ; ne codez pas de secrets en dur dans le source.
 :::
 
 ```python
@@ -326,11 +326,11 @@ import subprocess
 
 from apprise.decorators import notify
 
-# Safety notes:
-# - Prefer database roles with least privilege.
-# - Avoid executing arbitrary SQL from the notification body.
-# - Use a strict mapping from keywords to predefined SQL statements.
-# - This example calls `psql` to avoid adding a Python dependency.
+# Notes de sécurité :
+# - Préférez des rôles SQL au moindre privilège.
+# - Évitez d'exécuter du SQL arbitraire depuis le corps de notification.
+# - Utilisez un mappage strict de mots-clés vers des requêtes prédéfinies.
+# - Cet exemple appelle `psql` pour éviter d'ajouter une dépendance Python.
 
 SQL = {
     "vacuum": "VACUUM (ANALYZE);",
@@ -340,7 +340,7 @@ SQL = {
 
 _KEYWORD = re.compile(r"^db:\s*(?P<key>[a-z0-9_-]+)\s*$", re.IGNORECASE)
 
-# Initializes pg://
+# Initialise pg://
 @notify(on="pg://pgsql.mydomain.com")
 def pg_hook(body, title, notify_type, meta, *args, **kwargs):
     m = _KEYWORD.match((title or "").strip())
@@ -352,10 +352,10 @@ def pg_hook(body, title, notify_type, meta, *args, **kwargs):
     if not sql:
         return False
 
-    # Construct our postgresql:// URL based on the (pg://) one passed in
+    # Construire notre URL postgresql:// à partir de celle en pg://
     dsn = 'postgresql://' + meta.get('url')[len('pg://'):]
 
-    # Call psql safely, no shell
+    # Appeler psql proprement, sans shell
     argv = [
         "psql",
         dsn,
@@ -378,44 +378,44 @@ def pg_hook(body, title, notify_type, meta, *args, **kwargs):
 </Tabs>
 
 :::note
-The examples will show that Apprise can extend well beyond simple notifications; it can also be used to automate and trigger workflows you perform every day.
+Ces exemples montrent qu'Apprise peut aller bien au-delà des simples notifications ; il peut aussi servir à automatiser et déclencher des workflows du quotidien.
 :::
 
-Defaults defined in the decorator persist unless explicitly overridden.
+Les valeurs par défaut définies dans le décorateur persistent tant qu'elles ne sont pas explicitement surchargées.
 
-## Plugin Registration Behaviour
+## Comportement d'enregistrement du plugin
 
-Internally, the decorator:
+En interne, le décorateur :
 
-- Registers a dynamic `NotifyBase` wrapper
-- Binds your function to the schema
-- Enforces schema uniqueness
-- Supports attachments and persistent storage automatically
+- enregistre un wrapper dynamique `NotifyBase` ;
+- lie votre fonction au schéma ;
+- impose l'unicité du schéma ;
+- prend automatiquement en charge les pièces jointes et le stockage persistant.
 
-If a schema already exists, Apprise logs a warning and skips registration.
+Si un schéma existe déjà, Apprise journalise un avertissement et ignore l'enregistrement.
 
-## Loading Custom Decorators
+## Charger des décorateurs personnalisés
 
-### Apprise CLI
+### CLI Apprise
 
-By default, Apprise scans:
+Par défaut, Apprise scanne :
 
-- Linux and macOS:
+- Linux et macOS :
   - `~/.apprise/plugins`
   - `~/.config/apprise/plugins`
-- Windows:
+- Windows :
   - `%APPDATA%/Apprise/plugins`
   - `%LOCALAPPDATA%/Apprise/plugins`
 
-Override using:
+Surcharge possible avec :
 
 ```bash
 apprise -P /custom/plugin/path -b "test" foobar://
 ```
 
-### Python API
+### API Python
 
-Provide plugin paths through `AppriseAsset`:
+Fournissez les chemins de plugins via `AppriseAsset` :
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -430,25 +430,25 @@ aobj.add("foobar://")
 aobj.notify("Hello")
 ```
 
-Directory scanning rules:
+Règles de scan des répertoires :
 
-- Hidden files and directories are ignored
-- A directory with `__init__.py` loads only that file
-- Directories without `__init__.py` load all `.py` files at that level
-- Scanning is non-recursive
+- les fichiers et répertoires cachés sont ignorés ;
+- un répertoire avec `__init__.py` charge uniquement ce fichier ;
+- un répertoire sans `__init__.py` charge tous les fichiers `.py` à ce niveau ;
+- le scan n'est pas récursif.
 
 ---
 
-## Restrictions and Best Practices
+## Restrictions et bonnes pratiques
 
-- Schemas must be unique
-- Keep modules import-safe.
-  Do not perform network calls or long-running work at import time.
-- Validate and sanitize `meta` values before using them.
-- Prefer allowlists over dynamic execution.
-- Put secrets in environment variables or secret stores, not in URLs.
-- If you need strong parsing, batching, attachments, or upstream contribution, write a full plugin instead.
+- les schémas doivent être uniques ;
+- gardez les modules sûrs à importer ;
+  n'effectuez pas d'appels réseau ni de traitements longs au moment de l'import ;
+- validez et nettoyez les valeurs `meta` avant de les utiliser ;
+- préférez les listes blanches à l'exécution dynamique ;
+- placez les secrets dans des variables d'environnement ou des coffres à secrets, pas dans les URL ;
+- si vous avez besoin d'un parsing fort, de batch, de pièces jointes ou d'une contribution amont, écrivez un plugin complet à la place.
 
-## Summary
+## Résumé
 
-The Apprise decorator API provides a fast, flexible way to extend Apprise with custom logic while preserving the familiar `schema://` interface. It is ideal for internal workflows, automation hooks, and tightly integrated systems.
+L'API de décorateur Apprise offre un moyen rapide et flexible d'étendre Apprise avec une logique personnalisée tout en conservant l'interface familière en `schema://`. Elle convient parfaitement aux workflows internes, aux hooks d'automatisation et aux systèmes fortement intégrés.

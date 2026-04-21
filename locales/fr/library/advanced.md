@@ -1,13 +1,13 @@
 ---
-title: "Utilisation avancée"
-description: "Async, serialization, and low-level control."
+title: "Utilisation Avancée"
+description: "Asynchrone, sérialisation et contrôle bas niveau."
 sidebar:
   order: 5
 ---
 
-## Asynchronous Notifications
+## Notifications asynchrones
 
-If you are running inside an `asyncio` event loop, you can use `async_notify()` to send notifications without blocking.
+Si vous exécutez votre code dans une boucle d'événements `asyncio`, vous pouvez utiliser `async_notify()` pour envoyer des notifications sans bloquer.
 
 ```python
 import asyncio
@@ -17,55 +17,55 @@ async def main():
     apobj = apprise.Apprise()
     apobj.add('mailto://user:pass@example.com')
 
-    # Await the notification delivery
+    # Attendre l'envoi de la notification
     await apobj.async_notify(
-        title='Async Test',
-        body='This was sent asynchronously',
+        title='Test asynchrone',
+        body='Ceci a été envoyé de manière asynchrone',
     )
 
 asyncio.run(main())
 ```
 
-## Serialization (Pickle)
+## Sérialisation (Pickle)
 
-Apprise objects can be serialized (pickled). This allows you to configure an Apprise object once, save it to disk (or a database), and reload it later with all services configured.
+Les objets Apprise peuvent être sérialisés (`pickled`). Cela vous permet de configurer un objet Apprise une seule fois, de l'enregistrer sur disque (ou dans une base de données), puis de le recharger plus tard avec tous ses services déjà configurés.
 
 ```python
 import apprise
 import pickle
 
-# 1. Setup
+# 1. Configuration
 apobj = apprise.Apprise()
 apobj.add("json://localhost")
 
-# 2. Serialize
+# 2. Sérialisation
 serialized_data = pickle.dumps(apobj)
 
-# ... later in your code ...
+# ... plus tard dans votre code ...
 
-# 3. Restore
+# 3. Restauration
 restored_obj = pickle.loads(serialized_data)
-restored_obj.notify("I am back!")
+restored_obj.notify("Je suis de retour !")
 ```
 
-## Low-Level: The Apprise Notification Object
+## Bas niveau : l'objet de notification Apprise
 
-When you call `Apprise.notify()`, it handles tagging, configuration, and logging for you. If you need to bypass this and interact directly with a specific notification object:
+Lorsque vous appelez `Apprise.notify()`, Apprise gère pour vous les tags, la configuration et la journalisation. Si vous devez contourner cela et interagir directement avec un objet de notification précis :
 
 ```python
 import apprise
 
-# Instantiate a single notification object directly
-# (Bypassing the Apprise() manager)
+# Instancier directement un seul objet de notification
+# (en contournant le gestionnaire Apprise())
 obj = apprise.Apprise.instantiate('glib://')
 
-# Send raw content
+# Envoyer un contenu brut
 obj.send(
-    body="Raw message",
-    title="Raw title"
+    body="Message brut",
+    title="Titre brut"
 )
 ```
 
 :::caution
-Using `send()` directly bypasses many of the safeguards and features (like tagging and attachment processing) provided by the main `notify()` method.
+Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::

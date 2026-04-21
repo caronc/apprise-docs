@@ -1,93 +1,93 @@
 ---
 title: "API Apprise"
-description: "Contribuer to the API Apprise repository"
+description: "Contribuer au dépôt de l'API Apprise"
 sidebar:
   order: 3
 ---
 
-## Contribuer to API Apprise
+## Contribuer à l'API Apprise
 
-Thank you for your interest in contributing to API Apprise.
+Merci pour votre intérêt à contribuer à l'API Apprise.
 
-This repository is the web application and API layer that wraps the Apprise core library. Contributions are welcome across code, bug fixes, UI improvements, documentation, and deployment tooling.
+Ce dépôt correspond à l'application web et à la couche API qui encapsulent la bibliothèque principale d'Apprise. Les contributions sont bienvenues pour le code, les corrections de bugs, les améliorations d'interface, la documentation et l'outillage de déploiement.
 
-## Retrieve from GitHub
+## Récupérer depuis GitHub
 
 ```bash
 git clone git@github.com:caronc/apprise-api.git
 cd apprise-api
 ```
 
-## Development Environment
+## Environnement de Développement
 
-API Apprise supports both a local (bare metal) workflow and a Docker Compose workflow.
+L'API Apprise prend en charge à la fois un workflow local (bare metal) et un workflow Docker Compose.
 
 ### Bare Metal
 
-Start the development server in debug mode:
+Démarrez le serveur de développement en mode debug :
 
 ```bash
 tox -e runserver
-# visit: http://localhost:8000/
+# visiter : http://localhost:8000/
 ```
 
-You can also bind to a different address or port:
+Vous pouvez aussi vous binder sur une autre adresse ou un autre port :
 
 ```bash
 tox -e runserver -- "localhost:8080"
 tox -e runserver -- "0.0.0.0:8080"
 ```
 
-### Docker Compose for Development
+### Docker Compose pour le Développement
 
-A fresh checkout can be run with Docker Compose, and the development flow mounts your local source tree into the container so changes are reflected without rebuilding:
+Un checkout fraîchement cloné peut être lancé avec Docker Compose, et le flux de développement monte votre arborescence source locale dans le conteneur afin que les changements soient visibles sans rebuild :
 
 ```bash
-# Pre-create the paths you will mount to
+# Précréer les chemins que vous allez monter
 mkdir -p attach config plugin
 
-# Run the stack
+# Lancer la stack
 PUID=$(id -u) PGID=$(id -g) docker compose up
 ```
 
-## Quality Assurance and Testing
+## Assurance Qualité et Tests
 
-This repository uses `tox` to keep linting, tests, and formatting consistent across contributor environments:
+Ce dépôt utilise `tox` afin de garder le linting, les tests et le formatage cohérents d'un environnement contributeur à l'autre :
 
 ```bash
-# Run unit tests
+# Lancer les tests unitaires
 tox -e test
 
-# Lint (calls ruff under the hood)
+# Lint (appelle ruff en interne)
 tox -e lint
 
-# Auto-format
+# Formatage automatique
 tox -e format
 ```
 
-You can combine environments as well:
+Vous pouvez également combiner les environnements :
 
 ```bash
 tox -e test,lint
 ```
 
-If you prefer running tools directly (once dev dependencies are installed), the repository documents `pytest` and `ruff` as optional manual equivalents.
+Si vous préférez exécuter les outils directement (une fois les dépendances de développement installées), le dépôt documente `pytest` et `ruff` comme équivalents manuels optionnels.
 
-## Quick Checklist Before You Submit
+## Checklist Rapide Avant Soumission
 
-- Your change includes tests when practical.
-- `tox -e test` passes locally.
-- `tox -e lint` passes locally.
-- You ran `tox -e format` when formatting changes are needed.
-- Your pull request description clearly explains what changed and why.
+- Votre changement inclut des tests lorsque c'est pertinent.
+- `tox -e test` passe localement.
+- `tox -e lint` passe localement.
+- Vous avez exécuté `tox -e format` lorsque des changements de formatage étaient nécessaires.
+- La description de votre pull request explique clairement ce qui a changé et pourquoi.
 
-## Remarques on Docker Compose Files
+## Notes sur les Fichiers Docker Compose
 
-- For development, `docker compose up` will apply the override file automatically in a fresh checkout, and it is designed for live iteration.
-- For production-style deployments, prefer the base Compose file only, so you are running the immutable image and bundled static assets.
+- Pour le développement, `docker compose up` appliquera automatiquement le fichier d'override dans un checkout frais, et ce mode est conçu pour une itération en direct.
+- Pour des déploiements de type production, préférez uniquement le fichier Compose de base afin d'exécuter l'image immuable et les assets statiques inclus.
 
-## Licensing and Attribution
+## Licence et Attribution
 
-API Apprise is released under the MIT License
+L'API Apprise est publiée sous licence MIT.
 
-All contributions must be compatible with this licence, and new files should include appropriate headers where required.
+Toutes les contributions doivent être compatibles avec cette licence, et les nouveaux fichiers doivent inclure les en-têtes appropriés lorsque cela est requis.

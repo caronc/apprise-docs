@@ -1,130 +1,130 @@
 ---
-title: "Démarrage rapide"
-description: "Core methods: add, notify, tagging, and loading configurations."
+title: "Démarrage Rapide"
+description: "Méthodes principales : add, notify, tags et chargement de configurations."
 sidebar:
   order: 2
 ---
 
-## The Apprise Object
+## L'objet Apprise
 
 ```python
 import apprise
 apobj = apprise.Apprise()
 ```
 
-### Adding Services (`add`)
+### Ajouter des services (`add`)
 
-The `add()` method registers notification services to your instance.
+La méthode `add()` enregistre des services de notification dans votre instance.
 
 ```python
-# Add a single service
+# Ajouter un seul service
 apobj.add('json://localhost')
 
-# Add multiple services at once
+# Ajouter plusieurs services d'un coup
 apobj.add([
     'mailto://user:pass@example.com',
     'slack://tokenA/tokenB/tokenC'
 ])
 ```
 
-### Sending Notifications (`notify`)
+### Envoyer des notifications (`notify`)
 
-The `notify()` method sends messages to all registered services.
+La méthode `notify()` envoie des messages à tous les services enregistrés.
 
 ```python
 apobj.notify(
-    title="Server Alert",
-    body="CPU usage is at 99%",
+    title="Alerte serveur",
+    body="L'utilisation CPU est à 99%",
 )
 ```
 
-#### Message Types
+#### Types de message
 
-You can categorize your notifications using `NotifyType`. This often changes the icon or color of the notification (depending on the receiving service).
+Vous pouvez catégoriser vos notifications avec `NotifyType`. Cela modifie souvent l'icône ou la couleur de la notification selon le service destinataire.
 
 ```python
 from apprise import NotifyType
 
 apobj.notify(
-    title="Success",
-    body="Backup completed successfully.",
+    title="Succès",
+    body="La sauvegarde s'est terminée avec succès.",
     notify_type=NotifyType.SUCCESS
 )
 ```
 
-| Icon                                           | Type                 | Description                   |
-| ---------------------------------------------- | :------------------- | :---------------------------- |
-| ![info](./images/apprise-info-72x72.png)       | `NotifyType.INFO`    | Default. General information. |
-| ![success](./images/apprise-success-72x72.png) | `NotifyType.SUCCESS` | Successful operations.        |
-| ![warning](./images/apprise-warning-72x72.png) | `NotifyType.WARNING` | Issues that aren't fatal.     |
-| ![failure](./images/apprise-failure-72x72.png) | `NotifyType.FAILURE` | Critical errors.              |
+| Icône                                          | Type                 | Description                              |
+| ---------------------------------------------- | :------------------- | :--------------------------------------- |
+| ![info](./images/apprise-info-72x72.png)       | `NotifyType.INFO`    | Valeur par défaut. Information générale. |
+| ![success](./images/apprise-success-72x72.png) | `NotifyType.SUCCESS` | Opérations réussies.                     |
+| ![warning](./images/apprise-warning-72x72.png) | `NotifyType.WARNING` | Problèmes non fatals.                    |
+| ![failure](./images/apprise-failure-72x72.png) | `NotifyType.FAILURE` | Erreurs critiques.                       |
 
-### Etiquetage
+### Tags
 
-Etiquetage allows you to send notifications to specific subgroups of services.
+Les tags permettent d'envoyer des notifications à des sous-groupes précis de services.
 
-**1. Assign Tags**
+**1. Assigner des tags**
 
 ```python
-# Assign tags when adding services
+# Assigner des tags lors de l'ajout des services
 apobj.add('slack://...', tag='devops')
 apobj.add('mailto://...', tag='management')
-apobj.add('discord://...', tag=['devops', 'management']) # Multiple tags
+apobj.add('discord://...', tag=['devops', 'management']) # Plusieurs tags
 ```
 
-**2. Filter by Tags**
+**2. Filtrer par tags**
 
 ```python
-# Notify ONLY services tagged 'devops'
-apobj.notify(title="Deploying", body="...", tag="devops")
+# Notifier UNIQUEMENT les services tagués 'devops'
+apobj.notify(title="Déploiement", body="...", tag="devops")
 
-# Notify services tagged 'devops' OR 'management'
-apobj.notify(title="Update", body="...", tag=["devops", "management"])
+# Notifier les services tagués 'devops' OU 'management'
+apobj.notify(title="Mise à jour", body="...", tag=["devops", "management"])
 ```
 
-Les expressions de tags programmatiques suivent les regles suivantes :
+Les expressions de tags utilisées en programmation suivent ces règles :
 
-| Expression `notify(tag=...)` | Services selectionnes                        |
+| Expression `notify(tag=...)` | Services sélectionnés                        |
 | ---------------------------- | -------------------------------------------- |
-| `"TagA"`                     | Possede `TagA`                               |
-| `"TagA,TagB"`                | Possede `TagA` **ET** `TagB`                 |
-| `["TagA", "TagB"]`           | Possede `TagA` **OU** `TagB`                 |
-| `["TagA,TagC", "TagB"]`      | Possede (`TagA` **ET** `TagC`) **OU** `TagB` |
+| `"TagA"`                     | Possède `TagA`                               |
+| `"TagA,TagB"`                | Possède `TagA` **ET** `TagB`                 |
+| `["TagA", "TagB"]`           | Possède `TagA` **OU** `TagB`                 |
+| `["TagA,TagC", "TagB"]`      | Possède (`TagA` **ET** `TagC`) **OU** `TagB` |
 
 :::note
-En Python, une liste signifie **OU**, tandis qu'une chaine separee par des virgules signifie **ET**.
-C'est la difference la plus importante a retenir pour `notify(tag=...)`.
+En Python, une liste signifie **OU**, tandis qu'une chaîne séparée par des virgules signifie **ET**.
+C'est la différence la plus importante par rapport à ce que beaucoup essaient intuitivement en premier.
 :::
 
 ```python
-# Notify services tagged 'product' AND 'create'
-apobj.notify(title="Created", body="...", tag="product,create")
+# Notifier les services tagués 'product' ET 'create'
+apobj.notify(title="Créé", body="...", tag="product,create")
 
-# Notify services tagged 'devops' OR 'finance'
-apobj.notify(title="Report", body="...", tag=["devops", "finance"])
+# Notifier les services tagués 'devops' OU 'finance'
+apobj.notify(title="Rapport", body="...", tag=["devops", "finance"])
 
-# Notify services matching ('comment' AND 'create') OR 'admin'
-apobj.notify(title="Comment Created", body="...", tag=["comment,create", "admin"])
+# Notifier les services correspondant à ('comment' ET 'create') OU 'admin'
+apobj.notify(title="Commentaire créé", body="...", tag=["comment,create", "admin"])
 ```
 
-### Chargement de la configuration Files
+### Charger des fichiers de configuration
 
-You can use the `AppriseConfig` object to load URLs from external YAML or Text files instead of hardcoding them.
+Vous pouvez utiliser l'objet `AppriseConfig` pour charger des URL depuis des fichiers YAML ou texte externes au lieu de les coder en dur.
 
 ```python
 import apprise
 
-# 1. Create the Config Object
+# 1. Créer l'objet de configuration
 config = apprise.AppriseConfig()
 
-# 2. Add configuration sources
+# 2. Ajouter des sources de configuration
 config.add('/path/to/my/config.yml')
 config.add('https://myserver.com/my/apprise/config')
 
-# 3. Create Apprise instance and ingest the config
+# 3. Créer l'instance Apprise et absorber la configuration
 apobj = apprise.Apprise()
 apobj.add(config)
 
-# 4. Notify as usual (URLs from the file are now loaded)
-apobj.notify("Loaded from config!")
+# 4. Notifier comme d'habitude (les URL du fichier sont maintenant chargées)
+apobj.notify("Chargé depuis la configuration !")
 ```
