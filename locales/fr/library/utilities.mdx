@@ -1,27 +1,22 @@
 ---
 title: "Référence des Utilitaires"
-description: "Common utility helpers used by Apprise plugins and library integrations."
+description: "Fonctions utilitaires communes utilisées par les plugins Apprise et les intégrations de bibliothèque."
 sidebar:
   label: "Utilities"
   order: 8
 ---
 
-Apprise includes a set of utility helpers used across plugins and supported
-integrations. Plugin authors should prefer these helpers over ad hoc parsing
-and formatting because they provide consistent behaviour, edge case handling,
-and safer logging.
+Apprise inclut un ensemble de fonctions utilitaires utilisées à travers les plugins et les intégrations prises en charge.
+Les auteurs de plugins devraient préférer ces helpers aux traitements ad hoc, car ils offrent un comportement cohérent, une meilleure gestion des cas limites et une journalisation plus sûre.
 
-This page focuses on the helpers you are most likely to use when writing or
-maintaining plugins. Additional utilities exist, but they are intentionally not
-covered here.
+Cette page se concentre sur les helpers que vous utiliserez le plus souvent lorsque vous écrivez ou maintenez des plugins. D'autres utilitaires existent, mais ils ne sont volontairement pas couverts ici.
 
-## Import Patterns
+## Modèles d'import
 
-Helpers are exposed through `apprise.utils` (recommended for plugin
-authors), and are implemented in the `apprise.utils.*` modules.
+Les helpers sont exposés via `apprise.utils` (recommandé pour les auteurs de plugins) et implémentés dans les modules `apprise.utils.*`.
 
 ```python
-# Parsing and validation
+# Parsing et validation
 from apprise.utils.parse import (
     parse_bool,
     parse_call_sign,
@@ -39,10 +34,10 @@ from apprise.utils.parse import (
     validate_regex,
 )
 
-# Safer debug logging
+# Journalisation de debug plus sûre
 from apprise.utils.sanitize import sanitize_payload
 
-# Encoding helpers
+# Helpers d'encodage
 from apprise.utils.base64 import (
     base64_urlencode,
     base64_urldecode,
@@ -51,32 +46,25 @@ from apprise.utils.base64 import (
 )
 ```
 
-### Recommended Calling Pattern
+### Schéma d'appel recommandé
 
-A practical way to think about the parsing utilities is:
+Une bonne façon de penser aux utilitaires de parsing est la suivante :
 
-- `parse_*()` functions split and normalize lists of inputs, often forgiving.
-  Many accept a `store_unparseable` option so you can log which values were
-  rejected later.
-- `is_*()` functions validate a single candidate value. They return `False` on
-  failure, otherwise they return normalized data that you can safely store.
-- `validate_regex()` is a strict helper used to validate and optionally format
-  a value using a regex match.
+- les fonctions `parse_*()` découpent et normalisent des listes d'entrées, souvent de manière tolérante ;
+- beaucoup acceptent une option `store_unparseable` afin que vous puissiez journaliser plus tard les valeurs rejetées ;
+- les fonctions `is_*()` valident une seule valeur candidate ;
+- elles renvoient `False` en cas d'échec, sinon des données normalisées que vous pouvez stocker en sécurité ;
+- `validate_regex()` est un helper strict servant à valider et éventuellement reformater une valeur avec une regex.
 
-Most plugins use both styles together. For example, an SMS plugin can call
-`parse_phone_no()` to break up a user-supplied target list, then call
-`is_phone_no()` on each entry to validate and normalize it.
+La plupart des plugins utilisent les deux styles ensemble. Par exemple, un plugin SMS peut appeler `parse_phone_no()` pour découper une liste de cibles fournie par l'utilisateur, puis appeler `is_phone_no()` sur chaque entrée pour la valider et la normaliser.
 
-## URL Parsing
+## Parsing d'URL
 
 ### `parse_url()`
 
-Use this in `parse_url()` or `parse_native_url()` implementations to convert a
-user-provided URL into a normalized structure. It handles schema detection,
-quoting, user and password extraction, host verification, port parsing, and
-query-string parsing.
+Utilisez cette fonction dans vos implémentations de `parse_url()` ou `parse_native_url()` pour convertir une URL fournie par l'utilisateur en structure normalisée. Elle gère la détection de schéma, l'échappement, l'extraction de l'utilisateur et du mot de passe, la vérification de l'hôte, le parsing du port et celui de la chaîne de requête.
 
-Typical usage:
+Utilisation typique :
 
 ```python
 from apprise.utils.parse import parse_url
@@ -87,43 +75,38 @@ if not results:
 
 schema = results["schema"]
 host = results.get("host")
-qsd = results.get("qsd", {})  # query-string dictionary
+qsd = results.get("qsd", {})  # dictionnaire de query string
 ```
 
-#### Key Arguments
+#### Arguments clés
 
-- `verify_host`  
-  When `True`, `parse_url()` validates the host and returns `None` if it is
-  missing or invalid. This is a good default for network targets.
-  When `False`, host validation is relaxed, which is useful for plugins that
-  treat the host as an identifier or do not require a host.
+- `verify_host`
+  Lorsque cette valeur est `True`, `parse_url()` valide l'hôte et renvoie `None` s'il est absent ou invalide. C'est un bon défaut pour des cibles réseau.
+  Lorsque cette valeur est `False`, la validation de l'hôte est assouplie, ce qui est utile pour des plugins qui traitent l'hôte comme un identifiant ou n'en ont pas besoin.
 
-- `default_schema`  
-  Used when a user omits the `schema://` portion.
+- `default_schema`
+  Utilisé quand l'utilisateur omet la portion `schema://`.
 
-- `simple`  
-  When `True`, returns a smaller result structure. Most plugins should use the
-  default `simple=False`.
+- `simple`
+  Lorsque cette valeur est `True`, la structure renvoyée est plus petite. La plupart des plugins devraient garder `simple=False`.
 
-- `plus_to_space`  
-  Controls whether `+` in the query string becomes a space. Apprise defaults
-  this to `False` because `+` is common in tokens and passwords.
+- `plus_to_space`
+  Contrôle si `+` dans la query string devient un espace. Apprise le laisse par défaut à `False` car `+` est fréquent dans les jetons et mots de passe.
 
-#### What It Returns
+#### Ce que la fonction renvoie
 
-The returned dictionary varies by input, but typically includes:
+Le dictionnaire renvoyé varie selon l'entrée, mais comprend généralement :
 
-- `schema`, and optionally `host` and `port`
-- `user` and `password` when provided
-- `fullpath`, and sometimes `path` and `query`
-- Parsed query-string data, via `qsd`
+- `schema`, et éventuellement `host` et `port` ;
+- `user` et `password` lorsqu'ils sont fournis ;
+- `fullpath`, et parfois `path` et `query` ;
+- les données de chaîne de requête analysées via `qsd`.
 
-## Common Parsing Helpers
+## Helpers de parsing courants
 
 ### `parse_bool()`
 
-Converts common boolean representations into a Python `bool`. This is the
-preferred way to parse flags from URL query strings or configuration values.
+Convertit les représentations booléennes courantes en `bool` Python. C'est la méthode recommandée pour parser des drapeaux issus d'une query string ou d'une valeur de configuration.
 
 ```python
 from apprise.utils.parse import parse_bool
@@ -132,40 +115,37 @@ include_image = parse_bool(qsd.get("image"), default=False)
 batch = parse_bool(qsd.get("batch"), default=True)
 ```
 
-#### What It Recognizes
+#### Valeurs reconnues
 
-- False-like: `"0"`, `"no"`, `"off"`, `"false"`, `"deny"`, `"disable"`, `"never"`
-- True-like: `"1"`, `"yes"`, `"on"`, `"true"`, `"allow"`, `"enable"`
+- Faux : `"0"`, `"no"`, `"off"`, `"false"`, `"deny"`, `"disable"`, `"never"`
+- Vrai : `"1"`, `"yes"`, `"on"`, `"true"`, `"allow"`, `"enable"`
 
-If a string cannot be interpreted, `default` is returned. For non-string values,
-`bool(value)` is used.
+Si une chaîne ne peut pas être interprétée, `default` est renvoyé. Pour les valeurs non textuelles, `bool(value)` est utilisé.
 
-#### Tri-state Behaviour Example
+#### Exemple de comportement tri-état
 
-Sometimes you want different behaviour for:
+Parfois vous souhaitez distinguer :
 
-- not provided at all (unset)
-- explicitly enabled
-- explicitly disabled
+- non fourni du tout ;
+- activé explicitement ;
+- désactivé explicitement.
 
-A common case is a feature that is **auto-enabled only when another setting is
-present**, unless the user explicitly disables it.
+Un cas classique est une fonctionnalité **auto-activée seulement lorsqu'un autre réglage est présent**, sauf si l'utilisateur la désactive explicitement.
 
 ```python
-raw = qsd.get("discovery")  # None when not provided
+raw = qsd.get("discovery")  # None si non fourni
 
 if raw is None:
-    # Unset: choose a default based on other configuration
+    # Non défini : choisir un défaut basé sur d'autres réglages
     discovery = True if (self.secure and self.host) else False
 else:
-    # Explicitly set: honor user intent
+    # Défini explicitement : respecter l'intention de l'utilisateur
     discovery = parse_bool(raw, default=False)
 ```
 
 ### `parse_list()`
 
-Breaks string and list-like inputs into a single list. It accepts multiple
-inputs and merges them. By default it returns a sorted, unique list.
+Découpe des chaînes et entrées de type liste en une seule liste. Elle accepte plusieurs sources et les fusionne. Par défaut, le résultat est trié et dédoublonné.
 
 ```python
 from apprise.utils.parse import parse_list
@@ -174,22 +154,18 @@ tags = parse_list(qsd.get("tag"), cast=str)
 targets = parse_list(qsd.get("to"), cast=str, allow_whitespace=False)
 ```
 
-#### Common Options
+#### Options courantes
 
-- `cast` converts values before parsing when possible (useful when values may
-  be numeric).
-- `allow_whitespace` controls whether whitespace is treated as a delimiter.
-- `sort` controls whether the result is normalized into a unique sorted list
-  (`True`), or returned in parsed order (`False`).
+- `cast` convertit les valeurs avant parsing lorsque c'est possible ;
+- `allow_whitespace` contrôle si les espaces sont traités comme séparateurs ;
+- `sort` contrôle si le résultat est normalisé en liste triée unique (`True`) ou renvoyé dans l'ordre de parsing (`False`).
 
-### `parse_emails()` and `is_email()`
+### `parse_emails()` et `is_email()`
 
-These helpers are commonly used in email-like integrations and anywhere a user
-can pass multiple recipients.
+Ces helpers sont couramment utilisés dans les intégrations de type email et partout où l'utilisateur peut passer plusieurs destinataires.
 
-- `parse_emails()` extracts multiple candidate emails from strings and
-  recursively walks through tuples, lists, and sets.
-- `is_email()` validates a single email and returns a structured result.
+- `parse_emails()` extrait plusieurs adresses candidates depuis des chaînes et parcourt récursivement tuples, listes et ensembles ;
+- `is_email()` valide une seule adresse et renvoie un résultat structuré.
 
 ```python
 from apprise.utils.parse import parse_emails, is_email
@@ -198,20 +174,17 @@ recipients = []
 for candidate in parse_emails(qsd.get("to")):
     result = is_email(candidate)
     if not result:
-        self.logger.warning("Dropped invalid email (%s) specified.", candidate)
+        self.logger.warning("Adresse email invalide ignorée (%s).", candidate)
         continue
 
     recipients.append(result["full_email"])
 ```
 
-Tip: `is_email()` returns a dictionary (not just a boolean). When present, you
-can use fields like `name`, `domain`, and `full_email` to build a canonical
-representation and keep name mappings for later.
+Astuce : `is_email()` renvoie un dictionnaire, pas seulement un booléen. Lorsqu'il est présent, vous pouvez utiliser des champs comme `name`, `domain` et `full_email` pour construire une représentation canonique et conserver les correspondances de noms pour plus tard.
 
 ### `parse_urls()`
 
-Extracts URLs from strings or list-like input and can preserve unparseable
-entries to aid error reporting.
+Extrait des URL depuis des chaînes ou des entrées de type liste et peut conserver les valeurs impossibles à parser afin d'aider au reporting d'erreurs.
 
 ```python
 from apprise.utils.parse import parse_urls
@@ -219,13 +192,11 @@ from apprise.utils.parse import parse_urls
 endpoints = parse_urls(qsd.get("endpoint"))
 ```
 
-#### How `store_unparseable` Helps
+#### En quoi `store_unparseable` aide
 
-If no valid items are detected and `store_unparseable=True`, the input is split
-on common delimiters and returned anyway. This allows you to log which values
-were rejected, rather than silently discarding everything.
+Si aucun élément valide n'est détecté et que `store_unparseable=True`, l'entrée est quand même découpée selon des séparateurs courants puis renvoyée. Cela vous permet de journaliser précisément quelles valeurs ont été rejetées au lieu de tout jeter silencieusement.
 
-A practical plugin pattern:
+Schéma pratique dans un plugin :
 
 ```python
 emails = parse_emails(qsd.get("to"), store_unparseable=True)
@@ -239,15 +210,14 @@ for entry in emails:
         invalid.append(entry)
 
 for entry in invalid:
-    self.logger.warning("Ignoring invalid email: %s", entry)
+    self.logger.warning("Email invalide ignoré : %s", entry)
 ```
 
-### `parse_phone_no()` and `is_phone_no()`
+### `parse_phone_no()` et `is_phone_no()`
 
-Used by SMS, voice, and telecom-style plugins.
+Utilisés par les plugins SMS, voix et télécom.
 
-`parse_phone_no()` splits a target list into candidate entries, then
-`is_phone_no()` validates a single entry and returns `False` or a dictionary.
+`parse_phone_no()` découpe une liste de cibles en entrées candidates, puis `is_phone_no()` valide une entrée et renvoie soit `False`, soit un dictionnaire.
 
 ```python
 from apprise.utils.parse import parse_phone_no, is_phone_no
@@ -263,26 +233,25 @@ for candidate in parse_phone_no(targets):
         invalid.append(candidate)
 
 for candidate in invalid:
-    self.logger.warning("Dropped invalid phone number (%s) specified.", candidate)
+    self.logger.warning("Numéro de téléphone invalide ignoré (%s).", candidate)
 ```
 
-`is_phone_no()` result dictionary commonly includes:
+Le dictionnaire renvoyé par `is_phone_no()` inclut généralement :
 
-- `full` (digits only)
-- `pretty` (human-friendly formatting, when available)
-- `country`, `area`, `line` (may be empty)
+- `full` (chiffres seulement) ;
+- `pretty` (formatage lisible, lorsque disponible) ;
+- `country`, `area`, `line` (peuvent être vides).
 
-Important constraints:
+Contraintes importantes :
 
-- The digit count must be between `min_len` (default `10`) and `14` inclusive.
-- Common separators are accepted on input; you should store the normalized form.
+- le nombre de chiffres doit être compris entre `min_len` (10 par défaut) et 14 inclus ;
+- les séparateurs courants sont acceptés à l'entrée ; vous devriez stocker la forme normalisée.
 
-### `parse_call_sign()` and `is_call_sign()`
+### `parse_call_sign()` et `is_call_sign()`
 
-Used by APRS and ham radio-style integrations.
+Utilisés par APRS et les intégrations radioamateur.
 
-`parse_call_sign()` splits a callsign list, then `is_call_sign()` validates a
-single callsign and returns `False` or a dictionary.
+`parse_call_sign()` découpe une liste d'indicatifs, puis `is_call_sign()` valide une valeur unique et renvoie `False` ou un dictionnaire.
 
 ```python
 from apprise.utils.parse import parse_call_sign, is_call_sign
@@ -291,67 +260,58 @@ targets = []
 for candidate in parse_call_sign(qsd.get("to")):
     result = is_call_sign(candidate)
     if not result:
-        self.logger.warning("Dropping invalid call sign (%s).", candidate)
+        self.logger.warning("Indicatif invalide ignoré (%s).", candidate)
         continue
 
     targets.append(result["callsign"].upper())
 ```
 
-`is_call_sign()` validates a single callsign and returns `False` or a dictionary:
+`is_call_sign()` valide un seul indicatif et renvoie `False` ou un dictionnaire :
 
-- `callsign` (uppercased)
-- `ssid` (string, may be empty)
+- `callsign` (en majuscules) ;
+- `ssid` (chaîne pouvant être vide).
 
-A practical pattern mirrors phone and email handling:
+Un schéma pratique ressemble à celui des emails et téléphones :
 
-- Parse a list with `parse_call_sign(...)`
-- Validate each entry with `is_call_sign(...)`
-- Warn on invalid values, do not fail the entire configuration unless the
-  service requires at least one valid target
+- parser une liste avec `parse_call_sign(...)` ;
+- valider chaque entrée avec `is_call_sign(...)` ;
+- avertir pour les valeurs invalides sans faire échouer toute la configuration, sauf si le service exige au moins une cible valide.
 
-## Host and Identifier Validation
+## Validation d'hôte et d'identifiant
 
-These helpers are frequently used by plugins to validate inputs early and
-produce clear error messages.
+Ces helpers sont souvent utilisés par les plugins pour valider tôt les entrées et produire des messages d'erreur clairs.
 
-- `is_hostname(hostname, ipv4=True, ipv6=True, underscore=True)`  
-  Validates hostnames and optionally IP addresses. It supports underscores when
-  `underscore=True` to accommodate practical Docker and local naming
-  conventions.
+- `is_hostname(hostname, ipv4=True, ipv6=True, underscore=True)`
+  Valide les noms d'hôte et éventuellement les adresses IP. Il prend en charge les underscores lorsque `underscore=True` afin de couvrir des conventions pragmatiques de Docker et d'environnements locaux.
 
-- `is_ipaddr(addr, ipv4=True, ipv6=True)`  
-  Validates IPv4 and IPv6. For IPv6, it returns the address enclosed in
-  brackets (`[addr]`) to align with URL formatting expectations.
+- `is_ipaddr(addr, ipv4=True, ipv6=True)`
+  Valide IPv4 et IPv6. Pour IPv6, la fonction renvoie l'adresse entourée de crochets (`[addr]`) afin de respecter les attentes de format d'URL.
 
-- `is_uuid(value)`  
-  Validates UUID strings.
+- `is_uuid(value)`
+  Valide des chaînes UUID.
 
-These helpers return `False` when invalid. When valid, they return a normalized
-string (not a boolean).
+Ces helpers renvoient `False` lorsqu'une valeur est invalide. Sinon, ils renvoient une chaîne normalisée.
 
-## Regex Validation
+## Validation par regex
 
 ### `validate_regex()`
 
-Validates a value against a regular expression. On success it returns the
-(cleaned) value, otherwise it returns `None`.
+Valide une valeur par rapport à une expression régulière. En cas de succès, renvoie la valeur nettoyée ; sinon renvoie `None`.
 
 ```python
 from apprise.utils.parse import validate_regex
 
 token = validate_regex(qsd.get("token"), r"^[A-Z0-9]{32}$", flags="i")
 if not token:
-    self.logger.warning("An invalid token was specified")
+    self.logger.warning("Un jeton invalide a été fourni")
     return None
 ```
 
-#### Plugin `template_token` Regex Tuples
+#### Tuples regex dans `template_token`
 
-If your plugin defines a template token regex (as most plugins do), you can
-reuse it directly when validating inputs, which keeps the definition in one
-place.
+Si votre plugin définit une regex de jeton de template (comme la plupart des plugins), vous pouvez la réutiliser directement pour valider les entrées, ce qui garde la définition à un seul endroit.
 
-Example pattern:
+Exemple :
 
 ```python
 self.token = validate_regex(
@@ -359,19 +319,15 @@ self.token = validate_regex(
 )
 ```
 
-This relies on `template_tokens["token"]["regex"]` being a tuple in the form
-`(regex, flags)`.
+Cela suppose que `template_tokens["token"]["regex"]` soit un tuple de la forme `(regex, flags)`.
 
-#### Notable Features
+#### Points notables
 
-- Regexes are cached internally after compilation, so repeated validations are
-  inexpensive.
-- `flags` may be passed as an integer, or as a string of flag characters, for
-  example `"imx"`.
-- When `fmt` is provided, named capture groups can be reassembled into a
-  normalized string.
+- les regex sont mises en cache en interne après compilation, donc les validations répétées coûtent peu ;
+- `flags` peut être passé comme entier ou comme chaîne de caractères, par exemple `"imx"` ;
+- lorsque `fmt` est fourni, des groupes capturés nommés peuvent être réassemblés dans une chaîne normalisée.
 
-Example with formatting:
+Exemple avec formatage :
 
 ```python
 value = validate_regex(
@@ -380,17 +336,14 @@ value = validate_regex(
     flags="i",
     fmt="{prefix}:{id}",
 )
-# value is now "prefix:123" (or None if no match)
+# value vaut maintenant "prefix:123" (ou None si pas de correspondance)
 ```
 
-## Safe Logging and Secret Handling
+## Journalisation sûre et gestion des secrets
 
 ### `sanitize_payload()`
 
-Use this helper before logging request payloads or response details, especially
-when the structure may include **attachments**, **large encoded blobs**, or
-deep nesting. It reduces log pollution and avoids leaking sensitive or very
-large values, while still preserving enough structure to troubleshoot.
+Utilisez ce helper avant de journaliser des payloads de requête ou des détails de réponse, en particulier lorsque la structure peut inclure des **pièces jointes**, de **gros blobs encodés** ou une imbrication profonde. Il réduit la pollution des logs et évite de divulguer des valeurs sensibles ou très volumineuses, tout en conservant assez de structure pour dépanner.
 
 ```python
 from apprise.utils.sanitize import sanitize_payload
@@ -398,17 +351,15 @@ from apprise.utils.sanitize import sanitize_payload
 self.logger.debug("payload=%s", sanitize_payload(payload))
 ```
 
-#### When to Use It
+#### Quand l'utiliser
 
-You do not need to sanitize every debug log. `sanitize_payload()` is most
-useful when:
+Vous n'avez pas besoin d'assainir chaque log de debug. `sanitize_payload()` est surtout utile lorsque :
 
-- a payload might contain attachments (base64, bytes, file metadata)
-- a response might contain unexpectedly large objects
-- you want safe previews without copying large values into logs
+- un payload peut contenir des pièces jointes (base64, bytes, métadonnées de fichier) ;
+- une réponse peut contenir des objets volumineux inattendus ;
+- vous voulez des aperçus sûrs sans recopier de grosses valeurs dans les logs.
 
-If your debug log could be heavy, guard the call so it only runs when debug
-logging is enabled.
+Si votre log de debug peut être coûteux, protégez l'appel pour qu'il ne s'exécute que lorsque le niveau DEBUG est activé.
 
 ```python
 import logging
@@ -418,25 +369,24 @@ if self.logger.isEnabledFor(logging.DEBUG):
     self.logger.debug("Payload: %s", sanitize_payload(payload))
 ```
 
-#### What It Does
+#### Ce que fait la fonction
 
-- Leaves primitives unchanged (e.g., `None`, booleans, numbers).
-- Summarizes long strings with a compact marker and head and tail previews.
-- Summarizes bytes with a bounded sha256 digest marker.
-- Walks nested dictionaries and sequences safely.
-- Detects recursion and prevents infinite traversal.
-- Applies depth and item limits to prevent excessively large logs.
+- laisse inchangées les primitives (`None`, booléens, nombres, etc.) ;
+- résume les longues chaînes avec un marqueur compact et des aperçus début/fin ;
+- résume les `bytes` avec un marqueur borné basé sur sha256 ;
+- parcourt en sécurité les dictionnaires et séquences imbriqués ;
+- détecte la récursion et évite une traversée infinie ;
+- applique des limites de profondeur et de nombre d'éléments pour éviter des logs gigantesques.
 
-Practical pattern:
+Schéma pratique :
 
-1. Build your request payload normally.
-2. If debug is enabled, log `sanitize_payload(payload)`.
-3. Envoyer the original payload to the upstream service.
+1. Construisez normalement votre payload de requête.
+1. Si le debug est activé, journalisez `sanitize_payload(payload)`.
+1. Envoyez le payload original au service amont.
 
-#### Tuning Behaviour
+#### Ajuster le comportement
 
-Some environments benefit from stricter bounds, for example to prevent large
-attachments or Base64-like blobs from entering logs.
+Certains environnements bénéficient de limites plus strictes, par exemple pour empêcher de grosses pièces jointes ou des blobs de type Base64 d'entrer dans les logs.
 
 ```python
 from apprise.utils.sanitize import SanitizeOptions, sanitize_payload
@@ -451,14 +401,13 @@ opts = SanitizeOptions(
 self.logger.debug("payload=%s", sanitize_payload(payload, options=opts))
 ```
 
-When troubleshooting, avoid raising these limits globally. A safer approach is
-to temporarily adjust them locally around a specific debug log statement.
+Lors d'un dépannage, évitez d'augmenter globalement ces limites. Il est plus sûr de les ajuster localement et temporairement autour d'une instruction de debug précise.
 
-## Encoding Helpers
+## Helpers d'encodage
 
-### `base64_urlencode()` and `base64_urldecode()`
+### `base64_urlencode()` et `base64_urldecode()`
 
-URL-safe Base64 helpers for working with bytes.
+Helpers Base64 URL-safe pour travailler avec des octets.
 
 ```python
 from apprise.utils.base64 import base64_urlencode, base64_urldecode
@@ -467,14 +416,11 @@ encoded = base64_urlencode(b"abc")  # "YWJj"
 decoded = base64_urldecode(encoded)  # b"abc"
 ```
 
-These helpers are strict about input types. They return `None` for unsupported
-inputs.
+Ces helpers sont stricts sur les types d'entrée. Ils renvoient `None` pour les valeurs non prises en charge.
 
-### `encode_b64_dict()` and `decode_b64_dict()`
+### `encode_b64_dict()` et `decode_b64_dict()`
 
-Dictionary helpers used when an API expects Base64-wrapped payload components,
-often for binary-safe transport. Values that can be JSON-encoded are converted
-to strings and wrapped with a `b64:` prefix.
+Helpers de dictionnaire utiles lorsqu'une API attend des composants de payload encapsulés en Base64, souvent pour transporter en sécurité des données binaires. Les valeurs sérialisables en JSON sont converties en chaînes puis préfixées par `b64:`.
 
 ```python
 from apprise.utils.base64 import encode_b64_dict, decode_b64_dict
@@ -483,11 +429,10 @@ original = {"int": 1, "float": 2.3}
 encoded, needs_decoding = encode_b64_dict(original)
 
 # encoded == {"int": "b64:MQ==", "float": "b64:Mi4z"}
-# needs_decoding is True
+# needs_decoding vaut True
 
 decoded = decode_b64_dict(encoded)
 # decoded == original
 ```
 
-If JSON encoding fails for a value, the helper falls back to string conversion
-and will indicate that decoding is not required.
+Si l'encodage JSON échoue pour une valeur, le helper se rabat sur une conversion en chaîne et indiquera qu'aucun décodage n'est requis.

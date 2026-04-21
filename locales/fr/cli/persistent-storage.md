@@ -1,90 +1,90 @@
 ---
 title: Stockage Persistant
-description: Understanding how Apprise caches data to reduce API calls.
+description: Comprendre comment Apprise met en cache des données pour réduire les appels API.
 sidebar:
   order: 3
 ---
 
-Persistent Storage allows Apprise to cache data locally. This greatly reduces the number of API transactions between you and the service(s) you are using.
+Le stockage persistant permet à Apprise de mettre des données en cache localement. Cela réduit fortement le nombre de transactions API entre vous et le ou les services que vous utilisez.
 
-## Why use Persistent Storage?
+## Pourquoi utiliser le Stockage Persistant ?
 
-Some services require complex authentication handshakes or resource lookups that are "expensive" to perform every time you send a notification.
+Certains services nécessitent des échanges d'authentification complexes ou des recherches de ressources « coûteuses » à effectuer à chaque envoi de notification.
 
-- **Matrix:** Login information is cached locally to avoid re-authenticating with the homeserver on every request.
-- **Telegram:** User account details are cached to save extra fetches to the service.
+- **Matrix :** les informations de connexion sont mises en cache localement pour éviter une réauthentification au homeserver à chaque requête.
+- **Telegram :** les détails du compte utilisateur sont mis en cache pour éviter des récupérations supplémentaires auprès du service.
 
-## Storage Locations
+## Emplacements de Stockage
 
-Apprise stores all of its persistent data in a directory unique to the Apprise URL you create.
+Apprise stocke toutes ses données persistantes dans un répertoire unique pour chaque URL Apprise créée.
 
-- **File Extension:** `.psdata`
-- **Directory Name:** A generated 8-character alphanumeric string (UID).
+- **Extension de fichier :** `.psdata`
+- **Nom de répertoire :** une chaîne alphanumérique générée de 8 caractères (UID)
 
-By default, files are written to:
+Par défaut, les fichiers sont écrits dans :
 
-- **Windows:** `%APPDATA%/Apprise/cache`
-- **Linux:** `~/.local/share/apprise/cache`
+- **Windows :** `%APPDATA%/Apprise/cache`
+- **Linux :** `~/.local/share/apprise/cache`
 
-## Managing Storage via CLI
+## Gérer le Stockage via la CLI
 
-### Viewing Cache IDs (UIDs)
+### Afficher les IDs de Cache (UID)
 
-Every Apprise URL you define has a unique URL ID (`uid`) generated against it. To see which UIDs have been assigned to your configuration, use the `--dry-run` flag combined with `--tag=all`:
+Chaque URL Apprise que vous définissez reçoit un identifiant d'URL unique (`uid`). Pour voir quels UID ont été attribués à votre configuration, utilisez le flag `--dry-run` combiné à `--tag=all` :
 
 ```bash
 apprise --dry-run --tag=all
 ```
 
-**Example Output:**
-![Apprise Dry Run Output](./images/01abafebf75ad38d.jpeg)
+**Exemple de sortie :**
+![Apprise Dry Run Output](/cli/images/01abafebf75ad38d.jpeg)
 
-_Note how some plugins (like `dbus://`) display `- n/a -`, indicating they do not use persistent storage._
+_Notez que certains plugins (comme `dbus://`) affichent `- n/a -`, ce qui indique qu'ils n'utilisent pas le stockage persistant._
 
-### Listing Active Storage
+### Lister le Stockage Actif
 
-You can inspect the current state of your persistent storage using the `storage` command:
+Vous pouvez inspecter l'état actuel de votre stockage persistant à l'aide de la commande `storage` :
 
 ```bash
 apprise storage
 ```
 
-**Example Output:**
-![Apprise Storage List](./images/3993e3ece1157fec.jpeg)
+**Exemple de sortie :**
+![Apprise Storage List](/cli/images/3993e3ece1157fec.jpeg)
 
-The output shows:
+La sortie affiche :
 
-1. **Grouping:** Multiple URLs sharing the same credentials share the same storage endpoint.
-2. **Disk Usage:** The amount of space currently occupied.
-3. **Status:**
-   - `active`: The plugin has data cached on disk.
-   - `unused`: The plugin is not currently occupying space.
-   - `stale`: A plugin previously wrote data here, but it is no longer referenced by your current configuration.
+1. **Groupement :** plusieurs URL partageant les mêmes identifiants partagent le même endpoint de stockage.
+2. **Utilisation disque :** l'espace actuellement occupé.
+3. **Statut :**
+   - `active` : le plugin possède des données mises en cache sur disque ;
+   - `unused` : le plugin n'occupe actuellement aucun espace ;
+   - `stale` : un plugin avait précédemment écrit des données ici, mais n'est plus référencé par votre configuration actuelle.
 
-### Cleaning Up
+### Nettoyage
 
-To remove all accumulated persistent storage generated through the CLI tool:
+Pour supprimer tout le stockage persistant accumulé via l'outil CLI :
 
 ```bash
 apprise storage clean
 ```
 
-You can be more specific by targeting a specific UID or tag:
+Vous pouvez être plus précis en visant un UID ou un tag spécifique :
 
 ```bash
-# Clean a specific UID (e.g. found via 'apprise storage')
+# Nettoyer un UID spécifique (par ex. trouvé via 'apprise storage')
 apprise storage clean abc123xy
 
-# Clean all URLs associated with the 'family' tag
+# Nettoyer toutes les URL associées au tag 'family'
 apprise storage clean --tag family
 ```
 
-## Storage Modes
+## Modes de Stockage
 
-The CLI tool enables Persistent Storage by default using the `auto` mode. You can change this behavior using the `--storage-mode` switch.
+L'outil CLI active le stockage persistant par défaut en mode `auto`. Vous pouvez modifier ce comportement avec le switch `--storage-mode`.
 
-| Mode         | Description                                                                                                                       |
-| :----------- | :-------------------------------------------------------------------------------------------------------------------------------- |
-| **`auto`**   | (Default) Persistent storage is used when applicable. Only plugins that require it will write to the local cache.                 |
-| **`flush`**  | Similar to `auto`, but changes are immediately flushed to disk. This ensures data is always current but increases I/O operations. |
-| **`memory`** | Disables persistent storage. No data is written to disk. This mimics the behavior of older Apprise versions.                      |
+| Mode         | Description                                                                                                                                                      |
+| :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`auto`**   | (Par défaut) Le stockage persistant est utilisé lorsque cela s'applique. Seuls les plugins qui en ont besoin écrivent dans le cache local.                       |
+| **`flush`**  | Semblable à `auto`, mais les modifications sont écrites immédiatement sur disque. Cela garantit des données toujours à jour, mais augmente les opérations d'I/O. |
+| **`memory`** | Désactive le stockage persistant. Aucune donnée n'est écrite sur disque. Cela reproduit le comportement des anciennes versions d'Apprise.                        |

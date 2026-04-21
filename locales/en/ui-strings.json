@@ -28,9 +28,8 @@
       "reddit": "Apprise Subreddit",
       "discord": "Apprise Discord Chat"
     },
-    "tools": {
-      "title": "Tools",
-      "url_builder": "URL Builder"
+    "url_builder": {
+      "title": "URL Builder"
     }
   },
   "common": {

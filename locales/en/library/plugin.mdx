@@ -593,7 +593,7 @@ class NotifyMyService(NotifyBase):
 
 The return value is a **tuple of importable top-level package names** — the same string you would pass to `import`, not the pip install name (e.g. `"paho"` for `paho-mqtt`).
 
-The [Notification Manager](./extending/notification-manager#library-eviction) tracks a reference count for each declared library. When every plugin that uses a given library is disabled and `N_MGR.evict_on_disable` is `True`, the manager removes that library — and all of its submodules — from `sys.modules`, releasing the associated Python objects from memory.
+The [Notification Manager](./extending/notification-manager/#library-eviction) tracks a reference count for each declared library. When every plugin that uses a given library is disabled and `N_MGR.evict_on_disable` is `True`, the manager removes that library — and all of its submodules — from `sys.modules`, releasing the associated Python objects from memory.
 
 - Return the base-class default `()` (an empty tuple) if your plugin has no optional runtime dependencies worth evicting.
 - Submodules are handled automatically; declare only the top-level name.
@@ -885,7 +885,7 @@ Alias entries must **never** redeclare properties that are inherited from the ta
 
 `private`, `type`, `required`, `regex`, `default`, `min`, `max`, `map_to`, `prefix`, `group`
 
-These are resolved at runtime by following the alias chain — consumers such as the [URL Builder](/tools/url-builder/) read them from the target, not from the alias itself. The only permitted extras alongside `alias_of` are:
+These are resolved at runtime by following the alias chain — consumers such as the [URL Builder](../url-builder/) read them from the target, not from the alias itself. The only permitted extras alongside `alias_of` are:
 
 | Extra key | When allowed                                                                                 |
 | :-------- | :------------------------------------------------------------------------------------------- |
@@ -988,7 +988,7 @@ Kwargs are for prefixed arguments that can appear multiple times, typically used
 - `-` is often used for URL parameters
 - `:` is often used for payload extras
 
-Each `template_kwargs` entry requires a `prefix` and a `name`, and those are also surfaced in the [URL Builder](/tools/url-builder/) as a **Custom Parameters** table where users can add any number of key/value rows.
+Each `template_kwargs` entry requires a `prefix` and a `name`, and those are also surfaced in the [URL Builder](../url-builder/) as a **Custom Parameters** table where users can add any number of key/value rows.
 
 ```python
 template_kwargs = dict(
@@ -1053,7 +1053,7 @@ usage or failed deliveries.
 
 ## URL Builder Integration
 
-The [Apprise URL Builder](/tools/url-builder/) generates its form entirely from the metadata exported by your plugin. Well-formed metadata leads to a polished, user-friendly experience.
+The [Apprise URL Builder](../url-builder/) generates its form entirely from the metadata exported by your plugin. Well-formed metadata leads to a polished, user-friendly experience.
 
 ### Checklist for URL Builder quality
 

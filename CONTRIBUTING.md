@@ -160,6 +160,25 @@ updating without obvious errors.
 - Reference images with relative paths
 - Avoid hot-linking images from external sites
 
+## Internal Links
+
+- Prefer relative links for documentation pages within the same locale
+- Avoid root-absolute internal docs links such as `/services/`, `/url-builder/`, `/api/`, `/cli/`, `/guides/`, `/library/`, `/qa/`, `/contributing/`, and `/getting-started/`
+- Root-absolute shared assets such as `/assets/...` are acceptable when the asset is intentionally global to the site
+
+Examples:
+
+```md
+[Supported Services](../services/)
+[URL Builder](../url-builder/)
+![Service Logo](./images/logo.svg)
+```
+
+This prevents translated pages from accidentally sending visitors back to the
+default English route. The site build currently includes a safeguard for
+localized content, but contributors should still write locale-safe links in the
+source whenever practical.
+
 ## Translations
 
 Translations are always welcome, even if incomplete.
@@ -169,6 +188,7 @@ Guidelines:
 - Mirror the source directory structure
 - Translate titles and headings
 - Leave technical terms unchanged if unsure
+- Keep internal links locale-safe by using relative paths when linking to other docs pages
 
 Example:
 

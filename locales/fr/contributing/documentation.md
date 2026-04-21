@@ -1,28 +1,27 @@
 ---
 title: "Documentation Apprise"
-description: "Contributing to the Apprise Documentation"
+description: "Contribuer à la documentation Apprise"
 sidebar:
   order: 4
 ---
 
-## Contributing to Apprise Documentation
+## Contribuer à la Documentation Apprise
 
-We welcome documentation improvements! Please follow the guidelines below to help us review and
-merge your contributions smoothly.
+Les améliorations de documentation sont les bienvenues ! Suivez les recommandations ci-dessous pour nous aider à examiner et fusionner vos contributions dans de bonnes conditions.
 
-## Retrieve from GitHub
+## Récupérer depuis GitHub
 
 ```bash
-# Acquire the documentation source from its official resting spot on GitHub
+# Récupérer les sources de la documentation depuis leur emplacement officiel sur GitHub
 git clone git@github.com:caronc/apprise-docs.git
 
 ```
 
-## Repository Layout
+## Organisation du Dépôt
 
-All documentation lives under the `locales/` directory.
+Toute la documentation vit sous le répertoire `locales/`.
 
-Each locale mirrors the same structure so navigation remains predictable across languages.
+Chaque locale reproduit la même structure afin que la navigation reste prévisible d'une langue à l'autre.
 
 ```text
 locales/
@@ -40,74 +39,73 @@ locales/
     assets/
 ```
 
-### Directory Guide
+### Guide des Répertoires
 
-- **Getting Started** (`getting-started/`)  
-  Introductory material for new users
+- **Getting Started** (`getting-started/`)
+  Contenu introductif pour les nouveaux utilisateurs
 
-- **Guides** (`guides/`)  
-  How-to articles, workflows, best practices, and troubleshooting patterns
+- **Guides** (`guides/`)
+  Articles pratiques, workflows, bonnes pratiques et dépannage
 
-- **Config** (`config/`)  
-  Configuration syntax and reference material
+- **Config** (`config/`)
+  Syntaxe de configuration et documents de référence
 
-- **QA** (`qa/`)  
-  Troubleshooting, diagnostics, and FAQs
+- **QA** (`qa/`)
+  Dépannage, diagnostics et FAQ
 
-- **Dev** (`dev/`)  
-  Developer-focused documentation and internals
+- **Dev** (`dev/`)
+  Documentation orientée développement et fonctionnement interne
 
-- **Contributing** (`contributing/`)  
-  How to help improve Apprise and its ecosystem
+- **Contributing** (`contributing/`)
+  Comment aider à améliorer Apprise et son écosystème
 
-- **Services** (`services/`)  
-  Documentation specific to a notification service, including URL syntax,
-  configuration options, and examples
+- **Services** (`services/`)
+  Documentation spécifique à un service de notification, y compris la syntaxe d'URL, les options de configuration et des exemples
 
-## Getting Started as a Contributor
+## Bien Débuter comme Contributeur
 
-### Prerequisites
+### Prérequis
 
-- Node.js (LTS recommended)
-- `pnpm` (version pinned in `package.json`)
+- Node.js (LTS recommandé)
+- `pnpm` (version verrouillée dans `package.json`)
 - Git
 
-### Quick Start
+### Démarrage Rapide
 
-1. Install dependencies:
+1. Installer les dépendances :
 
    ```bash
    pnpm install
    ```
 
-2. Make your documentation changes  
-   Add, edit, or improve any Markdown file.
+2. Apporter vos changements dans la documentation
+   Ajoutez, modifiez ou améliorez n'importe quel fichier Markdown.
 
-3. Run validation:
+3. Lancer la validation :
 
    ```bash
    pnpm lint
    ```
 
-   Most formatting issues can be fixed automatically with:
+   La plupart des problèmes de formatage peuvent être corrigés automatiquement avec :
 
    ```bash
    pnpm lint:fix
    ```
 
-4. Open a pull request 🎉
+4. Ouvrir une pull request
 
-> If linting fails, it will tell you exactly what needs attention.
+> Si le lint échoue, il vous indiquera exactement ce qui doit être corrigé.
 
-## Adding or Improving a Service
+## Ajouter ou Améliorer un Service
 
-Each service lives at:
+Chaque service se trouve à l'emplacement suivant :
 
 ```text
 locales/<locale>/services/<service>/index.md
 ```
 
-Optionally, a service may include an `images/` directory for logos or diagrams.
+De manière optionnelle, un service peut inclure un répertoire `images/` pour les logos ou schémas.
 
 ```text
 services/<service>/
@@ -116,26 +114,26 @@ services/<service>/
     └── logo.svg
 ```
 
-### Service Logos
+### Logos de Service
 
-Service logos are optional, but encouraged when an official logo is available.
+Les logos de service sont facultatifs, mais encouragés lorsqu'un logo officiel existe.
 
-- Supported formats: `.svg`, `.png`, `.jpg`, `.jpeg`
-- Raster images should not exceed:
-  - **200px height**
-  - **440px width**
+- Formats pris en charge : `.svg`, `.png`, `.jpg`, `.jpeg`
+- Les images raster ne doivent pas dépasser :
+  - **200px de hauteur**
+  - **440px de largeur**
 
-If present, logos are automatically rendered on the service page.
+S'ils sont présents, les logos sont affichés automatiquement sur la page du service.
 
 ---
 
-## Service Page Template
+## Modèle de Page de Service
 
-Each service page starts with a frontmatter block that describes its capabilities.
+Chaque page de service commence par un bloc frontmatter qui décrit ses capacités.
 
-This metadata is **used to generate the Overview section automatically** on the site.
+Ces métadonnées sont **utilisées pour générer automatiquement la section Overview** du site.
 
-A minimal example:
+Exemple minimal :
 
 ````md
 ---
@@ -187,36 +185,48 @@ apprise -vv -t "My Title" -b "Message Body" \
 ```
 ````
 
-> The markers such as `<!-- SERVICE:DETAILS -->` are intentional and must be left in place.  
-> They are replaced automatically when the documentation is rendered.
+> Les marqueurs comme `<!-- SERVICE:DETAILS -->` sont intentionnels et doivent rester en place.
+> Ils sont remplacés automatiquement lors du rendu de la documentation.
 
-If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS *}` or `{/_ SERVICE:DETAILS _/}` insead, e.g.: `{/*- SERVICE:DETAILS */}`
+Si vous avez créé un fichier `mdx` à la place, vous pouvez utiliser `{/* SERVICE:DETAILS *}` ou `{/_ SERVICE:DETAILS _/}`, par exemple : `{/*- SERVICE:DETAILS */}`
 
-## Localization and Translations
+## Localisation et Traductions
 
-- Each language lives under `locales/<locale>/`
-- English (`en`) is the default
-- Translations may be partial and incremental
+- Chaque langue vit sous `locales/<locale>/`
+- L'anglais (`en`) est la langue par défaut
+- Les traductions peuvent être partielles et incrémentales
+- Préférez les liens relatifs entre pages de documentation dans une même locale
+- Évitez les liens internes absolus à la racine comme `/services/` ou `/url-builder/` dans le contenu traduit
+- Les assets partagés absolus à la racine comme `/assets/...` conviennent lorsqu'ils sont volontairement globaux
 
-Even partial translations are welcome.
+Exemples :
 
-## Linting and Validation
+```md
+[Services Pris en Charge](../services/)
+[Générateur d'URL](../url-builder/)
+![Logo du Service](./images/logo.svg)
+```
 
-This repository uses automated checks to ensure:
+Le build du site inclut un garde-fou qui réécrit les liens internes locaux pour les locales non par défaut pendant la synchronisation, mais les contributeurs devraient tout de même écrire des liens sûrs pour leur locale dans les sources dès que possible.
 
-- Consistent Markdown formatting
-- Supported frontmatter keys and structure
-- Predictable rendering on the website
+Même les traductions partielles sont les bienvenues.
 
-Linting exists to **help contributors**, not to block them. Most failures are
-formatting or unsupported metadata issues and are easy to fix.
+## Linting et Validation
 
-## How You Can Help
+Ce dépôt utilise des vérifications automatiques pour garantir :
 
-- Improve documentation for a service you use
-- Clarify confusing sections
-- Add examples
-- Fix typos or formatting issues
-- Translate content into another language
+- un formatage Markdown cohérent ;
+- des clés frontmatter et une structure prises en charge ;
+- un rendu prévisible sur le site.
 
-If you are unsure where something belongs, open an issue and ask.
+Le lint existe pour **aider les contributeurs**, pas pour les bloquer. La plupart des échecs concernent le formatage ou des métadonnées non prises en charge et sont faciles à corriger.
+
+## Comment Vous Pouvez Aider
+
+- Améliorer la documentation d'un service que vous utilisez
+- Clarifier les sections confuses
+- Ajouter des exemples
+- Corriger des fautes ou des problèmes de formatage
+- Traduire du contenu dans une autre langue
+
+Si vous ne savez pas où quelque chose doit aller, ouvrez une issue et demandez.

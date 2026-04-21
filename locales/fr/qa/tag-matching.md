@@ -1,53 +1,53 @@
 ---
 title: "Correspondance des Tags"
-description: "Issues with tag assignments and notifications triggered based on tags defined"
+description: "Problèmes liés aux affectations de tags et aux notifications déclenchées à partir des tags définis"
 sidebar:
   order: 10
 ---
 
 ## Introduction
 
-If you tagged your URLs, they're not going to be notified unless you explicitly reference them with **--tag=** (or **-g**). You can always check to see what URLs have been loaded using the `all` tag directive paired with **--dry-run**:
+Si vous avez ajouté des tags à vos URL, elles ne seront pas notifiées tant que vous ne les référencez pas explicitement avec **--tag=** (ou **-g**). Vous pouvez toujours vérifier quelles URL ont été chargées en utilisant la directive de tag `all` combinée à **--dry-run** :
 
-### Tag Association Debugging
+### Débogage des associations de tags
 
-If you have access to the Apprise CLI (installed via `pip install apprise`) then you can easily trace what aligns with different tag combinations. The `--dry-run` will cause `apprise` to not perform any action, but merely list what matches to the terminal.
+Si vous avez accès à la CLI Apprise (installée via `pip install apprise`), vous pouvez facilement suivre ce qui correspond à différentes combinaisons de tags. L'option `--dry-run` indique à `apprise` de ne rien envoyer, mais seulement d'afficher en sortie terminale ce qui correspond.
 
-This simply lists all entries found in the `apprise.txt` file whether they have a tag or not:
+La commande suivante liste simplement toutes les entrées trouvées dans le fichier `apprise.txt`, qu'elles aient un tag ou non :
 
 ```bash
 apprise --dry-run --tag=all \
    --config=/my/path/to/my/config/apprise.txt
 ```
 
-Without a `--tag` specified, you'll only match URLs that have no tag associated with them:
+Sans `--tag`, vous ne verrez correspondre que les URL auxquelles aucun tag n'est associé :
 
 ```bash
-# List notifications that would otherwise be triggered without a tag specified:
+# Lister les notifications qui seraient déclenchées sans tag spécifié :
 apprise --dry-run \
    --config=/my/path/to/my/config/apprise.txt
 ```
 
-Now we can list all defined URLs that have the tag `devops` assigned to them:
+Nous pouvons maintenant lister toutes les URL définies ayant le tag `devops` :
 
 ```bash
 apprise --dry-run --tag=devops \
    --config=/my/path/to/my/config/apprise.txt
 ```
 
-Once you have identified your tagging issue in your configuration to the point it lists correctly using the above commands above, you can send your notification by removing the `--dry-run` switch and add the `--body` (`-b`) at a minimum to send your notification(s).
+Une fois que vous avez identifié votre problème de tags dans la configuration et que les bonnes entrées s'affichent avec les commandes ci-dessus, vous pouvez envoyer votre notification en retirant `--dry-run` et en ajoutant au minimum `--body` (`-b`).
 
-General filter expressions follow:
+Les expressions de filtrage générales sont les suivantes :
 
-| Filter                        | Selected services                                                               |
+| Filtre                        | Services sélectionnés                                                           |
 | ----------------------------- | ------------------------------------------------------------------------------- |
-| `--tag TagA`                  | Match `TagA`                                                                    |
-| `--tag TagA,TagB`             | Match `TagA` **AND** `TagB` (Strict)                                            |
-| `--tag 'TagA' --tag 'TagB`    | Match `TagA` **OR** `TagB` (Union)                                              |
-| `--tag 'TagA,TagC --tag TagB` | Match ( `TagA` **AND** `TagC`) **OR** `TagB`. This is a mix of Strict and Union |
-| `--tag all`                   | Match **ALL** services (tagged and untagged).                                   |
-| `(Omitted)`                   | Notify **untagged** services only.                                              |
+| `--tag TagA`                  | Correspond à `TagA`                                                             |
+| `--tag TagA,TagB`             | Correspond à `TagA` **ET** `TagB` (strict)                                      |
+| `--tag 'TagA' --tag 'TagB`    | Correspond à `TagA` **OU** `TagB` (union)                                       |
+| `--tag 'TagA,TagC --tag TagB` | Correspond à (`TagA` **ET** `TagC`) **OU** `TagB`. Mélange de strict et d'union |
+| `--tag all`                   | Correspond à **TOUS** les services (tagués et non tagués).                      |
+| `(omis)`                      | Notifie uniquement les services **non tagués**.                                 |
 
 :::note
-When you use a comma, you are applying a filter: you are telling Apprise to narrow down the list to only those specific services that possess every tag you listed. To widen the list to include multiple different groups, simply repeat the -g switch.
+Lorsque vous utilisez une virgule, vous appliquez un filtre : vous demandez à Apprise de réduire la liste aux seuls services qui possèdent tous les tags listés. Pour élargir la sélection et inclure plusieurs groupes différents, répétez simplement le switch `-g`.
 :::

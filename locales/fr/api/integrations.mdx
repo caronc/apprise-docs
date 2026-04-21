@@ -1,6 +1,6 @@
 ---
 title: Intégrations
-description: Call Apprise API from curl, Go, Rust, JavaScript, TypeScript, PHP, or Python.
+description: Appeler l’API Apprise depuis curl, Go, Rust, JavaScript, TypeScript, PHP ou Python.
 sidebar:
   order: 5
 ---
@@ -32,22 +32,22 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
   }
 `}</style>
 
-Apprise API is meant to be a single notification gateway.
-Instead of building direct webhooks to Discord, Slack, email, and SMS in every project, send to Apprise API and let it route the message.
+L'API Apprise est conçue comme une passerelle de notification unique.
+Au lieu de construire des webhooks directs vers Discord, Slack, l'email et les SMS dans chaque projet, envoyez vos messages à l'API Apprise et laissez-la router le message.
 
 ## Endpoints
 
 :::note
-**Apprise does not require you to add Python in your application.**  
-Apprise itself is written in Python, but most integrations interact with it purely over HTTP using the Apprise API. Applications in any language can send notifications without embedding Python or managing notification logic locally.
+**Apprise ne vous oblige pas à ajouter Python dans votre application.**  
+Apprise lui-même est écrit en Python, mais la plupart des intégrations interagissent avec lui uniquement via HTTP en utilisant l'API Apprise. Des applications dans n'importe quel langage peuvent envoyer des notifications sans embarquer Python ni gérer localement la logique de notification.
 :::
 
-| If you want to...                                   | Recommended Approach                                                                                  |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Avoid embedding Python in your application          | Apprise API (Stateful or Stateless)                                                                   |
-| Keep notification logic out of your codebase        | Apprise API (Stateful)                                                                                |
-| Use Apprise as a simple HTTP gateway                | Apprise API (Stateless)                                                                               |
-| Send notifications from scripts or the command line | [Apprise CLI](../../cli/getting-started/) or [Apprise Python Library](../../library/getting-started/) |
+| Si vous voulez...                                        | Approche recommandée                                                                                 |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Éviter d'intégrer Python dans votre application          | API Apprise (Stateful ou Stateless)                                                                  |
+| Garder la logique de notification hors de votre codebase | API Apprise (Stateful)                                                                               |
+| Utiliser Apprise comme simple passerelle HTTP            | API Apprise (Stateless)                                                                              |
+| Envoyer des notifications depuis des scripts ou la CLI   | [CLI Apprise](../../cli/) ou [Bibliothèque Python Apprise](../../library/)                           |
 
 ### Stateless
 
@@ -58,19 +58,18 @@ Apprise itself is written in Python, but most integrations interact with it pure
   />
   <img
     src="../images/stateless-api-integration-light.svg"
-    alt="Stateless API Integration"
+    alt="Intégration API Stateless"
     loading="lazy"
   />
 </picture>
 
-If you cannot (or do not want to) store configuration server-side, you can also use
-stateless notifications:
+Si vous ne pouvez pas, ou ne souhaitez pas, stocker la configuration côté serveur, vous pouvez également utiliser des notifications stateless :
 
 - `POST /notify`
 
-Stateless calls include the destination Apprise URLs in the request payload.
+Les appels stateless incluent les URL de destination Apprise dans la charge utile de la requête.
 
-See the endpoint reference for the full list of supported paths.
+Consultez la référence des endpoints pour la liste complète des chemins pris en charge.
 
 ### Stateful
 
@@ -81,56 +80,53 @@ See the endpoint reference for the full list of supported paths.
   />
   <img
     src="../images/stateful-api-integration-light.svg"
-    alt="Stateful API Integration"
+    alt="Intégration API Stateful"
     loading="lazy"
   />
 </picture>
 
-For stateful notifications (recommended for most integrations), you call one endpoint:
+Pour les notifications stateful, recommandées pour la plupart des intégrations, vous appelez un seul endpoint :
 
 - `POST /notify/{KEY}`
 
-Where `{KEY}` identifies a configuration saved on the server.
-Your client code stays small and stable, while the Apprise API instance holds the actual
-notification URLs and any routing tags.
+Ici, `{KEY}` identifie une configuration enregistrée sur le serveur.
+Votre code client reste petit et stable, tandis que l'instance API Apprise conserve les véritables URL de notification ainsi que les éventuels tags de routage.
 
-## Build the Request URL
+## Construire l’URL de Requête
 
-Given:
+Étant donné :
 
 - `scheme`: `http` or `https`
 - `host`: the Apprise API hostname or IP
 - `port`: optional, omit for 80 (http) or 443 (https)
 - `key`: your saved configuration key
 
-Construct:
+Construisez :
 
 - `BASE = {scheme}://{host}`
 - If a non-default port is used: `BASE = {scheme}://{host}:{port}`
 - `NOTIFY = {BASE}/notify/{key}`
 
 :::note
-If your Apprise API is hosted behind a reverse proxy under a subpath, you may need to
-prefix your base URL with that path (for example, `https://example.com/apprise`).
+Si votre API Apprise est hébergée derrière un reverse proxy sous un sous-chemin, vous devrez peut-être préfixer votre URL de base avec ce chemin (par exemple, `https://example.com/apprise`).
 :::
 
-## Common Payload Fields
+## Champs de Payload Courants
 
-Apprise API accepts both form and JSON payloads in many cases.
-For integrations, JSON is usually easiest.
+L'API Apprise accepte dans de nombreux cas les payloads de formulaire comme les payloads JSON.
+Pour les intégrations, JSON est généralement le plus simple.
 
-- `body` (required): message content
-- `title` (optional): message title
-- `type` (optional): `info` (default), `success`, `warning`, or `failure`
-- `format` (optional): `text` (default), `markdown`, or `html`
-- `tag` (optional, stateful): route to a subset of saved URLs
+- `body` (requis) : contenu du message
+- `title` (optionnel) : titre du message
+- `type` (optionnel) : `info` (par défaut), `success`, `warning` ou `failure`
+- `format` (optionnel) : `text` (par défaut), `markdown` ou `html`
+- `tag` (optionnel, stateful) : route vers un sous-ensemble d'URL enregistrées
 
 ### Tags
 
-Tags are only meaningful for stateful calls (`/notify/{KEY}`), because the server already
-knows which URLs belong to that key.
+Les tags n'ont de sens que pour les appels stateful (`/notify/{KEY}`), parce que le serveur sait déjà quelles URL appartiennent à cette clé.
 
-The `tag` value follows these rules:
+La valeur `tag` suit les règles suivantes :
 
 | `tag` value        | Selected services                         |
 | ------------------ | ----------------------------------------- |
@@ -142,43 +138,40 @@ The `tag` value follows these rules:
 | `"TagA\|TagB"`     | Has `TagA` **OR** `TagB`                  |
 | `"TagA TagC,TagB"` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
 
-## Attachments
+## Pièces Jointes
 
-To send attachments, use `multipart/form-data`.
+Pour envoyer des pièces jointes, utilisez `multipart/form-data`.
 
-- Use `attach` (recommended) or `attachment` as the field name
-- The attachment value can be:
-  - a local file upload
-  - a remote URL that Apprise API downloads and forwards
+- Utilisez `attach` (recommandé) ou `attachment` comme nom de champ
+- La valeur de la pièce jointe peut être :
+  - un upload de fichier local
+  - une URL distante que l'API Apprise télécharge puis transmet
 
-## Payload Mapping Hooks
+## Hooks de Mapping du Payload
 
-If a third-party tool cannot change its JSON keys, Apprise API can map incoming fields
-to Apprise fields using query parameters prefixed with a colon (`:`).
+Si un outil tiers ne peut pas modifier ses clés JSON, l'API Apprise peut faire correspondre les champs entrants aux champs Apprise via des paramètres de requête préfixés par deux-points (`:`).
 
-### Mapping Rules
+### Règles de Mapping
 
-| Syntax                           | Effect                                      |
+| Syntaxe                          | Effet                                       |
 | -------------------------------- | ------------------------------------------- |
-| `?:incoming_field=apprise_field` | Rename `incoming_field` to `apprise_field`  |
-| `?:incoming_field=`              | Remove `incoming_field` from the payload    |
-| `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string |
+| `?:incoming_field=apprise_field` | Renomme `incoming_field` en `apprise_field` |
+| `?:incoming_field=`              | Supprime `incoming_field` du payload        |
+| `?:apprise_field=literal value`  | Force `apprise_field` à une chaîne fixe     |
 
-**Flat field example** — a tool sends `{"message": "Server Down"}`:
+**Exemple de champ plat** — un outil envoie `{"message": "Server Down"}` :
 
 ```text
 POST /notify/{KEY}?:message=body
 ```
 
-### Nested / Subfield Mapping
+### Mapping de Champs Imbriqués / Sous-champs
 
-When a third-party payload contains nested objects or arrays, Apprise API can reach into
-them using **dot-notation** for nested objects and **bracket-notation** for array elements.
-Both syntaxes can be freely mixed on the source side of the mapping rule.
+Lorsqu'un payload tiers contient des objets imbriqués ou des tableaux, l'API Apprise peut les parcourir en utilisant la **notation pointée** pour les objets imbriqués et la **notation entre crochets** pour les éléments de tableau. Les deux syntaxes peuvent être librement mélangées du côté source de la règle de mapping.
 
-#### Nested Objects (Dot-Notation)
+#### Objets Imbriqués (Notation Pointée)
 
-Walk into nested dictionaries with a dot-separated path:
+Parcourez des dictionnaires imbriqués avec un chemin séparé par des points :
 
 ```bash
 # Payload from a monitoring tool:
@@ -192,10 +185,9 @@ curl -X POST \
   "http://apprise-host/notify/{KEY}?:event.title=title&:event.state=type&:component.name=body"
 ```
 
-#### Array Elements (Bracket-Notation)
+#### Éléments de Tableau (Notation entre Crochets)
 
-Append `[N]` after a key name to dereference index `N` of that array. Multiple subscripts
-and mixing with dot-notation are both supported:
+Ajoutez `[N]` après un nom de clé pour déréférencer l'index `N` de ce tableau. Les indices multiples et le mélange avec la notation pointée sont tous deux pris en charge :
 
 ```bash
 # Payload from a forum / project-management webhook (e.g. Scoold / Para):
@@ -209,37 +201,30 @@ curl -g -X POST \
 ```
 
 :::note
-`curl` treats brackets in URLs as globbing syntax, so `-g` (or `--globoff`) is required when using mapping paths such as `items[0].title`. Keep the URL quoted so your shell passes it through unchanged.
+`curl` traite les crochets dans les URL comme une syntaxe de globbing ; `-g` (ou `--globoff`) est donc requis lorsque vous utilisez des chemins de mapping tels que `items[0].title`. Gardez l'URL entre guillemets afin que votre shell la transmette telle quelle.
 :::
 
-Quick-reference for path expressions:
+Référence rapide des expressions de chemin :
 
-| Source key            | Resolves to                                        |
-| --------------------- | -------------------------------------------------- |
-| `items[0]`            | First element of `items`                           |
-| `items[0].objectURI`  | `.objectURI` property of the first element         |
-| `matrix[0][1]`        | Row 0, column 1 of a 2-D array                     |
-| `a[0][1][2].value[3]` | Nested arrays -> dict -> array (6 traversal steps) |
+| Clé source            | Résout vers                                            |
+| --------------------- | ------------------------------------------------------ |
+| `items[0]`            | Premier élément de `items`                             |
+| `items[0].objectURI`  | Propriété `.objectURI` du premier élément              |
+| `matrix[0][1]`        | Ligne 0, colonne 1 d'un tableau 2D                     |
+| `a[0][1][2].value[3]` | Tableaux imbriqués -> dict -> tableau (6 traversées)   |
 
-**Rules and limits:**
+**Règles et limites :**
 
-- Only the **source** side of the rule may use path notation; the target must be a flat
-  Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
-- `N` in `[N]` must be a non-negative integer. Both `key[abc]` (non-integer) and
-  `key[0` / `key0]` (unmatched bracket) are rejected immediately.
-- If any step is unresolvable — missing key, index out of range, or a non-list node at
-  an index step — the server returns **400** and logs a `WARNING`. No notification is sent,
-  so misconfigured rules are visible in logs rather than silently dropped.
-- **Depth** is the total number of traversal operations: each dict-key lookup _and_ each
-  array-index dereference counts as one step. `items[0].objectURI` = 3 steps;
-  `a[0][1][2].value[3]` = 6 steps.
-- The maximum traversal depth defaults to **5**. Set
-  `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` to change this limit.
+- Seul le côté **source** de la règle peut utiliser la notation de chemin ; la cible doit être un champ Apprise plat (`title`, `body`, `type`, `format`, `tag`, etc.).
+- `N` dans `[N]` doit être un entier positif ou nul. Les formes `key[abc]` (non entière) et `key[0` / `key0]` (crochet non apparié) sont rejetées immédiatement.
+- Si une étape est introuvable — clé absente, index hors limites ou nœud non liste à une étape d'index — le serveur renvoie **400** et journalise un `WARNING`. Aucune notification n'est envoyée, ce qui rend les règles mal configurées visibles dans les logs au lieu d'être ignorées silencieusement.
+- La **profondeur** correspond au nombre total d'opérations de traversée : chaque recherche de clé dans un dict _et_ chaque déréférencement d'index dans un tableau comptent pour une étape. `items[0].objectURI` = 3 étapes ; `a[0][1][2].value[3]` = 6 étapes.
+- La profondeur maximale de traversée est de **5** par défaut. Définissez `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` pour modifier cette limite.
 
-## Examples
+## Exemples
 
 <Tabs>
-<TabItem value="sl" label="Stateless Examples">
+<TabItem value="sl" label="Exemples Stateless">
 
 <Tabs>
 <TabItem value="sl-curl" label="curl">
@@ -258,7 +243,7 @@ curl -X POST "http://localhost:8000/notify" \
 ```
 
 ```bash
-# Stateless notification with an attachment
+# Notification stateless avec une pièce jointe
 curl -X POST "http://localhost:8000/notify" \
   -F 'payload={
     "urls": ["discord://TOKEN/CHANNEL"],
@@ -272,11 +257,11 @@ curl -X POST "http://localhost:8000/notify" \
 <TabItem value="sl-python" label="Python">
 
 :::note
-The first example uses `requests` for synchronous calls.
-The second example uses `aiohttp` for async workflows and also shows multipart attachments.
+Le premier exemple utilise `requests` pour des appels synchrones.
+Le second utilise `aiohttp` pour des workflows asynchrones et montre également des pièces jointes multipart.
 :::
 
-The following leverages the `requests` library:
+L'exemple suivant s'appuie sur la bibliothèque `requests` :
 
 ```python
 # python_requests_example.py
@@ -336,7 +321,7 @@ resp = requests.post(
 resp.raise_for_status()
 ```
 
-The following leverages the `aiohttp` library:
+L'exemple suivant s'appuie sur la bibliothèque `aiohttp` :
 
 ```python
 # python_aiohttp_example.py
@@ -376,7 +361,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Field name can be attach or attachment
+    # Le nom du champ peut être attach ou attachment
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -385,13 +370,13 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
             resp.raise_for_status()
 
 
-# Usage:
+# Utilisation :
 api = AppriseStatelessApi(scheme="http", host="localhost", port=8000)
 
-# Send our notification:
+# Envoyer notre notification :
 asyncio.run(apprise_notify_json(api.notify_url, {"body": "Hello"}))
 
-# Send our notification with an attachment:
+# Envoyer notre notification avec une pièce jointe :
 asyncio.run(apprise_notify_with_attachment(
     api.notify_url, {
         "title": "Strange abuse detected",
@@ -407,7 +392,7 @@ asyncio.run(apprise_notify_with_attachment(
 <TabItem value="sl-ts" label="TypeScript">
 
 ```ts
-// Stateless Apprise API call using fetch (TypeScript)
+// Appel stateless à l'API Apprise avec fetch (TypeScript)
 const scheme = "http";
 const host = "localhost";
 const port = 8000;
@@ -431,7 +416,7 @@ await fetch(url, {
 <TabItem value="sl-js" label="JavaScript">
 
 ```js
-// Stateless Apprise API call using fetch (Vanilla JS)
+// Appel stateless à l'API Apprise avec fetch (JavaScript vanilla)
 const scheme = "http";
 const host = "localhost";
 const port = 8000;
@@ -452,7 +437,7 @@ fetch(`${scheme}://${host}:${port}/notify`, {
 
 ```php
 <?php
-// Stateless Apprise API call using PHP cURL
+// Appel stateless à l'API Apprise avec PHP cURL
 
 $payload = json_encode([
     "urls" => [
@@ -521,7 +506,7 @@ public class AppriseNotifyStateless {
     public static void main(String[] args) {
         String url = "http://localhost:8000/notify";
 
-        // JSON payload with multiple URLs
+        // Payload JSON avec plusieurs URL
         String jsonPayload = """
             {
                 "urls": [
@@ -547,7 +532,7 @@ public class AppriseNotifyStateless {
 }
 ```
 
-Here is an example using attachments:
+Voici un exemple avec pièces jointes :
 
 ```java
 // Note: We construct a manual multipart body here for standard Java 11+
@@ -566,10 +551,10 @@ public class AppriseAttachment {
         String boundary = "---Boundary" + UUID.randomUUID().toString();
         Path file = Path.of("/path/to/file.txt");
 
-        // Comma-separated list of URLs
+        // Liste d'URL séparées par des virgules
         String targetUrls = "discord://TOKEN/CHANNEL,mailto://user:pass@example.com";
 
-        // Build Multipart Body
+        // Construire le body multipart
         String body = "--" + boundary + "\r\n" +
             "Content-Disposition: form-data; name=\"urls\"\r\n\r\n" +
             targetUrls + "\r\n" +
@@ -622,7 +607,7 @@ var response = await client.PostAsync(url, content);
 response.EnsureSuccessStatusCode();
 ```
 
-Here is an example leveraging attachments:
+Voici un exemple utilisant des pièces jointes :
 
 ```csharp
 using System.Net.Http.Headers;
@@ -669,15 +654,15 @@ Invoke-RestMethod -Uri $Uri `
     -ContentType "application/json"
 ```
 
-Here is an example leveraging attachments:
+Voici un exemple utilisant des pièces jointes :
 
 ```powershell
 $Uri = "http://localhost:8000/notify"
 $FilePath = "/path/to/file.txt"
 
-# PowerShell 6.1+ automatically handles multipart if you use a Hash Table
+# PowerShell 6.1+ gère automatiquement le multipart si vous utilisez une table de hachage
 $Form = @{
-    # Pass URLs as a comma-separated string
+    # Passer les URL sous forme de chaîne séparée par des virgules
     urls   = "discord://TOKEN/CHANNEL,mailto://user:pass@example.com"
     body   = "Artifact attached (Stateless)"
     attach = Get-Item -Path $FilePath
@@ -711,7 +696,7 @@ response = http.request(request)
 puts response.body
 ```
 
-Here is an example leveraging attachments:
+Voici un exemple utilisant des pièces jointes :
 
 ```ruby
 require 'net/http/post/multipart' # gem install multipart-post
@@ -722,7 +707,7 @@ file_path = '/path/to/file.txt'
 
 File.open(file_path) do |file|
   req = Net::HTTP::Post::Multipart.new(url.path,
-    # Pass URLs as a comma-separated string
+    # Passer les URL sous forme de chaîne séparée par des virgules
     "urls" => "discord://TOKEN/CHANNEL,mailto://user:pass@example.com",
     "body" => "Artifact attached (Stateless)",
     "attach" => UploadIO.new(file, "application/octet-stream", File.basename(file_path))
@@ -765,12 +750,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 </TabItem>
 </Tabs>
 </TabItem>
-<TabItem value="sf" label="Stateful Examples">
+<TabItem value="sf" label="Exemples Stateful">
 <Tabs>
 <TabItem value="sf-curl" label="curl">
 
 ```bash
-# JSON payload (recommended)
+# Payload JSON (recommandé)
 SCHEME=http
 HOST=localhost
 PORT=8000
@@ -790,7 +775,7 @@ curl -X POST \
 ```
 
 :::note
-The above could have also been written like this:
+L'exemple ci-dessus aurait aussi pu être écrit ainsi :
 
 ```bash
 curl -X POST \
@@ -801,7 +786,7 @@ curl -X POST \
 
 :::
 
-Here is another example tha routes based on defined tags:
+Voici un autre exemple qui route selon les tags définis :
 
 ```bash
 curl -X POST \
@@ -812,7 +797,7 @@ curl -X POST \
 ```
 
 :::note
-The above could have also been written like this:
+L'exemple ci-dessus aurait aussi pu être écrit ainsi :
 
 ```bash
 curl -X POST \
@@ -824,7 +809,7 @@ curl -X POST \
 :::
 
 ```bash
-# Attachment (multipart)
+# Pièce jointe (multipart)
 curl -X POST \
   -F "body=See attached log" \
   -F "attach=@/var/log/syslog" \
@@ -836,11 +821,11 @@ curl -X POST \
 <TabItem value="sf-python" label="Python">
 
 :::note
-The first example uses `requests` for synchronous calls.
-The second example uses `aiohttp` for async workflows and also shows multipart attachments.
+Le premier exemple utilise `requests` pour des appels synchrones.
+Le second utilise `aiohttp` pour des workflows asynchrones et montre également des pièces jointes multipart.
 :::
 
-The following leverages the `requests` library:
+L'exemple suivant s'appuie sur la bibliothèque `requests` :
 
 ```python
 # python_requests_example.py
@@ -867,7 +852,7 @@ class AppriseApi:
         path = f"/{prefix}/notify/{quote(self.key)}" if prefix else f"/notify/{quote(self.key)}"
         return f"{origin}{path}"
 
-# Usage:
+# Utilisation :
 api = AppriseApi(scheme="http", host="localhost", port=8000, key="my-alerts")
 payload = {
     "title": "Deploy",
@@ -886,7 +871,7 @@ resp.raise_for_status()
 
 ```
 
-The following leverages the `aiohttp` library:
+L'exemple suivant s'appuie sur la bibliothèque `aiohttp` :
 
 ```python
 # python_aiohttp_example.py
@@ -928,7 +913,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Field name can be attach or attachment
+    # Le nom du champ peut être attach ou attachment
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -937,13 +922,13 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
             resp.raise_for_status()
 
 
-# Usage:
+# Utilisation :
 api = AppriseApi(scheme="http", host="localhost", port=8000, key="my-alerts")
 
-# Send our notification:
+# Envoyer notre notification :
 asyncio.run(apprise_notify_json(api.notify_url, {"body": "Hello"}))
 
-# Send our notification with an attachment:
+# Envoyer notre notification avec une pièce jointe :
 asyncio.run(apprise_notify_with_attachment(
     api.notify_url, {
         "title": "Strange abuse detected",
@@ -1014,7 +999,7 @@ export async function appriseNotifyWithAttachment(
   if (payload.tag) form.append("tag", payload.tag);
   form.append("body", payload.body);
 
-  // Field name can be attach or attachment
+  // Le nom du champ peut être attach ou attachment
   form.append("attach", file);
 
   const res = await fetch(url, {
@@ -1031,7 +1016,7 @@ export async function appriseNotifyWithAttachment(
   }
 }
 
-// Example:
+// Exemple :
 const notifyUrl = buildNotifyUrl(
   "https",
   "apprise.example.net",
@@ -1073,7 +1058,7 @@ async function appriseNotify(url, payload) {
   }
 }
 
-// Example:
+// Exemple :
 const url = buildNotifyUrl({
   scheme: "http",
   host: "localhost",
@@ -1147,7 +1132,7 @@ function apprise_notify_with_attachment(string $url, string $body, string $file_
 
     $post = [
         'body' => $body,
-        // Field name can be attach or attachment
+        // Le nom du champ peut être attach ou attachment
         'attach' => new CURLFile($file_path),
     ];
 
@@ -1176,7 +1161,7 @@ function apprise_notify_with_attachment(string $url, string $body, string $file_
     }
 }
 
-// Example:
+// Exemple :
 $url = build_notify_url('http', 'localhost', 'my-alerts', 8000);
 
 apprise_notify_json($url, [
@@ -1261,7 +1246,7 @@ func notifyWithAttachment(endpoint string, payload NotifyPayload, filePath strin
   var buf bytes.Buffer
   w := multipart.NewWriter(&buf)
 
-  // Fields
+  // Champs
   _ = w.WriteField("body", payload.Body)
   if payload.Title != "" {
     _ = w.WriteField("title", payload.Title)
@@ -1276,7 +1261,7 @@ func notifyWithAttachment(endpoint string, payload NotifyPayload, filePath strin
     _ = w.WriteField("tag", payload.Tag)
   }
 
-  // File
+  // Fichier
   f, err := os.Open(filePath)
   if err != nil {
     return err
@@ -1397,14 +1382,14 @@ var response = await client.PostAsync(url, content);
 response.EnsureSuccessStatusCode();
 ```
 
-Below is an attachment example:
+Ci-dessous, un exemple avec pièce jointe :
 
 ```csharp
 using var client = new HttpClient();
 using var form = new MultipartFormDataContent();
 
 form.Add(new StringContent("See attached log"), "body");
-// Open the file stream
+// Ouvrir le flux du fichier
 using var fileStream = File.OpenRead("/var/log/syslog");
 using var fileContent = new StreamContent(fileStream);
 form.Add(fileContent, "attach", "syslog.txt");
@@ -1430,7 +1415,7 @@ Invoke-RestMethod -Uri $Uri -Method Post -Body ($Payload | ConvertTo-Json) -Cont
 
 ```
 
-Below is an attachment example:
+Ci-dessous, un exemple avec pièce jointe :
 
 ```powershell
 $Uri = "http://localhost:8000/notify/my-alerts"
@@ -1467,7 +1452,7 @@ puts response.body
 
 ```
 
-Below is an attachment example:
+Ci-dessous, un exemple avec pièce jointe :
 
 ```ruby
 require 'net/http/post/multipart' # gem install multipart-post
@@ -1585,8 +1570,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 :::note
-The example uses `reqwest`, `serde`, `tokio`, and `urlencoding` crates.
-If you prefer fewer dependencies, you can do the same POST with `hyper` or `ureq`.
+L'exemple utilise les crates `reqwest`, `serde`, `tokio` et `urlencoding`.
+Si vous préférez moins de dépendances, vous pouvez effectuer le même POST avec `hyper` ou `ureq`.
 :::
 
 </TabItem>

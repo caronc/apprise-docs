@@ -1,85 +1,85 @@
 ---
 title: Utilisation et Arguments
-description: Comprehensive guide to Apprise CLI flags, environment variables, attachments, and scripting.
+description: Guide complet des options de la CLI Apprise, des variables d'environnement, des pièces jointes et du scripting.
 sidebar:
   order: 2
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-This guide covers everything from basic flags to advanced scripting techniques with the Apprise CLI.
+Ce guide couvre tout, depuis les options de base jusqu'aux techniques avancées de scripting avec la CLI Apprise.
 
-## Command Line Arguments
+## Arguments en Ligne de Commande
 
-You can view the full help menu at any time by running `apprise --help`.
+Vous pouvez afficher le menu d'aide complet à tout moment avec `apprise --help`.
 
-### Message Composition
+### Composition du Message
 
-| Flag | Long flag             | Description                                                                            |
-| :--- | :-------------------- | :------------------------------------------------------------------------------------- |
-| `-b` | `--body`              | The message body to send. If omitted, Apprise reads from `stdin`.                      |
-| `-t` | `--title`             | The message title (optional).                                                          |
-| `-n` | `--notification-type` | Notification type. Values: `info`, `success`, `warning`, `failure`. Default is `info`. |
-| `-i` | `--input-format`      | Input format. Values: `text`, `html`, `markdown`. Default is `text`.                   |
-| `-e` | `--interpret-escapes` | Interpret backslash escapes in `--body` (for example `\n`, `\r`).                      |
-| `-j` | `--interpret-emojis`  | Interpret emoji shortcodes in `--body` (for example `:smile:`).                        |
-| `-T` | `--theme`             | Set the default theme.                                                                 |
+| Flag | Option longue         | Description                                                                                   |
+| :--- | :-------------------- | :-------------------------------------------------------------------------------------------- |
+| `-b` | `--body`              | Le corps du message à envoyer. Si omis, Apprise lit depuis `stdin`.                           |
+| `-t` | `--title`             | Le titre du message (optionnel).                                                              |
+| `-n` | `--notification-type` | Type de notification. Valeurs : `info`, `success`, `warning`, `failure`. Par défaut : `info`. |
+| `-i` | `--input-format`      | Format d'entrée. Valeurs : `text`, `html`, `markdown`. Par défaut : `text`.                   |
+| `-e` | `--interpret-escapes` | Interpréter les séquences d'échappement dans `--body` (par exemple `\n`, `\r`).               |
+| `-j` | `--interpret-emojis`  | Interpréter les shortcodes emoji dans `--body` (par exemple `:smile:`).                       |
+| `-T` | `--theme`             | Définir le thème par défaut.                                                                  |
 
-### Configuration, Filtering, and Plugins
+### Configuration, Filtrage et Plugins
 
-| Flag | Long flag           | Description                                                                                                                                      |
-| :--- | :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-c` | `--config`          | One or more configuration locations (local file or remote URL).                                                                                  |
-| `-g` | `--tag`             | Filter which services to notify (see Tag filtering).                                                                                             |
-| `-R` | `--recursion-depth` | Maximum number of recursive `include` directives allowed while loading config. Default is `1`. Set to `0` to ignore `include`/import statements. |
-| `-P` | `--plugin-path`     | Add one or more paths to scan for custom notification plugins.                                                                                   |
+| Flag | Option longue       | Description                                                                                                                                                       |
+| :--- | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c` | `--config`          | Un ou plusieurs emplacements de configuration (fichier local ou URL distante).                                                                                    |
+| `-g` | `--tag`             | Filtrer les services à notifier (voir filtrage par tags).                                                                                                         |
+| `-R` | `--recursion-depth` | Nombre maximal de directives `include` récursives autorisées lors du chargement de la configuration. Par défaut : `1`. Mettez `0` pour ignorer `include`/imports. |
+| `-P` | `--plugin-path`     | Ajouter un ou plusieurs chemins à scanner pour les plugins de notification personnalisés.                                                                         |
 
-### Attachments
+### Pièces Jointes
 
-| Flag | Long flag  | Description                                                                                 |
-| :--- | :--------- | :------------------------------------------------------------------------------------------ |
-| `-a` | `--attach` | One or more attachment locations (local file path or URL). Can be specified multiple times. |
+| Flag | Option longue | Description                                                                                                        |
+| :--- | :------------ | :----------------------------------------------------------------------------------------------------------------- |
+| `-a` | `--attach`    | Un ou plusieurs emplacements de pièces jointes (chemin de fichier local ou URL). Peut être utilisé plusieurs fois. |
 
-### Storage
+### Stockage
 
-Apprise supports a persistent storage cache. You can tune it with the flags below, or use the `apprise storage` subcommand.
+Apprise prend en charge un cache de stockage persistant. Vous pouvez l'ajuster avec les options ci-dessous ou utiliser la sous-commande `apprise storage`.
 
-| Flag   | Long flag              | Description                                                                                             |
-| :----- | :--------------------- | :------------------------------------------------------------------------------------------------------ |
-| `-S`   | `--storage-path`       | Path to the persistent storage caching location.                                                        |
-| `-SM`  | `--storage-mode`       | Storage mode. Values: `auto`, `flush`, `memory`. Default is `auto`.                                     |
-| `-SPD` | `--storage-prune-days` | Number of days used for `storage prune`. Default is `30`. Set to `0` to delete all accumulated content. |
-| `-SUL` | `--storage-uid-length` | Number of unique characters used to store persistent cache in. Default is `8`.                          |
+| Flag   | Option longue          | Description                                                                                                          |
+| :----- | :--------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `-S`   | `--storage-path`       | Chemin vers l'emplacement du cache de stockage persistant.                                                           |
+| `-SM`  | `--storage-mode`       | Mode de stockage. Valeurs : `auto`, `flush`, `memory`. Par défaut : `auto`.                                          |
+| `-SPD` | `--storage-prune-days` | Nombre de jours utilisé pour `storage prune`. Par défaut : `30`. Mettez `0` pour supprimer tout le contenu accumulé. |
+| `-SUL` | `--storage-uid-length` | Nombre de caractères uniques utilisés pour stocker le cache persistant. Par défaut : `8`.                            |
 
-### Execution and Diagnostics
+### Exécution et Diagnostic
 
-| Flag  | Long flag         | Description                                                                                   |
-| :---- | :---------------- | :-------------------------------------------------------------------------------------------- |
-| `-Da` | `--disable-async` | Send synchronously (one after the other) instead of in parallel.                              |
-| `-d`  | `--dry-run`       | Trial run. Prints which services would be triggered to `stdout`. Does not send notifications. |
-| `-l`  | `--details`       | Print details about currently supported services.                                             |
-| `-v`  | `--verbose`       | Increase verbosity. You can stack it (for example `-vvvv`).                                   |
-| `-D`  | `--debug`         | Debug mode, useful for troubleshooting.                                                       |
-| `-V`  | `--version`       | Print version and exit.                                                                       |
+| Flag  | Option longue     | Description                                                                                               |
+| :---- | :---------------- | :-------------------------------------------------------------------------------------------------------- |
+| `-Da` | `--disable-async` | Envoyer de manière synchrone (l'un après l'autre) plutôt qu'en parallèle.                                 |
+| `-d`  | `--dry-run`       | Exécution d'essai. Affiche quels services seraient déclenchés sur `stdout`. N'envoie aucune notification. |
+| `-l`  | `--details`       | Afficher les détails des services actuellement pris en charge.                                            |
+| `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                           |
+| `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                      |
+| `-V`  | `--version`       | Afficher la version puis quitter.                                                                         |
 
-## Environment Variables
+## Variables d'Environnement
 
-You can pre-set default behaviors using environment variables. This is useful for containerized environments or setting system-wide defaults.
+Vous pouvez prédéfinir certains comportements via des variables d'environnement. C'est utile dans des environnements conteneurisés ou pour définir des valeurs par défaut au niveau système.
 
-| Variable               | Description                                                                                                                                                                   |
-| :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `APPRISE_URLS`         | Default service URLs to notify if none are provided on the command line. Space and/or comma delimited. If `--config` is specified, it overrides any `APPRISE_URLS` reference. |
-| `APPRISE_CONFIG_PATH`  | Override the default configuration search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                      |
-| `APPRISE_PLUGIN_PATH`  | Override the default plugin search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                             |
-| `APPRISE_STORAGE_PATH` | Override the default persistent storage path.                                                                                                                                 |
+| Variable               | Description                                                                                                                                                                                 |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `APPRISE_URLS`         | URL de service par défaut à notifier si aucune n'est fournie sur la ligne de commande. Séparées par des espaces et/ou des virgules. Si `--config` est spécifié, cela écrase `APPRISE_URLS`. |
+| `APPRISE_CONFIG_PATH`  | Remplacer les chemins de recherche de configuration par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                               |
+| `APPRISE_PLUGIN_PATH`  | Remplacer les chemins de recherche de plugins par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                     |
+| `APPRISE_STORAGE_PATH` | Remplacer le chemin par défaut du stockage persistant.                                                                                                                                      |
 
-## Default Configuration Locations
+## Emplacements de Configuration par Défaut
 
-If you do not specify a configuration file via the CLI (`--config`), Apprise automatically loads a default configuration file for you.
+Si vous ne spécifiez pas de fichier de configuration via la CLI (`--config`), Apprise charge automatiquement un fichier de configuration par défaut.
 
 <Tabs syncKey="config-search-path">
 <TabItem label="Linux/BSD/Apple">
-The following configuration files are scanned in the order identified below; the first match is loaded and nothing further is processed thereafter.
+Les fichiers de configuration suivants sont recherchés dans l'ordre indiqué ci-dessous ; la première correspondance est chargée et aucune recherche supplémentaire n'est effectuée.
 
 1. `~/.apprise`
 1. `~/.apprise.conf`
@@ -98,7 +98,7 @@ The following configuration files are scanned in the order identified below; the
 1. `~/.config/apprise/apprise.yml`
 1. `~/.config/apprise/apprise.yaml`
 
-The following global paths are also searched if nothing is found above:
+Les chemins globaux suivants sont également recherchés si rien n'est trouvé ci-dessus :
 
 1. `/etc/apprise`
 1. `/etc/apprise.yml`
@@ -111,7 +111,7 @@ The following global paths are also searched if nothing is found above:
 </TabItem>
 
 <TabItem label="Microsoft Windows">
-The following configuration files are scanned in the order identified below; the first match is loaded and nothing further is processed thereafter.
+Les fichiers de configuration suivants sont recherchés dans l'ordre indiqué ci-dessous ; la première correspondance est chargée et aucune recherche supplémentaire n'est effectuée.
 
 1. `%APPDATA%\Apprise\apprise`
 1. `%APPDATA%\Apprise\apprise.conf`
@@ -122,7 +122,7 @@ The following configuration files are scanned in the order identified below; the
 1. `%LOCALAPPDATA%\Apprise\apprise.yml`
 1. `%LOCALAPPDATA%\Apprise\apprise.yaml`
 
-The following global paths are also searched if nothing is found above:
+Les chemins globaux suivants sont également recherchés si rien n'est trouvé ci-dessus :
 
 1. `%ALLUSERSPROFILE%\Apprise\apprise`
 1. `%ALLUSERSPROFILE%\Apprise\apprise.conf`
@@ -137,30 +137,30 @@ The following global paths are also searched if nothing is found above:
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yml`
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yaml`
 
-Assuming we were the user `foobar` and Microsoft Windows was installed on the `C:\` drive; the above can be interprted as:
+En supposant que l'utilisateur soit `foobar` et que Microsoft Windows soit installé sur le lecteur `C:\`, les variables ci-dessus peuvent être interprétées ainsi :
 
-| Environment Variable  | Example Translation               |
-| --------------------- | --------------------------------- |
-| `%APPDATA%`           | `C:\Users\foobar\AppData\Roaming` |
-| `%LOCALAPPDATA%`      | `C:\Users\foobar\AppData\Local`   |
-| `%ALLUSERSPROFILE%`   | `C:\ProgramData`                  |
-| `%PROGRAMFILES%`      | `C:\Program Files`                |
-| `%COMMONPROGRAMFILES` | `C:\Program Files\Common Files`   |
+| Variable d'environnement | Exemple de traduction             |
+| ------------------------ | --------------------------------- |
+| `%APPDATA%`              | `C:\Users\foobar\AppData\Roaming` |
+| `%LOCALAPPDATA%`         | `C:\Users\foobar\AppData\Local`   |
+| `%ALLUSERSPROFILE%`      | `C:\ProgramData`                  |
+| `%PROGRAMFILES%`         | `C:\Program Files`                |
+| `%COMMONPROGRAMFILES`    | `C:\Program Files\Common Files`   |
 
 </TabItem>
 </Tabs>
 
-:::tip[Did you know?]
-Apprise automatically determines the format (TEXT vs YAML) based on the file extension (`.yml` or `.yaml`). If your file has no extension, it defaults to TEXT unless valid YAML structure is detected.
+:::tip[Le saviez-vous ?]
+Apprise détermine automatiquement le format (TEXT vs YAML) à partir de l'extension du fichier (`.yml` ou `.yaml`). Si votre fichier n'a pas d'extension, il est traité comme du TEXT par défaut, sauf si une structure YAML valide est détectée.
 :::
 
-## File Attachments
+## Pièces Jointes Fichier
 
-You can send files alongside your notifications using the `--attach` (`-a`) flag. Apprise handles the upload logic automatically for services that support it (like Discord, Slack, and Telegram).
+Vous pouvez envoyer des fichiers avec vos notifications via l'option `--attach` (`-a`). Apprise gère automatiquement la logique d'upload pour les services qui prennent cela en charge (comme Discord, Slack et Telegram).
 
-### Local Files
+### Fichiers Locaux
 
-Send a log file or image from your local disk.
+Envoyer un fichier log ou une image depuis votre disque local.
 
 ```bash
 apprise \
@@ -170,12 +170,12 @@ apprise \
   "discord://webhook_id/webhook_token"
 ```
 
-### Remote Attachments
+### Pièces Jointes Distantes
 
-Apprise can fetch a file from a URL and forward it as an attachment.
+Apprise peut récupérer un fichier depuis une URL puis le transmettre comme pièce jointe.
 
 ```bash
-# Apprise downloads the image and sends it to Telegram
+# Apprise télécharge l'image puis l'envoie à Telegram
 apprise \
   --title "Front Door" \
   --body "Motion detected" \
@@ -183,9 +183,9 @@ apprise \
   "tgram://bot_token/chat_id"
 ```
 
-### Multiple Attachments
+### Pièces Jointes Multiples
 
-You can specify the flag multiple times to send several files at once.
+Vous pouvez spécifier l'option plusieurs fois pour envoyer plusieurs fichiers à la fois.
 
 ```bash
 apprise \
@@ -195,62 +195,62 @@ apprise \
   "slack://tokenA/tokenB/tokenC"
 ```
 
-## Tagging and Filtering
+## Tags et Filtrage
 
-Apprise allows you to target specific subsets of your configuration using tags.
+Apprise vous permet de cibler des sous-ensembles spécifiques de votre configuration grâce aux tags.
 
-### Logic Rules
+### Règles de Logique
 
-Use `--tag` (`-g`) to specify one or more tags to filter which services to notify:
+Utilisez `--tag` (`-g`) pour spécifier un ou plusieurs tags et filtrer les services à notifier :
 
-- `-g "tagA" -g "tagB"`: Match tagA **OR** tagB (Union).
-- `-g "tagA,tagB"`: Match tagA **AND** tagB (Strict).
-- `-g "all"`: Notify **ALL** services (tagged and untagged).
-- `(Omitted)`: Notify **untagged** services only.
+- `-g "tagA" -g "tagB"` : correspond à tagA **OU** tagB (union).
+- `-g "tagA,tagB"` : correspond à tagA **ET** tagB (strict).
+- `-g "all"` : notifie **TOUS** les services (tagués et non tagués).
+- `(omis)` : notifie uniquement les services **non tagués**.
 
-Another way to look at it:
+Une autre manière de voir les choses :
 
-- **OR Logic:** To notify services that have _either_ Tag A **OR** Tag B, use the `--tag` switch multiple times.
-- **AND Logic:** To notify services that have _both_ Tag A **AND** Tag B, separate tags with a comma within a single switch.
+- **Logique OU :** pour notifier des services qui possèdent _soit_ Tag A **OU** Tag B, utilisez l'option `--tag` plusieurs fois.
+- **Logique ET :** pour notifier des services qui possèdent _à la fois_ Tag A **ET** Tag B, séparez les tags par une virgule dans une seule option.
 
-### Examples
+### Exemples
 
 ```bash
-# Notify services tagged 'devops' OR 'admin'
+# Notifier les services tagués 'devops' OU 'admin'
 apprise -t "Union Test" --config apprise.yml \
    --tag devops --tag admin
 
-# Notify services tagged with BOTH 'devops' AND 'critical'
+# Notifier les services tagués à la fois 'devops' ET 'critical'
 apprise -t "Intersection Test" --config apprise.yml \
    --tag "devops,critical"
 
-# Trigger a configuration stored under the key 'my-alerts' on a local
-# Apprise API server using the key 'my-alerts'
+# Déclencher une configuration stockée sous la clé 'my-alerts' sur un serveur
+# Apprise API local en utilisant la clé 'my-alerts'
 apprise -t "Job Finished" \
     "apprise://localhost:8000/my-alerts"
 
-# Trigger a secure remote instance, targeting only the 'devops' tag
+# Déclencher une instance distante sécurisée, en ciblant seulement le tag 'devops'
 apprise -t "Production Issue" \
     --tag devops \
     "apprises://apprise.example.com/234-3242-23-2111-34"
 ```
 
-## Formatting & Emojis
+## Formatage et Emojis
 
-### Input Formats
+### Formats d'Entrée
 
-By default, Apprise treats the body as plain text. You can change this using `--input-format`.
+Par défaut, Apprise traite le corps comme du texte brut. Vous pouvez modifier cela avec `--input-format`.
 
 ```bash
-# Send a Markdown formatted message
+# Envoyer un message formaté en Markdown
 apprise -t "Build Status" -b "**Success**: The build passed!" \
     --input-format markdown \
     "discord://..."
 ```
 
-### Emoji Support
+### Prise en Charge des Emojis
 
-Use `--interpret-emojis` (`-j`) to convert emoji shortcodes into actual emojis.
+Utilisez `--interpret-emojis` (`-j`) pour convertir les shortcodes emoji en vrais emojis.
 
 ```bash
 apprise \
@@ -260,9 +260,9 @@ apprise \
   "slack://..."
 ```
 
-### Escape Sequences
+### Séquences d'Échappement
 
-Use `--interpret-escapes` (`-e`) when you want `\n` sequences in your body to become real newlines.
+Utilisez `--interpret-escapes` (`-e`) si vous voulez que les séquences `\n` dans votre corps deviennent de vrais retours à la ligne.
 
 ```bash
 apprise \
@@ -272,35 +272,35 @@ apprise \
   "discord://..."
 ```
 
-## Using Apprise API
+## Utiliser Apprise API
 
-If you are running a self-hosted [Apprise API](../api/) instance, you can use the CLI to trigger it using the `apprise://` schema. This allows you to centralize your configuration on the server and keep your local clients simple.
+Si vous exécutez une instance auto-hébergée de [Apprise API](../api/), vous pouvez utiliser la CLI pour la déclencher avec le schéma `apprise://`. Cela vous permet de centraliser votre configuration côté serveur et de garder vos clients locaux très simples.
 
-### Syntax
+### Syntaxe
 
-- **Insecure (HTTP):** `apprise://hostname/config_key`
-- **Secure (HTTPS):** `apprises://hostname/config_key`
+- **Non sécurisé (HTTP) :** `apprise://hostname/config_key`
+- **Sécurisé (HTTPS) :** `apprises://hostname/config_key`
 
-Examples:
+Exemples :
 
 ```bash
-# Trigger a configuration stored under the key 'my-alerts' on a local server
+# Déclencher une configuration stockée sous la clé 'my-alerts' sur un serveur local
 apprise -t "Job Finished" \
     "apprise://localhost:8000/my-alerts"
 
-# Trigger a secure remote instance, targeting only the 'devops' tag
+# Déclencher une instance distante sécurisée, en ciblant seulement le tag 'devops'
 apprise -t "Production Issue" \
     --tag devops \
     "apprises://[apprise.example.com/production-key](https://apprise.example.com/production-key)"
 ```
 
-## Scripting & Piping
+## Scripting et Pipes
 
-The CLI is designed to work seamlessly with standard system pipes and scripts.
+La CLI est conçue pour s'intégrer proprement aux pipes et scripts système standard.
 
-### Multi-Line Input
+### Entrée Multiligne
 
-If you omit `--body`, Apprise reads from `stdin`.
+Si vous omettez `--body`, Apprise lit depuis `stdin`.
 
 ```bash
 cat << '_EOF' | apprise --title "Database Status" \
@@ -311,18 +311,18 @@ Status: SUCCESS
 _EOF
 ```
 
-### Piping from Files
+### Piping depuis des Fichiers
 
-Redirect the contents of a file directly into the message body.
+Rediriger directement le contenu d'un fichier dans le corps du message.
 
 ```bash
 cat ~/notes.txt | apprise --title "Daily Notes" \
    "mailto://user:pass@example.com"
 ```
 
-### Using Variables
+### Utiliser des Variables
 
-If you have a multi-line variable in your script, wrap it in quotes to preserve newlines.
+Si vous avez une variable multiligne dans votre script, entourez-la de guillemets pour préserver les sauts de ligne.
 
 ```bash
 MULTILINE_VAR="""
@@ -335,44 +335,42 @@ apprise --title "Variable Example" \
    "gotify://localhost"
 ```
 
-## Persistent Storage
+## Stockage Persistant
 
-Persistent storage writes to the following location by default, unless `APPRISE_STORAGE_PATH` or `--storage-path` overrides it:
+Le stockage persistant est écrit à l'emplacement suivant par défaut, sauf si `APPRISE_STORAGE_PATH` ou `--storage-path` le surcharge :
 
 - `~/.local/share/apprise/cache`
 
-Apprise can cache certain lookups and authentication details on disk to reduce
-repeated API calls. This is enabled by default for the CLI (mode `auto`). :contentReference[oaicite:14]{index=14}
+Apprise peut mettre en cache sur disque certaines recherches et informations d'authentification afin de réduire les appels API répétés. Cela est activé par défaut pour la CLI (mode `auto`).
 
-To interact with storage, use the `storage` subcommand:
+Pour interagir avec le stockage, utilisez la sous-commande `storage` :
 
 ```bash
 apprise storage
 ```
 
-For the full explanation (UIDs, cache locations, screenshots, and cleanup workflows),
-see [Persistent Storage](./persistent-storage/).
+Pour l'explication complète (UID, emplacements de cache, captures d'écran et workflows de nettoyage), consultez [Stockage Persistant](./persistent-storage/).
 
-## Exit Status
+## Code de Sortie
 
-The Apprise CLI exits with:
+La CLI Apprise quitte avec :
 
-- `0` if all notifications were sent successfully.
-- `1` if one or more notifications could not be sent.
-- `2` if there was a command line error (for example, invalid arguments).
-- `3` if one or more service URLs were successfully loaded, but none could be notified due to user filtering (tags).
+- `0` si toutes les notifications ont été envoyées avec succès.
+- `1` si une ou plusieurs notifications n'ont pas pu être envoyées.
+- `2` s'il y a eu une erreur de ligne de commande (par exemple des arguments invalides).
+- `3` si une ou plusieurs URL de service ont été chargées avec succès, mais qu'aucune n'a pu être notifiée à cause du filtrage utilisateur (tags).
 
-## Integrations
+## Intégrations
 
 ### Tmux Alert Bell
 
-You can link the tmux `alert-bell` hook to Apprise to get notifications when long-running commands complete.
+Vous pouvez relier le hook tmux `alert-bell` à Apprise pour recevoir des notifications lorsque de longues commandes se terminent.
 
 ```bash
-# 1. Set your tmux bell-action to 'other'
+# 1. Définir bell-action sur 'other' dans tmux
 set-option -g bell-action other
 
-# 2. Trigger Apprise on 'alert-bell'
+# 2. Déclencher Apprise sur 'alert-bell'
 set-hook -g alert-bell 'run-shell "\
   apprise \
     --title \"Tmux notification on #{host}\" \

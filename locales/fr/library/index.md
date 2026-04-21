@@ -1,49 +1,46 @@
 ---
-title: "Bibliothèque Python Apprise (cœur)"
-description: "Integrez directement les notifications Apprise dans vos applications Python."
+title: "Bibliothèque Python Apprise (Cœur)"
+description: "Intégrez directement les notifications Apprise dans vos applications Python."
 sidebar:
   label: "Introduction"
   order: 1
 ---
 
-La bibliotheque Apprise vous permet d'envoyer des notifications vers la quasi-totalite des services de notification populaires d'aujourd'hui (Telegram, Discord, Slack, e-mail, etc.) a l'aide d'une API Python unique et unifiee.
+La bibliothèque Apprise vous permet d'envoyer des notifications vers la quasi-totalité des services de notification populaires d'aujourd'hui (Telegram, Discord, Slack, email, etc.) à l'aide d'une API Python unique et unifiée.
 
-Pour les utilitaires communs utilises dans les plugins, consultez la [reference des utilitaires](./utilities/).
+Pour les utilitaires communs utilisés dans les plugins, consultez la [référence des utilitaires](./utilities/).
 
 ## Installation
 
-Apprise est disponible sur PyPI et peut etre installe via pip.
+Apprise est disponible sur PyPI et peut être installé via `pip`.
 
 ```bash
 pip install apprise
 ```
 
-## Bonjour le monde
+## Structure de la bibliothèque
 
-L'objet central de la bibliotheque est `Apprise`. Vous l'instanciez, vous ajoutez des URL et vous declenchez des notifications.
+La bibliothèque Python Apprise s'articule autour de quelques objets principaux :
 
-```python
-import apprise
+- `Apprise` pour enregistrer des services et envoyer des notifications
+- `AppriseConfig` pour charger une configuration depuis des fichiers ou des sources distantes
+- `AppriseAsset` pour définir le contexte global d'exécution
+- Les classes de plugins (`NotifyBase`) pour implémenter des services individuels
 
-# 1. Instancier l'objet Apprise
-apobj = apprise.Apprise()
+## Pour commencer
 
-# 2. Ajouter une ou plusieurs URL de service
-apobj.add('mailto://myuser:mypass@hotmail.com')
-apobj.add('tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz')
+Si vous débutez avec l'intégration Python d'Apprise :
 
-# 3. Envoyer une notification vers tous les services ajoutes
-apobj.notify(
-    body='Quel excellent service de notification !',
-    title='Titre de ma notification',
-)
-```
+1. Commencez par le [démarrage rapide](./quick-start/)
+1. Explorez ensuite la [configuration](./configuration/)
+1. Consultez [les ressources et l'image de marque](./assets/) pour comprendre le contexte global d'exécution
+1. Lisez [l'inspection et le débogage](./inspection/) si vous construisez des outils ou avez besoin de diagnostics
 
-## Pourquoi utiliser la bibliotheque ?
+## Référence avancée
 
-- **Syntaxe unifiee** : un format d'URL unique pour **<!-- SERVICES:COUNT -->** services.
-- **Asynchrone** : l’envoi des notifications est non bloquant (facultatif).
-- **Etiquetage** : regroupez les services (par ex. `devops`, `billing`) et notifiez-les de maniere selective.
-- **Pieces jointes** : envoyez facilement des fichiers et des images.
-- **Texte enrichi** : prise en charge des emojis ainsi que du HTML, du texte brut et du Markdown
-- **Configuration** : chargez des URL depuis des fichiers YAML/Texte ou des points de terminaison API.
+Les pages de cette section couvrent aussi :
+
+- Les [pièces jointes](./attachments/)
+- Le [stockage persistant](./persistent-storage/)
+- Le [développement de plugins](./plugin/)
+- Les [points d'extension](./extending/)

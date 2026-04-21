@@ -197,6 +197,21 @@ If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS *}` or `{
 - Each language lives under `locales/<locale>/`
 - English (`en`) is the default
 - Translations may be partial and incremental
+- Prefer relative links between docs pages inside a locale
+- Avoid root-absolute internal docs links such as `/services/` or `/url-builder/` in translated content
+- Root-absolute shared assets such as `/assets/...` are fine when they are intentionally global
+
+Examples:
+
+```md
+[Supported Services](../services/)
+[URL Builder](../url-builder/)
+![Service Logo](./images/logo.svg)
+```
+
+The site build includes a safeguard that rewrites locale-local internal links
+for non-default locales during sync, but contributors should still author
+locale-safe links in source content whenever practical.
 
 Even partial translations are welcome.
 

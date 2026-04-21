@@ -1,112 +1,112 @@
 ---
-title: "Inspection et débogage"
-description: "Introspect supported services and capture logs for debugging."
+title: "Inspection et Débogage"
+description: "Inspecter les services pris en charge et capturer les logs pour le débogage."
 sidebar:
   order: 6
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Apprise includes a small set of inspection utilities that let your application discover what is supported at runtime, and capture diagnostic output without taking over global logging configuration. The most important entry point is `Apprise.details()` and `Apprise.json()`, which is designed for dynamic tooling such as URL builders, setup wizards, admin UIs, and validation pipelines.
+Apprise inclut un petit ensemble d'utilitaires d'inspection qui permettent à votre application de découvrir ce qui est pris en charge à l'exécution et de capturer une sortie de diagnostic sans reprendre la configuration globale de journalisation. Les points d'entrée les plus importants sont `Apprise.details()` et `Apprise.json()`, conçus pour des outils dynamiques comme les générateurs d'URL, les assistants de configuration, les interfaces d'administration et les pipelines de validation.
 
-## Inspecting Capabilities
+## Inspecter les capacités
 
-Both methods return the same data: the Apprise version, the active `AppriseAsset` configuration (icons, themes, masks), and every schema (plugin) Apprise knows about — including URL construction templates and token metadata that can be used to build a correct Apprise URL dynamically. The difference is the return type: `details()` returns a raw Python dictionary, while `json()` returns a JSON-serialized string (or writes to a file).
+Les deux méthodes renvoient les mêmes données : la version d'Apprise, la configuration `AppriseAsset` active (icônes, thèmes, masques) et tous les schémas (plugins) connus d'Apprise, y compris les modèles de construction d'URL et les métadonnées de jetons permettant de construire dynamiquement une URL Apprise correcte. La différence se situe au niveau du type de retour : `details()` renvoie un dictionnaire Python brut, tandis que `json()` renvoie une chaîne JSON sérialisée (ou écrit dans un fichier).
 
 <Tabs>
 <TabItem label="details()">
 
-`Apprise.details()` returns a dictionary that describes all supported notification services. Use this when you need to work with the data programmatically in Python.
+`Apprise.details()` renvoie un dictionnaire décrivant tous les services de notification pris en charge. Utilisez-le lorsque vous devez manipuler les données de manière programmatique en Python.
 
-### details() Signature
+### Signature de details()
 
 ```python
 apobj.details(
-    lang=None,                # BCP 47 language tag, e.g. "fr" or "de"
-    show_requirements=False,  # Include per-plugin dependency info
-    show_disabled=False,      # Include plugins that are currently unavailable
+    lang=None,                # Tag de langue BCP 47, ex. "fr" ou "de"
+    show_requirements=False,  # Inclure les dépendances propres à chaque plugin
+    show_disabled=False,      # Inclure les plugins actuellement indisponibles
 )
 ```
 
-### details() Utilisation de base
+### Utilisation de base de details()
 
 ```python
 import apprise
 
-# Instantiate an instance of Apprise
+# Instancier Apprise
 apobj = apprise.Apprise()
 
-# Produce list of details
+# Produire la liste des détails
 info: dict = apobj.details()
 ```
 
-### details() Showing Disabled Plugins
+### details() avec plugins désactivés
 
-Some schemas may be present but not usable because optional dependencies are missing. If you are building a UI, you usually want to surface these as "available, but currently disabled", along with the reasons for it being disabled. Reasons can be that the server simply doesn't have the necessary packages installed to use it, environment related, or that it was manually disabled by the administrator. By default `show_disabled=False`, so to see this list, you need to explicitly set it.
+Certains schémas peuvent être présents mais inutilisables parce que des dépendances optionnelles manquent. Si vous construisez une interface, vous voudrez généralement les afficher comme « disponibles, mais actuellement désactivés », avec la raison correspondante. Cette raison peut venir de paquets non installés, de l'environnement ou d'une désactivation manuelle par un administrateur. Par défaut `show_disabled=False`, donc pour voir cette liste il faut l'activer explicitement.
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
 
-# Include services that exist but are not currently usable
+# Inclure les services existants mais actuellement inutilisables
 info: dict = apobj.details(show_disabled=True)
 ```
 
 :::note
-`details()` may return Python types such as `datetime`, `bytes`, `set`, and `tuple` that the standard `json.dumps()` cannot serialize. Use `json()` (see the other tab) when you need a JSON payload — it handles all type encoding automatically via `AppriseJSONEncoder`.
+`details()` peut renvoyer des types Python tels que `datetime`, `bytes`, `set` et `tuple` que le `json.dumps()` standard ne sait pas sérialiser. Utilisez `json()` (voir l'autre onglet) si vous avez besoin d'une charge utile JSON : il gère automatiquement l'encodage de tous ces types via `AppriseJSONEncoder`.
 :::
 
 </TabItem>
 <TabItem label="json()">
 
-`Apprise.json()` is a convenience wrapper around `details()` that handles JSON serialization for you, including proper encoding of types that the standard `json` module cannot handle (such as `datetime` objects, `bytes`, `set`, `frozenset`, and `tuple`).
+`Apprise.json()` est un raccourci autour de `details()` qui gère la sérialisation JSON pour vous, y compris l'encodage correct des types que le module `json` standard ne prend pas en charge (comme les objets `datetime`, `bytes`, `set`, `frozenset` et `tuple`).
 
-### json() Signature
+### Signature de json()
 
 ```python
 apobj.json(
-    lang=None,                # BCP 47 language tag, e.g. "fr" or "de"
-    show_requirements=False,  # Include per-plugin dependency info
-    show_disabled=False,      # Include plugins that are currently unavailable
-    indent=None,              # Passed to json.dumps(); None = compact output
-    path=None,                # If set, write to this file path instead of returning a string
+    lang=None,                # Tag de langue BCP 47, ex. "fr" ou "de"
+    show_requirements=False,  # Inclure les dépendances propres à chaque plugin
+    show_disabled=False,      # Inclure les plugins actuellement indisponibles
+    indent=None,              # Transmis à json.dumps(); None = sortie compacte
+    path=None,                # Si défini, écrit dans ce fichier au lieu de renvoyer une chaîne
 )
 ```
 
-### json() Utilisation de base
+### Utilisation de base de json()
 
-Without a `path` argument, `json()` returns the serialized JSON as a `str`:
+Sans argument `path`, `json()` renvoie le JSON sérialisé sous forme de `str` :
 
 ```python
 import apprise
 
-# Instantiate an instance of Apprise
+# Instancier Apprise
 apobj = apprise.Apprise()
 
-# Compact JSON string — useful for API responses, caching, etc.
+# Chaîne JSON compacte — utile pour une API, du cache, etc.
 payload: str = apobj.json()
 
-# Pretty-printed JSON — useful for debugging or writing config stubs
+# JSON indenté — utile pour le débogage ou pour générer des squelettes de config
 payload: str = apobj.json(indent=2)
 ```
 
-### json() Showing Disabled Plugins
+### json() avec plugins désactivés
 
-Same as `details()`, pass `show_disabled=True` to include services that exist but cannot currently be used:
+Comme pour `details()`, passez `show_disabled=True` pour inclure les services existants mais actuellement indisponibles :
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
 
-# Include services that exist but are not currently usable
+# Inclure les services existants mais actuellement inutilisables
 payload: str = apobj.json(show_disabled=True)
 ```
 
-### Writing JSON to a File
+### Écrire le JSON dans un fichier
 
-Pass a `path` to write the output directly to disk. On success it returns `True`; on failure (permissions error, disk full, etc.) it logs the error and returns `False`.
+Passez `path` pour écrire directement le résultat sur disque. En cas de succès, la méthode renvoie `True`; sinon (problème de permission, disque plein, etc.), elle journalise l'erreur et renvoie `False`.
 
 ```python
 import apprise
@@ -115,17 +115,17 @@ apobj = apprise.Apprise()
 
 ok: bool = apobj.json(path="/var/cache/apprise/details.json")
 if not ok:
-    print("Failed to write details — check logs for the reason")
+    print("Échec de l'écriture des détails — consultez les logs pour connaître la raison")
 ```
 
-### Including Requirements and Disabled Plugins
+### Inclure dépendances et plugins désactivés
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
 
-# Full audit dump — every plugin, even those missing dependencies
+# Dump complet d'audit — chaque plugin, même ceux sans dépendances installées
 payload: str = apobj.json(
     show_requirements=True,
     show_disabled=True,
@@ -136,23 +136,23 @@ payload: str = apobj.json(
 </TabItem>
 </Tabs>
 
-## Understanding the Returned Structure
+## Comprendre la structure renvoyée
 
 :::note
-`details()` may contain Python types such as `datetime`, `bytes`, `set`, and `tuple` that the standard `json.dumps()` cannot serialize. Use `Apprise.json()` (described above) when you need JSON output — it uses `AppriseJSONEncoder` internally to handle these types correctly. If you call `json.dumps(apobj.details())` directly you may encounter a `TypeError` for certain plugins.
+`details()` peut contenir des types Python tels que `datetime`, `bytes`, `set` et `tuple` que le `json.dumps()` standard ne sait pas sérialiser. Utilisez `Apprise.json()` (décrit ci-dessus) lorsque vous avez besoin d'une sortie JSON : il utilise `AppriseJSONEncoder` en interne pour gérer correctement ces types. Si vous appelez directement `json.dumps(apobj.details())`, vous pouvez rencontrer un `TypeError` avec certains plugins.
 :::
 
-### Top-Level Keys
+### Clés de premier niveau
 
-You should expect these top-level keys:
+Vous pouvez vous attendre à trouver ces clés de premier niveau :
 
-- `version`: the Apprise library version.
-- `asset`: the active `AppriseAsset` settings.
-- `schemas`: a list of all supported schemas, one entry per plugin.
+- `version` : la version de la bibliothèque Apprise ;
+- `asset` : les paramètres `AppriseAsset` actifs ;
+- `schemas` : la liste de tous les schémas pris en charge, une entrée par plugin.
 
 #### `asset`
 
-The `asset` content is produced by `AppriseAsset.details()` and currently contains:
+Le contenu de `asset` est produit par `AppriseAsset.details()` et contient actuellement :
 
 - `app_id`
 - `app_desc`
@@ -162,111 +162,111 @@ The `asset` content is produced by `AppriseAsset.details()` and currently contai
 - `image_url_mask`
 - `image_url_logo`
 
-These values matter for clients that want to render icons, show a branded header, or link to the correct logo and theme assets. More on this can be found [here](../assets/)
+Ces valeurs sont importantes pour les clients qui souhaitent afficher des icônes, montrer un en-tête personnalisé ou lier le bon logo et les bons assets de thème. Plus d'informations sont disponibles [ici](../assets/).
 
-### `schemas` entries
+### Entrées `schemas`
 
-Each schema entry describes one plugin, such as `discord`, `mailto`, `slack`, and so on. A schema entry typically contains:
+Chaque entrée de schéma décrit un plugin, comme `discord`, `mailto`, `slack`, etc. Une entrée contient généralement :
 
-- a human friendly name (plugin `service_name`),
-- protocol information (secure and insecure variants),
-- URL building templates,
-- token metadata for URL components and query parameters,
-- dependency requirements (required vs recommended packages).
+- un nom lisible (`service_name`) ;
+- des informations de protocole (variantes sécurisées et non sécurisées) ;
+- des modèles de construction d'URL ;
+- des métadonnées de jetons pour les composants d'URL et les paramètres de requête ;
+- les dépendances nécessaires (paquets obligatoires ou recommandés).
 
-The "URL building" portion is generated by the plugin inspection helper `apprise.plugins.details(plugin)`, which returns a structure with these keys:
+La partie « construction d'URL » est générée par l'assistant d'inspection `apprise.plugins.details(plugin)`, qui renvoie une structure avec les clés suivantes :
 
 - `templates`
 - `tokens`
 - `args`
 - `kwargs`
 
-### URL Templates
+### Modèles d'URL
 
-`templates` is a list of URL patterns supported by the plugin, expressed with `{token}` placeholders. Templates are meant for display and tooling, for example:
+`templates` est une liste de modèles d'URL pris en charge par le plugin, exprimés avec des espaces réservés `{token}`. Ces modèles servent à l'affichage et aux outils, par exemple pour :
 
-- show examples in your UI,
-- drive a "wizard" that asks only for tokens relevant to the selected template,
-- validate that a constructed URL matches at least one template.
+- montrer des exemples dans votre interface ;
+- piloter un assistant qui ne demande que les jetons utiles au modèle choisi ;
+- valider qu'une URL construite correspond à au moins un modèle.
 
-Templates are sourced directly from each plugin's `templates` attribute.
+Les modèles proviennent directement de l'attribut `templates` de chaque plugin.
 
-### Token Metadata
+### Métadonnées de jetons
 
-The most valuable part of the schema details is the token metadata. Apprise generates a consistent, predictable token structure, even when plugins omit optional fields. This normalization is handled internally so client tooling can rely on stable keys.
+La partie la plus utile des détails de schéma réside dans les métadonnées des jetons. Apprise génère une structure cohérente et prévisible, même lorsque des plugins omettent des champs optionnels. Cette normalisation est gérée en interne pour que les outils clients puissent compter sur des clés stables.
 
-Tokens are divided into three groups:
+Les jetons sont répartis en trois groupes :
 
-- `tokens`: path, host, auth, and other "core" pieces used to initialize the plugin.
-- `args`: query string arguments (normal plugin options).
-- `kwargs`: dynamic key/value arguments, where the user provides both the argument name and its value (used by a small number of services).
+- `tokens` : chemin, hôte, authentification et autres éléments « cœur » servant à initialiser le plugin ;
+- `args` : arguments de chaîne de requête (options normales du plugin) ;
+- `kwargs` : arguments dynamiques clé/valeur, où l'utilisateur fournit à la fois le nom de l'argument et sa valeur.
 
-#### The Implicit `schema` Token
+#### Le jeton implicite `schema`
 
-Apprise injects a `schema` token automatically, and it is always required. Its values come from the plugin's `secure_protocol` and `protocol` settings. This is how tooling can show, for example, `http` and `https` variants where appropriate.
+Apprise injecte automatiquement un jeton `schema`, toujours requis. Ses valeurs proviennent des paramètres `secure_protocol` et `protocol` du plugin. C'est ainsi qu'un outil peut afficher par exemple les variantes `http` et `https` lorsqu'elles existent.
 
-#### Standard Token Fields (normalized)
+#### Champs standards des jetons (normalisés)
 
-After normalization, you can typically rely on these fields being present:
+Après normalisation, vous pouvez généralement compter sur la présence des champs suivants :
 
-| Key        | Description                                                           |
-| ---------- | --------------------------------------------------------------------- |
-| `name`     | A human friendly label (defaults to the token key if missing).        |
-| `map_to`   | The plugin argument this token maps to (defaults to the token key).   |
-| `type`     | Token type (defaults to `string`). Supports `list:*` and `choice:*`.  |
-| `required` | Defaults to `False` unless explicitly set.                            |
-| `private`  | Defaults to `False` unless explicitly set.                            |
-| `default`  | May be present (including auto-filled when only one choice exists).   |
-| `values`   | For `choice:*` tokens and some other constrained inputs.              |
-| `delim`    | For `list:*` tokens (defaults vary by context).                       |
-| `regex`    | Optional validation regex, normalized into a `(pattern, flags)` pair. |
-| `group`    | For list-alias tokens that map to multiple underlying fields.         |
+| Clé        | Description                                                                    |
+| ---------- | ------------------------------------------------------------------------------ |
+| `name`     | Libellé lisible (prend le nom du jeton par défaut s'il manque).                |
+| `map_to`   | Argument du plugin ciblé par ce jeton (prend le nom du jeton par défaut).      |
+| `type`     | Type de jeton (par défaut `string`). Prend aussi `list:*` et `choice:*`.       |
+| `required` | Vaut `False` par défaut si non précisé.                                        |
+| `private`  | Vaut `False` par défaut si non précisé.                                        |
+| `default`  | Peut être présent, y compris rempli automatiquement s'il n'existe qu'un choix. |
+| `values`   | Pour les jetons `choice:*` et certains autres champs contraints.               |
+| `delim`    | Pour les jetons `list:*` (la valeur par défaut varie selon le contexte).       |
+| `regex`    | Regex de validation facultative, normalisée en paire `(pattern, flags)`.       |
+| `group`    | Pour les alias de liste qui mappent plusieurs champs sous-jacents.             |
 
-##### Delimiter Behavior
+##### Comportement des délimiteurs
 
-Apprise assigns different default delimiters depending on where the token lives:
+Apprise assigne des délimiteurs par défaut différents selon l'emplacement du jeton :
 
-- `tokens` (path-oriented lists) default to `/`
-- `args` and `kwargs` (query-oriented lists) default to `,` and space
+- `tokens` (listes orientées chemin) utilisent `/` par défaut ;
+- `args` et `kwargs` (listes orientées requête) utilisent `,` et espace.
 
-This matters when your UI needs to present how to enter multiple recipients, channels, or targets.
+Cela compte lorsque votre interface doit expliquer comment saisir plusieurs destinataires, canaux ou cibles.
 
-##### Aliases and Grouping
+##### Alias et groupement
 
-If multiple token names map to the same underlying argument via `map_to`, Apprise can expose a `group` field for list types, so tooling can show that one list token acts as an alias for multiple related inputs.
+Si plusieurs noms de jetons pointent vers le même argument via `map_to`, Apprise peut exposer un champ `group` pour les types liste, afin qu'un outil puisse montrer qu'un jeton liste agit comme alias pour plusieurs entrées liées.
 
-### Dependencies and install hints (`requirements`)
+### Dépendances et indices d'installation (`requirements`)
 
-Apprise can also return dependency details per plugin via the inspection helper `apprise.plugins.requirements(plugin)`.
+Apprise peut aussi renvoyer les détails de dépendance par plugin via `apprise.plugins.requirements(plugin)`.
 
-The structure includes:
+La structure inclut :
 
-- `details`: a short human readable message, auto-filled if the plugin does not provide one.
-- `packages_required`: a list of required packages (pip requirement strings).
-- `packages_recommended`: a list of recommended packages (pip requirement strings).
+- `details` : court message lisible, rempli automatiquement si le plugin n'en fournit pas ;
+- `packages_required` : liste des paquets obligatoires (chaînes de dépendance `pip`) ;
+- `packages_recommended` : liste des paquets recommandés.
 
-This is the piece you want to show when a plugin appears in `details(show_disabled=True)` but cannot be enabled until dependencies are installed.
+C'est la partie à afficher lorsqu'un plugin apparaît dans `details(show_disabled=True)` mais ne peut pas être activé tant que ses dépendances ne sont pas installées.
 
-## Using `details()` to Build a URL Wizard
+## Utiliser `details()` pour construire un assistant d'URL
 
-A practical approach that tends to work well:
+Une approche pratique qui fonctionne bien :
 
-1. Let the user choose a service from `schemas` by `service_name`.
-2. Show the available `templates` for that service.
-3. Once a template is selected, identify every `{token}` in the template and prompt for those from `tokens`.
-4. Offer optional query configuration based on `args` (and `kwargs` only if present).
-5. Respect `private=True` by masking input fields and never echoing the value back.
-6. Respect `type` to render correct widgets:
-   - `bool`: checkbox
-   - `choice:*`: dropdown using `values`
-   - `int`/`float`: numeric input with min/max when present
-   - `list:*`: multi-entry input and show the delimiter guidance from `delim`
+1. Laisser l'utilisateur choisir un service dans `schemas` via `service_name`.
+1. Afficher les `templates` disponibles pour ce service.
+1. Une fois un modèle choisi, identifier chaque `{token}` du modèle et demander les champs correspondants dans `tokens`.
+1. Proposer la configuration facultative via `args` (et `kwargs` seulement si présent).
+1. Respecter `private=True` en masquant les champs et sans jamais réafficher leur valeur en clair.
+1. Respecter `type` pour rendre les bons widgets :
+   - `bool` : case à cocher
+   - `choice:*` : liste déroulante basée sur `values`
+   - `int`/`float` : champ numérique avec min/max si présents
+   - `list:*` : saisie multiple avec aide sur le délimiteur tirée de `delim`
 
-## Debugging with `LogCapture`
+## Débogage avec `LogCapture`
 
-For programmatic debugging, Apprise includes `LogCapture`, a context manager that intercepts log output for the duration of a block. This is often preferable to globally modifying Python logging handlers.
+Pour le débogage programmatique, Apprise fournit `LogCapture`, un gestionnaire de contexte qui intercepte la sortie de journal pendant la durée d'un bloc. C'est souvent préférable à une modification globale des handlers de journalisation Python.
 
-### Capture Logs to Memory
+### Capturer les logs en mémoire
 
 ```python
 import apprise
@@ -274,18 +274,18 @@ import apprise
 apobj = apprise.Apprise()
 apobj.add("mailto://user:pass@example.com")
 
-# Capture all logs (INFO and above) to memory
+# Capturer tous les logs (INFO et plus) en mémoire
 with apprise.LogCapture(level=apprise.logging.INFO) as output:
-    apobj.notify(title="Hello", body="World")
+    apobj.notify(title="Bonjour", body="Monde")
 
-    # 'output' is a StringIO object
-    print("Logs captured:")
+    # 'output' est un objet StringIO
+    print("Logs capturés :")
     print(output.getvalue())
 ```
 
-### Capture Logs to File
+### Capturer les logs dans un fichier
 
-You can also direct logs to a temporary or persistent file.
+Vous pouvez aussi diriger les logs vers un fichier temporaire ou persistant.
 
 ```python
 import apprise
@@ -293,12 +293,12 @@ import apprise
 apobj = apprise.Apprise()
 
 with apprise.LogCapture(path="/var/log/apprise.log", delete=False) as fp:
-    apobj.notify(title="System", body="Crash detected")
+    apobj.notify(title="Système", body="Crash détecté")
 ```
 
-### Custom HTML Log Formatting
+### Formatage HTML personnalisé des logs
 
-You can inject custom formatting into the log stream to render logs directly into a web page.
+Vous pouvez injecter un format personnalisé dans le flux de log afin d'afficher directement les logs dans une page web.
 
 ```python
 import apprise
@@ -315,14 +315,14 @@ fmt = (
 apobj = apprise.Apprise()
 with apprise.LogCapture(fmt=fmt) as logs:
     apobj.notify(title="Test", body="Message")
-    # Get the HTML string
+    # Récupérer la chaîne HTML
     html: str = f"<ul>{logs.getvalue()}</ul>"
 ```
 
-## Remarques for Library Authors
+## Notes pour les auteurs de bibliothèques
 
-If you are integrating Apprise into another library or service:
+Si vous intégrez Apprise dans une autre bibliothèque ou un autre service :
 
-- Prefer `json()` when you need a JSON payload (API responses, file dumps) — it handles all type encoding automatically.
-- Prefer `details()` when you need the raw dictionary for further processing, such as building UI widgets or performing programmatic inspection of plugin metadata.
-- Prefer `LogCapture` in tests and diagnostics so you can show users meaningful error output without forcing them to reconfigure logging globally.
+- préférez `json()` lorsque vous avez besoin d'une charge utile JSON (réponses API, dumps fichier) ;
+- préférez `details()` lorsque vous avez besoin du dictionnaire brut pour un traitement ultérieur, par exemple construire une interface ou inspecter des métadonnées de plugins ;
+- préférez `LogCapture` dans les tests et le diagnostic afin de montrer des erreurs utiles aux utilisateurs sans leur imposer de reconfigurer la journalisation globale.

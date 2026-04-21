@@ -19,15 +19,6 @@ This repository exists so that **anyone who can write Markdown** can help improv
 documentation, while providing a **single, authoritative source** for all
 Apprise and Apprise-API documentation.
 
-## What This Repository Is
-
-- 📚 A **Markdown-only** documentation source
-- 🧩 The canonical home for **service documentation**
-- 🌍 The source of **all translations and locales**
-- 🤝 Open to **small and large contributions alike**
-
-If it can be written as Markdown and helps users understand [Apprise](https://github.com/caronc/apprise) and its companion [Apprise-API](https://github.com/caronc/apprise-api), then it belongs here.
-
 ## Repository Layout
 
 The repository is organised into a few top-level areas:
@@ -63,6 +54,12 @@ Each locale mirrors the same structure so navigation remains predictable
 across languages. English (`en`) is the canonical locale; all other
 locales may be partial.
 
+When linking between documentation pages inside a locale, prefer relative
+paths instead of root-absolute links. For example, use `../services/` instead
+of `/services/`, and `../url-builder/` instead of `/url-builder/`, from
+translated content. This helps localized pages stay inside their own locale
+instead of falling back to the default English route.
+
 - **Getting Started** (`getting-started/`)
   Introductory material for new users
 
@@ -82,7 +79,8 @@ locales may be partial.
   How-to articles, workflows, best practices, and troubleshooting patterns
 
 - **Tools** (`tools/`)
-  Documentation for companion tools such as the URL builder
+  Source content and locale strings for companion tooling. The URL Builder is
+  authored here, but published on the website at `/url-builder/`.
 
 - **Contributing** (`contributing/`)
   How to help improve Apprise and its ecosystem
@@ -230,6 +228,10 @@ These assets should be referenced using relative paths:
 ```md
 ![Service Logo](images/logo.svg)
 ```
+
+For internal documentation links, the same rule applies: prefer relative paths
+for locale-specific content. Root-absolute shared assets like `/assets/...`
+remain appropriate when the asset is intentionally global.
 
 Only include assets that are directly relevant to the service.
 
