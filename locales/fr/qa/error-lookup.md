@@ -13,7 +13,7 @@ Les messages d'erreur fréquemment rencontrés peuvent être documentés dans ce
 
 Si le programme appelant exécute sa propre boucle d'événements, Apprise peut provoquer quelques frictions lorsqu'il essaie d'utiliser la sienne. Dans ce cas, vous avez 2 possibilités :
 
-1. Ne pas appeler `notify()`. À la place, utilisez directement `await` sur `async_notify()`. [Voir ici pour plus de détails](/qa/#async_notify--leveraging-await-to-send-notifications).
+1. Ne pas appeler `notify()`. À la place, utilisez directement `await` sur `async_notify()`. [Voir ici pour plus de détails](../library/advanced/#notifications-asynchrones).
 1. Utiliser une bibliothèque qui gère précisément ce cas, appelée [nest-asyncio](https://pypi.org/project/nest-asyncio/) :
 
    ```bash

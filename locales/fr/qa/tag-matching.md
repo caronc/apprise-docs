@@ -39,14 +39,14 @@ Une fois que vous avez identifié votre problème de tags dans la configuration 
 
 Les expressions de filtrage générales sont les suivantes :
 
-| Filtre                        | Services sélectionnés                                                           |
-| ----------------------------- | ------------------------------------------------------------------------------- |
-| `--tag TagA`                  | Correspond à `TagA`                                                             |
-| `--tag TagA,TagB`             | Correspond à `TagA` **ET** `TagB` (strict)                                      |
-| `--tag 'TagA' --tag 'TagB`    | Correspond à `TagA` **OU** `TagB` (union)                                       |
-| `--tag 'TagA,TagC --tag TagB` | Correspond à (`TagA` **ET** `TagC`) **OU** `TagB`. Mélange de strict et d'union |
-| `--tag all`                   | Correspond à **TOUS** les services (tagués et non tagués).                      |
-| `(omis)`                      | Notifie uniquement les services **non tagués**.                                 |
+| Filtre                         | Services sélectionnés                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| `--tag TagA`                   | Correspond à `TagA`                                                             |
+| `--tag TagA,TagB`              | Correspond à `TagA` **ET** `TagB` (strict)                                      |
+| `--tag 'TagA' --tag 'TagB'`    | Correspond à `TagA` **OU** `TagB` (union)                                       |
+| `--tag 'TagA,TagC' --tag TagB` | Correspond à (`TagA` **ET** `TagC`) **OU** `TagB`. Mélange de strict et d'union |
+| `--tag all`                    | Correspond à **TOUS** les services (tagués et non tagués).                      |
+| `(omis)`                       | Notifie uniquement les services **non tagués**.                                 |
 
 :::note
 Lorsque vous utilisez une virgule, vous appliquez un filtre : vous demandez à Apprise de réduire la liste aux seuls services qui possèdent tous les tags listés. Pour élargir la sélection et inclure plusieurs groupes différents, répétez simplement le switch `-g`.
