@@ -42,12 +42,12 @@ Au lieu de construire des webhooks directs vers Discord, Slack, l'email et les S
 Apprise lui-même est écrit en Python, mais la plupart des intégrations interagissent avec lui uniquement via HTTP en utilisant l'API Apprise. Des applications dans n'importe quel langage peuvent envoyer des notifications sans embarquer Python ni gérer localement la logique de notification.
 :::
 
-| Si vous voulez...                                        | Approche recommandée                                                                                 |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Éviter d'intégrer Python dans votre application          | API Apprise (Stateful ou Stateless)                                                                  |
-| Garder la logique de notification hors de votre codebase | API Apprise (Stateful)                                                                               |
-| Utiliser Apprise comme simple passerelle HTTP            | API Apprise (Stateless)                                                                              |
-| Envoyer des notifications depuis des scripts ou la CLI   | [CLI Apprise](../../cli/) ou [Bibliothèque Python Apprise](../../library/)                           |
+| Si vous voulez...                                        | Approche recommandée                                                       |
+| -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Éviter d'intégrer Python dans votre application          | API Apprise (Stateful ou Stateless)                                        |
+| Garder la logique de notification hors de votre codebase | API Apprise (Stateful)                                                     |
+| Utiliser Apprise comme simple passerelle HTTP            | API Apprise (Stateless)                                                    |
+| Envoyer des notifications depuis des scripts ou la CLI   | [CLI Apprise](../../cli/) ou [Bibliothèque Python Apprise](../../library/) |
 
 ### Stateless
 
@@ -206,12 +206,12 @@ curl -g -X POST \
 
 Référence rapide des expressions de chemin :
 
-| Clé source            | Résout vers                                            |
-| --------------------- | ------------------------------------------------------ |
-| `items[0]`            | Premier élément de `items`                             |
-| `items[0].objectURI`  | Propriété `.objectURI` du premier élément              |
-| `matrix[0][1]`        | Ligne 0, colonne 1 d'un tableau 2D                     |
-| `a[0][1][2].value[3]` | Tableaux imbriqués -> dict -> tableau (6 traversées)   |
+| Clé source            | Résout vers                                          |
+| --------------------- | ---------------------------------------------------- |
+| `items[0]`            | Premier élément de `items`                           |
+| `items[0].objectURI`  | Propriété `.objectURI` du premier élément            |
+| `matrix[0][1]`        | Ligne 0, colonne 1 d'un tableau 2D                   |
+| `a[0][1][2].value[3]` | Tableaux imbriqués -> dict -> tableau (6 traversées) |
 
 **Règles et limites :**
 
