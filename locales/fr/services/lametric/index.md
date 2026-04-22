@@ -104,7 +104,7 @@ Envoyer une notification LaMetric Time en Mode Appareil, sur notre reseau local 
 ```bash
 # Supposons que notre {apikey} soit abc123
 # Supposons que notre {hostname} soit 192.168.1.3
-apprise -vv -b "Test Message Body" lametric://abc123@192.168.1.3
+apprise -vv -b "Corps du Message de Test" lametric://abc123@192.168.1.3
 ```
 
 Envoyer une notification LaMetric Time en mode nuagique, via l'API developpeur LaMetric :
@@ -112,5 +112,5 @@ Envoyer une notification LaMetric Time en mode nuagique, via l'API developpeur L
 ```bash
 # Supposons que notre {app_id} soit ABCD1234
 # Supposons que notre {app_access_token} soit abcdefg==
-apprise -vv -b "Test Message Body" lametric://abcdefg==@ABCD1234
+apprise -vv -b "Corps du Message de Test" lametric://abcdefg==@ABCD1234
 ```

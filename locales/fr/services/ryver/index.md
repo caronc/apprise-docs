@@ -77,6 +77,6 @@ Envoyer une notification Ryver :
 ```bash
 # Assuming our {organization} is apprise
 # Assuming our {token} is T1JJ3T3L2
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ryver:///apprise/T1JJ3T3L2
 ```

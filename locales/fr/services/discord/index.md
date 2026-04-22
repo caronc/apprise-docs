@@ -85,7 +85,7 @@ Envoyer une notification Discord :
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
@@ -95,7 +95,7 @@ Si vous souhaitez utiliser votre propre URL d'avatar personnalisee, deja heberge
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
 # Supposons que notre {AvatarURL} soit https://i.imgur.com/FsEpmwg.jpeg
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?avatar_url=https://i.imgur.com/FsEpmwg.jpeg"
 ```
 
@@ -104,7 +104,7 @@ Envoyer une notification qui notifie `@everyone` dans le salon :
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
-apprise -vv -t "Hello All" -b "Test Message that pings @everyone" \
+apprise -vv -t "Bonjour a Tous" -b "Message de Test that pings @everyone" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 

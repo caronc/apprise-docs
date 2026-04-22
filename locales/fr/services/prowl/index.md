@@ -48,6 +48,6 @@ Envoyer une notification Prowl à notre serveur
 
 ```bash
 # Assuming our {apikey} is adf9dfjkj24jkafkljkf6f
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    prowl://adf9dfjkj24jkafkljkf6f
 ```

@@ -59,7 +59,7 @@ Envoyer un message simple :
 # Assuming our {password} is pass
 # Assuming our {Source} is +15551234567
 # Because no target is specified, we will notify ourseles
-apprise -vv -t "Test" -b "Hello from Apprise" \
+apprise -vv -t "Test" -b "Bonjour d'Apprise" \
   46elks://user123:pass@/+15551234567
 ```
 
@@ -71,6 +71,6 @@ Plusieurs destinataires et un identifiant d'expéditeur :
 # Assuming our {Source} is Acme
 # Assuming our target {PhoneNo} we wish to notify is
 #     +15551234567 and +15551231234
-apprise -vv -b "Status: OK" \
+apprise -vv -b "Statut: OK" \
   "46elks://user:pass456@/+15551234567/+15551231234?from=Acme"
 ```

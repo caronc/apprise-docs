@@ -81,7 +81,7 @@ Envoyer une notification SMSEagle :
 # Supposons que le {Hostname} de notre appliance SMSEagle soit smseagle.example.com
 # Supposons que nous voulions notifier 555221237 et +18005551234
 # Testez avec la commande suivante :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
  smseagle://abcd123@smseagle.example.com/555221237/+18005551234
 
 ```
@@ -90,7 +90,7 @@ Les notifications SMSEagle prennent aussi en charge les pieces jointes, images u
 
 ```bash
 # Les pieces jointes sont egalement prises en charge :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
  smseagle://abcd123@smseagle.example.com/555221237/+18005551234 \
  --attach /path/to/image.png
 ```

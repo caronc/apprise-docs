@@ -62,7 +62,7 @@ Creer une note Misskey sur le serveur `misskey.sda1.net` :
 ```bash
 # Supposons que notre {hostname} soit misskey.sda1.net
 # Supposons que notre {token} soit abcdefghijklmn
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "misskeys://misskey.sda1.net/abcdefghijklmn"
 ```
 
@@ -72,7 +72,7 @@ Cet exemple reprend le precedent mais exploite l'option `visibility` :
 # Supposons que notre {hostname} soit misskey.sda1.net
 # Supposons que notre {token} soit abcdefghijklmn
 # Supposons une {visibility} de home
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "misskeys://misskey.sda1.net/abcdefghijklmn?visibility=home"
 ```
 

@@ -74,6 +74,6 @@ Envoyer une notification Streamlabs :
 
 ```bash
 # Supposons que notre {access_token} soit abcdefghij1234567890
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    strmlabs://abcdefghij1234567890/
 ```

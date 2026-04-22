@@ -237,7 +237,7 @@ Envoyer une notification Matrix sécurisée avec nom d’utilisateur et mot de p
 # Supposons que {user} soit nuxref
 # Supposons que {password} soit abc123
 # Notifier #general et #apprise
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/#general/#apprise
 ```
 
@@ -247,28 +247,28 @@ la connexion par mot de passe est désactivée sur le serveur :
 ```bash
 # Supposons que {hostname} soit matrix.example.com
 # Supposons que {token} soit syt_abc123...
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://syt_abc123@matrix.example.com/#general"
 ```
 
 Desactiver l'imposition du homeserver :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/!abc123?hsreq=no
 ```
 
 Utiliser l’API v2, requise pour les pièces jointes sur certains déploiements :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/#general?v=2
 ```
 
 E2EE est activé par défaut lorsque le paquet `cryptography` est installé et que le salon le prend en charge. Pour désactiver explicitement E2EE et toujours envoyer en clair :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://nuxref:abc123@matrix.example.com/#general?e2ee=no"
 ```
 
@@ -278,7 +278,7 @@ Envoyer un message direct a un utilisateur Matrix :
 # Supposons que {hostname} soit matrix.example.com
 # Supposons que {user} soit nuxref, et {password} abc123
 # Envoyer un MP a @bob sur le meme homeserver
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/@bob
 ```
 
@@ -287,7 +287,7 @@ Envoyer un message direct avec un jeton d’accès pré-généré :
 ```bash
 # Supposons que {hostname} soit matrix.example.com
 # Supposons que {token} soit syt_abc123...
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://syt_abc123@matrix.example.com/@bob"
 ```
 
@@ -295,7 +295,7 @@ Envoyer une requête webhook **t2bot.io** :
 
 ```bash
 # Supposons que {webhook} soit ABCDEFG12345
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrix://ABCDEFG12345
 ```
 
@@ -304,13 +304,13 @@ Envoyer une requête webhook **matrix-hookshot** :
 ```bash
 # Supposons que {hostname} soit hookshot.example.com
 # Supposons que {token} soit ABCDEFG12345
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://apprise:ABCDEFG12345@hookshot.example.com?mode=hookshot"
 ```
 
 Si votre instance hookshot est exposée derrière un chemin webhook public personnalisé :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://apprise:ABCDEFG12345@hookshot.example.com?mode=hookshot&path=/public-hooks"
 ```

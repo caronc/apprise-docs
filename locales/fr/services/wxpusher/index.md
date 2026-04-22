@@ -57,7 +57,7 @@ Envoyer une notification WxPusher en utilisant un topic :
 ```bash
 # Supposons que notre {app_key} soit AT_12345
 # Supposons que notre {topic} soit 987
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n failure  \
    wxpusher://AT_12345/987
 ```
 
@@ -66,7 +66,7 @@ Voici un exemple de notification d'un utilisateur :
 ```bash
 # Supposons que notre {app_key} soit AT_12345
 # Supposons que notre {user} soit UID_123
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n failure  \
    wxpusher://AT_12345/UID_123
 ```
 
@@ -76,6 +76,6 @@ Nous pouvons notifier plusieurs utilisateurs et topics en les precisant simpleme
 # Supposons que notre {app_key} soit AT_12345
 # Supposons que nos {user} soient UID_123 et UID_456
 # Supposons que nos {topic} soient 5555 et 4444
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n failure  \
    wxpusher://AT_12345/UID_123/5555/4444/UID_456
 ```

@@ -56,20 +56,20 @@ La syntaxe valide est la suivante :
 En utilisant l'URL Apprise simplifiée :
 
 ```bash
-apprise -vv -t "QQ Title" -b "Message content" \
+apprise -vv -t "Titre QQ" -b "Contenu du Message" \
     qq://abc123def456ghi789jkl012mno345pq
 ```
 
 En utilisant la forme avec paramètre de requête :
 
 ```bash
-apprise -vv -t "QQ Title" -b "Message content" \
+apprise -vv -t "Titre QQ" -b "Contenu du Message" \
     qq://?token=abc123def456ghi789jkl012mno345pq
 ```
 
 En utilisant l'URL webhook native :
 
 ```bash
-apprise -vv -t "QQ Title" -b "Message content" \
+apprise -vv -t "Titre QQ" -b "Contenu du Message" \
     https://qmsg.zendee.cn/send/abc123def456ghi789jkl012mno345pq
 ```

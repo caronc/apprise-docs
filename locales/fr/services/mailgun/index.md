@@ -71,6 +71,6 @@ Envoyer une notification Mailgun a l'adresse e-mail <bill.gates@microsoft.com>
 # Supposons que notre {apikey} soit 4b4f2918fd-dk5f-8f91f
 # Supposons que notre {email} To soit bill.gates@microsoft.com
 # Supposons que nous voulions envoyer depuis noreply@example.com
-apprise -vv -t "Email Subject" -b "Message Body" \
+apprise -vv -t "Email Subject" -b "Message Corps du Message" \
    mailgun:///noreply@example.com/4b4f2918fd-dk5f-8f91f/bill.gates@microsoft.com
 ```

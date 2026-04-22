@@ -67,6 +67,6 @@ Envoyer une notification Twist vers le canal #general associé à notre équipe 
 #  - our {email} is test@example.com
 #  - our {password} is abc123
 #  - The {channel} is #general
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twist://abc123:test@example.com/#general
 ```

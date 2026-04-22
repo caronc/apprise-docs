@@ -71,12 +71,12 @@ Envoyer une notification Twilio sous forme de SMS :
 # Supposons que notre {PhoneNo}
 #  - se trouve aux Etats-Unis, donc avec l'indicatif +1
 #  - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twilio://AC735c307c62944b5a:e29dfbcebf390dee9@19005559999/18005551223
 
 # l'exemple suivant aurait egalement fonctionne, les espaces,
 # parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twilio://AC735c307c62944b5a:e29dfbcebf390dee9@1-(900) 555-9999/1-(800) 555-1223
 
 ```
@@ -90,12 +90,12 @@ Si votre compte est configure pour prendre en charge [WhatsApp for Business](htt
 # Supposons que notre {AuthToken} soit e29dfbcebf390dee9
 # Supposons que notre {FromPhoneNo} soit +1-900-555-9999
 # Supposons que notre {PhoneNo} WhatsApp soit +1 555 123 3456
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twilio://AC735c307c62944b5a:e29dfbcebf390dee9@19005559999/w:15551233456
 
 # l'exemple suivant aurait egalement fonctionne, les espaces,
 # parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twilio://AC735c307c62944b5a:e29dfbcebf390dee9@1-(900) 555-9999/w:+1 555 123 3456
 
 ```

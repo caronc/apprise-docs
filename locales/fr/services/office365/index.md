@@ -133,6 +133,6 @@ Envoyer une notification e-mail à votre compte Office 365 :
 # Assuming our {account_email} is user@example.com
 # Assuming our {client_id} is zz-yy-xx-ww
 # Assuming our {client_secret} is rt/djdwjjd
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    azure:///user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt/djdwjjd
 ```

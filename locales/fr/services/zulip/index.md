@@ -70,7 +70,7 @@ Envoyer une notification Zulip vers le flux `#general`, utilise par defaut :
 # Supposons que notre {organization} soit apprise
 # Supposons que notre {token} soit T1JJ3T3L2
 # Supposons que notre {botname} soit goober
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    zulip:///goober@apprise/T1JJ3T3L2
 ```
 
@@ -80,6 +80,6 @@ Envoyer une notification Zulip vers le flux `#support` :
 # Supposons que notre {organization} soit apprise
 # Supposons que notre {token} soit T1JJ3T3L2
 # Supposons que notre {stream} soit #support
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    zulip:///apprise/T1JJ3T3L2/support
 ```

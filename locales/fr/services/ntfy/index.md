@@ -107,14 +107,14 @@ L'ancienne orthographe `tags=` a ete renommee en `xtags=` parce que l'analyseur 
 Voici un exemple de message Ntfy envoye avec des tags :
 
 ```bash
-apprise -vv -t "Failure" -b "Something went wrong" \
+apprise -vv -t "Failure" -b "Un probleme est survenu" \
    "ntfy://localhost/mytopic?priority=high&xtags=warning"
 ```
 
 Voici un exemple reprenant le precedent pour montrer que plusieurs tags Ntfy sont egalement pris en charge :
 
 ```bash
-apprise -vv -t "Alert" -b "Disk space low" \
+apprise -vv -t "Alert" -b "Espace disque faible" \
    "ntfy://localhost/mytopic?priority=high&xtags=warning,storage"
 ```
 
@@ -133,7 +133,7 @@ Dans l'exemple ci-dessus :
 - `tag: ntfy-alert` : tag de routage Apprise ; il serait ensuite utilise lors du declenchement suivant :
 
   ```bash
-  apprise -vv -t "Alert" -b "Disk space low" \
+  apprise -vv -t "Alert" -b "Espace disque faible" \
      --tag=ntfy-alert --config=apprise.yaml
   ```
 
@@ -144,7 +144,7 @@ Envoyer une notification vers un serveur Ntfy local :
 ```bash
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {topic} soit great-place
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ntfy://localhost/great-place
 ```
 
@@ -152,7 +152,7 @@ Nous pouvons aussi envoyer une notification au serveur ntfy.sh, en mode cloud :
 
 ```bash
 # Supposons que notre {topic} soit great-place
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ntfy://great-place
 ```
 
@@ -162,7 +162,7 @@ Ntfy prend egalement en charge Markdown ; pour en profiter, ajoutez simplement `
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {topic} soit great-place
 # Supposons que nous voulions tirer parti de la prise en charge de markdown
-apprise -vv -t "Test Message Title" -b "# Markdown Support" \
+apprise -vv -t "Titre du Message de Test" -b "# Markdown Support" \
    "ntfy://localhost/great-place?format=markdown"
 ```
 
@@ -171,13 +171,13 @@ Utilisation securisee en HTTPS :
 ```bash
 # Supposons que notre {hostname} SECURISE soit localhost
 # Supposons que notre {topic} soit great-topic
-apprise -vv -t "Test Secure Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test Securise" -b "Corps du Message de Test" \
    ntfys://localhost/great-topic
 ```
 
 Utilisation des boutons d'action ntfy :
 
 ```bash
-apprise -vv -t "Title" -b "Message content" \
+apprise -vv -t "Title" -b "Contenu du Message" \
     ntfy://ntfy.selfhostedexample.com/mytopic?actions=view%2CGoogle%2Chttps://www.google.com%3Bview%2CBing%2Chttps://www.bing.com
 ```

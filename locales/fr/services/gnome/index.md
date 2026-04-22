@@ -42,6 +42,6 @@ Si nous sommes sur un systeme capable d'heberger le bureau Gnome, nous pouvons n
 
 ```bash
 # Nous envoyer une notification de bureau Gnome
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    gnome://
 ```

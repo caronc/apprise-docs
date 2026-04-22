@@ -49,6 +49,6 @@ Envoyer une notification Kumulos :
 ```bash
 # Supposons que notre {APIKey} soit 8b799edf-6f98-4d3a-9be7-2862fb4e5752
 # Supposons que notre {ServerKey} soit aNe8IVQvUay79KEOt8jEh2GPWOwRKAXG+lP7
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    kumulos://8b799edf-6f98-4d3a-9be7-2862fb4e5752/aNe8IVQvUay79KEOt8jEh2GPWOwRKAXG+lP7
 ```

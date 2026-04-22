@@ -91,7 +91,7 @@ Certains utilisateurs peuvent nécessiter la présence d'en-têtes HTTP spéciau
 # Assuming our {admin_user} is admin
 # Assuming our (admin) {password} is 12345-67890-12345-67890-12345:
 # We want to notify arnold
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ncloud://admin:12345-67890-12345-67890-12345@localhost/arnold?-X-Token=abcdefg
 
 # Multiple headers just require more entries defined with a hyphen in front:
@@ -103,12 +103,12 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Assuming our {admin_user} is admin
 # Assuming our (admin) {password} is secret:
 # We want to notify arnold
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ncloud://admin:12345-67890-12345-67890-12345@localhost/arnold?-X-Token=abcdefg&-X-Apprise=is%20great
 
 # If we're using an older version of NextCloud (their API changed) we may need
 # to let Apprise know this (using the version= directive)
-apprise -t "Title" -b "Body" "ncloud://admin:12345-67890-12345-67890-12345@localhost/arnold??version=20"
+apprise -t "Title" -b "Corps du Message" "ncloud://admin:12345-67890-12345-67890-12345@localhost/arnold??version=20"
 
 ```
 

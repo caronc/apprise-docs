@@ -90,13 +90,13 @@ Envoyer une notification LunaSea :
 ```bash
 # Assuming our {FireBaseDeviceID} is abcd_abcd_abcd
 # Send to a Device (make sure to add + at front):
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
   lunasea://+abcd_abcd_abcd
 
 # Assuming our {FireBaseDeviceID} is abcd_abcd_abcd
 # Assuming our {FireBaseUserID} is wxyz_wxyz_wxyz
 #Send to a device (add +) and a user (optionally add @)
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
   lunasea://+abcd_abcd_abcd/@wxyz_wxyz_wxyz
 
 # Running your own private server, no problem:
@@ -105,6 +105,6 @@ apprise -t "Test Title" -b "Test Message" \
 # Assuming our {password} is pass
 # Assuming our {FireBaseDeviceID} is abcd_abcd_abcd
 # Assuming our {FireBaseUserID} is wxyz_wxyz_wxyz
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
   lunasea://user:pass@myhostname/+FireBaseDevice1/@FireBaseUserID
 ```

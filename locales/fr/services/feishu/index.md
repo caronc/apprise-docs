@@ -42,6 +42,6 @@ Envoyer une notification a votre compte Feishu :
 
 ```bash
 # Supposons que notre {token} soit token
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "feishu://token"
 ```

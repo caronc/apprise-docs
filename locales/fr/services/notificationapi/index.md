@@ -98,44 +98,44 @@ Ces valeurs par défaut sont communes à tous les plugins Apprise, en plus des p
 Envoyer à un destinataire e-mail par type et laisser NotificationAPI choisir le canal :
 
 ```bash
-apprise -vv -t "Order Update" -b "Your order shipped."   napi://order_tracking@CLIENT_ID/CLIENT_SECRET/id/user@example.com
+apprise -vv -t "Mise a Jour de Commande" -b "Votre commande a ete expediee."   napi://order_tracking@CLIENT_ID/CLIENT_SECRET/id/user@example.com
 ```
 
 Envoyer la même notification à plusieurs destinataires à l'aide de segments de chemin :
 
 ```bash
-apprise -vv -t "Status" -b "Processing complete."   napi://order_tracking@CLIENT_ID/CLIENT_SECRET/\
+apprise -vv -t "Statut" -b "Traitement termine."   napi://order_tracking@CLIENT_ID/CLIENT_SECRET/\
      id/user@example.com/+15552341234/alice_123
 ```
 
 Forcer le canal SMS et définir la région sur le Canada :
 
 ```bash
-apprise -vv -t "Code" -b "Your verification code is 123456"   'napi://order_tracking@CLIENT_ID/CLIENT_SECRET/id/+16475550123?channel=sms&region=ca'
+apprise -vv -t "Code" -b "Votre code de verification est 123456"   'napi://order_tracking@CLIENT_ID/CLIENT_SECRET/id/+16475550123?channel=sms&region=ca'
 ```
 
 Définir _From_, CC et BCC pour un e-mail :
 
 ```bash
-apprise -vv -t "Release" -b "v2.0.1 is live."   'napi://release_note@CLIENT_ID/CLIENT_SECRET/id/dev@example.ca?from=Dev%20Team&cc=qa@example.ca&bcc=ops@example.ca'
+apprise -vv -t "Publication" -b "La version v2.0.1 est en ligne."   'napi://release_note@CLIENT_ID/CLIENT_SECRET/id/dev@example.ca?from=Dev%20Team&cc=qa@example.ca&bcc=ops@example.ca'
 ```
 
 Transmettre des jetons dynamiques référencés par votre modèle NotificationAPI :
 
 ```bash
-apprise -vv -t "Order" -b " "   'napi://order_tracking@CLIENT_ID/CLIENT_SECRET/user@example.com?:orderId=12345&:status=shipped'
+apprise -vv -t "Commande" -b " "   'napi://order_tracking@CLIENT_ID/CLIENT_SECRET/user@example.com?:orderId=12345&:status=shipped'
 ```
 
 Utiliser une forme basée uniquement sur la chaîne de requête, pratique en YAML :
 
 ```bash
-apprise -vv -t "Hello" -b "Hi there"   'napi://?id=CLIENT_ID&secret=CLIENT_SECRET&type=greeting&to=id,user@example.com'
+apprise -vv -t "Hello" -b "Bonjour a vous"   'napi://?id=CLIENT_ID&secret=CLIENT_SECRET&type=greeting&to=id,user@example.com'
 ```
 
 Version minimale, id + e-mail :
 
 ```bash
-apprise -vv -t "Welcome" -b "Hello from Apprise"   "napi://welcome_email@CID/SECRET/user123/test@example.com"
+apprise -vv -t "Bienvenue" -b "Bonjour d'Apprise"   "napi://welcome_email@CID/SECRET/user123/test@example.com"
 ```
 
 Région EU avec substitutions de jetons :
@@ -147,5 +147,5 @@ apprise -vv -b "<b>Your order shipped!</b>" --format=html   "napi://order_update
 Définition de From / CC / BCC / Reply-To pour l'e-mail :
 
 ```bash
-apprise -vv -b "Body"   "napi://newsletter@CID/SECRET/user123/test@example.com?from=Team<team@example.com>&cc=dev@example.com&bcc=ops@example.com&reply=help@example.com"
+apprise -vv -b "Corps du Message"   "napi://newsletter@CID/SECRET/user123/test@example.com?from=Team<team@example.com>&cc=dev@example.com&bcc=ops@example.com&reply=help@example.com"
 ```

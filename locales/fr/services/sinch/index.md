@@ -66,11 +66,11 @@ Envoyer une notification Sinch par SMS :
 # Assuming our {FromPhoneNo} is +1-900-555-9999
 # Assuming our {PhoneNo} - is in the US somewhere making our country code +1
 #                        - identifies as 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sinch://AC735c307c62944b5a:e29dfbcebf390dee9@19005559999/18005551223
 
 # the following would also have worked (spaces, brackets,
 # dashes are accepted in a phone no field):
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sinch://AC735c307c62944b5a:e29dfbcebf390dee9@1-(900) 555-9999/1-(800) 555-1223
 ```

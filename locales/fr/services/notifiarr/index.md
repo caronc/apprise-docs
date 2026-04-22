@@ -58,7 +58,7 @@ Envoyer une notification Discord :
 # Supposons que notre {APIKey} soit 4174216298
 # Supposons que notre {ChannelID} soit 123456789
 # Testez les changements avec la commande suivante :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
 "notifiarr://4174216298/123456789"
 
 ```
@@ -70,7 +70,7 @@ Si vous avez un Discord Event ID que vous souhaitez reutiliser, vous pouvez fair
 # Supposons que notre {ChannelID} soit 123456789
 # Supposons que notre {EventID} soit 1234
 # Testez les changements avec la commande suivante :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
 "notifiarr://4174216298/123456789?event=1234"
 
 ```

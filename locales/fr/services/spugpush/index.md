@@ -59,20 +59,20 @@ Vous pouvez egalement utiliser le format avec chaine de requete : `spugpush://?t
 Utilisation de l'URL Apprise simplifiee :
 
 ```bash
-apprise -vv -t "SpugPush Title" -b "Notification content" \
+apprise -vv -t "SpugPush Title" -b "Contenu de la Notification" \
    spugpush://abc123def456ghi789jkl012mno345pq
 ```
 
 Utilisation du token comme parametre de requete :
 
 ```bash
-apprise -vv -t "SpugPush Title" -b "Notification content" \
+apprise -vv -t "SpugPush Title" -b "Contenu de la Notification" \
    spugpush://?token=abc123def456ghi789jkl012mno345pq
 ```
 
 Utilisation de l'URL webhook native complete :
 
 ```bash
-apprise -vv -t "SpugPush Title" -b "Notification content" \
+apprise -vv -t "SpugPush Title" -b "Contenu de la Notification" \
    https://push.spug.dev/send/abc123def456ghi789jkl012mno345pq
 ```

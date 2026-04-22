@@ -61,11 +61,11 @@ Envoyer une notification Vonage sous forme de SMS :
 # Supposons que notre {PhoneNo}
 #  - se trouve aux Etats-Unis, donc avec l'indicatif +1
 #  - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    vonage://bc1451bd:gank339l7jk3cjaE@19005559999/18005551223
 
 # l'exemple suivant aurait egalement fonctionne, les espaces,
 # parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    vonage://bc1451bd:gank339l7jk3cjaE@1-(900) 555-9999/1-(800) 555-1223
 ```

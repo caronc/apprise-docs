@@ -59,7 +59,7 @@ Les valeurs `{receiver}` correspondent aux identifiants Viber des utilisateurs a
 Envoyer un message a un destinataire unique :
 
 ```bash
-apprise -vv -b "Hello from Apprise" \
+apprise -vv -b "Bonjour d'Apprise" \
   "viber://MYTOKEN/RECEIVER_ID"
 ```
 

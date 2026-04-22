@@ -89,7 +89,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 # Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
 # Supposons que notre {email} de destination soit bill.gates@microsoft.com
 # Supposons que nous voulions envoyer depuis noreply@example.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?+X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter d'autres entrees :
@@ -101,7 +101,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
 # Supposons que notre {email} de destination soit bill.gates@microsoft.com
 # Supposons que nous voulions envoyer depuis noreply@example.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
@@ -115,7 +115,7 @@ SparkPost permet d'utiliser des `{{tokens}}` encadres par deux accolades. [Consu
 # Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
 # Supposons que notre {email} de destination soit bill.gates@microsoft.com
 # Supposons que nous voulions envoyer depuis noreply@example.com
-apprise -vv -t "Test Message Title" -b "Bill Gates works at {{software}}" \
+apprise -vv -t "Titre du Message de Test" -b "Bill Gates works at {{software}}" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?:software=Microsoft"
 ```
 

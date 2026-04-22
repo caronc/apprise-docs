@@ -56,6 +56,6 @@ Envoyer une notification Pushjet :
 ```bash
 # Supposons que notre {secret_key} soit abcdefghijklmnopqrstuvwxyzabc
 # Supposons que notre {hostname} soit localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pjet://abcdefghijklmnopqrstuvwxyzabc@localhost
 ```

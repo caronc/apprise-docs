@@ -69,20 +69,20 @@ Utilisation de l'URL Apprise simplifiee :
 ```bash
 # Supposons que notre jeton soit 1234567890abcdef1234567890abcdef
 
-apprise -vv -t "Spike Alert" -b "Incident occurred" \
+apprise -vv -t "Alerte Spike" -b "Incident survenu" \
    spike://1234567890abcdef1234567890abcdef
 ```
 
 Utilisation du jeton comme parametre d'URL :
 
 ```bash
-apprise -vv -t "Spike Alert" -b "Incident occurred" \
+apprise -vv -t "Alerte Spike" -b "Incident survenu" \
    spike://?token=1234567890abcdef1234567890abcdef
 ```
 
 Utilisation de l'URL webhook native complete :
 
 ```bash
-apprise -vv -t "Spike Alert" -b "Incident occurred" \
+apprise -vv -t "Alerte Spike" -b "Incident survenu" \
    https://api.spike.sh/v1/alerts/1234567890abcdef1234567890abcdef
 ```

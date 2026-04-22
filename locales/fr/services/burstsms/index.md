@@ -57,6 +57,6 @@ Envoyer une notification Burst SMS :
 # Supposons que notre {PhoneNo}
 #  - se trouve aux Etats-Unis, donc avec l'indicatif +1
 #  - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    burstsms://bc1451bd:gank339l7jk3cjaE@19005559999/18005551223
 ```

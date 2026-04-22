@@ -103,7 +103,7 @@ Envoyer un message WhatsApp via HTTP :
 # Assuming our Evolution API is running at myserver.local:8080
 # Assuming our instance name is MyInstance
 # Assuming the destination number is +55 11 99999-9999
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "evolution://abc123secret@myserver.local:8080/MyInstance/5511999999999"
 ```
 
@@ -113,7 +113,7 @@ Envoyer via HTTPS (Evolution API derrière un reverse proxy avec TLS) :
 # Assuming our {apikey} is abc123secret
 # Assuming our Evolution API is reachable at api.example.com (HTTPS)
 # Assuming our instance name is MyInstance
-apprise -vv -t "Alert" -b "Server is down!" \
+apprise -vv -t "Alert" -b "Le serveur est indisponible !" \
    "evolutions://abc123secret@api.example.com/MyInstance/5511999999999"
 ```
 

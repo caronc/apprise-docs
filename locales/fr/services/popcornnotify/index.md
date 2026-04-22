@@ -56,12 +56,12 @@ Envoyer une notification PopcornNotify sous forme de SMS :
 # Supposons que notre {PhoneNo}
 #   - soit aux Etats-Unis, donc avec l'indicatif pays +1
 #   - corresponde au numero 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    popcorn:///abc123456/18005551223
 
 # la variante suivante aurait aussi fonctionne
 # les espaces, parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    popcorn:///abc123456/1-(800) 555-1223
 ```
 
@@ -70,6 +70,6 @@ Vous pouvez aussi envoyer des e-mails tout aussi simplement :
 ```bash
 # Supposons que notre {ApiKey} soit abc123456
 # Supposons que notre {Email} soit user@example.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    popcorn:///abc123456/user@example.com
 ```

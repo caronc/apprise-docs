@@ -45,7 +45,7 @@ Envoyer un message public :
 # Supposons que notre {AppID} soit abcd-1234-efghi-6789
 
 # notre utilisateur est @testaccount
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "bluesky://John@abcd-1234-efghi-6789"
 
 ```

@@ -58,6 +58,6 @@ Envoyer une notification Resend :
 # Supposons que notre domaine authentifie soit example.com, et que nous voulions
 # definir notre {from_email} sur noreply@example.com
 # Supposons que notre {to_email} soit someone@microsoft.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    resend:///re_bcd123-xyz:noreply@example.com/someone@microsoft.com
 ```

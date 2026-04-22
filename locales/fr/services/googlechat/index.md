@@ -72,7 +72,7 @@ Envoyer une notification Google Chat :
 # Supposons que notre {webhook_key} soit AIzaSSjMm-WEfqKqqsHI
 # Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    gchat://AAAAkM/AIzaSSjMm-WEfqKqqsHI/O7bnyri_WEXKcyFk%3D
 ```
 
@@ -83,7 +83,7 @@ Rappel : vous pouvez aussi utiliser directement l'URL telle qu'elle vous a été
 # Supposons que notre {webhook_key} soit AIzaSSjMm-WEfqKqqsHI
 # Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    https://chat.googleapis.com/v1/spaces/AAAAkM/messages?key=AIzaSSjMm-WEfqKqqsHI&token=O7bnyri_WEXKcyFk%3D
 ```
 
@@ -95,6 +95,6 @@ Vous souhaitez cibler une `threadKey` précise ? Faites simplement ceci :
 # Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
 # Supposons que notre {threadkey} soit ABC
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    gchat://AAAAkM/AIzaSSjMm-WEfqKqqsHI/O7bnyri_WEXKcyFk%3D/?thread=ABC
 ```

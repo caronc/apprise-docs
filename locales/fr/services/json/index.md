@@ -87,15 +87,15 @@ Par defaut, toutes les notifications sont envoyees en `POST`. Remplacez ce compo
 
 ```bash
 # Envoyer comme requete PUT
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?method=put"
 
 # Envoyer comme requete DELETE
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?method=delete"
 
 # Envoyer comme requete PATCH
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?method=patch"
 ```
 
@@ -113,7 +113,7 @@ L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter du 
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que nous voulions inclure `"sound": "oceanwave"` dans la charge utile existante :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?:sound=oceanwave"
 ```
 
@@ -122,8 +122,8 @@ L'exemple ci-dessus publierait un message comme celui-ci :
 ```json
 {
   "version": "1.0",
-  "title": "Test Message Title",
-  "message": "Test Message Body",
+  "title": "Titre du Message de Test",
+  "message": "Corps du Message de Test",
   "type": "info",
   "sound": "oceanwave"
 }
@@ -135,7 +135,7 @@ Vous pouvez aussi supprimer des entrees en definissant leur valeur comme vide :
 # Vider version et type de la charge utile :
 # Supposons que notre {hostname} soit localhost
 # Supposons que nous voulions retirer version et type de la sortie :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?:version&:type"
 ```
 
@@ -143,8 +143,8 @@ L'exemple ci-dessus publierait un message comme celui-ci :
 
 ```json
 {
-  "title": "Test Message Title",
-  "message": "Test Message Body"
+  "title": "Titre du Message de Test",
+  "message": "Corps du Message de Test"
 }
 ```
 
@@ -156,7 +156,7 @@ Enfin, vous pouvez remapper des valeurs, par exemple en envoyant le message dans
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que nous voulions remapper la section message vers body :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost/?:message=body"
 ```
 
@@ -165,8 +165,8 @@ L'exemple ci-dessus publierait un message comme celui-ci :
 ```json
 {
   "version": "1.0",
-  "title": "Test Message Title",
-  "body": "Test Message Body",
+  "title": "Titre du Message de Test",
+  "body": "Corps du Message de Test",
   "type": "info"
 }
 ```
@@ -181,7 +181,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {port} soit 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost:8080/path/?+X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
@@ -191,7 +191,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {port} soit 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
@@ -204,13 +204,13 @@ Certains utilisateurs peuvent avoir besoin que des parametres GET fassent partie
 #
 # Le symbole `-` sera retire lors de l'envoi en amont
 # Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "json://localhost:8080/?-token=abcdefg"
 
 # Si vous voulez transmettre plus d'un element, il suffit de les enchainer :
 # L'exemple ci-dessous enverrait un POST vers :
 #  https://example.ca/my/path?key1=value1&key2=value2
 #
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "jsons://example.ca/my/path?-key1=value1&-key2=value2"
 ```

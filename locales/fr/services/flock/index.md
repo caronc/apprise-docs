@@ -77,6 +77,6 @@ Envoyer une notification Flock à notre canal #nuxref (identifié comme `g:abcd1
 ```bash
 # Assuming our {token} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 # our channel nuxref is represented as g:abcd1234efgh
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    flock:///134b8gh0-eba0-4fa9-ab9c-257ced0e8221/g:abcd1234efgh
 ```

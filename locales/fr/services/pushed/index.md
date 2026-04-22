@@ -71,6 +71,6 @@ Envoyer une notification Pushed :
 ```bash
 # Supposons que notre {app_key} soit sopJo0dVKVC9YK1F5wDQ
 # Supposons que notre {app_secret} soit KWEtXxVm1PtDTTrKaEM49DhBd8MJvSMCHSvunPerbCf1MaNLO300roqOL0F8HErAl
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pushed://sopJo0dVKVC9YK1F5wDQ/KWEtXxVm1PtDTTrKaEM49DhBd8MJvSMCHSvunPerbCf1MaNLO300roqOL0F8HErAl
 ```

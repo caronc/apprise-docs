@@ -68,6 +68,6 @@ Envoyer un message BulkSMS :
 # Supposons que notre {user} soit joe
 # Supposons que notre {password} soit hard-to-guess
 # Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    bulksms://joe:hard-to-guess@+134-555-1223
 ```

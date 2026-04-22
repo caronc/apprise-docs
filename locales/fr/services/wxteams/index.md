@@ -123,7 +123,7 @@ Envoyer une notification Webex Teams via webhook :
 
 ```bash
 # Supposons que notre {token} soit T1JJ3T3L2DEFK543
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    wxteams://T1JJ3T3L2DEFK543/
 ```
 

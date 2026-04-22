@@ -57,7 +57,7 @@ Envoyer une notification Growl a notre serveur
 
 ```bash
 # Supposons que notre {hostname} soit growl.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    growl://growl.server.local
 ```
 
@@ -65,6 +65,6 @@ Certaines versions de Growl n'affichent pas correctement l'image ou l'icone ; vo
 
 ```bash
 # Envoyer une notification Growl en utilisant une image binaire brute (au lieu d’une URL, en interne)
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    growl://growl.server.local?version=1
 ```

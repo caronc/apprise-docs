@@ -54,7 +54,7 @@ Envoyer un message Gotify :
 ```bash
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {token} soit abcdefghijklmn
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "gotify://gotify.server.local/abcdefghijklmn"
 
 # Si votre serveur est heberge ailleurs et exige un chemin supplementaire
@@ -62,7 +62,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {token} soit abcdefghijklmn
 # Supposons que notre {path} soit /my/gotify/path/
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "gotify://gotify.server.local/my/gotify/path/abcdefghijklmn"
 ```
 
@@ -71,7 +71,7 @@ Il existe aussi une prise en charge de **markdown** si vous souhaitez l'exploite
 ```bash
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {token} soit abcdefghijklmn
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "gotify://gotify.server.local/abcdefghijklmn?format=markdown"
 #                                                ^      ^
 #                                                |      |

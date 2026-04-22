@@ -68,6 +68,6 @@ Envoyer un e-mail SES :
 # Supposons que notre {AccessKeySecret} soit bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
 # Supposons que notre {Region} soit us-east-2
 # Supposons que notre {Email} soit test@test.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    ses://test@test.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/
 ```

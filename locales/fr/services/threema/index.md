@@ -66,7 +66,7 @@ Envoyer une notification Threema Gateway simple :
 #  - notre {gateway_id} soit *MYGWYID
 #  - notre {secret} soit abc123-2345
 #  - le {toPhoneNo} soit 6135551234
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    threema://*MYGWYID@abc123-2345/6135551234
 ```
 
@@ -77,6 +77,6 @@ Envoyer une notification Threema Gateway simple a un utilisateur Threema en prec
 #  - notre {gateway_id} soit *MYGWYID
 #  - notre {secret} soit abc123-2345
 #  - le {toThreemaID} soit FRIENDID
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    threema://*MYGWYID@abc123-2345/FRIENDID
 ```

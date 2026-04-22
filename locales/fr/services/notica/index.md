@@ -74,7 +74,7 @@ Envoyer une notification Notica :
 ```bash
 # Supposons que notre {token} soit abc123
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    notica://abc123
 ```
 
@@ -88,7 +88,7 @@ Les solutions autohebergees peuvent necessiter des en-tetes HTTP speciaux lors d
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {token} soit abc123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "notica://localhost/abc123/?-X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter d'autres entrees prefixees par `-` :
@@ -98,6 +98,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {token} soit abc123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "notica://localhost/abc123/?-X-Token=abcdefg&-X-Apprise=is%20great"
 ```

@@ -49,7 +49,7 @@ Envoyer une notification Seven :
 # Supposons que notre {AccessToken} soit abcd123
 # Supposons que nous voulions notifier 555221237 et +18005551234
 # Testez avec la commande suivante :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
  seven://abcd123/555221237/+18005551234
 
 ```

@@ -54,11 +54,11 @@ Envoyer une notification Kavenegar sous forme de SMS :
 # Supposons que notre {PhoneNo}
 #   - se trouve aux Etats-Unis, donc avec l'indicatif pays 001
 #   - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    kavenegar://gank339l7jk3cjaE/0018005551223
 
 # la variante suivante aurait aussi fonctionne
 # les espaces, parentheses et tirets sont acceptes dans ce champ :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    kavenegar://gank339l7jk3cjaE/001 - (800) 555-1223
 ```

@@ -64,6 +64,6 @@ Envoyer une notification Gitter vers le canal _apprise/community_ :
 ```bash
 # Assuming our {token} is abcdefghij1234567890
 # Assuming our {room} is apprise/community
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    gitter:///abcdefghij1234567890/apprise
 ```

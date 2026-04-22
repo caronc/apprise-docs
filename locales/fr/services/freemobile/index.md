@@ -46,6 +46,6 @@ Envoyer une notification Free-Mobile :
 ```bash
 # Supposons que notre {user} soit abc123
 # Supposons que notre {password} soit 98765
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "freemobile://abc123@98765"
 ```

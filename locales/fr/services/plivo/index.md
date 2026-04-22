@@ -60,7 +60,7 @@ Envoyer une notification Plivo :
 # Supposons que notre {from_no} soit +1555229999
 # Supposons que nous voulions notifier 1555221237 et +18005551234
 # Testez les changements avec la commande suivante :
-apprise -t "Test Title" -b "Test Message" \
+apprise -t "Titre de Test" -b "Message de Test" \
  "plivo://abcd123@9876test/1555229999/+1555221237/+18005551234"
 
 ```

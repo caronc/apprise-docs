@@ -153,7 +153,7 @@ Envoyer une toot Mastodon :
 ```bash
 # Supposons que notre {AccessKey} soit T1JJ3T3L2
 # Supposons que notre {Host} soit noc.social
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mastodons://T1JJ3T3L2@noc.social"
 ```
 
@@ -162,7 +162,7 @@ Envoyer une toot Mastodon avec des entrees dans le chemin :
 ```bash
 # Supposons que notre {AccessKey} soit T1JJ3T3L2
 # Supposons que notre {Host} soit noc.social
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mastodons://T1JJ3T3L2@noc.social/@caronc/%23apprise"
 ```
 
@@ -171,7 +171,7 @@ Envoyer une toot Mastodon avec des `ping` fixes ajoutes :
 ```bash
 # Supposons que notre {AccessKey} soit T1JJ3T3L2
 # Supposons que notre {Host} soit noc.social
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mastodons://T1JJ3T3L2@noc.social?ping=#apprise,#notifications"
 ```
 
@@ -181,7 +181,7 @@ Envoyer un message direct Mastodon a `@testaccount` :
 # Supposons que notre {AccessKey} soit T1JJ3T3L2
 # Supposons que notre {Host} soit noc.social
 # notre utilisateur est @testaccount
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mastodons://T1JJ3T3L2@noc.social/@testaccount?visibility=direct"
 ```
 
@@ -190,6 +190,6 @@ Envoyer un message direct Mastodon a nous-memes en utilisant la detection integr
 ```bash
 # Supposons que notre {AccessKey} soit T1JJ3T3L2
 # Supposons que notre {Host} soit noc.social
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mastodons://T1JJ3T3L2@noc.social/?visibility=direct"
 ```

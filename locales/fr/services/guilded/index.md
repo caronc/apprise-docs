@@ -74,7 +74,7 @@ Envoyer une notification Guilded :
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "guilded://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
@@ -84,6 +84,6 @@ Si vous souhaitez utiliser votre propre URL d'avatar personnalisee, deja heberge
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
 # Supposons que notre {AvatarURL} soit https://i.imgur.com/FsEpmwg.jpeg
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "guilded://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?avatar_url=https://i.imgur.com/FsEpmwg.jpeg"
 ```

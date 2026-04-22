@@ -85,15 +85,15 @@ Par defaut, toutes les notifications sont envoyees en `POST`. Remplacez ce compo
 
 ```bash
 # Envoyer comme requete PUT
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?method=put"
 
 # Envoyer comme requete DELETE
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?method=delete"
 
 # Envoyer comme requete PATCH
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?method=patch"
 ```
 
@@ -111,7 +111,7 @@ L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter des
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que nous voulions inclure "sound=oceanwave" dans la charge utile existante :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?:sound=oceanwave"
 ```
 
@@ -119,8 +119,8 @@ L'exemple ci-dessus effectuerait un POST avec les champs de formulaire suivants 
 
 ```text
 version=1.0
-title=Test Message Title
-message=Test Message Body
+title=Titre du Message de Test
+message=Corps du Message de Test
 type=info
 sound=oceanwave
 ```
@@ -130,15 +130,15 @@ Vous pouvez aussi supprimer les champs integres en definissant leur valeur comme
 ```bash
 # Supprimer version et type de la charge utile :
 # Supposons que notre {hostname} soit localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?:version&:type"
 ```
 
 L'exemple ci-dessus publierait :
 
 ```text
-title=Test Message Title
-message=Test Message Body
+title=Titre du Message de Test
+message=Corps du Message de Test
 ```
 
 Enfin, vous pouvez remapper un champ integre vers un nom de cle different :
@@ -146,7 +146,7 @@ Enfin, vous pouvez remapper un champ integre vers un nom de cle different :
 ```bash
 # Remapper le champ "message" vers "body" :
 # Supposons que notre {hostname} soit localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost/?:message=body"
 ```
 
@@ -154,8 +154,8 @@ L'exemple ci-dessus publierait :
 
 ```text
 version=1.0
-title=Test Message Title
-body=Test Message Body
+title=Titre du Message de Test
+body=Corps du Message de Test
 type=info
 ```
 
@@ -169,7 +169,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {port} soit 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost:8080/path/?+X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
@@ -179,7 +179,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {port} soit 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
@@ -192,14 +192,14 @@ Certains utilisateurs peuvent avoir besoin que des parametres GET fassent partie
 #
 # Le symbole `-` sera retire lors de l'envoi en amont
 # Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "form://localhost:8080/?-token=abcdefg"
 
 # Si vous voulez transmettre plus d'un element, il suffit de les enchainer :
 # L'exemple ci-dessous enverrait un POST vers :
 #  https://example.ca/my/path?key1=value1&key2=value2
 #
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "forms://example.ca/my/path?-key1=value1&-key2=value2"
 ```
 

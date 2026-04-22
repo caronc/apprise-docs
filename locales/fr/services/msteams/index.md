@@ -101,7 +101,7 @@ Envoyer une notification Microsoft Teams :
 # Supposons que notre {tokenA} soit T1JJ3T3L2@DEFK543
 # Supposons que notre {tokenB} soit A1BRTD4JD
 # Supposons que notre {tokenC} soit TIiajkdnlazkcOXrIdevi7F
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    msteams:///Apprise/T1JJ3T3L2@DEFK543/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/
 ```
 
@@ -158,7 +158,7 @@ Une notification comme celle-ci :
 ```bash
 # En utilisant des deux-points, nous pouvons definir dynamiquement
 # target et whence depuis la ligne de commande :
-apprise -t "My Title" -b "This is Ignored" \
+apprise -t "Mon Titre" -b "Ceci est Ignore" \
    "msteams://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 
@@ -172,8 +172,8 @@ Publierait dans MSTeams, sur la base du template ci-dessus :
   "sections": [
     {
       "activityImage": null,
-      "activityTitle": "My Title",
-      "text": "Hello Chris, how are you this afternoon?"
+      "activityTitle": "Mon Titre",
+      "text": "Bonjour Chris, comment allez-vous cet apres-midi ?"
     }
   ]
 }

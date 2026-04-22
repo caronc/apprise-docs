@@ -75,7 +75,7 @@ Certains utilisateurs peuvent avoir besoin d'en-têtes HTTP spéciaux lors de l'
 # Assuming our {user} is user1
 # Assuming our (user1) {password} is 12345-67890-12345-67890-12345
 # We want to notify Room _93nfkdn3_:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    nctalks://user1:12345-67890-12345-67890-12345@localhost/93nfkdn3?-X-Token=abcdefg
 
 # Multiple headers just require more entries defined with a hyphen in front:
@@ -87,6 +87,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Assuming our {user} is user1
 # Assuming our (user1) {password} is 12345-67890-12345-67890-12345
 # We want to notify Room _93nfkdn3_:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    nctalks://user1:12345-67890-12345-67890-12345@localhost/arnold?-X-Token=abcdefg&-X-Apprise=is%20great
 ```

@@ -83,7 +83,7 @@ Envoyer une notification Pushover a tous nos appareils configures :
 ```bash
 # Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
 # Supposons que notre {token} soit abcdefghijklmnop-abcdefg
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg
 ```
 
@@ -94,7 +94,7 @@ Envoyer une notification Pushover a un groupe de diffusion :
 # Supposons que notre {token} soit abcdefghijklmnop-abcdefg
 # Supposons que notre {group_key} soit gznej3rKEVAvPUxu9vvNnqpmZpokzF
 # Le prefixe # l'identifie comme une group key
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg/#gznej3rKEVAvPUxu9vvNnqpmZpokzF"
 ```
 
@@ -107,6 +107,6 @@ Envoyer une notification Pushover avec la priorite Emergency :
 # Supposons que notre {token} soit abcdefghijklmnop-abcdefg
 # L'exemple ci-dessous definit une expiration de 1 heure et tente
 # de renvoyer le message toutes les 10 minutes :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?priority=emergency&retry=600&expire=3600
 ```

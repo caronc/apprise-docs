@@ -52,7 +52,7 @@ Envoyer une notification Remote Syslog :
 
 ```bash
 # L'exemple ci-dessous envoie une notification syslog vers la facility `user`
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    rsyslog://localhost
 ```
 

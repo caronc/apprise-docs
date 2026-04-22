@@ -69,7 +69,7 @@ Envoyer une notification APRS :
 # Supposons que notre {callsign} soit df1jsl-9
 # {locale} n'est pas defini ; utilisation de 'euro.aprs2.net' comme serveur cible par defaut
 #
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "aprs://df1jsl-15:12345@df1jsl-9"
 
 # Supposons que notre {userid} soit df1jsl-15
@@ -80,13 +80,13 @@ apprise -vv -b "Test Message Body" \
 # Cela produira trois indicatifs cibles car le plugin
 # respectera les informations de SSID de l'indicatif
 #
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    aprs://df1jsl-15:12345@df1jsl-9/df1jsl-8/df1jsl-7
 
 # Supposons que notre {userid} soit df1jsl-15
 # Supposons que notre {password} soit 12345
 # Supposons que notre {callsign} soit df1jsl-9
 # Supposons que notre {locale} soit NOAM --> correspond a l'URL serveur 'noam.aprs2.net', voir https://www.aprs2.net/
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "aprs://df1jsl-15:12345@df1jsl-9?locale=NOAM"
 ```

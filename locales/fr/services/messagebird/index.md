@@ -51,11 +51,11 @@ Envoyer une notification MessageBird par SMS :
 # Assuming our {APIKey} is gank339l7jk3cjaE
 # Assuming our {FromPhoneNo} - is in the US somewhere making our country code +1
 #                            - identifies as 1-123-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    msgbird://gank339l7jk3cjaE/11235551223
 
 # the following would also have worked (spaces, brackets,
 # dashes are accepted in a phone no field):
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    msgbird://gank339l7jk3cjaE/1-(123) 555-1223
 ```

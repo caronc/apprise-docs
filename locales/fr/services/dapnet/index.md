@@ -62,7 +62,7 @@ Envoyer une notification DAPNET :
 # Supposons que notre {password} soit appriseIsAwesome
 # Supposons que notre {callsign} soit df1def
 #
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "dapnet://df1abc:appriseIsAwesome@df1def"
 
 # Supposons que notre {user} soit df1abc
@@ -71,7 +71,7 @@ apprise -vv -b "Test Message Body" \
 # Cela produira deux indicatifs cibles car le plugin retirera
 # le SSID '-12' et detectera l'indicatif en doublon
 #
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    dapnet://df1abc:appriseIsAwesome@df1def/df1ghi/df1def-12
 
 # Supposons que notre {user} soit df1abc
@@ -79,6 +79,6 @@ apprise -vv -b "Test Message Body" \
 # Supposons que notre {callsign} soit df1def
 # Supposons que notre {priority} soit emergency
 # Supposons que nos {txgroups} soient 'dl-all', 'all'
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "dapnet://df1abc:test@df1def?txgroups=dl-all,all&priority=emergency"
 ```

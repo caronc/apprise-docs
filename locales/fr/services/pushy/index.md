@@ -46,6 +46,6 @@ Envoyer une notification Pushy :
 ```bash
 # Supposons que notre {apikey} soit abcdefghijklmnopqrstuvwxyzabc
 # Supposons que notre {target} soit un appareil portant l'identifiant abcabcabc
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pushy://abcdefghijklmnopqrstuvwxyzabc/@abcabcabc
 ```

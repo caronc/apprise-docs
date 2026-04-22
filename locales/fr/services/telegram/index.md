@@ -109,7 +109,7 @@ Envoyer une notification Telegram a lead2gold :
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {chat_id} de lead2gold soit 12315544
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/
 ```
 
@@ -119,7 +119,7 @@ Vous voulez utiliser les fonctionnalites Markdown de Telegram ? Faites plutot ce
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {chat_id} de lead2gold soit 12315544
 # Nous forçons le format de sortie en markdown dans cet exemple
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?format=markdown
 ```
 
@@ -129,7 +129,7 @@ Vous avez un sujet precis a notifier ?
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {chat_id} de lead2gold soit 12315544
 # Supposons que le {topic_id} soit 1234567
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?topic=1234567
 ```
 
@@ -139,6 +139,6 @@ Les sujets peuvent egalement etre definis pour chaque chat_id :
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {chat_id} de lead2gold soit 12315544
 # Supposons que le {topic_id} soit 1234567
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544:1234567/
 ```

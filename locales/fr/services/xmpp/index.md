@@ -213,7 +213,7 @@ Sans `xmpp=`, Apprise se connecte directement à `host`. Si le serveur se trouve
 Envoyer une notification XMPP en clair :
 
 ```bash
-apprise -vv -b "Test Message" \
+apprise -vv -b "Message de Test" \
   xmpp://user:password@localhost
 ```
 
@@ -234,7 +234,7 @@ apprise -vv -b "TLS Message" \
 Envoyer un message à un destinataire spécifique :
 
 ```bash
-apprise -vv -t "Test Title" -b "Hello from Apprise" \
+apprise -vv -t "Titre de Test" -b "Bonjour d'Apprise" \
   xmpps://user:password@chat.example.com/alice@example.net
 ```
 
@@ -248,21 +248,21 @@ apprise -vv -b "Group Message" \
 Désactiver la vérification du certificat TLS :
 
 ```bash
-apprise -vv -b "Test Message" \
+apprise -vv -b "Message de Test" \
   xmpps://user:password@chat.example.com/alice@example.net?verify=no
 ```
 
 Envoyer une notification vers une ressource :
 
 ```bash
-apprise -vv -b "Test Message" \
+apprise -vv -b "Message de Test" \
   xmpps://user:password@chat.example.com/?to=alice@example.net/mobile
 ```
 
 Envoyer un message vers un salon MUC :
 
 ```bash
-apprise -vv -b "Hello, room!" \
+apprise -vv -b "Bonjour, salon !" \
   "xmpps://user:password@chat.example.com/#general@conference.example.com"
 ```
 

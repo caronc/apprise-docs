@@ -75,28 +75,28 @@ Le modèle d'URL du plugin est :
 Envoyer une notification Brevo simple à vous-même, From et To identiques :
 
 ```bash
-apprise -vv -t "Test Title" -b "Test Message" \
+apprise -vv -t "Titre de Test" -b "Message de Test" \
    brevo://APIToken:user@example.com
 ```
 
 Envoyer un e-mail de `user@example.com` à un destinataire unique :
 
 ```bash
-apprise -vv -t "Deployment Complete" -b "The release finished successfully." \
+apprise -vv -t "Deploiement Termine" -b "La publication s'est terminee avec succes." \
     brevo://APIToken:user@example.com/ops@example.com
 ```
 
 Envoyer à plusieurs destinataires avec CC, BCC et un en-tête Reply-To :
 
 ```bash
-apprise -vv -t "Incident Report" -b "See attached logs for details." \
+apprise -vv -t "Rapport d'Incident" -b "Voir les journaux ci-joints pour plus de details." \
    "brevo://APIToken:alerts@example.com/oncall@example.com?to=dev1@example.com,dev2@example.com&cc=teamlead@example.com&bcc=manager@example.com&reply=Support%20Desk%20<support@example.com>"
 ```
 
 Envoyer avec une pièce jointe :
 
 ```bash
-apprise -vv -t "Nightly Report" -b "Attached is the latest report." \
+apprise -vv -t "Rapport Nocturne" -b "Le dernier rapport est joint." \
    --attach /path/to/report.pdf   \
    brevo://APIToken:reports@example.com/recipient@example.com
 ```

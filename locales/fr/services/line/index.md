@@ -62,6 +62,6 @@ Envoyer une notification Line :
 ```bash
 # Supposons que notre {token} soit 4174216298
 # Supposons que notre {user} soit U1234567
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    line://4174216298/U1234567
 ```

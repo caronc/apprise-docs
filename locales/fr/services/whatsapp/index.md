@@ -67,7 +67,7 @@ La syntaxe valide est la suivante :
 
 Les modeles que vous creez permettent de definir `{{1}}`, `{{2}}`, etc., qui seront remplaces lors de l'execution d'Apprise. Pour predefinir ces valeurs, il suffit d'utiliser le prefixe `:`, deux-points, devant l'index a renseigner.
 
-Par exemple, `?:3=My Value` affectera `My Value` a `{{3}}` a l'execution. Vous devez fournir tous les index attendus, sinon le serveur distant renverra une erreur.
+Par exemple, `?:3=Ma Valeur` affectera `Ma Valeur` a `{{3}}` a l'execution. Vous devez fournir tous les index attendus, sinon le serveur distant renverra une erreur.
 
 Si vous souhaitez associer le `body` ou le `type` d'Apprise a un index, utilisez ces mots-cles speciaux avec le prefixe `:` pour definir la correspondance. Par exemple, `?:body=1` est accepte et placera le contenu du `body` d'Apprise dans `{{1}}`.
 
@@ -84,25 +84,25 @@ Envoyer une notification WhatsApp :
 
 ```bash
 # Testez avec la commande suivante :
-apprise -b "Test Message" \
+apprise -b "Message de Test" \
   "whatsapp://token@from_phone_id/to_phone_no/"
 
 # Les modeles peuvent etre utilises ainsi :
-apprise -b "Test Message" \
+apprise -b "Message de Test" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/"
 
 # Si vous avez defini les tokens {{1}} et {{2}}, vous pouvez leur attribuer des valeurs ainsi :
-apprise -b "Test Message" \
+apprise -b "Message de Test" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:1=the data i want put here&:2=more data here"
 
 # La forme :<id> permet d'associer les elements {{<id>}}. Si vous souhaitez mapper le body
 # ou le type du message a un index, 2 mots-cles reserves sont disponibles pour cela :
 # L'exemple ci-dessous place la valeur du body Apprise dans l'element {{1}} :
-apprise -b "Test Message" \
+apprise -b "Message de Test" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:body=1"
 
 # Vous pouvez melanger mots-cles et index :
-apprise -b "Test Message" \
+apprise -b "Message de Test" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:body=2&:type=3&1:MyID1Value"
 
 # Il revient au developpeur de s'assurer que tous les {{1}}, {{2}}, etc. sont correctement renseignes

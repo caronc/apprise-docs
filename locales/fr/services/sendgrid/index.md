@@ -92,6 +92,6 @@ Envoyer une notification SendGrid :
 # Supposons que notre domaine authentifie soit example.com, et que nous voulions
 # definir notre {from_email} sur noreply@example.com
 # Supposons que notre {to_email} soit someone@microsoft.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sendgrid:///abcd123-xyz:noreply@example.com/someone@microsoft.com
 ```

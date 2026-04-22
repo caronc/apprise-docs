@@ -56,6 +56,6 @@ Envoyer une notification Kodi a notre serveur a l'ecoute sur le port 80 :
 
 ```bash
 # Supposons que notre {hostname} soit kodi.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "kodi://kodi.server.local"
 ```

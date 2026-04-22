@@ -53,11 +53,11 @@ Nous pouvons nous envoyer une notification de la facon suivante :
 
 ```bash
 # Nous envoyer une notification de bureau MacOS
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://"
 
 # Nous envoyer une notification de bureau MacOS avec le son par defaut
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://_/?sound=default"
 
 ```

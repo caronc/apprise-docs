@@ -51,6 +51,6 @@ Envoyer une notification Faast :
 
 ```bash
 # Supposons que notre {authorizationtoken} soit abcdefghijklmnop-abcdefg
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    faast://abcdefghijklmnop-abcdefg
 ```

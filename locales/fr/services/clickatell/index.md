@@ -51,6 +51,6 @@ Envoyer une notification vers votre compte Clickatell :
 ```bash
 # Supposons que notre {apikey} soit token
 # Supposons que notre {PhoneNo} soit 1-800-555-1234
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "clickatell://token/1-800-555-1234"
 ```

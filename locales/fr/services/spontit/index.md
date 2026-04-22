@@ -65,11 +65,11 @@ Envoyer une notification Spontit a tous les appareils associes a un projet :
 # Supposons :
 #  - que notre {user} soit user28635710302
 #  - que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    spontit://user28635710302@a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 
 # Pour remplacer le sous-titre, sur iOS uniquement, faites comme suit :
 # Vous devez utiliser des chaines encodees en URL, ci-dessous les espaces sont remplaces par %20
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    spontit://myuser@myapi?subtitle=A%20Different%20Subtitle
 ```

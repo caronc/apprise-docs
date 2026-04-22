@@ -164,7 +164,7 @@ Envoyer une notification Mattermost sécurisée à notre serveur via un webhook 
 # Assuming our {hostname} is mattermost.server.local
 # Assuming our {token} is 3ccdd113474722377935511fc85d3dd4
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mmosts://mattermost.server.local/3ccdd113474722377935511fc85d3dd4
 ```
 
@@ -175,7 +175,7 @@ Envoyer une notification Mattermost sécurisée à notre serveur tournant sur le
 # Assuming our secure {port} our server is running on is 8065
 # Assuming our {token} is 3ccdd113474722377935511fc85d3dd4
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mmosts://mattermost.server.local:8065/3ccdd113474722377935511fc85d3dd4
 ```
 
@@ -187,7 +187,7 @@ Envoyer une notification Mattermost non sécurisée à un serveur en visant des 
 # Assuming our {channels} is #support and #general
 
 # We don't need to provide the '#' (hashtag) prefix:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mmost://mattermost.server.local/3ccdd113474722377935511fc85d3dd4?channels=support,general
 ```
 
@@ -198,7 +198,7 @@ Envoyer une notification webhook avec un nom d'affichage personnalisé (`botname
 # Assuming our {token} is 3ccdd113474722377935511fc85d3dd4
 # Assuming our desired display name is mybot
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    'mmosts://mybot@mattermost.server.local/3ccdd113474722377935511fc85d3dd4'
 ```
 
@@ -207,7 +207,7 @@ Publier en tant que bot dans un identifiant de canal spécifique :
 ```bash
 # Assuming our {access_token} is abcd1234
 # Assuming our {channel_id} is f6g7ha13d4e58ib2c9aa
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    'mmosts://mattermost.server.local/abcd1234?mode=bot&to=f6g7ha13d4e58ib2c9aa'
 ```
 
@@ -216,7 +216,7 @@ Publier en tant que bot dans plusieurs identifiants de canaux :
 ```bash
 # Assuming our {access_token} is abcd1234
 # Assuming our {channel_ids} are a1b2c3d4e5f6g7h8i9j0 and f6g7ha13d4e58ib2c9aa
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    'mmosts://mattermost.server.local/abcd1234?mode=bot&to=a1b2c3d4e5f6g7h8i9j0,f6g7ha13d4e58ib2c9aa'
 ```
 
@@ -228,11 +228,11 @@ Publier en tant que bot en utilisant la résolution `#channel_name` (équipe req
 # Assuming our {channel_name} is general
 
 # Team provided via URL user portion:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    'mmosts://myteam@mattermost.server.local/abcd1234?mode=bot&to=#general'
 
 # Team provided via query string:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    'mmosts://mattermost.server.local/abcd1234?mode=bot&team=myteam&to=#general'
 ```
 
@@ -243,7 +243,7 @@ Envoyer un message bot avec une pièce jointe :
 # Assuming our {channel_id} is f6g7ha13d4e58ib2c9aa
 # Assuming the file to attach is /path/to/report.pdf
 
-apprise -vv -t "Report" -b "See attached." \
+apprise -vv -t "Rapport" -b "Voir ci-joint." \
    --attach /path/to/report.pdf \
    'mmosts://mattermost.server.local/abcd1234?mode=bot&to=f6g7ha13d4e58ib2c9aa'
 ```

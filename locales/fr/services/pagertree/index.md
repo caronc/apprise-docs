@@ -51,7 +51,7 @@ Envoyer une commande de creation PagerTree.
 ```bash
 
 # Supposons que notre {integration_id} soit int_0123456789
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagertree://int_0123456789"
 ```
 
@@ -64,7 +64,7 @@ L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter du 
 #
 # Supposons que notre {integration_id} soit int_xxxxxxxxxx
 # Supposons que nous voulions inclure "server": "blue-ranger-2" dans le payload existant :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagertree://int_xxxxxxxxxx/?:server=blue-ranger-2"
 ```
 
@@ -74,8 +74,8 @@ Cela publierait un message comme celui-ci :
 {
   "id": "0f85aa1c-711e-4873-95b6-e441c291537d",
   "action": "create",
-  "title": "Test Message Title",
-  "message": "Test Message Body",
+  "title": "Titre du Message de Test",
+  "message": "Corps du Message de Test",
   "server": "blue-ranger-2"
 }
 ```
@@ -89,7 +89,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 #    pagertree-token: abcdefg
 #
 # Supposons que notre {integration_id} soit int_xxxxxxxxxx
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagertree://int_xxxxxxxxxx?+pagertree-token=abcdefg"
 
 ```
@@ -102,6 +102,6 @@ Certaines fonctionnalites de PagerTree, comme les incidents, se trouvent dans la
 # Indiquer a PagerTree que cette alerte doit etre marquee comme incident
 # Le symbole `-` sera retire lors de l'envoi en amont
 # Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagertree://int_xxxxxxxxxx?-incident=true&-incident_severity=SEV-1&-incident_message=Join the war room"
 ```

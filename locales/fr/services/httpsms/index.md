@@ -50,6 +50,6 @@ Envoyer un message httpSMS :
 # Supposons que notre {apikey} soit hard-to-guess
 # Supposons que le {PhoneNo} associe a notre compte soit +1800-555-4444
 # Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    httpsms://hard-to-guess@+1800-555-4444/+134-555-1223
 ```

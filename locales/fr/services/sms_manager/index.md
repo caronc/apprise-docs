@@ -53,6 +53,6 @@ Envoyer un message SMS Manager :
 ```bash
 # Supposons que notre {apikey} soit hard-to-guess
 # Supposons que le {PhoneNo} a notifier soit +134-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    smsmgr://hard-to-guess@+134-555-1223
 ```

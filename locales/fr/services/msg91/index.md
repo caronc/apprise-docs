@@ -67,12 +67,12 @@ Envoyer une notification MSG91 par SMS :
 # Assuming our {AuthKey} is gank339l7jk3cjaE
 # Assuming our {PhoneNo} - is in the US somewhere making our country code +1
 #                        - identifies as 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    msg91://12345@gank339l7jk3cjaE/18005551223
 
 # the following would also have worked (spaces, brackets,
 # dashes are accepted in a phone no field):
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "msg91://12345@gank339l7jk3cjaE/1-(800) 555-1223"
 ```
 
@@ -87,7 +87,7 @@ Envoyer une notification MSG91 par SMS :
 # Assuming we want to make sure Apprise does not pass along the `type`
 # Assuming we want to define our Foobar Inc company name as the template token `company`:
 #                        - identifies as 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "msg91://12345@gank339l7jk3cjaE/18005551223?:body=payload&:type&company=Foobar%20Inc"
 
 ```

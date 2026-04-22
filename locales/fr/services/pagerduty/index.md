@@ -60,7 +60,7 @@ Envoyer un declenchement PagerDuty pour notre **source** `node01.local` et le **
 # Supposons que notre {api_key} soit TIiajkdnlazkcOXrIdevi7F
 # Supposons que notre {source} soit node01.local
 # Supposons que notre {component} soit drive_sda
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/node01.local/drive_sda/"
 ```
 
@@ -76,7 +76,7 @@ Vous pouvez aussi fournir des details personnalises dans la charge utile. Pour c
 # Supposons que notre {api_key} soit 98754
 # Supposons que notre {source} soit node01.local
 # Supposons que notre {component} soit drive_sda
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB"
 
 # Pour plusieurs details, il suffit d'ajouter plus d'entrees :
@@ -88,6 +88,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Supposons que notre {api_key} soit 98754
 # Supposons que notre {source} soit node01.local
 # Supposons que notre {component} soit drive_sda
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB&+disk_space_total=500GB"
 ```

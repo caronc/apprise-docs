@@ -53,7 +53,7 @@ Envoyer une notification XBMC a notre serveur a l'ecoute sur le port `8080` :
 
 ```bash
 # Supposons que notre {hostname} soit xbmc.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xbmc://xbmc.server.local"
 
 # Il est possible qu'un utilisateur et un mot de passe protegent votre serveur XBMC ;
@@ -61,6 +61,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Supposons que notre {hostname} soit xbmc.server.local
 # Supposons que notre {userid} soit xbmc
 # Supposons que notre {password} soit xbmc
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xbmc://xbmc:xbmc@xbmc.server.local"
 ```

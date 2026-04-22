@@ -80,12 +80,12 @@ Envoyer un message SMS :
 # Supposons que notre {PhoneNo}
 #   - se trouve aux Etats-Unis, donc avec l'indicatif pays +1
 #   - corresponde au numero 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223
 
 # la variante suivante aurait aussi fonctionne
 # les espaces, parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+1(800)555-1223
 
 ```

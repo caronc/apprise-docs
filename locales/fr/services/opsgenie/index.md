@@ -110,7 +110,7 @@ Vous pouvez remplacer la correspondance type-vers-action par defaut en utilisant
 Par exemple, pour faire en sorte que les notifications `info` creent une nouvelle alerte au lieu d'ajouter une note :
 
 ```bash
-apprise -vv -t "Test Title" -b "Test Body" \
+apprise -vv -t "Titre de Test" -b "Corps de Test" \
    "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?:info=new"
 ```
 
@@ -120,7 +120,7 @@ Envoyer une notification Opsgenie a tous les appareils associes a un projet :
 
 ```bash
 # Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 ```
 
@@ -131,7 +131,7 @@ Opsgenie vous permet de fournir des details composes de paires cle/valeur que vo
 ```bash
 # L'exemple ci-dessous definirait la paire cle/valeur foo=bar :
 # Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar"
 
 # Pour plusieurs paires cle/valeur, il suffit d'ajouter plus d'entrees :
@@ -140,6 +140,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #    apprise=awesome
 #
 # Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar&+apprise=awesome"
 ```

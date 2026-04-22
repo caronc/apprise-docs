@@ -41,6 +41,6 @@ Envoyer une notification PushMe :
 ```bash
 # Supposons que notre {token}, ou {push_key}, soit abc123
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pushme://abc123
 ```

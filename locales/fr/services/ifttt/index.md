@@ -66,10 +66,10 @@ Envoyer une notification IFTTT :
 ```bash
 # Supposons que notre {WebhookID} soit b1lUk7b9LpGakJARKBwRIZ
 # Supposons que notre {Event} soit sms_message
-# Supposons que nous voulions que {value1} contienne "My Title"
-# Supposons que nous voulions que {value2} contienne "My Body"
+# Supposons que nous voulions que {value1} contienne "Mon Titre"
+# Supposons que nous voulions que {value2} contienne "My Corps du Message"
 # Supposons que nous voulions que {value3} contienne "info"
-apprise -vv -t "My Title" -b "My Value" \
+apprise -vv -t "Mon Titre" -b "Ma Valeur" \
    ifttt:///b1lUk7b9LpGakJARKBwRIZ@sms_message
 ```
 

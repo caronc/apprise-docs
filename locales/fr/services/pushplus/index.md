@@ -57,20 +57,20 @@ La syntaxe valide est la suivante :
 Utilisation de l'URL Apprise simplifiée :
 
 ```bash
-apprise -vv -t "Title" -b "This is the body" \
+apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
     pushplus://abc123def456ghi789jkl012mno345pq
 ```
 
 Utilisation du token en tant que paramètre de requête :
 
 ```bash
-apprise -vv -t "Title" -b "This is the body" \
+apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
     pushplus://?token=abc123def456ghi789jkl012mno345pq
 ```
 
 Utilisation de l'URL native complète du webhook :
 
 ```bash
-apprise -vv -t "Title" -b "This is the body" \
+apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
     https://www.pushplus.plus/send?token=abc123def456ghi789jkl012mno345pq
 ```

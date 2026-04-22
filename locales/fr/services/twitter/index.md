@@ -117,7 +117,7 @@ Envoyer un message direct X a `@testaccount` :
 # Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
 # Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
 # notre utilisateur est @testaccount
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twitter://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3
 ```
 
@@ -129,7 +129,7 @@ Ou
 # Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
 # Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
 # notre utilisateur est @testaccount
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    x://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3
 ```
 
@@ -140,7 +140,7 @@ Envoyer un post public :
 # Supposons que notre {ConsumerSecret} soit A1BRTD4JD
 # Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
 # Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    twitter://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3?mode=tweet
 ```
 
@@ -151,6 +151,6 @@ Ou
 # Supposons que notre {ConsumerSecret} soit A1BRTD4JD
 # Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
 # Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    x://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3?mode=tweet
 ```

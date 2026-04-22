@@ -120,12 +120,12 @@ Envoyer une notification Signal (via Signal API) :
 # Assuming our {FromPhoneNo} is +1-900-555-9999
 # Assuming our {PhoneNo} - is in the US somewhere making our country code +1
 #                        - identifies as 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost/19005559999/18005551223"
 
 # the following would also have worked (spaces, brackets,
 # dashes are accepted in a phone no field):
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost/1-(900) 555-9999/1-(800) 555-1223"
 ```
 
@@ -135,7 +135,7 @@ D'après mon expérience personnelle, j'ai pu m'envoyer une notification à moi-
 # Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
 # Assuming our {Port} is 9922
 # Assuming our {FromPhoneNo} is +1 555 555 1234
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost:9922/15555551234"
 ```
 

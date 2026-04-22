@@ -82,7 +82,7 @@ Envoyer une notification Bark à tous les appareils associés à un projet :
 #  - que notre {hostname} soit localhost
 #  - que notre {port} soit 8080
 #  - que notre {device_key} soit j300012fl9y0b5AW9g9Nsejb8P
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P
 ```
 
@@ -90,7 +90,7 @@ Envoyer une notification Bark au format Markdown :
 
 ```bash
 # Le contenu Markdown est envoyé via le champ `markdown` de Bark
-apprise -vv -t "Build Status" -b "# Success\n\nDeployment completed." \
+apprise -vv -t "Build Statut" -b "# Success\n\nDeployment completed." \
    bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?format=markdown
 ```
 

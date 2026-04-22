@@ -81,41 +81,41 @@ Si un canal est protégé par une clé, ajoutez-la après le nom du canal en uti
 Envoyer un message vers un canal via TLS :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://irc.example.net/#alerts"
 ```
 
 Envoyer vers plusieurs cibles :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://irc.example.net/#alerts/@bob/@alice"
 ```
 
 Envoyer vers un canal protégé par un mot de passe :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://irc.example.net/#private:channel-key"
 ```
 
 Exemple en mode NickServ :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://user:pass@irc.example.net/#alerts?mode=nickserv&nick=MyNick"
 ```
 
 Exemple en mode relayeur ZNC :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://zncuser:zncpass@znc.example.net/#alerts?mode=znc&nick=MyNick"
 ```
 
 Mode ZNC, plusieurs cibles :
 
 ```bash
-apprise -vv -t "Title" -b "Message body" \
+apprise -vv -t "Title" -b "Corps du Message" \
   "ircs://zncuser:zncpass@znc.example.net/#alerts/@bob?mode=znc&nick=MyNick"
 ```

@@ -40,6 +40,6 @@ Envoyer une notification ServerChan :
 ```bash
 # Supposons que :
 #  - notre {sendkey} soit ABC123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    schan://ABC123
 ```

@@ -57,6 +57,6 @@ Envoyer une notification Synology a tous les appareils associes a un projet :
 #  - que notre {hostname} soit synology.home.arpa
 #  - que notre {port} soit 5000
 #  - que notre {token} soit j300012fl9y0b5AW9g9Nsejb8P
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    synology://synology.home.arpa:5000/j300012fl9y0b5AW9g9Nsejb8P
 ```

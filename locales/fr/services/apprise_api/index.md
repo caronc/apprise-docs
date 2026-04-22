@@ -61,7 +61,7 @@ Envoyer une notification a un serveur API Apprise a l'ecoute sur le port 80 :
 ```bash
 # Supposons que notre {hostname} soit apprise.server.local
 # Supposons que notre {token} soit token
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token"
 ```
 
@@ -71,7 +71,7 @@ Voici un autre exemple ou vous pouvez appeler votre serveur Apprise selon les ta
 # Supposons que notre {hostname} soit apprise.server.local
 # Supposons que notre {token} soit token
 # Supposons que nous voulions declencher toute notification associee au {tag} email
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=email"
 ```
 
@@ -89,15 +89,15 @@ Vous pouvez aussi utiliser la logique ET et OU lorsque vous transmettez des tags
 
 ```bash
 # Exemple OU
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=devops,finance"
 
 # Exemple ET
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=devops alerts"
 
 # Exemple mixte : (comment AND create) OR admin
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
 
@@ -112,7 +112,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 # Supposons que notre {hostname} soit localhost
 # Supposons que notre {port} soit 8080
 # Supposons que notre {token} soit apprise
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "apprise://localhost:8080/apprise/?+X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
@@ -125,7 +125,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # Supposons que notre {token} soit apprise
 # Dans cet exemple, nous permettons la definition d'un chemin URL personnalise
 # dans le cas ou notre API Apprise serait hebergee a cet endroit
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "apprise://localhost:8080/path/apprise/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 

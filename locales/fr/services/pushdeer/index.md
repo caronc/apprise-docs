@@ -52,12 +52,12 @@ Envoyer une notification PushDeer :
 
 ```bash
 # Supposons que notre {push_key} pushdeer.com soit abcdefghijklmnop-abcdefg
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pushdeers://abcdefghijklmnop-abcdefg"
 
 # Pour un hebergement autonome :
 # Supposons que notre {push_key} soit abcdefghijklmnop-abcdefg
 # Supposons que notre {hostname} soit myserver.example.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pushdeers://myserver.example.com/abcdefghijklmnop-abcdefg
 ```

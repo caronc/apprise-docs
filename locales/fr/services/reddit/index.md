@@ -76,6 +76,6 @@ Envoyer une notification Reddit
 # Supposons que notre {app_secret} soit YZGKc5YNjq3BsC-bf7oBKalBMeb1xA
 # Supposons que nous voulions publier dans le {subreddit} Apprise
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    reddit://sstark:notAFanOfLannisters@YWARPXajkk645m/YZGKc5YNjq3BsC-bf7oBKalBMeb1xA/Apprise
 ```

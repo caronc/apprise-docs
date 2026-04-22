@@ -74,7 +74,7 @@ Envoyer une notification Microsoft Teams :
 # Assuming our {port} is 443
 # Assuming our {workflow} is T1JJ3T3L2@DEFK543
 # Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
 
@@ -128,9 +128,9 @@ Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `t
 Une notification comme celle-ci :
 
 ```bash
-# using colons, we can set our target and whence dynamically from the
-# command line:
-apprise -t "My Title goes in app_title" -b "This is placed into the app_body" \
+# En utilisant des deux-points, nous pouvons definir dynamiquement
+# target et whence depuis la ligne de commande :
+apprise -t "Mon Titre va dans app_title" -b "Ceci est place dans app_body" \
    "workflows://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 

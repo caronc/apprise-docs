@@ -90,7 +90,7 @@ Envoyer une alerte Splunk On-Call pour simuler l'echec de notre service de base 
 # Supposons que nous voulions declencher un message Splunk `CRITICAL`, donc envoyer une notification Apprise de type `failure`
 # Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 # Supposons que notre {route_key} soit database
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n failure \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 ```
 
@@ -100,7 +100,7 @@ Nous pouvons resoudre la panne ci-dessus en procedant simplement comme suit :
 # Supposons que nous voulions declencher un message Splunk `ACKNOWLEDGEMENT`, donc envoyer une notification Apprise de type `success`
 # Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 # Supposons que notre {route_key} soit database
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n success \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n success \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 ```
 
@@ -112,7 +112,7 @@ Envoyer un message Splunk avec remappage de nos cles :
 # Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 # Supposons que notre {route_key} soit database
 # Dans cet exemple, nous enverrons un message `warning`, qui deviendra donc un `CRITICAL`
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n warning \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n warning \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221?:info=rec&:warn=crit
 ```
 
@@ -123,6 +123,6 @@ Quel que soit le type de message envoye, nous pouvons aussi le forcer en `RECOVE
 # Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 # Supposons que notre {route_key} soit database
 # Dans cet exemple, nous enverrons un message `failure`, mais il sera traite comme un `RECOVERY` a cause de notre configuration
-apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" -n failure  \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221?:action=recovery
 ```

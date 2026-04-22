@@ -79,12 +79,12 @@ Envoyer une notification OneSignal à tous les appareils associés à un projet 
 #  - our {app_id} is abc123
 #  - our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 #  - our {player_id} is 3456-2345-a3ef
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    onesignal://abc123@a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/3456-2345-a3ef
 
 # Override the subtitle (Mac users only) by doing the following:
 # You must use URL encoded strings, below the spaces are swapped with %20
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    onesignal://abc123@a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/3456-2345-a3ef?subtitle=A%20Different%20Subtitle
 ```
 
@@ -94,7 +94,7 @@ L'utilisation du `:` dans l'URL Apprise permet de modifier et d'enrichir le payl
 
 ```bash
 # As an example:
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "onesignal://credentials/?:key1=value1"
 ```
 
@@ -113,7 +113,7 @@ L'utilisation du `+` dans l'URL Apprise permet de modifier et d'enrichir le payl
 
 ```bash
 # As an example:
-apprise -vv -b "Test Message Body" \
+apprise -vv -b "Corps du Message de Test" \
    "onesignal://credentials/?+key1=value1"
 ```
 

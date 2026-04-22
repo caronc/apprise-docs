@@ -132,7 +132,7 @@ Envoyer une notification Slack vers le canal `#nuxref` :
 # Supposons que notre {tokenB} soit A1BRTD4JD
 # Supposons que notre {tokenC} soit TIiajkdnlazkcOXrIdevi7F
 # Notre canal nuxref est represente par #nuxref
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack:///T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/#nuxref
 ```
 
@@ -141,7 +141,7 @@ Autrement, si vous utilisez un bot, une notification Slack vers le canal `#gener
 ```bash
 # Supposons que notre {OAuthToken} soit xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d
 # Notre canal general est represente par #general
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/#general
 ```
 
@@ -151,6 +151,6 @@ Vous pouvez aussi désactiver le pied de page, par exemple ainsi :
 # Supposons que notre {OAuthToken} soit xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d
 # Nous voulons l'envoyer vers notre canal #general ; %23 est la forme encodee du symbole #
 # Nous definissons aussi footer sur no
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
 ```

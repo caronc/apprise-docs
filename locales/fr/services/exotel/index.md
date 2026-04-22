@@ -77,12 +77,12 @@ Envoyer une notification Exotel sous forme de SMS :
 # Supposons que notre {PhoneNo}
 #  - se trouve aux Etats-Unis, donc avec l'indicatif +1
 #  - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    exotel://acme123:exo-token@19005559999/18005551223
 
 # l'exemple suivant aurait egalement fonctionne, les espaces,
 # parentheses et tirets sont acceptes dans un numero :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    exotel://acme123:exo-token@1-(900) 555-9999/1-(800) 555-1223
 ```
 
@@ -94,7 +94,7 @@ Envoyer via la region Inde en utilisant une cle API distincte et un sender ID ap
 # Supposons que notre {ApiToken} soit exo-token
 # Supposons que notre {SenderID} soit EXOTEL
 # Supposons que notre {PhoneNo} soit +91-98765-43210
-apprise -vv -b "Your verification code is 123456" \
+apprise -vv -b "Votre code de verification est 123456" \
    "exotel://acme123:exo-token@EXOTEL/919876543210?apikey=api-key&region=in&priority=high"
 ```
 

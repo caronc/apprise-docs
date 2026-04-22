@@ -85,6 +85,6 @@ Envoyer une notification Notifico :
 # L'exemple ci-dessous envoie une notification Notifico
 # Supposons que notre {ProjectID} soit 2144
 # Supposons que notre {MessageHook} soit uJmKaBW9WFk42miB146ci3Kj
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    notifico://2144/uJmKaBW9WFk42miB146ci3Kj
 ```

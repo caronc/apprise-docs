@@ -75,6 +75,6 @@ Envoyer une notification Boxcar a tous les appareils associes a un projet :
 # Supposons :
 #  - que notre {access_key} soit pJz1KEP5zGo9KwDnIb-7_Kab
 #  - que notre {secret_key} soit j300012fl9y0b5AW9g9Nsejb8P
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    boxcar://pJz1KEP5zGo9KwDnIb-7_Kab/j300012fl9y0b5AW9g9Nsejb8P
 ```

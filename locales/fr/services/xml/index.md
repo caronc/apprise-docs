@@ -34,14 +34,14 @@ Le format pourrait ressembler à ceci :
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Body>
+    <soapenv:Corps du Message>
         <Notification xmlns:xsi="http://nzbget.lead2gold.org/notify/NotifyXML-1.0.xsd">
             <Version>1.0</Version>
             <Subject>What A Great Movie Downloaded Successfully</Subject>
             <MessageType>info</MessageType>
             <Message>Plenty of details here...</Message>
        </Notification>
-    </soapenv:Body>
+    </soapenv:Corps du Message>
 </soapenv:Envelope>
 ```
 
@@ -86,7 +86,7 @@ Envoyer une notification XML à notre serveur Web en écoute sur le port 80 :
 
 ```bash
 # Assuming our {hostname} is xml.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    xml://xml.server.local
 ```
 
@@ -96,15 +96,15 @@ Par défaut, toutes les notifications sont envoyées en tant que requête `POST`
 
 ```bash
 # Send as a PUT request
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost/?method=put"
 
 # Send as a DELETE request
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost/?method=delete"
 
 # Send as a PATCH request
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost/?method=patch"
 ```
 
@@ -124,7 +124,7 @@ L'utilisation du `:` dans l'URL Apprise vous permet de modifier et d'ajouter du 
 #
 # Assuming our {hostname} is localhost
 # Assuming we want to include "Sound": "oceanwave" as part of the existing payload:
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost/?:Sound=oceanwave"
 ```
 
@@ -136,15 +136,15 @@ Ce qui précède publierait un message tel que :
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Body>
+    <soapenv:Corps du Message>
         <Notification xmlns:xsi="http://nzbget.lead2gold.org/notify/NotifyXML-1.0.xsd">
             <Version>1.0</Version>
-            <Subject>Test Message Title</Subject>
+            <Subject>Titre du Message de Test</Subject>
             <MessageType>info</MessageType>
-            <Message>Test Message Body</Message>
+            <Message>Corps du Message de Test</Message>
             <Sound>oceanwave</Sound>
        </Notification>
-    </soapenv:Body>
+    </soapenv:Corps du Message>
 </soapenv:Envelope>
 ```
 
@@ -153,7 +153,7 @@ Vous pouvez également supprimer des éléments intégrés de la sortie en défi
 ```bash
 # Remove the Version and MessageType elements from the payload:
 # Assuming our {hostname} is localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost/?:Version&:MessageType"
 ```
 
@@ -165,12 +165,12 @@ Ce qui précède publierait un message tel que :
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Body>
+    <soapenv:Corps du Message>
         <Notification>
-            <Subject>Test Message Title</Subject>
-            <Message>Test Message Body</Message>
+            <Subject>Titre du Message de Test</Subject>
+            <Message>Corps du Message de Test</Message>
        </Notification>
-    </soapenv:Body>
+    </soapenv:Corps du Message>
 </soapenv:Envelope>
 ```
 
@@ -179,10 +179,10 @@ Ce qui précède publierait un message tel que :
 Enfin, vous pouvez remapper un élément intégré vers un nom de balise différent :
 
 ```bash
-# Remap "Message" to "Body" and "Subject" to "Title":
+# Remap "Message" to "Corps du Message" and "Subject" to "Title":
 # Assuming our {hostname} is localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   "xml://localhost/?:Message=Body&:Subject=Title"
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "xml://localhost/?:Message=Corps du Message&:Subject=Title"
 ```
 
 Ce qui précède publierait un message tel que :
@@ -193,14 +193,14 @@ Ce qui précède publierait un message tel que :
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soapenv:Body>
+    <soapenv:Corps du Message>
         <Notification>
             <Version>1.0</Version>
-            <Title>Test Message Title</Title>
+            <Title>Titre du Message de Test</Title>
             <MessageType>info</MessageType>
-            <Body>Test Message Body</Body>
+            <Corps du Message>Corps du Message de Test</Corps du Message>
        </Notification>
-    </soapenv:Body>
+    </soapenv:Corps du Message>
 </soapenv:Envelope>
 ```
 
@@ -214,7 +214,7 @@ Certains utilisateurs peuvent avoir besoin que des en-têtes HTTP spéciaux soie
 #
 # Assuming our {hostname} is localhost
 # Assuming our {port} is 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost:8080/path/?+X-Token=abcdefg"
 
 # Multiple headers just require more entries defined:
@@ -224,7 +224,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #
 # Assuming our {hostname} is localhost
 # Assuming our {port} is 8080
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
@@ -237,13 +237,13 @@ Certains utilisateurs peuvent avoir besoin que des paramètres GET fassent parti
 #
 # The `-` symbol will get stripped off when the upstream post takes place
 # Apprise knows not to do anything with the argument at all and pass it along as is.
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xml://localhost:8080/?-token=abcdefg"
 
 # If you want to pass more then one element, just chain them:
 # The below would send a a POST to:
 #  https://example.ca/my/path?key1=value1&key2=value2
 #
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "xmls://example.ca/my/path?-key1=value1&-key2=value2"
 ```

@@ -105,6 +105,6 @@ Envoyer une notification Rocket.Chat vers le canal _#nuxref_ :
 # Supposons que notre {user} soit l2g
 # Supposons que notre {password} soit awes0m3!
 # Supposons que notre {hostname} soit rocket.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    rocket://l2g:awes0m3!@rocket.server.local/#nuxref
 ```

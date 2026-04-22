@@ -52,6 +52,6 @@ Envoyer un message SMS Manager :
 # Supposons que notre {appuser} soit user123
 # Supposons que notre {apikey} soit hard-to-guess
 # Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    atalk://user123@hard-to-guess/+134-555-1223
 ```

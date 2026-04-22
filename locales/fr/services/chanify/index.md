@@ -39,6 +39,6 @@ Envoyer une notification vers votre compte Chanify :
 
 ```bash
 # Supposons que notre {token} soit token
-apprise -vv --body="Test Message" \
+apprise -vv --body="Message de Test" \
    "chanify://token"
 ```

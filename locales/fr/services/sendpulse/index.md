@@ -74,6 +74,6 @@ Envoyer une notification SendPulse :
 # Supposons que notre {client_secret} soit client_secret
 # Supposons que nous voulions envoyer un e-mail a target@example.com
 # Supposons que notre {to_email} soit someone@microsoft.com
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sendpulse:///user@example.com/client_id/client_secret/target@example.com
 ```

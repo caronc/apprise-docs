@@ -55,11 +55,11 @@ Envoyer une notification SFR :
 # Supposons que notre {PhoneNo}
 #   - se trouve aux Etats-Unis, donc avec l'indicatif pays +1
 #   - corresponde a 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sfr://foo:bar@1234/18005551223
 
 # la variante suivante aurait aussi fonctionne
 # les espaces, parentheses et tirets sont acceptes dans ce champ :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sfr://foo:bar@1234//1-(800) 555-1223
 ```

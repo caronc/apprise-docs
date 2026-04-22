@@ -53,7 +53,7 @@ En supposant que nous sommes sur un ordinateur Windows, nous pouvons nous envoye
 
 ```bash
 # Send ourselves a windows notification
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "windows://"
 ```
 

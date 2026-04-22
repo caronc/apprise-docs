@@ -57,7 +57,7 @@ Envoyer une notification Voip.ms a nous-meme :
 #  - notre {email} soit test@example.com
 #  - notre {password} soit abc123
 #  - les {toPhoneNo} et {fromPhoneNo} soient 6135551234
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    voipms://abc123:test@example.com/6135551234
 ```
 
@@ -69,7 +69,7 @@ Envoyer une notification Voip.ms a un autre appareil :
 #  - notre {password} soit abc123
 #  - le {fromPhoneNo} soit 6135551234
 #  - le {ToPhoneNo} soit 5645554321
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    voipms://abc123:test@example.com/6135551234/5645554321
 ```
 

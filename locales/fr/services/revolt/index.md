@@ -50,6 +50,6 @@ Envoyer une notification Revolt a `lead2gold` :
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {channel} associe a lead2gold soit 12315544
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    revolt://123456789:abcdefg_hijklmnop/12315544/
 ```

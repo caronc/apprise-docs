@@ -85,7 +85,7 @@ Envoyer une notification FCM Legacy :
 # Supposons que notre {APIKey} soit bu1dHSdO22pfaaVy
 # Supposons que notre {Device} soit ABCD:12345
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "fcm://bu1dHSdO22pfaaVy/ABCD:12345"
 
 ```
@@ -97,6 +97,6 @@ Envoyer une notification FCM OAuth2 :
 # Supposons que le chemin vers notre JSON {Keyfile} soit /etc/apprise/fcm/keyfile.json
 # Supposons que notre {Device} soit ABCD:12345
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "fcm://Apprise/ABCD:12345/?keyfile=/etc/apprise/fcm/keyfile.json"
 ```

@@ -77,6 +77,6 @@ Envoyer une notification Join a tous nos appareils configures :
 ```bash
 # Supposons que notre {apikey} soit abcdefghijklmnop-abcdefg
 # Supposons que nous envoyions au groupe : all
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    join://abcdefghijklmnop-abcdefg/group.all
 ```

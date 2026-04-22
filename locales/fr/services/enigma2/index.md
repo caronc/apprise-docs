@@ -79,14 +79,14 @@ Envoyer une notification a notre appareil Enigma2 :
 
 ```bash
 # Supposons que notre {hostname} soit dreambox
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    enigma2://dreambox
 
 # Si votre service est heberge sous /enigma2, l'exemple suivant peut gerer cela :
 # Supposons que notre {hostname} soit dreambox
 # Supposons que notre {fullpath} soit /enigma2
 
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "enigma2://dreambox/enigma2"
 
 ```
@@ -100,7 +100,7 @@ Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'en
 #    X-Token: abcdefg
 #
 # Supposons que notre {hostname} soit vu-device
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "enigma2://localhost/?-X-Token=abcdefg"
 
 # Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees precedees d'un symbole moins :
@@ -109,6 +109,6 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 #    X-Apprise: is great
 #
 # Supposons que notre {hostname} soit localhost
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "enigma2://localhost/path/?-X-Token=abcdefg&-X-Apprise=is%20great"
 ```

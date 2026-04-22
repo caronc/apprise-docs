@@ -175,7 +175,7 @@ Définissez :
 - `X-Token: abcdefg`
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
   "mailto://localhost?to=john@example.ca&+X-Token=abcdefg"
 ```
 
@@ -191,7 +191,7 @@ Par exemple, si vous souhaitez aussi transmettre les en-têtes e-mail suivants d
 Vous structurerez alors votre e-mail comme ceci :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
   "mailto://localhost?to=john@example.ca&+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
@@ -253,7 +253,7 @@ Pour éviter toute ambiguïté, tout paramètre d'URL (`?key=value`) surcharge l
 Exemple avec un fournisseur intégré :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
     mailto:///example:mypassword@gmail.com
 ```
 
@@ -263,7 +263,7 @@ Envoyer un e-mail via un fournisseur personnalisé ; comme aucun `smtp=` n'est p
 # Assuming the {domain} is example.com
 # Assuming the {user} is george
 # Assuming the {password} is pass123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mailto://george:pass123@example.com
 
 # L'URL ci-dessus aurait aussi pu être écrite comme ceci :
@@ -276,7 +276,7 @@ Si le serveur SMTP diffère du domaine, ce qui est généralement le cas, votre 
 # Assuming the {domain} is example.com
 # Assuming the {user} is george
 # Assuming the {password} is pass123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mailto://george:pass123@example.com?smtp=smtp.example.com
 ```
 
@@ -286,7 +286,7 @@ Dans certains cas, `{user}` est une adresse e-mail complète. Vous pouvez alors 
 # Assuming the {domain} is example.com
 # Assuming the {user} is george@example.com
 # Assuming the {password} is pass123
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mailto://example.com?user=george@example.com&pass=pass123"
 
 # Notez que l'esperluette (&), utilisée dans l'URL pour séparer
@@ -294,7 +294,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # en arrière-plan. Encadrez donc votre URL de guillemets.
 
 # Envoyer un e-mail vers un serveur relais SMTP que vous hébergez :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    mailto://localhost?from=john@example.ca
 ```
 
@@ -306,7 +306,7 @@ Les utilisateurs de serveurs SMTP personnalisés auront besoin d'une configurati
 # Assuming the {login} is user1@example.com
 # Assuming the {password} is pass123
 # Assuming you want to use starttls (port 587)
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mailtos://_?user=user1@example.com&pass=pass123&smtp=mail.example.com&from=joe@example.com"
 
 # Remarques (pour l'URL ci-dessus) :
@@ -324,11 +324,11 @@ Voici un exemple plus avancé où vous souhaitez utiliser `ssl` et un port perso
 # Assuming the {password} is pass123
 # Assuming you want to use ssl on port 12522
 # Assuming you want your email to go to bob@example.com and jane@yahoo.ca
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mailtos://example.com:12522?user=user1@example.com&pass=pass123&smtp=mail.example.com&from=joe@example.com&to=bob@example.com,jane@yahoo.ca&mode=ssl"
 
 Relais local :
 ```bash
-apprise -t "Test Title" -b "Test Body" \
+apprise -t "Titre de Test" -b "Corps de Test" \
    mailto://localhost?to=john@example.com
 ````

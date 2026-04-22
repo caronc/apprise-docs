@@ -61,7 +61,7 @@ Envoyer une notification PushSafer a tous nos appareils configures :
 
 ```bash
 # Supposons que notre {private_key} soit 435jdj3k78435jdj3k78435jdj3k78
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    psafers://435jdj3k78435jdj3k78435jdj3k78
 ```
 
@@ -71,6 +71,6 @@ Envoyer une notification PushSafer avec la priorite Emergency :
 # La priorite Emergency recommande aussi de preciser les valeurs
 # expire et retry.
 # Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    psafers://435jdj3k78435jdj3k78435jdj3k78?priority=emergency
 ```

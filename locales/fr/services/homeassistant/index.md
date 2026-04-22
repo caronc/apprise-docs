@@ -131,7 +131,7 @@ hassio://{host}/{access_token}/{service}?prefix=/ha
 Envoyer une notification persistante (crée une nouvelle entrée dans le tableau de bord HA à chaque appel) :
 
 ```bash
-apprise -vv -t "Alert" -b "Motion detected" \
+apprise -vv -t "Alert" -b "Mouvement detecte" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f'
 ```
 
@@ -139,21 +139,21 @@ Envoyer une notification persistante qui **remplace** toujours la précédente
 (utile pour des mises à jour d'état récurrentes) :
 
 ```bash
-apprise -vv -t "Status" -b "All systems nominal" \
+apprise -vv -t "Statut" -b "All systems nominal" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f?nid=apprise'
 ```
 
 Envoyer vers un service de notification de l'application mobile :
 
 ```bash
-apprise -vv -t "Alert" -b "Someone rang the doorbell" \
+apprise -vv -t "Alert" -b "Quelqu'un a sonne a la porte" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_myphone'
 ```
 
 Envoyer vers plusieurs services dans une seule URL :
 
 ```bash
-apprise -vv -t "Alert" -b "Garage door left open" \
+apprise -vv -t "Alert" -b "La porte du garage est restee ouverte" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_phone1/notify.mobile_app_phone2'
 ```
 

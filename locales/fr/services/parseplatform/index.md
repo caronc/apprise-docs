@@ -49,6 +49,6 @@ Envoyer une notification Parse Platform :
 #  - our {app_id} is abc123
 #  - our {master_key} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 #  - our {hostname} is parseplatform.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    parsep://app_id:master_key@parseplatform.local
 ```

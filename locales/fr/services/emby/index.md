@@ -65,13 +65,13 @@ Envoyer une notification a un serveur a l'ecoute sur le port par defaut, `8096` 
 
 ```bash
 # Supposons que notre {hostname} soit media.server.local
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "emby://user:password@media.server.local"
 ```
 
 Envoyer une notification securisee, en HTTPS :
 
 ```bash
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "embys://user:password@media.server.local"
 ```

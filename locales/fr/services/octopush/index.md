@@ -67,12 +67,12 @@ Envoyer une notification Octopush sous forme de SMS :
 # Supposons que notre {api_key} soit my-api-key
 # Supposons que notre {phone_no} soit aux Etats-Unis, donc avec l'indicatif pays +1,
 # et corresponde au numero 800-555-1223
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "octopush://user@example.com/my-api-key/18005551223"
 
 # la variante suivante aurait aussi fonctionne
 # les espaces, parentheses et tirets sont acceptes dans ce champ :
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "octopush://user@example.com/my-api-key/1-(800) 555-1223"
 ```
 
