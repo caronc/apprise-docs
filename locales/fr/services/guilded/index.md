@@ -1,6 +1,6 @@
 ---
 title: "Notifications Guilded"
-description: "Envoyer Guilded notifications."
+description: "Envoyer des notifications Guilded."
 sidebar:
   label: "Guilded"
 
@@ -23,22 +23,22 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-First set up a Guilded account on the website. From there you will need to generate a webhook.
+Commencez par creer un compte Guilded sur le site web. Ensuite, vous devrez generer un webhook.
 
-The webhook will end up looking something like this:
+Le webhook ressemblera a quelque chose comme ceci :
 `https://media.guilded.gg/webhooks/4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js`
 
-This effectively equates to:
+Cela correspond en pratique a :
 `https://media.guilded.gg/webhooks/{WebhookID}/{WebhookToken}`
 
-**Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_); you no longer need to parse the URL any further. However there is slightly less overhead (internally) if you do.
+**Remarque :** Apprise prend cette URL en charge _telle quelle_, _depuis la v0.7.7_. Vous n'avez donc plus besoin de l'analyser davantage. Cela dit, il y a un peu moins de surcharge interne si vous le faites.
 
-The last part of the URL you're given make up the 2 tokens you need to send notifications with. With respect to the above example the tokens are as follows:
+La derniere partie de l'URL fournie constitue les 2 jetons dont vous avez besoin pour envoyer des notifications. Dans l'exemple ci-dessus, les jetons sont les suivants :
 
-1. **WebhookID** is `4174216298`
-2. **WebhookToken** is `JHMHI8qBe7bk2ZwO5U711o3dV_js`
+1. **WebhookID** vaut `4174216298`
+2. **WebhookToken** vaut `JHMHI8qBe7bk2ZwO5U711o3dV_js`
 
 ## Syntaxe
 
@@ -48,42 +48,42 @@ La syntaxe valide est la suivante :
 - `guilded://{WebhookID}/{WebhookToken}/`
 - `guilded://{botname}@{WebhookID}/{WebhookToken}/`
 
-Guilded can also support a variety of website arguments, the below identifies the defaults and therefore do not need to be specified unless you want to override them:
+Guilded prend egalement en charge differents arguments web. Les valeurs ci-dessous correspondent aux valeurs par defaut et n'ont donc pas besoin d'etre precisees, sauf si vous souhaitez les remplacer :
 
 - `guilded://{WebhookID}/{WebhookToken}/?tts=No&avatar=Yes&footer=No&image=Yes`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                                                                                                        |
-| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| WebhookID    | Yes      | The first part of 2 tokens provided to you after creating a _incoming-webhook_                                                                                                     |
-| WebhookToken | Yes      | The second part of 2 tokens provided to you after creating a _incoming-webhook_                                                                                                    |
-| botname      | No       | Identify the name of the bot that should issue the message. If one isn't specified then the default is to just use your account (associated with the _incoming-webhook_).          |
-| tts          | No       | Enable Text-To-Speech (by default is is set to **No**)                                                                                                                             |
-| footer       | No       | Include a message footer (by default is is set to **No**)                                                                                                                          |
-| image        | No       | Include an image in-line with the message describing the notification type (by default is is set to **Yes**)                                                                       |
-| avatar       | No       | Over-ride the default guilded avatar icon and replace it with one identify the notification type (by default is is set to **Yes**)                                                 |
-| avatar_url   | No       | Over-ride the default guilded avatar icon URL. By default this is not set and Apprise chooses the URL dynamically based on the type of message (info, success, warning, or error). |
+| Variable     | Obligatoire | Description                                                                                                                                                                            |
+| ------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WebhookID    | Oui         | Premiere partie des 2 jetons qui vous sont fournis apres la creation d'un _incoming-webhook_.                                                                                          |
+| WebhookToken | Oui         | Seconde partie des 2 jetons qui vous sont fournis apres la creation d'un _incoming-webhook_.                                                                                           |
+| botname      | Non         | Nom du bot qui doit publier le message. Si aucune valeur n'est fournie, la valeur par defaut consiste a utiliser simplement votre compte, associe a l'_incoming-webhook_.              |
+| tts          | Non         | Active le Text-To-Speech. La valeur par defaut est **No**.                                                                                                                             |
+| footer       | Non         | Inclut un pied de message. La valeur par defaut est **No**.                                                                                                                            |
+| image        | Non         | Inclut une image dans le message afin de representer le type de notification. La valeur par defaut est **Yes**.                                                                        |
+| avatar       | Non         | Remplace l'icone d'avatar Guilded par defaut par une icone identifiant le type de notification. La valeur par defaut est **Yes**.                                                      |
+| avatar_url   | Non         | Remplace l'URL de l'icone d'avatar Guilded par defaut. Si elle n'est pas definie, Apprise choisit dynamiquement l'URL en fonction du type de message, info, success, warning ou error. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Guilded notification:
+Envoyer une notification Guilded :
 
 ```bash
-# Assuming our {WebhookID} is 4174216298
-# Assuming our {WebhookToken} is JHMHI8qBe7bk2ZwO5U711o3dV_js
+# Supposons que notre {WebhookID} soit 4174216298
+# Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "guilded://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
-If you want to have your own custom avatar URL you're already hosting from another website, you could set the following:
+Si vous souhaitez utiliser votre propre URL d'avatar personnalisee, deja hebergee sur un autre site web, vous pouvez definir ceci :
 
 ```bash
-# Assuming our {WebhookID} is 4174216298
-# Assuming our {WebhookToken} is JHMHI8qBe7bk2ZwO5U711o3dV_js
-# Assuming our {AvatarURL} is https://i.imgur.com/FsEpmwg.jpeg
+# Supposons que notre {WebhookID} soit 4174216298
+# Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
+# Supposons que notre {AvatarURL} soit https://i.imgur.com/FsEpmwg.jpeg
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "guilded://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?avatar_url=https://i.imgur.com/FsEpmwg.jpeg"
 ```

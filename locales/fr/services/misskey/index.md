@@ -1,6 +1,6 @@
 ---
 title: "Notifications Misskey"
-description: "Envoyer Misskey notifications."
+description: "Envoyer des notifications Misskey."
 sidebar:
   label: "Misskey"
 
@@ -20,22 +20,22 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a any Misskey based service. [Here are a few you can choose from today](https://misskey-hub.net/en/instances.html).
+Inscrivez-vous a un service base sur Misskey. [Voici quelques instances parmi lesquelles vous pouvez choisir aujourd'hui](https://misskey-hub.net/en/instances.html).
 
-In Newer versions; the Access Token generation can be found in **Settings** -> **Service Integration** -> **Generate Access Token** (button).
+Dans les versions recentes, la generation du jeton d'acces se trouve sous **Settings** -> **Service Integration** -> **Generate Access Token**.
 <img alt="Image" src="./images/7a2720cccf8d5ec4.png" />
 
-**Note**: Other variations may provide **Generate access token** from the **API** menu item (it may vary depending on what version of misskey your chosen service is using).
+**Remarque :** d'autres variantes peuvent proposer **Generate access token** dans le menu **API**. Cela peut varier selon la version de Misskey utilisee par le service choisi.
 
-While generating the token:
+Lors de la generation du jeton :
 
-- Call it whatever you want
-- At the bare minimum you need to grant the: **Compose or delete notes**<br/>
+- Donnez-lui le nom de votre choix
+- Au minimum, vous devez accorder la permission **Compose or delete notes**<br/>
   <img width="408" height="462" alt="Image" src="./images/3731df2b3f8a5da9.png" />
 
-After you save your changes, you will be provided with the **Access Token** needed to work with Apprise.
+Apres avoir enregistre vos modifications, le **jeton d'acces** necessaire au fonctionnement avec Apprise vous sera fourni.
 
 ## Syntaxe
 
@@ -44,41 +44,41 @@ La syntaxe valide est la suivante :
 - `misskey://{token}@{host}`
 - `misskeys://{token}@{host}`
 
-Simply use `misskey://` if accessing an insecure server and `misskeys://` if accessing a secure one (https). In most cases, you'll likely always be using `misskeys://`
+Utilisez simplement `misskey://` si vous accedez a un serveur non securise et `misskeys://` si vous accedez a un serveur securise, en HTTPS. Dans la plupart des cas, vous utiliserez probablement toujours `misskeys://`.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token      | Yes      | The Access Token associated with the Application you created (in Misskey's Account Settings). Your token MUST have at the bare minimum `write:statuses` access. Additionally provide `write:media` if you intend to provide attachments.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| visibility | No       | The Misskey visibility you want to operate in. Possible values are:<br/>🔴 `public`: your note will be visible to all users and will show up on all timelines (home, local, social, global).<br/>Note: If your account is _silenced_, you cannot set your note visibility to public.<br/>🔴 `home`: Your note will be visible to all users, but will not show up on the local, social or global timeline for non-followers.<br/>🔴 `followers`: Your note will only be visible to those that are following you. The note will show up on all timelines of your followers.<br/>🔴 `specified`: Your note will only be visible to individually specified users. The note will show up on all timelines of the specified users. If you enable this option, your note won't be federated to remote instances. |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token      | Oui         | Jeton d'acces associe a l'application que vous avez creee dans les parametres de compte Misskey. Votre jeton doit disposer au minimum de l'autorisation `write:statuses`. Ajoutez egalement `write:media` si vous souhaitez fournir des pieces jointes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| visibility | Non         | Visibilite Misskey dans laquelle vous souhaitez publier. Valeurs possibles :<br/>🔴 `public` : votre note sera visible par tous les utilisateurs et apparaitra dans toutes les timelines, home, local, social et global.<br/>Remarque : si votre compte est _silenced_, vous ne pouvez pas definir la visibilite de votre note sur `public`.<br/>🔴 `home` : votre note sera visible par tous les utilisateurs, mais n'apparaitra pas dans les timelines local, social ou global pour les non-abonnes.<br/>🔴 `followers` : votre note ne sera visible que par les personnes qui vous suivent. Elle apparaitra dans les timelines de vos abonnes.<br/>🔴 `specified` : votre note ne sera visible que par les utilisateurs individuellement specifies. Elle apparaitra dans leurs timelines. Si vous activez cette option, votre note ne sera pas federée vers des instances distantes. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Create a Misskey note on the `misskey.sda1.net` server :
+Creer une note Misskey sur le serveur `misskey.sda1.net` :
 
 ```bash
-# Assuming our {hostname} is misskey.sda1.net
-# Assuming our {token} is abcdefghijklmn
+# Supposons que notre {hostname} soit misskey.sda1.net
+# Supposons que notre {token} soit abcdefghijklmn
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "misskeys://misskey.sda1.net/abcdefghijklmn"
 ```
 
-This example builds on the last but leverages the `visibility` option::
+Cet exemple reprend le precedent mais exploite l'option `visibility` :
 
 ```bash
-# Assuming our {hostname} is misskey.sda1.net
-# Assuming our {token} is abcdefghijklmn
-# Assuming a {visibility} of home
+# Supposons que notre {hostname} soit misskey.sda1.net
+# Supposons que notre {token} soit abcdefghijklmn
+# Supposons une {visibility} de home
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "misskeys://misskey.sda1.net/abcdefghijklmn?visibility=home"
 ```
 
-## Depannage
+## Dépannage
 
 1. `WARNING - Failed to send Misskey notification: Method not allowed., error=405.`
-   - If the website is hosted as `http` (insecure) you must use `misskey://` when assembling your Apprise URL where as if the website is `https` (secure hosting) you would use `misskeys://`
+   - Si le site est heberge en `http`, non securise, vous devez utiliser `misskey://` pour construire votre URL Apprise, tandis que si le site est heberge en `https`, securise, vous devez utiliser `misskeys://`.
 1. `WARNING - Failed to send Misskey notification: error=403.`
-   - Make sure that the API Token you generated has the **Compose or delete notes** security setting enabled. You may need to regenerate a new key that includes this permission, otherwise verify you provided the correct token in your Apprise URL.
+   - Assurez-vous que le jeton API que vous avez genere dispose bien de la permission **Compose or delete notes**. Il peut etre necessaire de regenerer une nouvelle cle incluant cette autorisation, ou de verifier que vous avez bien fourni le bon jeton dans votre URL Apprise.

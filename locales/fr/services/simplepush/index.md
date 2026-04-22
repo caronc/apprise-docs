@@ -1,6 +1,6 @@
 ---
 title: "Notifications SimplePush"
-description: "Envoyer SimplePush notifications."
+description: "Envoyer des notifications SimplePush."
 sidebar:
   label: "SimplePush"
 
@@ -21,22 +21,22 @@ limits:
 
 ## Configuration du compte
 
-SimplePush is a pretty straight forward messaging system you can get for your Android Device through their App [here](https://play.google.com/store/apps/details?id=io.tymm.simplepush).
+SimplePush est un systeme de messagerie plutot simple que vous pouvez utiliser sur votre appareil Android via leur application disponible [ici](https://play.google.com/store/apps/details?id=io.tymm.simplepush).
 
-You can optionally add additional notification encryption in the settings where it provides you with a **{salt}** value and allows you to configure/set your own encryption **{password}**.
+Vous pouvez facultativement ajouter un chiffrement supplementaire aux notifications dans les parametres. Le service vous fournit alors une valeur **{salt}** et vous permet de definir votre propre **{password}** de chiffrement.
 
-### 🔒 AES-CBC-128 Encryption Weakness
+### 🔒 Faiblesse du Chiffrement AES-CBC-128
 
-The Apprise team recognizes that the encryption used by this plugin is AES-CBC-128 which has been identified to have weaknesses including being vulnerable to the padding oracle attack ([Reference](https://soatok.blog/2020/07/12/comparison-of-symmetric-encryption-methods/#aes-gcm-vs-aes-cbc)).
+L'equipe Apprise reconnait que le chiffrement utilise par ce plugin est l'AES-CBC-128, un mode dont certaines faiblesses sont connues, notamment sa vulnerabilite potentielle aux attaques de type _padding oracle_ ([reference](https://soatok.blog/2020/07/12/comparison-of-symmetric-encryption-methods/#aes-gcm-vs-aes-cbc)).
 
-If the level of encryption is not satisfactory to you, your options are:
+Si ce niveau de chiffrement ne vous convient pas, plusieurs options s'offrent a vous :
 
-1. Reach out to SimplePush and ask for them to improve their security (to which Apprise will gladly accomodate) ...or
-1. Choose not to use Simple Push and select one of the [many other options available](https://github.com/caronc/apprise/wiki#notification-services).
+1. contacter SimplePush pour leur demander d'ameliorer leur securite, ce qu'Apprise prendra volontiers en charge ensuite ;
+2. ne pas utiliser SimplePush et choisir plutot l'un des [nombreux autres services disponibles](https://github.com/caronc/apprise/wiki#notification-services).
 
-What is important to identify is this weak encryption used by Apprise to access SimplePush is in place for compliance only. This will never have any cascading effect or impact any other secure notification service also supported by Apprise.
+Il est important de noter que ce chiffrement plus faible n'est utilise par Apprise que pour rester compatible avec SimplePush. Cela n'a aucun effet de bord et n'impacte aucun autre service de notification securise pris en charge par Apprise.
 
-Below is a screenshot from <https://simplepush.io/features> explaining the defined encryption setting from the upstream source:<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
+Vous trouverez ci-dessous une capture d'ecran de <https://simplepush.io/features> presentant le reglage de chiffrement tel qu'il est defini par le service d'origine :<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
 
 ## Syntaxe
 
@@ -45,24 +45,24 @@ La syntaxe valide est la suivante :
 - `spush://{apikey}/`
 - `spush://{salt}:{password}@{apikey}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                  |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| apikey   | Yes      | This is required for your account to work. You will be provided one from your SimplePush account.                                                                                                                                                            |
-| event    | No       | Optionally specify an event on the URL.                                                                                                                                                                                                                      |
-| password | No       | SimplePush offers a method of further encrypting the message and title during transmission (on top of the secure channel it's already sent on). This is the Encryption password set. You must provide the `salt` value with the `password` in order to work. |
-| salt     | No       | The salt is provided to you by SimplePush and is the second part of the additional encryption you can use with this service. You must provide a `password` with the `salt` value in order to work.                                                           |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                         |
+| -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle requise pour faire fonctionner votre compte. Elle vous est fournie par votre compte SimplePush.                                                                                                                                                 |
+| event    | Non         | Permet facultativement de preciser un evenement dans l'URL.                                                                                                                                                                                         |
+| password | Non         | SimplePush permet de chiffrer davantage le message et le titre pendant leur transmission, en plus du canal securise deja utilise. Il s'agit ici du mot de passe de chiffrement. Vous devez fournir aussi la valeur `salt` pour que cela fonctionne. |
+| salt     | Non         | La valeur `salt` vous est fournie par SimplePush et constitue la seconde partie du chiffrement additionnel disponible avec ce service. Vous devez fournir egalement un `password` pour que cela fonctionne.                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une SimplePush notification:
+Envoyer une notification SimplePush :
 
 ```bash
-# Assume:
-#  - our {apikey} is ABC123
+# Supposons que :
+#  - notre {apikey} soit ABC123
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    spush://ABC123
 ```

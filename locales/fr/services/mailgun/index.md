@@ -1,6 +1,6 @@
 ---
 title: "Notifications Mailgun"
-description: "Envoyer Mailgun notifications."
+description: "Envoyer des notifications Mailgun."
 sidebar:
   label: "Mailgun"
 
@@ -19,11 +19,11 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-You can create an account for free [on their website](https://www.mailgun.com/) but it comes with restrictions.
+Vous pouvez creer un compte gratuitement [sur leur site web](https://www.mailgun.com/), mais cette formule comporte des restrictions.
 
-For each domain you set up with them, you'll be able access them all from your dashboard once you're signed in. Here is a [quick link](https://app.mailgun.com/app/domains) to it. If you're using a free account; at the very least you will be able to see your _sandbox domain_ here. From here you can also acquire your **API Key** associated with each domain you've set up.
+Pour chaque domaine que vous configurez chez eux, vous pourrez tous les retrouver dans votre tableau de bord une fois connecte. Voici un [lien direct](https://app.mailgun.com/app/domains). Si vous utilisez un compte gratuit, vous pourrez au minimum y voir votre _sandbox domain_. Depuis cette page, vous pourrez aussi recuperer la **cle API** associee a chacun des domaines que vous avez configures.
 
 ## Syntaxe
 
@@ -33,44 +33,44 @@ La syntaxe valide est la suivante :
 - `mailgun://{user}@{domain}/{apikey}/{email}/`
 - `mailgun://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}/`
 
-You may also identify your region if you aren't using the US servers like so:
+Vous pouvez egalement preciser votre region si vous n'utilisez pas les serveurs americains, comme ceci :
 
 - `mailgun://{user}@{domain}/{apikey}/?region=eu`
 
-You can adjust what the Name associated with the From email is set to as well:
+Vous pouvez aussi ajuster le nom associe a l'adresse e-mail From :
 
 - `mailgun://{user}@{domain}/{apikey}/?name=Luke%20Skywalker`
 
-### Email Extensions
+### Extensions d'Adresse Email
 
-If you wish to utilize extensions, you'll need to escape the addition/plus (+) character with **%2B** like so:<br/>
+Si vous souhaitez utiliser des extensions, vous devrez echapper le caractere plus, `+`, avec **%2B**, comme ceci :<br/>
 `mailgun://{user}@{domain}/{apikey}/chris%2Bextension@example.com`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                          |
-| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Yes      | The API Key associated with the domain you want to send your email from. This is available to you after signing into their website an accessing the [dashboard](https://app.mailgun.com/app/domains).                                                |
-| domain   | Yes      | The Domain you wish to send your email from; this domain must be registered and set up with your mailgun account.                                                                                                                                    |
-| user     | Yes      | The user gets paired with the domain you specify on the URL to make up the **From** email address your recipients receive their email from.                                                                                                          |
-| email    | No       | You can specify as many email addresses as you wish. Each address you identify here will represent the **To**.<br/>**Note:** Depending on your account setup, mailgun does restrict you from emailing certain addresses.                             |
-| region   | No       | Identifies which server region you intend to access. Supported options here are **eu** and **us**. By default this is set to **us** unless otherwise specified. This specifically affects which API server you will access to send your emails from. |
-| name     | No       | This allows you to identify the name associated with the **From** email address when delivering your email.                                                                                                                                          |
-| to       | No       | This is an alias to the email variable. You can chain as many (To) emails as you want here separating each with a comma and/or space.                                                                                                                |
-| cc       | No       | Identify address(es) to notify as a Carbon Copy.                                                                                                                                                                                                     |
-| bcc      | No       | Identify address(es) to notify as a Blind Carbon Copy.                                                                                                                                                                                               |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                    |
+| -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle API associee au domaine depuis lequel vous souhaitez envoyer votre e-mail. Elle est disponible apres connexion a leur site web et acces au [tableau de bord](https://app.mailgun.com/app/domains).                                                         |
+| domain   | Oui         | Domaine depuis lequel vous souhaitez envoyer votre e-mail ; ce domaine doit etre enregistre et configure dans votre compte Mailgun.                                                                                                                            |
+| user     | Oui         | L'utilisateur est associe au domaine precise dans l'URL afin de composer l'adresse e-mail **From** que vos destinataires verront.                                                                                                                              |
+| email    | Non         | Vous pouvez specifier autant d'adresses e-mail que vous le souhaitez. Chaque adresse indiquee representera le champ **To**.<br/>**Remarque :** selon la configuration de votre compte, Mailgun peut restreindre l'envoi vers certaines adresses.               |
+| region   | Non         | Identifie la region du serveur auquel vous souhaitez acceder. Les options prises en charge sont **eu** et **us**. La valeur par defaut est **us** si rien n'est precise. Cela determine specifiquement quel serveur API sera utilise pour envoyer vos e-mails. |
+| name     | Non         | Permet de definir le nom associe a l'adresse e-mail **From** lors de l'envoi de votre e-mail.                                                                                                                                                                  |
+| to       | Non         | Alias de la variable `email`. Vous pouvez enchainer autant d'adresses, To, que vous le souhaitez en les separant par des virgules et/ou des espaces.                                                                                                           |
+| cc       | Non         | Identifie les adresses a notifier en copie, Carbon Copy.                                                                                                                                                                                                       |
+| bcc      | Non         | Identifie les adresses a notifier en copie cachee, Blind Carbon Copy.                                                                                                                                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Mailgun notification to the email address <bill.gates@microsoft.com>
+Envoyer une notification Mailgun a l'adresse e-mail <bill.gates@microsoft.com>
 
 ```bash
-# Assuming the {domain} we set up with our mailgun account is example.com
-# Assuming our {apikey} is  4b4f2918fd-dk5f-8f91f
-# We already know our To {email} is bill.gates@microsoft.com
-# Assuming we want our email to come from noreply@example.com
+# Supposons que le {domain} configure dans notre compte Mailgun soit example.com
+# Supposons que notre {apikey} soit 4b4f2918fd-dk5f-8f91f
+# Supposons que notre {email} To soit bill.gates@microsoft.com
+# Supposons que nous voulions envoyer depuis noreply@example.com
 apprise -vv -t "Email Subject" -b "Message Body" \
    mailgun:///noreply@example.com/4b4f2918fd-dk5f-8f91f/bill.gates@microsoft.com
 ```

@@ -20,13 +20,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-There isn't too much effort requires to use PushSafer notifications. The message is basically just passed to your online PushSafer account and then gets relayed to your device(s) you've setup from there.
+La configuration des notifications PushSafer est assez simple. Le message est essentiellement transmis a votre compte PushSafer en ligne, puis redirige vers les appareils que vous y avez configures.
 
-### Getting Your Private Key
+### Recuperer votre Private Key
 
-Once you log into their official [website](https://www.pushsafer.com/), you can find the **{private_key}** on your [dashboard](https://www.pushsafer.com/dashboard/).
+Une fois connecte a leur [site officiel](https://www.pushsafer.com/), vous pouvez trouver votre **{private_key}** sur votre [tableau de bord](https://www.pushsafer.com/dashboard/).
 
 ## Syntaxe
 
@@ -39,38 +39,38 @@ La syntaxe valide est la suivante :
 - `psafers://{private_key}?priority=emergency&sound=okay`
 - `psafers://{private_key}?vibrate=2`
 
-If no device is specified, the `a` reserved device is used by default. the `a` notifies **all** of your devices currently associated with your account.
+Si aucun appareil n'est precise, l'appareil reserve `a` est utilise par defaut. Le `a` notifie **tous** les appareils actuellement associes a votre compte.
 
-Secure connections are always made when you use `psafers://` however `psafer://` also works if you wish to use an unencrypted connection.
+Des connexions securisees sont toujours etablies lorsque vous utilisez `psafers://`. Toutefois, `psafer://` fonctionne aussi si vous souhaitez utiliser une connexion non chiffree.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| private_key | Yes      | The private key associated with your PushSafer account. This can be found on your [dashboard](https://www.pushsafer.com/dashboard/) after successfully logging in.                                                                                                                                                                                                               |
-| device_id   | No       | The device identifier to send your notification to. By default if one isn't specified then all of devices associated with your account are notified.                                                                                                                                                                                                                             |
-| priority    | No       | Can be **low**, **moderate**, **normal**, **high**, or **emergency**; the default is to use whatever the default setting is for the device being notified.                                                                                                                                                                                                                       |
-| sound       | No       | Can optionally identify one of the optional sound effects identified [here](https://www.pushsafer.com/en/pushapi#api-sound). By default this variable isn't set at all.                                                                                                                                                                                                          |
-| vibration   | No       | Android and iOS devices can be set to vibrate upon the reception of a notification. By setting this, you're effectively setting the strength of the vibration. You can set this to **1**, **2** or **3** where 3 is a maximum vibration setting and 1 causes a lighter vibration. By default this variable isn't set at all causing your device default settings to take effect. |
+| Variable    | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| private_key | Oui         | Cle privee associee a votre compte PushSafer. Vous pouvez la trouver sur votre [tableau de bord](https://www.pushsafer.com/dashboard/) apres connexion.                                                                                                                                                                                                                             |
+| device_id   | Non         | Identifiant de l'appareil auquel envoyer votre notification. Si aucune valeur n'est precisee, tous les appareils associes a votre compte sont notifies.                                                                                                                                                                                                                             |
+| priority    | Non         | Peut etre **low**, **moderate**, **normal**, **high** ou **emergency** ; par defaut, la valeur utilisee est celle deja definie pour l'appareil notifie.                                                                                                                                                                                                                             |
+| sound       | Non         | Permet facultativement d'indiquer l'un des effets sonores disponibles [ici](https://www.pushsafer.com/en/pushapi#api-sound). Par defaut, cette variable n'est pas definie.                                                                                                                                                                                                          |
+| vibration   | Non         | Les appareils Android et iOS peuvent vibrer a la reception d'une notification. En definissant cette valeur, vous reglez la force de vibration. Vous pouvez utiliser **1**, **2** ou **3**, ou 3 correspond a la vibration maximale et 1 a une vibration plus legere. Par defaut, cette variable n'est pas definie et laisse donc les reglages propres a votre appareil s'appliquer. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une PushSafer notification to all of our configured devices:
+Envoyer une notification PushSafer a tous nos appareils configures :
 
 ```bash
-# Assuming our {private_key} is 435jdj3k78435jdj3k78435jdj3k78
+# Supposons que notre {private_key} soit 435jdj3k78435jdj3k78435jdj3k78
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    psafers://435jdj3k78435jdj3k78435jdj3k78
 ```
 
-Envoyer une PushSafer notification with the Emergency Priority:
+Envoyer une notification PushSafer avec la priorite Emergency :
 
 ```bash
-# Emergency priority advises you to also specify the expire and
-# retry values.
-# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
+# La priorite Emergency recommande aussi de preciser les valeurs
+# expire et retry.
+# Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    psafers://435jdj3k78435jdj3k78435jdj3k78?priority=emergency
 ```

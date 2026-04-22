@@ -1,6 +1,6 @@
 ---
 title: "Notifications Syslog"
-description: "Envoyer Syslog notifications."
+description: "Envoyer des notifications Syslog."
 sidebar:
   label: "Syslog"
 
@@ -28,28 +28,27 @@ La syntaxe valide est la suivante :
 - `syslog://`
 - `syslog://{facility}`
 
-One might change the facility from its default like so:
+Vous pouvez par exemple remplacer la facility par defaut comme ceci :
 
 - `syslog://local5`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
+| Variable | Obligatoire | Description |
+| -------- | ----------- | ----------- |
 
-is used by default.
-| facility | No | The facility to use, by default it is `user`. Valid options are **kern**, **user**, **mail**, **daemon**, **auth**, **syslog**, **lpr**, **news**, **uucp**, **cron**, **local0**, **local1**, **local2**, **local3**, **local4**, **local5**, **local6**, and **local7**
-| logperror | No | Additionally send the log message to _stderr_. This method is ignored when preforming a remote query.
-| logpid | Yes | Include PID as part of the log output.
+| facility | Non | Facility a utiliser ; la valeur par defaut est `user`. Les options valides sont **kern**, **user**, **mail**, **daemon**, **auth**, **syslog**, **lpr**, **news**, **uucp**, **cron**, **local0**, **local1**, **local2**, **local3**, **local4**, **local5**, **local6** et **local7**. |
+| logperror | Non | Envoie aussi le message de journal vers `_stderr_`. Cette methode est ignoree lors d'une requete distante. |
+| logpid | Oui | Inclut le PID dans la sortie de journalisation. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Syslog notification
+Envoyer une notification Syslog :
 
 ```bash
-# The following sends a syslog notification to the `user` facility
+# L'exemple ci-dessous envoie une notification syslog vers la facility `user`
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    syslog://
 ```

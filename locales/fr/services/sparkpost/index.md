@@ -1,6 +1,6 @@
 ---
 title: "Notifications SparkPost"
-description: "Envoyer SparkPost notifications."
+description: "Envoyer des notifications SparkPost."
 sidebar:
   label: "SparkPost"
 
@@ -21,9 +21,9 @@ sample_urls:
 
 ## Configuration du compte
 
-You can create an account for free [on their website](https://sparkpost.com/) but it comes with restrictions.
+Vous pouvez creer un compte gratuitement [sur leur site web](https://sparkpost.com/), mais cette formule comporte des restrictions.
 
-For each domain you set up with them, you'll be able access them all from your dashboard once you're signed in. You'll need to generate an API key and grant it `transmission` access.
+Pour chaque domaine configure chez eux, vous pourrez y acceder depuis votre tableau de bord une fois connecte. Vous devrez generer une API key et lui accorder le droit `transmission`.
 
 ## Syntaxe
 
@@ -33,98 +33,98 @@ La syntaxe valide est la suivante :
 - `sparkpost://{user}@{domain}/{apikey}/{email}/`
 - `sparkpost://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}/`
 
-You may also identify your region if you aren't using the US servers like so:
+Vous pouvez aussi preciser votre region si vous n'utilisez pas les serveurs americains :
 
 - `sparkpost://{user}@{domain}/{apikey}/?region=eu`
 
-You can adjust what the Name associated with the From email is set to as well:
+Vous pouvez egalement ajuster le nom associe a l'adresse e-mail `From` :
 
 - `sparkpost://{user}@{domain}/{apikey}/?name=Darth%20Vader`
 
-### Email Extensions
+### Extensions d'Adresse E-mail
 
-If you wish to utilize extensions, you'll need to escape the addition/plus (+) character with **%2B** like so:<br/>
+Si vous souhaitez utiliser des extensions d'adresse, vous devez echapper le caractere plus `+` avec **%2B** comme ceci :<br/>
 `sparkpost://{user}@{domain}/{apikey}/chris%2Bextension@example.com`
 
-The Carbon Copy (**cc=**) and Blind Carbon Copy (**bcc=**) however are applied to each email sent. Hence if you send an email to 3 target users, the entire _cc_ and _bcc_ lists will be part of all 3 emails.
+Les champs Carbon Copy, `cc=`, et Blind Carbon Copy, `bcc=`, sont en revanche appliques a chaque e-mail envoye. Ainsi, si vous envoyez un message a 3 destinataires, les listes _cc_ et _bcc_ seront incluses dans chacun des 3 e-mails.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                          |
-| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Yes      | The API Key associated with the domain you want to send your email from. This is available to you after signing into their website an accessing the [dashboard](https://app.sparkpost.com/app/domains).                                              |
-| domain   | Yes      | The Domain you wish to send your email from; this domain must be registered and set up with your sparkpost account.                                                                                                                                  |
-| user     | Yes      | The user gets paired with the domain you specify on the URL to make up the **From** email address your recipients receive their email from.                                                                                                          |
-| batch    | No       | If batch mode is set to `yes` then all of email addresses are sent in a single batch for SparkPost to handle.                                                                                                                                        |
-| email    | No       | You can specify as many email addresses as you wish. Each address you identify here will represent the **To**.<br/>**Note:** Depending on your account setup, sparkpost does restrict you from emailing certain addresses.                           |
-| region   | No       | Identifies which server region you intend to access. Supported options here are **eu** and **us**. By default this is set to **us** unless otherwise specified. This specifically affects which API server you will access to send your emails from. |
-| from     | No       | This allows you to identify the name associated with the **From** email address when delivering your email.                                                                                                                                          |
-| to       | No       | This is an alias to the email variable. You can chain as many (To) emails as you want here separating each with a comma and/or space.                                                                                                                |
-| cc       | No       | Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                                                                                             |
-| bcc      | No       | Blind Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                                                                                       |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                       |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle API associee au domaine depuis lequel vous souhaitez envoyer vos e-mails. Elle est disponible apres connexion a leur site et acces au [tableau de bord](https://app.sparkpost.com/app/domains).                                               |
+| domain   | Oui         | Domaine depuis lequel vous souhaitez envoyer vos e-mails. Ce domaine doit etre enregistre et configure avec votre compte SparkPost.                                                                                                               |
+| user     | Oui         | L'utilisateur est combine au domaine indique dans l'URL pour former l'adresse **From** visible par vos destinataires.                                                                                                                             |
+| batch    | Non         | Si le mode `batch` est defini sur `yes`, toutes les adresses e-mail sont envoyees dans un seul lot que SparkPost traitera.                                                                                                                        |
+| email    | Non         | Vous pouvez specifier autant d'adresses e-mail que vous le souhaitez. Chaque adresse indiquee representera le champ **To**.<br>**Remarque :** selon la configuration de votre compte, SparkPost peut restreindre l'envoi vers certaines adresses. |
+| region   | Non         | Identifie la region du serveur a utiliser. Les options prises en charge sont **eu** et **us**. Par defaut, la valeur **us** est utilisee si rien n'est precise. Cela affecte le serveur API contacte pour l'envoi des e-mails.                    |
+| from     | Non         | Permet de definir le nom associe a l'adresse e-mail **From** lors de l'envoi.                                                                                                                                                                     |
+| to       | Non         | Alias de la variable `email`. Vous pouvez y chaîner autant d'adresses **To** que souhaite, separees par des virgules et/ou des espaces.                                                                                                           |
+| cc       | Non         | Adresse(s) e-mail en Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                                     |
+| bcc      | Non         | Adresse(s) e-mail en Blind Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une sparkpost notification to the email address `bill.gates@microsoft.com`
+Envoyer une notification SparkPost a l'adresse e-mail `bill.gates@microsoft.com` :
 
 ```bash
-# Assuming the {domain} we set up with our sparkpost account is example.com
-# Assuming our {apikey} is  4b4f2918fddk5f8f91f
-# We already know our To {email} is bill.gates@microsoft.com
-# Assuming we want our email to come from noreply@example.com
+# Supposons que le {domain} configure dans notre compte SparkPost soit example.com
+# Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
+# Supposons que notre {email} de destination soit bill.gates@microsoft.com
+# Supposons que nous voulions envoyer depuis noreply@example.com
 apprise sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com
 ```
 
 ### Manipulation des en-tetes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string. The below examples send a sparkpost notification to the email address `bill.gates@microsoft.com` while leveraging the header manipulation.
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL. Les exemples ci-dessous envoient une notification SparkPost a l'adresse `bill.gates@microsoft.com` en exploitant cette personnalisation des en-tetes.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming the {domain} we set up with our sparkpost account is example.com
-# Assuming our {apikey} is  4b4f2918fddk5f8f91f
-# We already know our To {email} is bill.gates@microsoft.com
-# Assuming we want our email to come from noreply@example.com
+# Supposons que le {domain} configure dans notre compte SparkPost soit example.com
+# Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
+# Supposons que notre {email} de destination soit bill.gates@microsoft.com
+# Supposons que nous voulions envoyer depuis noreply@example.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?+X-Token=abcdefg"
 
-# Multiple headers just require more entries defined with a hyphen in front:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter d'autres entrees :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming the {domain} we set up with our sparkpost account is example.com
-# Assuming our {apikey} is  4b4f2918fddk5f8f91f
-# We already know our To {email} is bill.gates@microsoft.com
-# Assuming we want our email to come from noreply@example.com
+# Supposons que le {domain} configure dans notre compte SparkPost soit example.com
+# Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
+# Supposons que notre {email} de destination soit bill.gates@microsoft.com
+# Supposons que nous voulions envoyer depuis noreply@example.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-### Global Substitution
+### Substitution Globale
 
-SparkPost allows you to identify `{{tokens}}` that are wrapped in 2 curly braces. [See here on their section of templating](https://developers.sparkpost.com/api/template-language/) for more details. If you wish to pass in a keyword and its substituted value, simply use the colon (**:**) in front of any parameter you specify on your URL string. The below examples send a sparkpost notification to the email address `bill.gates@microsoft.com` while leveraging the header manipulation.
+SparkPost permet d'utiliser des `{{tokens}}` encadres par deux accolades. [Consultez leur documentation sur le templating](https://developers.sparkpost.com/api/template-language/) pour plus de details. Si vous souhaitez transmettre un mot-cle et sa valeur de substitution, il suffit d'ajouter un deux-points, `:`, devant n'importe quel parametre precise dans votre URL. L'exemple ci-dessous envoie une notification SparkPost a `bill.gates@microsoft.com` en utilisant ce mecanisme.
 
 ```bash
-# Below would set the token {{software}} to be substituted with Microsoft:
-# Assuming the {domain} we set up with our sparkpost account is example.com
-# Assuming our {apikey} is  4b4f2918fddk5f8f91f
-# We already know our To {email} is bill.gates@microsoft.com
-# Assuming we want our email to come from noreply@example.com
+# L'exemple ci-dessous definirait le token {{software}} pour qu'il soit remplace par Microsoft :
+# Supposons que le {domain} configure dans notre compte SparkPost soit example.com
+# Supposons que notre {apikey} soit 4b4f2918fddk5f8f91f
+# Supposons que notre {email} de destination soit bill.gates@microsoft.com
+# Supposons que nous voulions envoyer depuis noreply@example.com
 apprise -vv -t "Test Message Title" -b "Bill Gates works at {{software}}" \
    "sparkpost:///noreply@example.com/4b4f2918fddk5f8f91f/bill.gates@microsoft.com/?:software=Microsoft"
 ```
 
-You can specify as many tokens as you like. Apprise automatically provides some default (out of the box) translated tokens if you wish to use them; they are as follows:
+Vous pouvez specifier autant de tokens que vous le souhaitez. Apprise fournit egalement automatiquement quelques tokens par defaut si vous souhaitez les utiliser :
 
-- **app_id**: The Application identifier; usually set to `Apprise`, but developers of custom applications may choose to over-ride this and place their name here. this is how you acquire this value.
-- **app_desc**: Similar the the Application Identifier, this is the Application Description. It's usually just a slightly more descriptive alternative to the _app_id_. This is usually set to `Apprise Notification` unless it has been over-ridden by a developer.
-- **app_color**: A hex code that identifies a colour associate with a message. For instance, `info` type messages are generally blue where as `warning` ones are orange, etc.
-- **app_type**: The message type itself; it may be `info`, `warning`, `success`, etc
-- **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
-- **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.
+- **app_id** : identifiant de l'application ; il vaut generalement `Apprise`, mais les developpeurs d'applications personnalisees peuvent le surcharger et y placer leur propre nom.
+- **app_desc** : description de l'application ; c'est en general une variante un peu plus explicite de _app_id_. Cette valeur est habituellement `Apprise Notification`, sauf surcharge par un developpeur.
+- **app_color** : code hexadecimal identifiant une couleur associee au message. Par exemple, les messages `info` sont generalement bleus tandis que les messages `warning` sont orange.
+- **app_type** : type du message lui-meme, par exemple `info`, `warning` ou `success`.
+- **app_title** : titre reel, c'est-a-dire la valeur `--title` ou `-t` transmise lors de l'appel a la notification Apprise.
+- **app_body** : corps reel du message, c'est-a-dire la valeur `--body` ou `-b` transmise lors de l'appel a la notification Apprise.
+- **app_url** : URL associee a l'instance Apprise, trouvee dans l'objet **AppriseAsset()**. Sauf surcharge par un developpeur, sa valeur est `https://github.com/caronc/apprise`.

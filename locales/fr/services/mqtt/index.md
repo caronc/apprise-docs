@@ -1,6 +1,6 @@
 ---
 title: "Notifications MQTT"
-description: "Envoyer MQTT notifications."
+description: "Envoyer des notifications MQTT."
 sidebar:
   label: "MQTT"
 
@@ -22,7 +22,7 @@ sample_urls:
 
 ## Configuration du compte
 
-MQTT Support requires **paho-mqtt** (a version less then v2) to work:
+La prise en charge MQTT necessite **paho-mqtt**, dans une version inferieure a v2, pour fonctionner :
 
 ```bash
 pip install "paho-mqtt<2.0"
@@ -37,48 +37,48 @@ La syntaxe valide est la suivante :
 - `mqtt://{user}@{host}:{port}/{topic}`
 - `mqtt://{user}:{password}@{host}:{port}/{topic}`
 
-For a secure connection, just use `mqtts` instead.
+Pour une connexion securisee, utilisez simplement `mqtts` a la place.
 
 - `mqtts://{host}/{topic}`
 - `mqtts://{host}:{port}/{topic}`
 - `mqtts://{user}@{host}:{port}/{topic}`
 - `mqtts://{user}:{password}@{host}:{port}/{topic}`
 
-Secure connections should be referenced using **mqtts://** where as insecure connections should be referenced via **mqtt://**.
+Les connexions securisees doivent etre referencees avec **mqtts://**, tandis que les connexions non securisees doivent utiliser **mqtt://**.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                   |
-| --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user      | no       | The user associated with your MQTT server.                                                                                                                                                                                                                                                                                    |
-| password  | no       | The password associated with your MQTT server.                                                                                                                                                                                                                                                                                |
-| hostname  | Yes      | The MQTT server you're sending your notification to.                                                                                                                                                                                                                                                                          |
-| port      | No       | The port the MQTT server is listening on. By default the port is **1883** for **mqtt://** and **8883** for all **mqtts://** references.                                                                                                                                                                                       |
-| qos       | No       | The MQTT Quality of Service (Qos) setting. By default this is set to **0** (_zero_).                                                                                                                                                                                                                                          |
-| version   | No       | The MQTT Protocol Version to use. By default this is set to **v3.1.1**. The other possible values are **v3.1** and **v5**.                                                                                                                                                                                                    |
-| client_id | No       | The MQTT client identifier to use when establishing a connection with the server. By default this is not set and a unique ID is generated per message.                                                                                                                                                                        |
-| session   | No       | The MQTT session to maintain (associated with the client_id). If no client_id is specified, then this value is not considered. By default there is no session established and each connection made by apprise is unique. If you wish to enforce a session (associated with a provided client_id) then set this value to True. |
-| retain    | No       | The MQTT publisher retain flag. By default this is set to `no`, but you may optionally over-ride it and set it to `yes`                                                                                                                                                                                                       |
+| Variable  | Obligatoire | Description                                                                                                                                                                                                                                                                                                                               |
+| --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user      | Non         | Utilisateur associe a votre serveur MQTT.                                                                                                                                                                                                                                                                                                 |
+| password  | Non         | Mot de passe associe a votre serveur MQTT.                                                                                                                                                                                                                                                                                                |
+| hostname  | Oui         | Serveur MQTT auquel vous envoyez votre notification.                                                                                                                                                                                                                                                                                      |
+| port      | Non         | Port sur lequel le serveur MQTT ecoute. Par defaut, il s'agit de **1883** pour **mqtt://** et de **8883** pour toutes les references **mqtts://**.                                                                                                                                                                                        |
+| qos       | Non         | Parametre MQTT Quality of Service, QoS. Par defaut, la valeur **0**, zero, est utilisee.                                                                                                                                                                                                                                                  |
+| version   | Non         | Version du protocole MQTT a utiliser. Par defaut, la valeur **v3.1.1** est utilisee. Les autres valeurs possibles sont **v3.1** et **v5**.                                                                                                                                                                                                |
+| client_id | Non         | Identifiant client MQTT a utiliser lors de l'etablissement de la connexion avec le serveur. Par defaut, il n'est pas defini et un identifiant unique est genere pour chaque message.                                                                                                                                                      |
+| session   | Non         | Session MQTT a maintenir, associee a `client_id`. Si aucun `client_id` n'est precise, cette valeur n'est pas prise en compte. Par defaut, aucune session n'est etablie et chaque connexion effectuee par Apprise est unique. Si vous souhaitez imposer une session, associee a un `client_id` fourni, definissez cette valeur sur `True`. |
+| retain    | Non         | Drapeau MQTT publisher retain. Par defaut, cette option vaut `no`, mais vous pouvez facultativement la surcharger et la definir sur `yes`.                                                                                                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
 ```bash
-# Assuming we're just running an MQTT Server locally on your box
-# Assuming we want to post our message to the topic: `my/topic`
+# Supposons que nous executons simplement un serveur MQTT localement sur notre machine
+# Supposons que nous voulions publier notre message sur le topic `my/topic`
 apprise -vvv -b "whatever-payload-want" "mqtt://localhost/my/topic"
 ```
 
-## Testing
+## Test
 
-I did the following to test this service locally (using docker):
+Voici ce qui a ete fait pour tester ce service localement, avec Docker :
 
 ```bash
-# Pull in Mosquitto (v2.x at the time) - 2021 Sept 16th
+# Recuperer Mosquitto, version v2.x a l'epoque, le 16 septembre 2021
 docker pull eclipse-mosquitto
 
-# Set up a spot for our configuration
+# Creer un emplacement pour la configuration
 mkdir mosquitto
 cd mosquitto
 cat << _EOF > mosquitto.conf
@@ -89,14 +89,14 @@ log_type all
 listener 1883
 _EOF
 
-# Now spin up an instance (we can Ctrl-C out of when we're done):
+# Lancer ensuite une instance, que l'on pourra interrompre avec Ctrl-C :
 docker run --name mosquitto -p 1883:1883 \
    --rm -v $(pwd)/mosquitto.conf:/mosquitto/config/mosquitto.conf \
    eclipse-mosquitto
 
-# All apprise testing can be done against this systems IP such as:
+# Tous les tests Apprise peuvent ensuite etre effectues contre l'IP de ce systeme, par exemple :
 apprise -vvv -b "my=payload" "mqtt://localhost/a/simple/topic"
 
-# Here is an example where the 'retain' flag is set:
+# Voici un exemple avec le drapeau `retain` active :
 apprise -vvv -b "my=payload" "mqtt://localhost/a/simple/topic?retain=yes"
 ```

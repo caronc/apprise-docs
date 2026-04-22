@@ -1,6 +1,6 @@
 ---
 title: "Notifications Prowl"
-description: "Envoyer Prowl notifications."
+description: "Envoyer des notifications Prowl."
 sidebar:
   label: "Prowl"
 
@@ -32,7 +32,7 @@ La syntaxe valide est la suivante :
 - `prowl://{apikey}/{providerkey}`
 - `prowl://{apikey}/?priority={priority}`
 
-## Detail des parametres
+## Détail des Paramètres
 
 | Variable    | Required | Description                                                                                                                         |
 | ----------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |

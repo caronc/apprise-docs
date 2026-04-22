@@ -1,6 +1,6 @@
 ---
 title: "Notifications Join"
-description: "Envoyer Join notifications."
+description: "Envoyer des notifications Join."
 sidebar:
   label: "Join"
 
@@ -21,15 +21,15 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use this plugin:
+Pour utiliser ce plugin :
 
-1. Ensure your browser allows popups and visit [joinjoaomgcd.appspot.com](https://joinjoaomgcd.appspot.com/).
-2. To register you just need to allow the page to link with your Google Profile. The good news is it doesn't ask for anything too personal.
-3. Download the app for your phone from the [Android Store here](https://play.google.com/store/apps/details?id=com.joaomgcd.join).
-4. Using your phone, when you first open the application, it will ask for a series of permissions and ask you a couple questions.
-5. If you just recently registered your device (in the previous step), you should now be able to refresh your browser at [joinjoaomgcd.appspot.com](https://joinjoaomgcd.appspot.com/). Your device should list itself. From here you can retrieve the API you need to worth with Apprise.
+1. Assurez-vous que votre navigateur autorise les fenetres popup, puis rendez-vous sur [joinjoaomgcd.appspot.com](https://joinjoaomgcd.appspot.com/).
+2. Pour vous inscrire, il vous suffit d'autoriser la page a se lier a votre profil Google. La bonne nouvelle, c'est qu'elle ne demande rien de trop personnel.
+3. Telechargez l'application sur votre telephone depuis le [Play Store](https://play.google.com/store/apps/details?id=com.joaomgcd.join).
+4. Lors de la premiere ouverture sur votre telephone, l'application vous demandera une serie d'autorisations et vous posera quelques questions.
+5. Si vous venez juste d'enregistrer votre appareil a l'etape precedente, vous devriez maintenant pouvoir actualiser votre navigateur sur [joinjoaomgcd.appspot.com](https://joinjoaomgcd.appspot.com/). Votre appareil devrait apparaitre dans la liste. A partir de la, vous pourrez recuperer l'API necessaire pour fonctionner avec Apprise.
 
 ## Syntaxe
 
@@ -40,43 +40,43 @@ La syntaxe valide est la suivante :
 - `join://{apikey}/{device_id1}/{device_id2}/{device_idN}`
 
 :::note
-If no device is specified, then by default **group.all** is used.
+Si aucun appareil n'est precise, alors **group.all** est utilise par defaut.
 :::
 
-Groups can be referenced like this (the _group._ part is optional):
+Les groupes peuvent etre references comme ceci, la partie _group._ est facultative :
 
 - `join://{apikey}/group.{group_id}`
 - `join://{apikey}/group.{group_id1}/group.{group_id2}/group.{group_idN}`
 - `join://{apikey}/{group_id}`
 - `join://{apikey}/{group_id1}/{group_id2}/{group_idN}`
 
-If what you specify isn't a `group` or `device_id` then it is interpreted as a `device_name` as a fallback:
+Si ce que vous specifiez n'est ni un `group` ni un `device_id`, alors ce sera interprete comme un `device_name` en repli :
 
 - `join://{apikey}/{device_name}`
 - `join://{apikey}/{device_name1}/{device_name1}/{device_nameN}`
 
-You can freely mix and match these combinations as well:
+Vous pouvez aussi melanger librement ces combinaisons :
 
 - `join://{apikey}/{device_id}/{group_id}/{device_name}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                        |
-| ----------- | -------- | ---------------------------------------------------------------------------------- |
-| apikey      | Yes      | The api key associated with your Join account.                                     |
-| device_id   | No       | The device identifier to send your notification to (a 32 bit alpha-numeri string). |
-| device_name | No       | The device name (PC, Nexus, etc)                                                   |
-| group_id    | No       | The group identifier to send your notification to.                                 |
+| Variable    | Obligatoire | Description                                                                                              |
+| ----------- | ----------- | -------------------------------------------------------------------------------------------------------- |
+| apikey      | Oui         | Cle API associee a votre compte Join.                                                                    |
+| device_id   | Non         | Identifiant de l'appareil auquel envoyer votre notification, une chaine alphanumerique de 32 caracteres. |
+| device_name | Non         | Nom de l'appareil, PC, Nexus, etc.                                                                       |
+| group_id    | Non         | Identifiant du groupe auquel envoyer votre notification.                                                 |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Join notification to all of our configured devices:
+Envoyer une notification Join a tous nos appareils configures :
 
 ```bash
-# Assuming our {apikey} is abcdefghijklmnop-abcdefg
-# Assume we're sending to the group: all
+# Supposons que notre {apikey} soit abcdefghijklmnop-abcdefg
+# Supposons que nous envoyions au groupe : all
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    join://abcdefghijklmnop-abcdefg/group.all
 ```

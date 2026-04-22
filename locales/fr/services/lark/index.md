@@ -1,6 +1,6 @@
 ---
 title: "Notifications Lark (Feishu)"
-description: "Envoyer Lark (Feishu) notifications."
+description: "Envoyer des notifications Lark (Feishu)."
 sidebar:
   label: "Lark (Feishu)"
 
@@ -19,22 +19,22 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Lark (also known as Feishu in China) allows you to create **custom bots** that can send notifications to groups and chats using **incoming webhooks**.
+Lark, egalement appele Feishu en Chine, vous permet de creer des **robots personnalises** capables d'envoyer des notifications a des groupes et a des discussions a l'aide de **webhooks entrants**.
 
-1. Visit the [Lark Developer Console](https://open.larksuite.com/) and create or access your app.
-2. Under **Features**, enable **Bot** and turn on the **Custom Bot** feature.
-3. From the app's **Bot settings**, generate a **Webhook URL**.
-4. Copy the webhook — it will look like this:
+1. Rendez-vous sur la [Console Developpeur Lark](https://open.larksuite.com/) et creez votre application, ou accedez a une application existante.
+2. Dans **Features**, activez **Bot** puis la fonctionnalite **Custom Bot**.
+3. Depuis les **Bot settings** de l'application, generez une **URL de webhook**.
+4. Copiez le webhook, il ressemblera a ceci :
 
    ```text
    https://open.larksuite.com/open-apis/bot/v2/hook/abcdef1234567890abcdef1234567890
    ```
 
-This webhook contains a single unique token at the end. This is all Apprise needs to deliver messages.
+Ce webhook contient un unique jeton a la fin. C'est tout ce dont Apprise a besoin pour delivrer des messages.
 
-While you can use the full webhook URL directly, Apprise also supports a simplified form using the `lark://` schema.
+Bien que vous puissiez utiliser directement l'URL webhook complete, Apprise prend aussi en charge une forme simplifiee utilisant le schema `lark://`.
 
 ## Syntaxe
 
@@ -43,28 +43,28 @@ La syntaxe valide est la suivante :
 - `https://open.larksuite.com/open-apis/bot/v2/hook/{token}`
 - `lark://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                      |
-| -------- | -------- | ---------------------------------------------------------------- |
-| token    | Yes      | The 32-character integration key at the end of your webhook URL. |
+| Variable | Obligatoire | Description                                                              |
+| -------- | ----------- | ------------------------------------------------------------------------ |
+| token    | Oui         | Cle d'integration de 32 caracteres situee a la fin de votre URL webhook. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Using the simplified Apprise URL:
+Utilisation de l'URL Apprise simplifiee :
 
 ```bash
-# Assuming our token is abcdef1234567890abcdef1234567890
+# Supposons que notre token soit abcdef1234567890abcdef1234567890
 
-apprise -vv -t "Lark Title" -b "Body of message" \
+apprise -vv -t "Titre Lark" -b "Corps du message" \
    lark://abcdef1234567890abcdef1234567890
 ```
 
-Using the full native URL as-is:
+Utilisation de l'URL native complete telle quelle :
 
 ```bash
-apprise -vv -t "Lark Title" -b "Body of message" \
+apprise -vv -t "Titre Lark" -b "Corps du message" \
    https://open.larksuite.com/open-apis/bot/v2/hook/abcdef1234567890abcdef1234567890
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Feishu"
-description: "Envoyer Feishu notifications."
+description: "Envoyer des notifications Feishu."
 sidebar:
   label: "Feishu"
 
@@ -20,7 +20,7 @@ limits:
 
 ## Configuration du compte
 
-Register your account with [Feishu](https://open.feishu.cn/) and then [follow these instructions](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot) to create a custom bot (and acquire the token you need).
+Inscrivez-vous sur [Feishu](https://open.feishu.cn/), puis [suivez ces instructions](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot) pour creer un bot personnalise et recuperer le jeton dont vous avez besoin.
 
 ## Syntaxe
 
@@ -28,20 +28,20 @@ La syntaxe valide est la suivante :
 
 - `feishu://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                           |
-| -------- | -------- | ------------------------------------------------------------------------------------- |
-| token    | **Yes**  | The token you generated as part of your Fieshu Custom Bot Creation (via your account) |
+| Variable | Obligatoire | Description                                                                            |
+| -------- | ----------- | -------------------------------------------------------------------------------------- |
+| token    | **Oui**     | Jeton genere lors de la creation de votre bot personnalise Feishu depuis votre compte. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notification to your Feishu account:
+Envoyer une notification a votre compte Feishu :
 
 ```bash
-# Assuming our {token} is token
+# Supposons que notre {token} soit token
 apprise -vv --body="Test Message" \
    "feishu://token"
 ```

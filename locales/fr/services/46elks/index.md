@@ -1,6 +1,6 @@
 ---
 title: "Notifications 46elks"
-description: "Envoyer 46elks notifications."
+description: "Envoyer des notifications 46elks."
 sidebar:
   label: "46elks"
 
@@ -23,36 +23,36 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-46elks is a straightforward SMS provider. You authenticate with your 46elks API user and password, then send `to`, `message`, and optionally `from`. The plugin loops per target recipient and posts form-encoded payloads to the fixed API endpoint.
+46elks est un fournisseur SMS simple. Vous vous authentifiez avec votre nom d'utilisateur et votre mot de passe API 46elks, puis vous envoyez `to`, `message` et optionnellement `from`. Le plugin itère sur chaque destinataire cible et publie des charges utiles encodées en formulaire vers le point de terminaison API fixe.
 
-1. Log in at <https://46elks.com> and obtain your **API username** and **password**.
-2. Optionally choose a **From** sender ID, either an E.164 number or an approved alphanumeric sender.
-3. Use the `46elks://` URL form in Apprise to send messages.
+1. Connectez-vous sur <https://46elks.com> et obtenez votre **nom d'utilisateur API** et votre **mot de passe**.
+2. Choisissez facultativement un identifiant d'expéditeur **From**, soit un numéro E.164 soit un expéditeur alphanumérique approuvé.
+3. Utilisez la forme URL `46elks://` dans Apprise pour envoyer des messages.
 
 ## Syntaxe
 
-La syntaxe valide est la suivante (les alias `46elks://` et `elks://` sont acceptes) :
+La syntaxe valide est la suivante (les alias `46elks://` et `elks://` sont acceptés) :
 
 - `46elks://{user}:{password}@/{from}`
 - `46elks://{user}:{password}@/{from}/{to}`
 - `46elks://{user}:{password}@/{from}/{to1}/{to2}/{toN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                        |
-| -------- | -------- | -------------------------------------------------- |
-| user     | Yes      | Your 46elks API username                           |
-| password | Yes      | Your 46elks API password                           |
-| to       | Yes      | Recipient phone number(s), E.164 recommended       |
-| from     | No       | Sender ID or E.164 number, if configured in 46elks |
+| Variable | Requis | Description                                                        |
+| -------- | ------ | ------------------------------------------------------------------ |
+| user     | Oui    | Votre nom d'utilisateur API 46elks                                 |
+| password | Oui    | Votre mot de passe API 46elks                                      |
+| to       | Oui    | Numéro(s) de téléphone destinataire(s), format E.164 recommandé    |
+| from     | Non    | Identifiant d'expéditeur ou numéro E.164, si configuré dans 46elks |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une simple message:
+Envoyer un message simple :
 
 ```bash
 # Assuming our {user} is user123
@@ -63,7 +63,7 @@ apprise -vv -t "Test" -b "Hello from Apprise" \
   46elks://user123:pass@/+15551234567
 ```
 
-Plusieurs destinataires et un identifiant expediteur :
+Plusieurs destinataires et un identifiant d'expéditeur :
 
 ```bash
 # Assuming our {user} is user

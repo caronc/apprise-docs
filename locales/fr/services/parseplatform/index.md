@@ -1,6 +1,6 @@
 ---
 title: "Notifications Parse Platform"
-description: "Envoyer Parse Platform notifications."
+description: "Envoyer des notifications Parse Platform."
 sidebar:
   label: "Parse Platform"
 
@@ -19,30 +19,30 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
 ## Syntaxe
 
-Channels are optional; if no channel is specified then you are just personally notified.
+Les canaux sont facultatifs ; si aucun canal n'est spécifié, vous êtes simplement notifié personnellement.
 
 La syntaxe valide est la suivante :
 
 - `parsep://{app_id}:{master_key}@{hostname}`
 - `parseps://{app_id}:{master_key}@{hostname}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                         |
-| ---------- | -------- | --------------------------------------------------- |
-| app_id     | Yes      | The Application ID                                  |
-| master_key | Yes      | This is the Master Key associated with your account |
-| hostname   | Yes      | The Hostname of your Parse Platform Server          |
+| Variable   | Requis | Description                                   |
+| ---------- | ------ | --------------------------------------------- |
+| app_id     | Oui    | L'identifiant de l'application                |
+| master_key | Oui    | La Master Key associée à votre compte         |
+| hostname   | Oui    | Le nom d'hôte de votre serveur Parse Platform |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Parse Platform notification
+Envoyer une notification Parse Platform :
 
 ```bash
 # Assume:

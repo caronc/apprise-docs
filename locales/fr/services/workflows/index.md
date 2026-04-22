@@ -1,8 +1,8 @@
 ---
-title: "Notifications Microsoft Power Automate / Workflows Notifications"
-description: "Envoyer Microsoft Power Automate / Workflows Notifications notifications."
+title: "Notifications Microsoft Power Automate / Workflows"
+description: "Envoyer des notifications Microsoft Power Automate / Workflows."
 sidebar:
-  label: "Microsoft Power Automate / Workflows Notifications"
+  label: "Microsoft Power Automate / Workflows"
 
 source: https://www.microsoft.com/power-platform/products/power-automate
 
@@ -20,14 +20,14 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Depending on where you want your notification to appear, you must create a workflow through the options. e.g. an MS Teams workflow might look like this:<br/>
+Selon l’endroit où vous souhaitez voir apparaître votre notification, vous devez créer un workflow adapté. Par exemple, un workflow MS Teams peut ressembler à ceci :<br/>
 ![image](./images/f6034b792cdb90d1.png)
 
-Documentation for this can be found [here](https://learn.microsoft.com/en-us/power-automate/teams/send-a-message-in-teams)
+La documentation correspondante se trouve [ici](https://learn.microsoft.com/en-us/power-automate/teams/send-a-message-in-teams).
 
-When you've completed this, it will generate you a URL that looks like:
+Une fois terminé, cela générera une URL ressemblant à ceci :
 
 ```text
 https://prod-NO.LOCATION.logic.azure.com:443/workflows/WFID/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SIGNATURE
@@ -38,12 +38,12 @@ https://prod-NO.LOCATION.logic.azure.com:443/workflows/WFID/triggers/manual/path
 
 ```
 
-Yes... The URL is that big... but at the end of the day this effectively equates to:
+Oui, l’URL est effectivement aussi longue... mais au final elle correspond à :
 
 - `workflows://{host}:{port}/{workflow}/{signature}`
 
 :::tip
-Apprise supports this URL _as-is_ too; you no longer need to parse the URL any further. However there is slightly more overhead (internally) if you do use it this way. Sometimes copy/paste is so much easier though!
+Apprise prend également cette URL en charge _telle quelle_ ; vous n’avez donc plus besoin de la reparser. Il existe toutefois un léger surcoût interne si vous l’utilisez ainsi. Parfois, le copier-coller reste malgré tout la solution la plus simple.
 :::
 
 ## Syntaxe
@@ -53,21 +53,21 @@ La syntaxe valide est la suivante :
 - `https://prod-site.logic.azure.com:443/workflows/{workflow}/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig={signature}`
 - `workflows://{host}:{port}/{workflow}/{signature}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                |
-| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| workflow  | Yes      | The Workflow Identifier provided in the Azure Webhook Link                                                                                                                                                                                                                                                 |
-| signature | Yes      | The Signature Identifier provided in the Azure Webhook Link (`sig=`)                                                                                                                                                                                                                                       |
-| wrap      | No       | Wrap body text in response.                                                                                                                                                                                                                                                                                |
-| ver       | No       | The Power Automate API Version to use; the default value is `2016-06-01`. This is also parsed using the keyword `api-version` that can be found on the Azure Webhook Link.                                                                                                                                 |
-| template  | No       | provide a path to a template you would prefer to use instead of the Adaptive card chosen by Apprise. use double `{{token}}` curly braces to identify the tokens you wish to have swapped in the provided template prior to its submission to the upstream service. (e.g `{{app_body}}` or `{{app_title}}`) |
+| Variable  | Requis | Description                                                                                                                                                                                                                                                                                   |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| workflow  | Oui    | L’identifiant de workflow fourni dans le lien webhook Azure.                                                                                                                                                                                                                                  |
+| signature | Oui    | L’identifiant de signature fourni dans le lien webhook Azure, c’est-à-dire `sig=`.                                                                                                                                                                                                            |
+| wrap      | Non    | Enveloppe le texte du corps dans la réponse.                                                                                                                                                                                                                                                  |
+| ver       | Non    | Version d’API Power Automate à utiliser ; la valeur par défaut est `2016-06-01`. Cette valeur peut aussi être lue via le mot-clé `api-version` présent dans le lien webhook Azure.                                                                                                            |
+| template  | Non    | Permet d’indiquer le chemin vers un template que vous préférez utiliser à la place de la carte Adaptive choisie par Apprise. Utilisez des doubles accolades `{{token}}` pour marquer les jetons à remplacer avant soumission au service amont, par exemple `{{app_body}}` ou `{{app_title}}`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Microsoft Teams notification:
+Envoyer une notification Microsoft Teams :
 
 ```bash
 # Assuming our {host} is prod-site.logic.azure.com
@@ -78,15 +78,15 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
 
-## Templating
+## Modèles
 
-### The `template` URL Argument
+### L’Argument d’URL `template`
 
-Define a `?template=` argument that points to a predefined JSON payload you wish to provide Workflow. Ideally you may wish to stick with the [AdaptiveCards](https://learn.microsoft.com/en-us/power-automate/create-adaptive-cards).
+Définissez un argument `?template=` pointant vers une charge utile JSON prédéfinie que vous souhaitez fournir au workflow. Dans l’idéal, vous pouvez rester sur le format [AdaptiveCards](https://learn.microsoft.com/en-us/power-automate/create-adaptive-cards).
 
-#### The Template Tokens
+#### Les Jetons de Modèle
 
-The `template=` you point to, can either be fully populate and ready to go as is (up to the MSTeams chat server), or you can dynamically populate it on the fly each time you call Apprise. You do this by using the double curly brace `{{` and `}}` to surround a keyword that you invent; here is an example:
+Le `template=` que vous indiquez peut soit être entièrement rempli et prêt à être utilisé tel quel, soit être alimenté dynamiquement à chaque appel Apprise. Pour cela, utilisez des doubles accolades `{{` et `}}` autour d’un mot-clé de votre choix, comme dans l’exemple ci-dessous :
 
 ```json
 {
@@ -109,23 +109,23 @@ The `template=` you point to, can either be fully populate and ready to go as is
 }
 ```
 
-In the above example, we introduce several tokens... `app_id`, `app_title`, `target` and `whence`. There are a few entries that will ALWAYS be set and you can not over-ride them. They are:
+Dans l’exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_title`, `target` et `whence`. Certaines entrées seront TOUJOURS définies et ne peuvent pas être surchargées :
 
-- **app_id**: The Application identifier; usually set to `Apprise`, but developers of custom applications may choose to over-ride this and place their name here. this is how you acquire this value.
-- **app_desc**: Similar the the Application Identifier, this is the Application Description. It's usually just a slightly more descriptive alternative to the _app_id_. This is usually set to `Apprise Notification` unless it has been over-ridden by a developer.
-- **app_color**: A hex code that identifies a colour associate with a message. For instance, `info` type messages are generally blue where as `warning` ones are orange, etc.
-- **app_type**: The message type itself; it may be `info`, `warning`, `success`, etc
-- **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
-- **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
-- **app_image_url**: The image URL associated with the message type (`info`, `warning`, etc) if one exists and/or was not specified to be turned off from the URL (`image=no`)
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.
+- **app_id** : l’identifiant de l’application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
+- **app_desc** : la description de l’application, souvent une variante un peu plus explicite de `app_id`. Elle vaut généralement `Apprise Notification` sauf surcharge.
+- **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont souvent bleus, tandis que les messages `warning` sont orange.
+- **app_type** : le type du message lui-même, comme `info`, `warning`, `success`, etc.
+- **app_title** : le titre réel transmis à la notification Apprise via `--title` ou `-t`.
+- **app_body** : le corps réel transmis à la notification Apprise via `--body` ou `-b`.
+- **app_image_url** : l’URL de l’image associée au type de message, par exemple `info` ou `warning`, si elle existe et n’a pas été désactivée dans l’URL via `image=no`.
+- **app_url** : l’URL associée à l’instance Apprise, trouvée dans l’objet **AppriseAsset()**. Sauf surcharge explicite, sa valeur est `https://github.com/caronc/apprise`.
 
-Anything you invent outside of that is yours. So lets get back to the `target` and `whence` that was define. Template tokens can be dynamically set by using the colon `:` operator before any URL argument you identify. For example we can set these values on our Apprise URL like so:
+Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de template peuvent être définis dynamiquement en utilisant l’opérateur `:` devant les arguments d’URL de votre choix. Par exemple :
 
 - `workflows://credentials/?template=/path/to/template.json&:target=Chris&:whence=this%20afternoon`
 - `workflows://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon`
 
-A notification like so:
+Une notification comme celle-ci :
 
 ```bash
 # using colons, we can set our target and whence dynamically from the
@@ -134,7 +134,7 @@ apprise -t "My Title goes in app_title" -b "This is placed into the app_body" \
    "workflows://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 
-Would post to MSTeams (with respect to our template above):
+Publierait dans MSTeams en suivant le template ci-dessus :
 
 ```json
 {
@@ -162,10 +162,10 @@ Would post to MSTeams (with respect to our template above):
 }
 ```
 
-#### Additional Template Remarques
+#### Remarques Supplémentaires sur les Modèles
 
-- Tokens can have white space around them for readability if you like. Hence `{{ token }}` is no different then `{{token}}`.
-- All tokens are escaped properly, so don't worry if your defined token has a double quote in it (`"`); it would be correctly escaped before it is sent upstream.
-- Tokens ARE case sensitive, so `{{Token}}` NEEDS to be populated with a `:Token=` value on your URL.
-- Tokens that are not matched correctly simply are not swapped and the {{keyword}} will remain as is in the message.
-- Apprise always requires you to specify a `--body` (`-b`) at a very minimum which can be optionally referenced as `{{app_body}}` in your template. Even if you choose not to use this token, you must still pass in something (anything) just to satisfy this requirement and make use of the template calls.
+- Les jetons peuvent contenir des espaces autour d’eux pour améliorer la lisibilité. Ainsi, `{{ token }}` n’est pas différent de `{{token}}`.
+- Tous les jetons sont correctement échappés ; ne vous inquiétez donc pas si une valeur contient un guillemet double (`"`), il sera correctement échappé avant l’envoi en amont.
+- Les jetons sont **sensibles à la casse**. Ainsi, `{{Token}}` doit être alimenté par une valeur `:Token=` dans votre URL.
+- Les jetons qui ne correspondent à rien ne sont tout simplement pas remplacés, et `{{keyword}}` restera tel quel dans le message.
+- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé sous `{{app_body}}` dans votre template. Même si vous ne l’utilisez pas, vous devez tout de même fournir une valeur pour satisfaire cette exigence et utiliser les appels de template.

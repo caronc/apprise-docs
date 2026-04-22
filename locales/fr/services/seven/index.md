@@ -1,6 +1,6 @@
 ---
 title: "Notifications Seven"
-description: "Envoyer Seven notifications."
+description: "Envoyer des notifications Seven."
 sidebar:
   label: "Seven"
 
@@ -22,7 +22,7 @@ limits:
 
 ## Configuration du compte
 
-Signup [from here](https://www.seven.io/). It is from the device you can access its web interface and configure your access token.
+Inscrivez-vous [ici](https://www.seven.io/). Depuis votre compte, vous pourrez acceder a l'interface web et configurer votre jeton d'acces.
 
 ## Syntaxe
 
@@ -30,25 +30,25 @@ La syntaxe valide est la suivante :
 
 - `seven://{token}/{target}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                             |
-| -------- | -------- | ----------------------------------------------------------------------- |
-| token    | Yes      | This is your generated Access Token associated with your Seven account. |
-| target   | Yes      | One or more phone number(s) you wish to send your notification to.      |
-| flash    | No       | Flash mode (default is `no` ); specify `yes` to enable                  |
-| label    | No       | Defines a label                                                         |
+| Variable | Obligatoire | Description                                                                |
+| -------- | ----------- | -------------------------------------------------------------------------- |
+| token    | Oui         | Jeton d'acces genere et associe a votre compte Seven.                      |
+| target   | Oui         | Un ou plusieurs numeros de telephone auxquels envoyer votre notification.  |
+| flash    | Non         | Mode flash. La valeur par defaut est `no` ; indiquez `yes` pour l'activer. |
+| label    | Non         | Definit un libelle.                                                        |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Seven notification:
+Envoyer une notification Seven :
 
 ```bash
-# Assuming our {AccessToken} is abcd123
-# Assuming we want to notify 555221237, and +18005551234
-# Test out the changes with the following command:
+# Supposons que notre {AccessToken} soit abcd123
+# Supposons que nous voulions notifier 555221237 et +18005551234
+# Testez avec la commande suivante :
 apprise -t "Test Title" -b "Test Message" \
  seven://abcd123/555221237/+18005551234
 

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Custom XML"
-description: "Envoyer HTML/XML based notifications."
+description: "Envoyer des notifications basées sur HTML/XML."
 sidebar:
   label: "HTTP/XML"
 group: "custom"
@@ -24,9 +24,9 @@ sample_urls:
 
 ## Introduction
 
-This is just a custom Notification that allows you to have this tool post to a web server as a simple XML string. This is useful for those who want to be notified via their own custom methods.
+Il s'agit d'une notification personnalisée qui permet à cet outil de publier vers un serveur Web sous forme d'une simple chaîne XML. Cela est utile pour ceux qui souhaitent être notifiés via leurs propres méthodes personnalisées.
 
-The format might look something like this:
+Le format pourrait ressembler à ceci :
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
@@ -45,12 +45,12 @@ The format might look something like this:
 </soapenv:Envelope>
 ```
 
-The _MessageType_ will be one of the following:
+Le champ _MessageType_ sera l'une des valeurs suivantes :
 
-- **info**: An informative type message
-- **success**: A successful report
-- **failure**: A failure report
-- **warning**: A warning report
+- **info** : Un message de type informatif
+- **success** : Un rapport de succès
+- **failure** : Un rapport d'échec
+- **warning** : Un rapport d'avertissement
 
 ## Syntaxe
 
@@ -61,28 +61,28 @@ La syntaxe valide est la suivante :
 - `xml://{user}:{password}@{hostname}`
 - `xml://{user}:{password}@{hostname}:{port}`
 
-Adding an `s` to the schema (i.e. `xmls://`) switches to a secure HTTPS connection:
+L'ajout d'un `s` au schéma (c'est-à-dire `xmls://`) bascule vers une connexion HTTPS sécurisée :
 
 - `xmls://{hostname}`
 - `xmls://{hostname}:{port}`
 - `xmls://{user}:{password}@{hostname}`
 - `xmls://{user}:{password}@{hostname}:{port}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                         |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname                                                                                                                                                                           |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **xml://** and **443** for all **xmls://** references.                                                                   |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
-| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
+| Variable | Requis | Description                                                                                                                                                                                                                 |
+| -------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui    | Le nom d'hôte du serveur Web                                                                                                                                                                                                |
+| port     | Non    | Le port sur lequel notre serveur Web est en écoute. Par défaut, le port est **80** pour **xml://** et **443** pour toutes les références **xmls://**.                                                                       |
+| user     | Non    | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _nom d'utilisateur_ pour l'authentification.                                                                                                 |
+| password | Non    | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _mot de passe_ pour l'authentification.                                                                                                      |
+| method   | Non    | Spécifier éventuellement la méthode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Par défaut, si aucune méthode n'est spécifiée, `post` est utilisé. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une XML notification to our web server listening on port 80:
+Envoyer une notification XML à notre serveur Web en écoute sur le port 80 :
 
 ```bash
 # Assuming our {hostname} is xml.server.local
@@ -90,9 +90,9 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    xml://xml.server.local
 ```
 
-### HTTP Method
+### Méthode HTTP
 
-By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+Par défaut, toutes les notifications sont envoyées en tant que requête `POST`. Modifiez ce comportement avec le paramètre URL `method` :
 
 ```bash
 # Send as a PUT request
@@ -108,15 +108,15 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xml://localhost/?method=patch"
 ```
 
-The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+La liste complète des méthodes prises en charge est : `post` (par défaut), `get`, `put`, `delete`, `patch`, `head`, `update` et `options`.
 
-> **Note:** When `method=get` is used, the XML body is still sent as a request body. To pass parameters as URL query strings instead, use the `-` prefix (see [GET Parameter Manipulation](#get-parameter-manipulation) below).
+> **Remarque :** Lorsque `method=get` est utilisé, le corps XML est toujours envoyé en tant que corps de la requête. Pour transmettre des paramètres sous forme de chaînes de requête URL, utilisez le préfixe `-` (voir [Manipulation des Paramètres GET](#manipulation-des-paramètres-get) ci-dessous).
 
-### Payload Manipulation
+### Manipulation de la Charge Utile
 
-Making use of the `:` on the Apprise URL allows you to alter and add to the content posted upstream to a remote server.
+L'utilisation du `:` dans l'URL Apprise vous permet de modifier et d'ajouter du contenu publié en amont vers un serveur distant.
 
-> **Note:** XML element names must be valid identifiers. Any characters outside of `[A-Za-z0-9_-]` are stripped automatically from the `:key` name.
+> **Remarque :** Les noms d'éléments XML doivent être des identifiants valides. Tout caractère en dehors de `[A-Za-z0-9_-]` est automatiquement supprimé du nom `:key`.
 
 ```bash
 # Add to the payload delivered to the remote server as if it was part
@@ -128,7 +128,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xml://localhost/?:Sound=oceanwave"
 ```
 
-The above would post a message such as:
+Ce qui précède publierait un message tel que :
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
@@ -148,7 +148,7 @@ The above would post a message such as:
 </soapenv:Envelope>
 ```
 
-You can also remove built-in elements from the output by setting their value to empty:
+Vous pouvez également supprimer des éléments intégrés de la sortie en définissant leur valeur à vide :
 
 ```bash
 # Remove the Version and MessageType elements from the payload:
@@ -157,7 +157,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xml://localhost/?:Version&:MessageType"
 ```
 
-The above would post a message such as:
+Ce qui précède publierait un message tel que :
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
@@ -174,9 +174,9 @@ The above would post a message such as:
 </soapenv:Envelope>
 ```
 
-> **Note:** When any payload customisation is applied (adding, removing, or remapping elements), the XSD namespace attribute is omitted from the `<Notification>` element.
+> **Remarque :** Lorsqu'une personnalisation de la charge utile est appliquée (ajout, suppression ou remappage d'éléments), l'attribut d'espace de noms XSD est omis de l'élément `<Notification>`.
 
-Finally, you can remap a built-in element to a different tag name:
+Enfin, vous pouvez remapper un élément intégré vers un nom de balise différent :
 
 ```bash
 # Remap "Message" to "Body" and "Subject" to "Title":
@@ -185,7 +185,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xml://localhost/?:Message=Body&:Subject=Title"
 ```
 
-The above would post a message such as:
+Ce qui précède publierait un message tel que :
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
@@ -204,9 +204,9 @@ The above would post a message such as:
 </soapenv:Envelope>
 ```
 
-### Manipulation des en-tetes
+### Manipulation des En-têtes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin que des en-têtes HTTP spéciaux soient présents lors de la publication de leurs données vers leur serveur. Cela peut être accompli en plaçant simplement un symbole plus (**+**) devant tout paramètre que vous spécifiez dans votre chaîne URL.
 
 ```bash
 # Below would set the header:
@@ -228,9 +228,9 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xml://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-### GET Parameter Manipulation
+### Manipulation des Paramètres GET
 
-Some users may require GET parameters to be part of their POST. Any parameters you pass onto the Apprise command line are interpreted by Apprise itself as options/actions you wish to perform (such as changing `method=update`, or `cto=3`). To have Apprise ignore what was specified and past the content `as-is` upstream, you just need to prefix your entries with a minus (`-`) symbol.
+Certains utilisateurs peuvent avoir besoin que des paramètres GET fassent partie de leur requête POST. Tout paramètre que vous transmettez sur la ligne de commande Apprise est interprété par Apprise lui-même comme des options/actions que vous souhaitez effectuer (comme changer `method=update` ou `cto=3`). Pour qu'Apprise ignore ce qui a été spécifié et transmette le contenu `tel quel` en amont, il vous suffit de préfixer vos entrées d'un symbole moins (`-`).
 
 ```bash
 # The below for example would post to http://localhost:8000?token=abcdefg

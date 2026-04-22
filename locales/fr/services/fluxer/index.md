@@ -1,6 +1,6 @@
 ---
 title: "Notifications Fluxer"
-description: "Envoyer Fluxer notifications."
+description: "Envoyer des notifications via Fluxer."
 sidebar:
   label: "Fluxer"
 
@@ -25,31 +25,31 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Fluxer uses webhooks for posting notifications.
+Fluxer utilise des webhooks pour publier des notifications.
 
-A webhook URL looks like this:
+Une URL de webhook ressemble à ceci :
 
 `https://api.fluxer.app/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
 
-This effectively equates to:
+Ce qui correspond effectivement à :
 `https://api.fluxer.app/webhooks/{WebhookID}/{WebhookToken}`
 
-The last part of the URL you are given make up the 2 tokens you need to send notifications with. With respect to the above example the tokens are as follows:
+La dernière partie de l'URL qui vous est fournie constitue les 2 jetons nécessaires pour envoyer des notifications. Pour l'exemple ci-dessus, les jetons sont les suivants :
 
-1. **WebhookID** is `417429632418316298`
-2. **WebhookToken** is `JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
+1. **WebhookID** est `417429632418316298`
+2. **WebhookToken** est `JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
 
-### Mentionner des roles, tags et utilisateurs
+### Mentionner des Rôles, Tags et Utilisateurs
 
-Fluxer supports Discord-style mentions. You can place these directly in the message body:
+Fluxer prend en charge les mentions de style Discord. Vous pouvez les placer directement dans le corps du message :
 
-- **user**: `<@123>`
-- **role**: `<@&456>`
-- **tag**: `@everyone` or `@here`
+- **user** : `<@123>`
+- **role** : `<@&456>`
+- **tag** : `@everyone` ou `@here`
 
-You can also force pings via the `ping=` URL parameter (see below).
+Vous pouvez également forcer des pings via le paramètre URL `ping=` (voir ci-dessous).
 
 ## Syntaxe
 
@@ -60,48 +60,48 @@ La syntaxe valide est la suivante :
 - `fluxer://{WebhookID}/{WebhookToken}/`
 - `fluxer://{botname}@{WebhookID}/{WebhookToken}/`
 
-### Private Server Mode
+### Mode Serveur Privé
 
-Fluxer can be used in two modes:
+Fluxer peut être utilisé dans deux modes :
 
-- `mode=cloud` (default): posts to the Fluxer Cloud API (`https://api.fluxer.app`)
-- `mode=private`: posts to the host you specify in the URL
+- `mode=cloud` (par défaut) : publie vers l'API Fluxer Cloud (`https://api.fluxer.app`)
+- `mode=private` : publie vers l'hôte que vous spécifiez dans l'URL
 
-When `mode=private` is used, a host is required:
+Lorsque `mode=private` est utilisé, un hôte est requis :
 
 - `fluxer://{host}/{WebhookID}/{WebhookToken}/?mode=private`
 - `fluxer://{host}:{port}/{WebhookID}/{WebhookToken}/?mode=private`
 
-If `mode=private` is selected but the host contains `fluxer.app`, Apprise will automatically switch back to `mode=cloud`.
+Si `mode=private` est sélectionné mais que l'hôte contient `fluxer.app`, Apprise repassera automatiquement en `mode=cloud`.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                                      |
-| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| WebhookID    | Yes      | The first part of 2 tokens provided to you after creating an incoming webhook                                    |
-| WebhookToken | Yes      | The second part of 2 tokens provided to you after creating an incoming webhook                                   |
-| botname      | No       | Identify the name of the bot that should issue the message                                                       |
-| host         | No       | Hostname of your private Fluxer server (used with `mode=private`)                                                |
-| port         | No       | Port of your private Fluxer server (used with `mode=private`)                                                    |
-| mode         | No       | One of: `cloud` (default) or `private`                                                                           |
-| tts          | No       | Enable Text-To-Speech (default is **No**)                                                                        |
-| avatar       | No       | Override the default avatar icon and replace it with one identifying the notification type (default is **Yes**)  |
-| avatar_url   | No       | Override the avatar icon URL. If not set, Apprise chooses a URL dynamically based on message type                |
-| footer       | No       | Include a footer section in the embed (default is **No**)                                                        |
-| footer_logo  | No       | Include the Fluxer footer logo when `footer=yes` (default is **Yes**)                                            |
-| image        | No       | Include an image in-line with the message describing the notification type (default is **No**)                   |
-| fields       | No       | Use embedded fields when posting in `markdown` format (default is **Yes**)                                       |
-| format       | No       | The default is `text`. Set to `markdown` to enable markdown-to-embed parsing (headers are converted into embeds) |
-| href         | No       | Identify a URL the title should link to when posting. You can also use `url=` as an alias                        |
-| thread       | No       | Optionally set the `thread_id` you wish your message to be applied to                                            |
-| thread_name  | No       | Optionally set the thread name when using `thread=`                                                              |
-| ping         | No       | A comma-separated list of users, roles, or tokens such as `everyone` that should always be pinged                |
+| Variable     | Requis | Description                                                                                                                                            |
+| ------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| WebhookID    | Oui    | La première partie des 2 jetons fournis lors de la création d'un webhook entrant                                                                       |
+| WebhookToken | Oui    | La seconde partie des 2 jetons fournis lors de la création d'un webhook entrant                                                                        |
+| botname      | Non    | Indique le nom du robot qui doit émettre le message                                                                                                    |
+| host         | Non    | Nom d'hôte de votre serveur Fluxer privé (utilisé avec `mode=private`)                                                                                 |
+| port         | Non    | Port de votre serveur Fluxer privé (utilisé avec `mode=private`)                                                                                       |
+| mode         | Non    | L'une des valeurs suivantes : `cloud` (par défaut) ou `private`                                                                                        |
+| tts          | Non    | Activer la synthèse vocale (Text-To-Speech) (par défaut **Non**)                                                                                       |
+| avatar       | Non    | Remplacer l'icône d'avatar par défaut par une icône identifiant le type de notification (par défaut **Oui**)                                           |
+| avatar_url   | Non    | Remplacer l'URL de l'icône d'avatar. Si non défini, Apprise choisit dynamiquement une URL en fonction du type de message                               |
+| footer       | Non    | Inclure une section pied de page dans l'intégration (par défaut **Non**)                                                                               |
+| footer_logo  | Non    | Inclure le logo de pied de page Fluxer lorsque `footer=yes` (par défaut **Oui**)                                                                       |
+| image        | Non    | Inclure une image en ligne avec le message décrivant le type de notification (par défaut **Non**)                                                      |
+| fields       | Non    | Utiliser des champs intégrés lors de la publication au format `markdown` (par défaut **Oui**)                                                          |
+| format       | Non    | La valeur par défaut est `text`. Définir sur `markdown` pour activer l'analyse markdown vers intégration (les en-têtes sont convertis en intégrations) |
+| href         | Non    | Identifier une URL vers laquelle le titre doit pointer lors de la publication. Vous pouvez également utiliser `url=` comme alias                       |
+| thread       | Non    | Définir éventuellement le `thread_id` auquel vous souhaitez que votre message soit appliqué                                                            |
+| thread_name  | Non    | Définir éventuellement le nom du fil de discussion lors de l'utilisation de `thread=`                                                                  |
+| ping         | Non    | Une liste séparée par des virgules d'utilisateurs, de rôles ou de jetons tels que `everyone` qui doivent toujours être mentionnés                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Fluxer notification:
+Envoyer une notification Fluxer :
 
 ```bash
 # Assuming our {WebhookID} is 417429632418316298
@@ -110,7 +110,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "fluxer://417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
 ```
 
-Envoyer une notification using markdown-to-embed formatting:
+Envoyer une notification en utilisant le formatage markdown vers intégration :
 
 ```bash
 # Assuming our {WebhookID} is 417429632418316298
@@ -125,7 +125,7 @@ cat << _EOF | apprise -vv \
 _EOF
 ```
 
-Envoyer an attachment:
+Envoyer une pièce jointe :
 
 ```bash
 # Assuming our {WebhookID} is 417429632418316298
@@ -135,7 +135,7 @@ apprise -vv -b "Here is a file" \
   "fluxer://417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
 ```
 
-Post to a private Fluxer server:
+Publier vers un serveur Fluxer privé :
 
 ```bash
 # Assuming your private server is https://fluxer.example.com

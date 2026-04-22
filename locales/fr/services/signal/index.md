@@ -1,6 +1,6 @@
 ---
 title: "Notifications Signal API"
-description: "Envoyer Signal API notifications."
+description: "Envoyer des notifications via Signal API."
 sidebar:
   label: "Signal API"
 
@@ -23,13 +23,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-First of all you need a Signal account. So it is presumed you've either got the Apple or Android version of the Signal software.
+Tout d'abord, vous devez disposer d'un compte Signal. Il est donc supposé que vous disposez de la version Apple ou Android du logiciel Signal.
 
-From here, the plugin assumes you have configured yourself up with the [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
+À partir de là, le plugin suppose que vous avez configuré le [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
 
-A simple setup might be:
+Une configuration simple pourrait ressembler à ceci :
 
 ```bash
 # Create a directory for our configuration to get stored into
@@ -42,9 +42,9 @@ docker run -d --name signal-api --restart=always -p 9922:8080 \
    bbernhard/signal-cli-rest-api
 ```
 
-If all goes well, you should be able to point your browser to: `http://localhost:9922/v1/qrcodelink?device_name=signal-api` and from your phone app, follow the instructions to add a **Linked Device**.
+Si tout se passe bien, vous devriez pouvoir pointer votre navigateur vers : `http://localhost:9922/v1/qrcodelink?device_name=signal-api` et, depuis l'application de votre téléphone, suivre les instructions pour ajouter un **Linked Device**.
 
-The **{FromPhoneNo}** must be the number associated with your account.
+Le **{FromPhoneNo}** doit être le numéro associé à votre compte.
 
 ## Syntaxe
 
@@ -55,36 +55,36 @@ La syntaxe valide est la suivante :
 - `signal://{user}:{password}@{hostname}/{from_phone}/{target}`
 - `signal://{user}:{password}@{hostname}:{port}/{from_phone}/{target}`
 
-You can post in multiple chats by simply chaining them at the end of the URL.
+Vous pouvez publier dans plusieurs conversations en les enchaînant simplement à la fin de l'URL.
 
 - `signal://{user}:{password}@{hostname}:{port}/{from_phone}/{target1}/{target2}/{target3}`
 - `signals://{user}:{password}@{hostname}:{port}/{from_phone}/{target1}/{target2}/{target3}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                      |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname | Yes      | The Web Server's hostname                                                                                                                        |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **signal://** and **443** for all **signals://** references.          |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                |
-| from     | Yes      | This must be a _From Phone Number_ you've added to the API service.                                                                              |
-| to       | **\*No** | A phone number or group id you wish to send your notification to. If one isn't specified, then the `from` is used instead.                       |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                  |
-| status   | No       | Optionally include a small little ASCII string representing the notification status being sent (inline with it) by default this is set to `yes`. |
+| Variable | Requis    | Description                                                                                                                                                                 |
+| -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui       | Le nom d'hôte du serveur Web                                                                                                                                                |
+| port     | Non       | Le port sur lequel notre serveur Web est en écoute. Par défaut, le port est **80** pour **signal://** et **443** pour toutes les références **signals://**.                 |
+| user     | Non       | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _nom d'utilisateur_ pour l'authentification.                                                 |
+| password | Non       | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _mot de passe_ pour l'authentification.                                                      |
+| from     | Oui       | Il doit s'agir d'un _numéro de téléphone expéditeur_ que vous avez ajouté au service API.                                                                                   |
+| to       | **\*Non** | Un numéro de téléphone ou un identifiant de groupe auquel vous souhaitez envoyer votre notification. Si aucun n'est spécifié, le champ `from` est utilisé à la place.       |
+| batch    | Non       | Envoyer plusieurs notifications spécifiées en un seul lot (1 envoi en amont vers le serveur final). Par défaut, cette option est définie sur `no`.                          |
+| status   | Non       | Inclure éventuellement une petite chaîne ASCII représentant le statut de la notification envoyée (en ligne avec celle-ci) ; par défaut, cette option est définie sur `yes`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-### Acquiring A Group ID
+### Obtenir un Identifiant de Groupe
 
-Groups can be created in the app, or via the [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
-To get a list of available groups and their ids run:
+Les groupes peuvent être créés dans l'application ou via le [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
+Pour obtenir la liste des groupes disponibles et leurs identifiants, exécutez :
 
 ```bash
 curl -X GET -H "Content-Type: application/json" localhost:9922/v1/groups/+15555551234 | jq
 ```
 
-Example output is as follows:
+Un exemple de sortie est le suivant :
 
 ```json
 [
@@ -109,11 +109,11 @@ Example output is as follows:
 The takeaway from the above is the group
 ```
 
-Example sending a notification to a group: `group.aabbccdd/eeffgghh=` identified by the `id`.
+Exemple d'envoi d'une notification à un groupe : `group.aabbccdd/eeffgghh=` identifié par le champ `id`.
 
 ## Exemples
 
-Envoyer une Signal Notification (via Signal API):
+Envoyer une notification Signal (via Signal API) :
 
 ```bash
 # Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
@@ -129,7 +129,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "signal://localhost/1-(900) 555-9999/1-(800) 555-1223"
 ```
 
-Based on my personal experiences, I was able to send a notification to myself by simply doing the following:
+D'après mon expérience personnelle, j'ai pu m'envoyer une notification à moi-même en procédant simplement comme suit :
 
 ```bash
 # Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
@@ -139,7 +139,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "signal://localhost:9922/15555551234"
 ```
 
-If you know the Group ID you want to notify, you can idenify it as well on the command line:
+Si vous connaissez l'identifiant du groupe auquel vous souhaitez envoyer une notification, vous pouvez également le spécifier sur la ligne de commande :
 
 ```bash
 # Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
@@ -150,12 +150,12 @@ apprise -vv -t "Group Message:" -b "Hello group members" \
     "signal://localhost:9922/+1555555551234/group.abcdefghijklmnop="
 ```
 
-I could even send an attachment without a problem:
+J'ai même pu envoyer une pièce jointe sans problème :
 
 ```bash
 apprise -vv -t -b "test" \
    signal://localhost:9922/15555551234 --attach apprise-test.gif
 ```
 
-Which produced:
+Ce qui a produit :
 ![image](./images/168930313-05e2bfb2-48f3-4a0a-b0ef-e5c601c97703.png)

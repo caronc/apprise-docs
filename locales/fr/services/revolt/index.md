@@ -1,6 +1,6 @@
 ---
 title: "Notifications Revolt"
-description: "Envoyer Revolt notifications."
+description: "Envoyer des notifications Revolt."
 sidebar:
   label: "Revolt"
 
@@ -23,7 +23,7 @@ limits:
 
 ## Configuration du compte
 
-Set up your account on [Revolt Chat](https://revolt.chat/) and generate a bot token
+Configurez votre compte sur [Revolt Chat](https://revolt.chat/) puis generez un jeton de robot.
 
 ## Syntaxe
 
@@ -32,24 +32,24 @@ La syntaxe valide est la suivante :
 - `revolt://{bot_token}/{channel_id}`
 - `revolt://{bot_token}/{channel_id1}/{channel_id2}/{channel_id3}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                      |
-| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| bot_token  | Yes      | The token that identifies the bot you created through the Revolt Admin Area.                                     |
-| channel_id | Yes      | Identify the users you want your bot to deliver your notifications to. You must specify at least 1 _channel_id_. |
-| url        | No       | Optionally specify an Embed URL with the API                                                                     |
-| icon_url   | No       | Optionally specify a URL to and Image to over-ride defaults                                                      |
+| Variable   | Obligatoire | Description                                                                                                                |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| bot_token  | Oui         | Jeton identifiant le robot que vous avez cree depuis l'interface d'administration Revolt.                                  |
+| channel_id | Oui         | Identifie les canaux auxquels votre robot doit remettre vos notifications. Vous devez preciser au moins un `_channel_id_`. |
+| url        | Non         | Permet facultativement de specifier une URL d'embed a utiliser avec l'API.                                                 |
+| icon_url   | Non         | Permet facultativement de specifier l'URL d'une image pour remplacer l'icone par defaut.                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Revolt notification to lead2gold:
+Envoyer une notification Revolt a `lead2gold` :
 
 ```bash
-# Assuming our {bot_token} is 123456789:abcdefg_hijklmnop
-# Assuming the {channel} belonging to lead2gold is 12315544
+# Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
+# Supposons que le {channel} associe a lead2gold soit 12315544
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    revolt://123456789:abcdefg_hijklmnop/12315544/
 ```

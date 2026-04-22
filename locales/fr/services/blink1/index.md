@@ -1,6 +1,6 @@
 ---
 title: "Voyant de notification Blink(1) USB LED"
-description: "Flash a Blink(1) USB LED with the color that matches the notification type."
+description: "Faire clignoter une LED USB Blink(1) avec une couleur correspondant au type de notification."
 sidebar:
   label: "Blink(1)"
 
@@ -23,23 +23,19 @@ sample_urls:
 
 ## Configuration du compte
 
-[Blink(1)](https://blink1.thingm.com/) is a small USB RGB LED notification
-light made by ThingM. Plug it into any USB port and Apprise can flash it
-in a color that reflects the notification type:
+[Blink(1)](https://blink1.thingm.com/) est un petit voyant USB RGB de notification fabrique par ThingM. Branchez-le sur n'importe quel port USB et Apprise pourra le faire clignoter dans une couleur correspondant au type de notification :
 
-| Notification Type | Color  |
-| ----------------- | ------ |
-| Info              | Blue   |
-| Success           | Green  |
-| Warning           | Yellow |
-| Failure           | Red    |
+| Type de Notification | Couleur |
+| -------------------- | ------- |
+| Info                 | Bleu    |
+| Success              | Vert    |
+| Warning              | Jaune   |
+| Failure              | Rouge   |
 
-The plugin talks to the device directly over USB HID using the
-[hidapi](https://pypi.org/project/hidapi/) Python package. There is no
-cloud service, no API key, and no network connection required.
+Le plugin communique directement avec l'appareil via USB HID a l'aide du paquet Python [hidapi](https://pypi.org/project/hidapi/). Aucun service cloud, aucune API key et aucune connexion reseau ne sont necessaires.
 
 :::note
-Install the `hidapi` package before using this plugin:
+Installez le paquet `hidapi` avant d'utiliser ce plugin :
 
 ```bash
 pip install hidapi
@@ -55,24 +51,23 @@ blink1://{serial}/
 blink1://{serial}/?duration={ms}&fade={ms}&ledn={n}
 ```
 
-Use `blink1://` (or `blink1://_/`) to target the first connected device.
-Supply the device serial number in the host position to address a specific
-unit when more than one Blink(1) is attached.
+Utilisez `blink1://`, ou `blink1://_/`, pour cibler le premier appareil connecte.
+Fournissez le numero de serie de l'appareil dans la position de l'hote si vous souhaitez viser un appareil precis lorsque plusieurs Blink(1) sont branches.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                 |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| serial   | No       | USB serial number of the target device. Omit (or use `_`) to use the first available device.                                |
-| duration | No       | How long in milliseconds to hold the notification color before switching the LED off. Default: `5000`. Range: `0`-`300000`. |
-| fade     | No       | Fade transition time in milliseconds. `0` = instant. Default: `0`. Range: `0`-`10000`.                                      |
-| ledn     | No       | Which LED to address: `0` = all (default), `1` = first LED only, `2` = second LED only (mk2 devices).                       |
+| Variable | Obligatoire | Description                                                                                                                                                 |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| serial   | Non         | Numero de serie USB de l'appareil cible. Omettez cette valeur, ou utilisez `_`, pour viser le premier appareil disponible.                                  |
+| duration | Non         | Duree, en millisecondes, pendant laquelle conserver la couleur de notification avant d'eteindre la LED. Valeur par defaut : `5000`. Plage : `0` a `300000`. |
+| fade     | Non         | Duree de transition en fondu, en millisecondes. `0` signifie instantane. Valeur par defaut : `0`. Plage : `0` a `10000`.                                    |
+| ledn     | Non         | LED a adresser : `0` pour toutes, par defaut, `1` pour la premiere LED uniquement, `2` pour la seconde LED uniquement, sur les appareils mk2.               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Faire clignoter le premier Blink(1) connecte avec les valeurs par defaut (bleu, instantane, 5 s) :
+Faire clignoter le premier Blink(1) connecte avec les valeurs par defaut, bleu, instantane, 5 s :
 
 ```bash
 apprise -vv -t "Deploy finished" -b "All checks passed." \

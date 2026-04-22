@@ -1,6 +1,6 @@
 ---
 title: "Notifications Splunk/VictorOps"
-description: "Envoyer Splunk/VictorOps notifications."
+description: "Envoyer des notifications Splunk/VictorOps."
 sidebar:
   label: "Splunk/VictorOps"
 
@@ -21,8 +21,8 @@ sample_urls:
 
 ## Configuration du compte
 
-1. [Create an account with Splunk On-Call](https://www.splunk.com/en_us/sign-up.html?redirecturl=https://www.splunk.com/en_us/products/on-call.html) (previously VictorOps). Then set up your REST endoint <br/> ![splunk-01](./images/f691ec449bf87a06.png)
-1. Access your API Key from [this link](https://portal.victorops.com/dash/apprise#/advanced/rest).<br/> ![splunk-02](./images/fb3c3c430919015a.png)<br/>It will look something like this:
+1. [Creez un compte Splunk On-Call](https://www.splunk.com/en_us/sign-up.html?redirecturl=https://www.splunk.com/en_us/products/on-call.html), anciennement VictorOps. Configurez ensuite votre point de terminaison REST.<br/> ![splunk-01](./images/f691ec449bf87a06.png)
+1. Recuperez votre API Key [a cette adresse](https://portal.victorops.com/dash/apprise#/advanced/rest).<br/> ![splunk-02](./images/fb3c3c430919015a.png)<br/>Elle ressemblera a ceci :
 
    ```text
    https://alert.victorops.com/integrations/generic/20131114/alert/1234abcd-c11c-1ad1-a1a1-12345678abcd/$routing_key
@@ -34,8 +34,8 @@ sample_urls:
                                                                                                       |-------------|
    ```
 
-1. Finally you will need to define a `routing_key` which can be done from **Settings** -> **Route Keys**<br/>![splunk-03](./images/ffc0e172e7d2e730.png)
-1. The `entity_id` is used to ensure your message can be triggered and acknowledged. It's effectively a key. If you don't provide one then Apprise will generate one for you (the same one every time).
+1. Enfin, vous devrez definir un `routing_key`, ce qui se fait dans **Settings** -> **Route Keys**.<br/>![splunk-03](./images/ffc0e172e7d2e730.png)
+1. L'`entity_id` sert a garantir qu'un meme message puisse etre declenche puis acquitte. C'est en pratique une cle. Si vous n'en fournissez pas, Apprise en generera une pour vous, toujours la meme.
 
 ## Syntaxe
 
@@ -48,81 +48,81 @@ La syntaxe valide est la suivante :
 - `https://alert.victorops.com/integrations/generic/20131114/ alert/{apikey}/{routing_key}`
 - `https://alert.victorops.com/integrations/generic/20131114/ alert/{apikey}/{routing_key}/{entity_id}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey      | **Yes**  | The REST API key associated with your Splunk account                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| routing_key | **Yes**  | One of the `routing_key` values you associated within your Splunk account                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| entity_id   | No       | A key you wish to generate your trigger from. Keys allow you to alert, ackowledge and/or resolve the same notification later on.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| action      | No       | The action you wish to perform with your Splunk/VictorOps Apprise notification. the following options are available to you:<br/>⚪ `map`: Use Apprise (or custom) action mappings based on the Notification Type. Hence a `warning` from Apprise triggers a `WARNING` on Splunk, while a `failure` triggers a `CRITICAL` Splunk message (triggering an incident). Finally a `success` triggers a `RECOVERY` Spunk message (clearing an incident). **`map` is the default action if nothing is specified.**<br />⚪ `warning`: Reguardless of the Apprise notification, ALWAYS trigger a Splunk `WARNING` message.<br/>⚪ `critical`: Reguardless of the Apprise notification, ALWAYS trigger a Splunk `CRITICAL` message.<br/>⚪ `acknowledgement`: Reguardless of the Apprise notification, ALWAYS trigger a Splunk `ACKNOWLEDGEMENT` message.<br/>⚪ `info`: Reguardless of the Apprise notification, ALWAYS trigger a Splunk `INFO` message.<br/>⚪ `recovery`: Reguardless of the Apprise notification, ALWAYS trigger a Splunk `RECOVERY` message. |
+| Variable    | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey      | **Oui**     | REST API key associee a votre compte Splunk.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| routing_key | **Oui**     | L'une des valeurs `routing_key` associees a votre compte Splunk.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| entity_id   | Non         | Cle a utiliser pour generer votre declenchement. Les cles permettent ensuite d'alerter, d'acquitter et/ou de resoudre la meme notification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| action      | Non         | Action a effectuer avec votre notification Apprise Splunk/VictorOps. Les options disponibles sont :<br/>⚪ `map` : utilise les correspondances d'action Apprise, ou personnalisees, selon le type de notification. Ainsi, un `warning` Apprise declenche un `WARNING` Splunk, un `failure` declenche un message `CRITICAL` Splunk, donc un incident, et un `success` declenche un message `RECOVERY`, ce qui clot un incident. **`map` est l'action par defaut si rien n'est precise.**<br/>⚪ `warning` : declenche toujours un message Splunk `WARNING`.<br/>⚪ `critical` : declenche toujours un message Splunk `CRITICAL`.<br/>⚪ `acknowledgement` : declenche toujours un message Splunk `ACKNOWLEDGEMENT`.<br/>⚪ `info` : declenche toujours un message Splunk `INFO`.<br/>⚪ `recovery` : declenche toujours un message Splunk `RECOVERY`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Custom Splunk/On-Call Event Mapping
+## Mappage Personnalise des Evenements Splunk/On-Call
 
-You can have Apprise take a unique Splunk/On-Call action depending on the notification that is triggered if you use the (default) `action` of `map` with this integration.
+Vous pouvez faire en sorte qu'Apprise declenche une action Splunk/On-Call specifique selon la notification emise si vous utilisez l'action par defaut `map` avec cette integration.
 
-First consider that Splunk supports the following settings:
+Commencez par noter que Splunk prend en charge les etats suivants :
 
-1. `CRITICAL`: Triggers an incident
-1. `WARNING`: May trigger an incident, depending on your settings
-1. `ACKNOWLEDGEMENT`: Acks an incident
-1. `INFO`: Creates a timeline event but does not trigger an incident
-1. `RECOVERY`: Resolves an incident
+1. `CRITICAL` : declenche un incident
+1. `WARNING` : peut declencher un incident, selon votre configuration
+1. `ACKNOWLEDGEMENT` : acquitte un incident
+1. `INFO` : cree un evenement de timeline sans declencher d'incident
+1. `RECOVERY` : resout un incident
 
-By default if the `action` is set to `map`, then Apprise maps itself to the following:
+Par defaut, si `action=map`, Apprise applique les correspondances suivantes :
 
 - Apprise `info` 👉 Splunk `INFO`
 - Apprise `warning` 👉 Splunk `WARNING`
 - Apprise `failure` 👉 Splunk `CRITICAL`
 - Apprise `success` 👉 Splunk `RECOVERY`
 
-If you wish to map these differently, you simply need to use the `:` (colon) when over-riding an apprise variable. Hence, if you wanted to map the (Apprise) `info` to (Splunk) `ACKNOWLEDGEMENT` instead, your URL would have `?:info=acknowledgement`. You can also short-form it like `?i=a` if you wanted to as well (same effect).
+Si vous souhaitez modifier ces correspondances, il suffit d'utiliser `:` devant la variable Apprise a surcharger. Par exemple, si vous voulez mapper `info` d'Apprise vers `ACKNOWLEDGEMENT` de Splunk, votre URL contiendra `?:info=acknowledgement`. Vous pouvez aussi utiliser une forme courte comme `?i=a`, avec le meme effet.
 
-You can add as many re-mappings as you want. Just be certain to add a colon (`:`) infront of the Apprise notificaiton type first.
+Vous pouvez ajouter autant de remappages que vous le souhaitez. Assurez-vous simplement de placer un deux-points, `:`, devant le type de notification Apprise a surcharger.
 
-## Testing
+## Tests
 
-Envoyer une Spunk On-Call alert to fail our database service:
+Envoyer une alerte Splunk On-Call pour simuler l'echec de notre service de base de donnees :
 
 ```bash
-# Assuming we want to trigger a Splunk CRITICAL message (we send a Apprise Failure)
-# Assuming our {apikey} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
-# Assuming our {route_key} is database
+# Supposons que nous voulions declencher un message Splunk `CRITICAL`, donc envoyer une notification Apprise de type `failure`
+# Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
+# Supposons que notre {route_key} soit database
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 ```
 
-We can recover from the failure above by just doing the following:
+Nous pouvons resoudre la panne ci-dessus en procedant simplement comme suit :
 
 ```bash
-# Assuming we want to trigger a Splunk ACKNOWLEDGEMENT message (we send a Apprise Success)
-# Assuming our {apikey} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
-# Assuming our {route_key} is database
+# Supposons que nous voulions declencher un message Splunk `ACKNOWLEDGEMENT`, donc envoyer une notification Apprise de type `success`
+# Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
+# Supposons que notre {route_key} soit database
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n success \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221
 ```
 
-Envoyer une Spunk message while re-mapping our keys around:
+Envoyer un message Splunk avec remappage de nos cles :
 
 ```bash
-# Assuming we want the (Apprise) `info` to to trigger a Splunk RECOVERY
-# Assuming we want the (Apprise) `warning` to always trigger a Splunk CRITICAL
-# Assuming our {apikey} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
-# Assuming our {route_key} is database
-# In this example we'll send a warning message (which will be a CRITICAL)
+# Supposons que nous voulions que `info` d'Apprise declenche un `RECOVERY` Splunk
+# Supposons que nous voulions que `warning` d'Apprise declenche toujours un `CRITICAL` Splunk
+# Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
+# Supposons que notre {route_key} soit database
+# Dans cet exemple, nous enverrons un message `warning`, qui deviendra donc un `CRITICAL`
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n warning \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221?:info=rec&:warn=crit
 ```
 
-Reguardless of what message type we sent, we always set it as RECOVERY:
+Quel que soit le type de message envoye, nous pouvons aussi le forcer en `RECOVERY` :
 
 ```bash
-# Assuming we always trigger a recovery
-# Assuming our {apikey} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
-# Assuming our {route_key} is database
-# In this example we'll send a failure message (which will be a RECOVERY due to our settings)
+# Supposons que nous voulions toujours declencher un `RECOVERY`
+# Supposons que notre {apikey} soit 134b8gh0-eba0-4fa9-ab9c-257ced0e8221
+# Supposons que notre {route_key} soit database
+# Dans cet exemple, nous enverrons un message `failure`, mais il sera traite comme un `RECOVERY` a cause de notre configuration
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
    splunk://database@134b8gh0-eba0-4fa9-ab9c-257ced0e8221?:action=recovery
 ```

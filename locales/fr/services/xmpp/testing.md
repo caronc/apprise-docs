@@ -1,13 +1,13 @@
 ---
-title: "XMPP Notification Testing"
-description: "Testing XMPP Notifications"
+title: "Tests de Notification XMPP"
+description: "Tester les notifications XMPP"
 sidebar:
-  label: "XMPP Testing"
+  label: "Tests XMPP"
 ---
 
 ## Prosody
 
-### Server Setup
+### Configuration du serveur
 
 ```bash
 docker run --rm -d \
@@ -18,7 +18,7 @@ docker run --rm -d \
   prosodyim/prosody:13.0
 ```
 
-### Create Test Users
+### Créer des utilisateurs de test
 
 ```bash
 docker exec -it prosody-test prosodyctl register apprise localhost password123
@@ -26,17 +26,17 @@ docker exec -it prosody-test prosodyctl register receiver localhost password123
 
 ```
 
-### Install the Client
+### Installer le client
 
-Download and install [Gajim](https://gajim.org/)
+Téléchargez et installez [Gajim](https://gajim.org/)
 
 ```bash
 sudo dnf install gajim
 ```
 
-Log in as `receiver@localhost` and password `password123`
+Connectez-vous avec `receiver@localhost` et le mot de passe `password123`
 
-### Test Apprise
+### Tester Apprise
 
 Envoyer une notification
 

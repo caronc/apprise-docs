@@ -1,6 +1,6 @@
 ---
 title: "Notifications Plivo"
-description: "Envoyer Plivo notifications."
+description: "Envoyer des notifications Plivo."
 sidebar:
   label: "Plivo"
 
@@ -22,9 +22,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Signup with Plivo [from here](https://plivo.com). From within your account you can genrate both our **Auth ID** and **Auth Token**
+Inscrivez-vous a Plivo [ici](https://plivo.com). Depuis votre compte, vous pourrez generer a la fois votre **Auth ID** et votre **Auth Token**.
 
 ## Syntaxe
 
@@ -34,32 +34,32 @@ La syntaxe valide est la suivante :
 - `plivo://{auth_id}@{token}/{from_phone}/{ToPhoneNo}`
 - `plivo://{auth_id}@{token}/{from_phone}/{ToPhoneNo1}/{ToPhoneNo2}/{ToPhoneNoN}`
 
-**Note**: If no target phone numbers are specified, then the `{source_phone}` is notified.
+**Remarque** : si aucun numero cible n'est precise, alors c'est `{source_phone}` qui sera notifie.
 
-**Note**: All Phone Numbers must be in E.164 format (e.g., `+14151234567`)
+**Remarque** : tous les numeros de telephone doivent etre au format E.164, par exemple `+14151234567`.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                     |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| auth_id  | Yes      | The **Auth ID** Associated with your Plivo account.                                                                             |
-| token    | Yes      | This is your generated Access Token associated with your Plivo account.                                                         |
-| from     | Yes      | The phone number associated with your account you want the text message to originate from.                                      |
-| to       | No       | The phone numbers you wish to notify.                                                                                           |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`. |
+| Variable | Obligatoire | Description                                                                                                                                                |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| auth_id  | Oui         | **Auth ID** associe a votre compte Plivo.                                                                                                                  |
+| token    | Oui         | Jeton d'acces genere associe a votre compte Plivo.                                                                                                         |
+| from     | Oui         | Numero de telephone associe a votre compte a partir duquel vous souhaitez envoyer le SMS.                                                                  |
+| to       | Non         | Numeros de telephone que vous souhaitez notifier.                                                                                                          |
+| batch    | Non         | Envoie plusieurs notifications specifiees dans un seul lot, soit 1 publication amont vers le serveur final. Par defaut, cette option est definie sur `no`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Plivo notification:
+Envoyer une notification Plivo :
 
 ```bash
-# Assuming our {auth_id} is abcd123
-# Assuming our {token} is 9876test
-# Assuming out {from_no} is +1555229999
-# Assuming we want to notify 1555221237, and +18005551234
-# Test out the changes with the following command:
+# Supposons que notre {auth_id} soit abcd123
+# Supposons que notre {token} soit 9876test
+# Supposons que notre {from_no} soit +1555229999
+# Supposons que nous voulions notifier 1555221237 et +18005551234
+# Testez les changements avec la commande suivante :
 apprise -t "Test Title" -b "Test Message" \
  "plivo://abcd123@9876test/1555229999/+1555221237/+18005551234"
 

@@ -22,7 +22,7 @@ cd apprise-api
 
 L'API Apprise prend en charge à la fois un workflow local (bare metal) et un workflow Docker Compose.
 
-### Bare Metal
+### Installation Directe
 
 Démarrez le serveur de développement en mode debug :
 

@@ -1,6 +1,6 @@
 ---
 title: "Notifications BulkSMS"
-description: "Envoyer BulkSMS notifications."
+description: "Envoyer des notifications BulkSMS."
 sidebar:
   label: "BulkSMS"
 
@@ -23,9 +23,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a BulkSMS account [from here](https://bulksms.com). You will be provided to create a user and password to associate with your account. This is all you need to use this through Apprise.
+Inscrivez-vous a un compte BulkSMS [ici](https://bulksms.com). Un identifiant utilisateur et un mot de passe associes a votre compte vous seront fournis. C'est tout ce dont vous avez besoin pour utiliser ce service avec Apprise.
 
 ## Syntaxe
 
@@ -33,7 +33,7 @@ La syntaxe valide est la suivante :
 
 - `bulksms://{user}:{password}@{target}`
 
-A `target` can be either a phone number, or if prefixed with `@` it becomes a group.
+Une `target` peut etre soit un numero de telephone, soit un groupe si elle est prefixee par `@`.
 
 - `bulksms://{user}:{password}@{phoneNo}`
 - `bulksms://{user}:{password}@{phoneNo1}/{phoneNo2}/{phoneNoN}`
@@ -44,30 +44,30 @@ Vous pouvez aussi melanger les formats
 
 - `bulksms://{user}:{password}@{to_phone1}/@{group1}`
 
-For ambiguity, if you do not provide a valid phone number, and the information parsed does not exclusively have a`@` in front of it, then it is first interpreted as phone number. However if alphanumeric characters are detected in it, then it is switched to a group.
+Pour lever toute ambiguite, si vous ne fournissez pas un numero de telephone valide et que l'information analysee n'est pas uniquement prefixee par `@`, elle est d'abord interpretee comme un numero. En revanche, si des caracteres alphanumeriques y sont detectes, elle sera alors traitee comme un groupe.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                     |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     | Yes      | The username associated with your BulkSMS Account.                                                                                                              |
-| password | Yes      | The password associated with your BulkSMS Account.                                                                                                              |
-| to       | **\*No** | A phone number and/or group you wish to send your notification to. You can use comma's to separate multiple entries if you wish. This is an alias to `targets`. |
-| from     | **\*No** | Specify the phone number you registered with BulkSMS you wish the message to be identified as being sent from.                                                  |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                                 |
-| route    | No       | Can be set to either `ECONOMY`, `STANDARD`, or `PREMIUM` (not case sensitive). If not otherwise provided, this assumes to be `STANDARD` by default.             |
-| unicode  | No       | Optionally tell Apprise to not mark your text message as having unicode characters in it. The message mode changes to `TEXT` if this is set to `No`             |
+| Variable | Obligatoire | Description                                                                                                                                                                                     |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     | Oui         | Nom d'utilisateur associe a votre compte BulkSMS.                                                                                                                                               |
+| password | Oui         | Mot de passe associe a votre compte BulkSMS.                                                                                                                                                    |
+| to       | **\*Non**   | Numero(s) de telephone et/ou groupe(s) auxquels vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour separer plusieurs entrees. Il s'agit d'un alias de `targets`. |
+| from     | **\*Non**   | Numero de telephone enregistre chez BulkSMS que vous souhaitez utiliser comme expediteur du message.                                                                                            |
+| batch    | Non         | Envoie plusieurs notifications specifiees dans un seul lot, soit 1 publication amont vers le serveur final. Par defaut, cette option est definie sur `no`.                                      |
+| route    | Non         | Peut etre defini sur `ECONOMY`, `STANDARD` ou `PREMIUM`, sans sensibilite a la casse. Si aucune valeur n'est fournie, la valeur par defaut est `STANDARD`.                                      |
+| unicode  | Non         | Permet facultativement d'indiquer a Apprise de ne pas marquer votre SMS comme contenant des caracteres Unicode. Le mode de message devient `TEXT` si cette valeur est definie sur `No`.         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une BulkSMS Message:
+Envoyer un message BulkSMS :
 
 ```bash
-# Assuming our {user} is joe
-# Assuming our {password} is hard-to-guess
-# Assuming the {PhoneNo} we wish to notify is +134-555-1223
+# Supposons que notre {user} soit joe
+# Supposons que notre {password} soit hard-to-guess
+# Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    bulksms://joe:hard-to-guess@+134-555-1223
 ```

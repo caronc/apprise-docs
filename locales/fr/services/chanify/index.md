@@ -1,6 +1,6 @@
 ---
 title: "Notifications Chanify"
-description: "Envoyer Chanify notifications."
+description: "Envoyer des notifications Chanify."
 sidebar:
   label: "Chanify"
 
@@ -15,9 +15,9 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a Chanify [from here](https://chanify.net/). You will be provided to create a user and password to associate with your account. From here you can generate a token; this is all you need to use this through Apprise.
+Inscrivez-vous a Chanify [ici](https://chanify.net/). Vous pourrez ensuite generer un jeton ; c'est tout ce dont vous avez besoin pour utiliser ce service avec Apprise.
 
 ## Syntaxe
 
@@ -25,20 +25,20 @@ La syntaxe valide est la suivante :
 
 - `chanify://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                             |
-| -------- | -------- | ------------------------------------------------------- |
-| token    | **Yes**  | The token you generated as part of your Chanify account |
+| Variable | Obligatoire | Description                                                       |
+| -------- | ----------- | ----------------------------------------------------------------- |
+| token    | **Oui**     | Jeton que vous avez genere dans le cadre de votre compte Chanify. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notification to your Chanify account:
+Envoyer une notification vers votre compte Chanify :
 
 ```bash
-# Assuming our {token} is token
+# Supposons que notre {token} soit token
 apprise -vv --body="Test Message" \
    "chanify://token"
 ```

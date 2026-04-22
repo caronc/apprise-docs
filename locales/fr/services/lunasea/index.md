@@ -1,6 +1,6 @@
 ---
 title: "Notifications Lunasea"
-description: "Envoyer Lunasea notifications."
+description: "Envoyer des notifications Lunasea."
 
 sidebar:
   label: "Lunasea"
@@ -23,11 +23,11 @@ ended: 2025-04-30
 
 :::note
 
-## Service End Reason
+## Raison de Fin de Service
 
-Taken from their website:
+Extrait de leur site web :
 ![Screenshot From 2025-07-06 13-20-14](./images/11ef07079a9e2aa2.png)
-💡The Service was removed from Apprise in [apprise/1318](https://github.com/caronc/apprise/issues/1318)
+💡Le service a été retiré d'Apprise dans [apprise/1318](https://github.com/caronc/apprise/issues/1318)
 :::
 
 <!-- SERVICE:DETAILS -->
@@ -36,20 +36,20 @@ Taken from their website:
 
 La syntaxe valide est la suivante :
 
-### Cloud Hosting
+### Hébergement Nuagique
 
 - `lunasea://{toFireBaseUser}`
 - `lunasea://{toFireBaseUser1}/{toFireBaseUser2}/{toFireBaseUserN}`
 - `lunasea://+{toFireBaseDevice}`
 - `lunasea://+{toFireBaseDevice1}/{toFireBaseDevice2}/{toFireBaseDeviceN}`
 
-Vous pouvez aussi melanger les formats:
+Vous pouvez également combiner les formats :
 
 - `lunasea://{user}:{pass}@/+{toFireBaseUser1}/{toFireBaseDevice1}/`
 
-### Private Hosting
+### Hébergement Privé
 
-This works the exact same way; you can just additionally specify your connection details to your local server:
+Cela fonctionne exactement de la même façon ; vous pouvez simplement spécifier en plus vos informations de connexion à votre serveur local :
 
 - `lunasea://{user}:{pass}@{hostname}/{toFireBaseUser}`
 - `lunasea://{user}:{pass}@{hostname}/{toFireBaseUser1}/{toFireBaseUser2}/{toFireBaseUserN}`
@@ -60,32 +60,32 @@ This works the exact same way; you can just additionally specify your connection
 - `lunasea://{user}:{pass}@{hostname}:{port}/+{toFireBaseDevice}`
 - `lunasea://{user}:{pass}@{hostname}:{port}/+{toFireBaseDevice1}/{toFireBaseDevice2}/{toFireBaseDeviceN}`
 
-**Note:** The `{user}`/`{pass}` is purely optional.
+**Remarque :** Le `{user}`/`{pass}` est entièrement facultatif.
 
-Vous pouvez aussi melanger les formats:
+Vous pouvez également combiner les formats :
 
 - `lunasea://{user}:{pass}@{hostname}/+{toFireBaseUser1}/{toFireBaseDevice1}/`
 - `lunasea://{user}:{pass}@{hostname}:{port}/+{toFireBaseUser1}/{toFireBaseDevice1}/`
 
-### Additional Remarques
+### Remarques Supplémentaires
 
-Use `lunaseas://` for a Secure (`https://`) connection and `lunasea://` for Insecure (`http://`).
+Utilisez `lunaseas://` pour une connexion sécurisée (`https://`) et `lunasea://` pour une connexion non sécurisée (`http://`).
 
-`lsea://` and `lseas://` can also be used as an alias to `lunasea://` and `lunaseas://` (respectively) if you choose.
+`lsea://` et `lseas://` peuvent également être utilisés comme alias de `lunasea://` et `lunaseas://` (respectivement) si vous le souhaitez.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| to       | **\*No** | One or more Firebase User IDs or Device IDs you wish to send your notification to. You can use comma's to separate multiple entries if you wish.                                                                                                                                                                                                                                                                               |
-| image    | No       | Map the image associated with the notification type to the payload. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                            |
-| mode     | No       | The default mode to treat the URL provided as. Possible values are `cloud` and `private`. This is detected if no otherwise specified. When set to `private`, a hostname must be provided as part of the URL. When set to `cloud`, all elements are presumed to be notification end points and <https://lunasea.app> is used. In cloud mode, all transactions are secure (regardless if you specify `lunasea://` or `lsea://`). |
+| Variable | Requis    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| to       | **\*Non** | Un ou plusieurs identifiants Firebase User ou Device auxquels vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour séparer plusieurs entrées.                                                                                                                                                                                                                                                                                                    |
+| image    | Non       | Associe l'image liée au type de notification à la charge utile. Par défaut, cette valeur est définie sur `no`.                                                                                                                                                                                                                                                                                                                                                                |
+| mode     | Non       | Le mode par défaut pour interpréter l'URL fournie. Les valeurs possibles sont `cloud` et `private`. Ce mode est détecté automatiquement si rien n'est précisé. En mode `private`, un nom d'hôte doit être fourni dans l'URL. En mode `cloud`, tous les éléments sont supposés être des points de terminaison de notification et <https://lunasea.app> est utilisé. En mode nuagique, toutes les transactions sont sécurisées (que vous spécifiiez `lunasea://` ou `lsea://`). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une LunaSea notification:
+Envoyer une notification LunaSea :
 
 ```bash
 # Assuming our {FireBaseDeviceID} is abcd_abcd_abcd

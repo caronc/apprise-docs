@@ -1,6 +1,6 @@
 ---
 title: "Notifications PushMe"
-description: "Envoyer PushMe notifications."
+description: "Envoyer des notifications PushMe."
 sidebar:
   label: "PushMe"
 
@@ -17,7 +17,7 @@ sample_urls:
 
 ## Configuration du compte
 
-Vous devez disposer d’un compte chez [PushMe](https://push.i-i.me/) and have downloaded the Phone App.
+Vous devez disposer d'un compte chez [PushMe](https://push.i-i.me/) et avoir telecharge l'application mobile.
 
 ## Syntaxe
 
@@ -25,21 +25,21 @@ La syntaxe valide est la suivante :
 
 - `pushme://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                      |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| token    | Yes      | This is the **push_key** associated with your PushMe Account                                                                                     |
-| status   | No       | Optionally include a small little ASCII string representing the notification status being sent (inline with it) by default this is set to `yes`. |
+| Variable | Obligatoire | Description                                                                                                                                                        |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| token    | Oui         | Il s'agit de la **push_key** associee a votre compte PushMe.                                                                                                       |
+| status   | Non         | Permet facultativement d'inclure une petite chaine ASCII representant l'etat de la notification envoyee, integree au message. Par defaut, cette option vaut `yes`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une PushMe notification:
+Envoyer une notification PushMe :
 
 ```bash
-# Assuming our {token} (or {push_key}) is abc123
+# Supposons que notre {token}, ou {push_key}, soit abc123
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pushme://abc123

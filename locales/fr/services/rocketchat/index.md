@@ -1,6 +1,6 @@
 ---
 title: "Notifications Rocket.Chat"
-description: "Envoyer Rocket.Chat notifications."
+description: "Envoyer des notifications Rocket.Chat."
 sidebar:
   label: "Rocket.Chat"
 
@@ -28,14 +28,14 @@ limits:
 
 ## Syntaxe
 
-Rocket.Chat can send notifications through the following **modes**:
+Rocket.Chat peut envoyer des notifications via les **modes** suivants :
 
-- **webhook**: A configured Incoming Webhook; this can be set up in the **Administration** area under **Integrations** heading.
-- **basic**: A user/password combination.
+- **webhook** : un webhook entrant configuré ; il peut être mis en place dans la zone **Administration** sous la rubrique **Intégrations**.
+- **basic** : une combinaison identifiant/mot de passe.
 
-Secure connections (via https) should be referenced using **rockets://** where as insecure connections (via http) should be referenced via **rocket://**.
+Les connexions sécurisées (via https) doivent être référencées avec **rockets://** tandis que les connexions non sécurisées (via http) doivent utiliser **rocket://**.
 
-### Basic Mode
+### Mode Basique
 
 La syntaxe valide est la suivante :
 
@@ -48,15 +48,15 @@ La syntaxe valide est la suivante :
 - `rockets://{user}:{password}@{hostname}/{room_id}`
 - `rockets://{user}:{password}@{hostname}:{port}/{room_id}`
 
-**Note:** the `?avatar=yes` option will only work if your user has the `bot` permission setting.
+**Remarque :** l'option `?avatar=yes` ne fonctionnera que si votre utilisateur possède le paramètre de permission `bot`.
 
-Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jour depuis une seule URL :
+Vous pouvez également combiner les formes ci-dessus et effectuer des mises à jour depuis une seule URL :
 
 - **rocket**://**{user}**:**{password}**@**{hostname}**/#**{channel_id}**/**{room_id}**
 
-For the Basic Mode Only: if neither a **{room_id}** or **#{channel}** is specified then this notification will fail.
+Pour le Mode Basique uniquement : si ni **{room_id}** ni **#{channel}** n'est spécifié, cette notification échouera.
 
-### Webhook Mode
+### Mode Webhook
 
 La syntaxe valide est la suivante :
 
@@ -68,43 +68,43 @@ La syntaxe valide est la suivante :
 - `rockets://{webhook}@{hostname}/{room_id}`
 - `rockets://{webhook}@{hostname}:{port}/{room_id}`
 
-Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jour depuis une seule URL :
+Vous pouvez également combiner les formes ci-dessus et effectuer des mises à jour depuis une seule URL :
 
 - **rocket**://**{webhook}**@**{hostname}**:**{port}**/#**{channel_id}**/**{room_id}**/**@{user}**
 
-By default a webhook is set up to be associated with a channel. Thus the following syntax is also valid:
+Par défaut, un webhook est configuré pour être associé à un canal. La syntaxe suivante est donc également valide :
 
 - **rocket**://**{webhook}**@**{hostname}**/
 
-**Note:** Some webhooks have slashes in them. For these you need to make sure you escape the slash (`/`) with `%2F`. So your URL may look like:
+**Remarque :** Certains webhooks contiennent des barres obliques. Dans ce cas, vous devez vous assurer d'échapper la barre oblique (`/`) avec `%2F`. Votre URL peut donc ressembler à :
 
-- `rocket://abcd%2F12345@{hostname}/` - Note the `%2F` (to swap out for `/` found in webhook)
+- `rocket://abcd%2F12345@{hostname}/` - Notez le `%2F` (pour remplacer le `/` présent dans le webhook)
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                 |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     | \*Yes    | The user identifier you've associated with your Rocket.Chat server. This is only required if you are not providing a **webhook** instead. This can be optionally combined with the **webhook** if you wish to over-ride the bot name.                       |
-| password | \*Yes    | The password identifier you've associated with your Rocket.Chat server. This is only required if you are not providing a **webhook** instead. This value can also substitute for a pre-generated token as well.                                             |
-| webhook  | \*Yes    | The incoming webhook you created and associated with your Rocket.Chat server . This is only required if you are not providing a **webhook** instead                                                                                                         |
-| hostname | Yes      | The Rocket.Chat server you're sending your notification to.                                                                                                                                                                                                 |
-| port     | No       | The port the Rocket.Chat server is listening on. By default the port is **80** for **rocket://** and **443** for all **rockets://** references.                                                                                                             |
-| room_id  | No       | A room identifier. Available for both **basic** and **webhook** modes.                                                                                                                                                                                      |
-| channel  | No       | Channels must be prefixed with a hash (#) or they will be interpreted as a room_id. Available for both **basic** and **webhook** modes. Channels must be registered with your Rocket.Chat server to work.                                                   |
-| user_id  | No       | Another user you wish to notify. User IDs must be prefixed with an at symbol (@). Available for the **webhook** mode only.                                                                                                                                  |
-| mode     | No       | The authentication mode is automatically detected based what it parses from the URL provided. You only need to set this if you feel it is being detected incorrectly. The possible modes are **basic**, **token**, and **webhook** and are explained above. |
-| avatar   | No       | Override the default avatar associated with the message to match that of the notification type (be that of a Warning, Error, Info, etc). By default this is set to **No** for **basic** mode and **Yes** for **webhook** mode.                              |
+| Variable | Requis | Description                                                                                                                                                                                                                                           |
+| -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     | \*Oui  | L'identifiant utilisateur associé à votre serveur Rocket.Chat. Requis uniquement si vous ne fournissez pas de **webhook**. Peut être combiné optionnellement avec le **webhook** si vous souhaitez remplacer le nom du robot.                         |
+| password | \*Oui  | Le mot de passe associé à votre serveur Rocket.Chat. Requis uniquement si vous ne fournissez pas de **webhook**. Cette valeur peut également se substituer à un jeton prégénéré.                                                                      |
+| webhook  | \*Oui  | Le webhook entrant que vous avez créé et associé à votre serveur Rocket.Chat. Requis uniquement si vous ne fournissez pas de **webhook** à la place.                                                                                                  |
+| hostname | Oui    | Le serveur Rocket.Chat auquel vous envoyez votre notification.                                                                                                                                                                                        |
+| port     | Non    | Le port sur lequel le serveur Rocket.Chat écoute. Par défaut, le port est **80** pour **rocket://** et **443** pour toutes les références **rockets://**.                                                                                             |
+| room_id  | Non    | Un identifiant de salon. Disponible pour les modes **basic** et **webhook**.                                                                                                                                                                          |
+| channel  | Non    | Les canaux doivent être préfixés par un dièse (#) sinon ils seront interprétés comme un identifiant de salon. Disponible pour les modes **basic** et **webhook**. Les canaux doivent être enregistrés sur votre serveur Rocket.Chat pour fonctionner. |
+| user_id  | Non    | Un autre utilisateur à notifier. Les identifiants utilisateur doivent être préfixés par le symbole arobase (@). Disponible pour le mode **webhook** uniquement.                                                                                       |
+| mode     | Non    | Le mode d'authentification est détecté automatiquement d'après l'URL fournie. Vous n'avez à le définir que si vous estimez qu'il est mal détecté. Les modes possibles sont **basic**, **token** et **webhook**, décrits ci-dessus.                    |
+| avatar   | Non    | Remplace l'avatar par défaut associé au message pour correspondre au type de notification (Avertissement, Erreur, Info, etc.). Par défaut, cette option est **Non** pour le mode **basic** et **Oui** pour le mode **webhook**.                       |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Rocket.Chat notification to the channel _#nuxref_:
+Envoyer une notification Rocket.Chat vers le canal _#nuxref_ :
 
 ```bash
-# Assuming our {user} is l2g
-# Assuming our {password} is awes0m3!
-# Assuming our {hostname} is rocket.server.local
+# Supposons que notre {user} soit l2g
+# Supposons que notre {password} soit awes0m3!
+# Supposons que notre {hostname} soit rocket.server.local
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    rocket://l2g:awes0m3!@rocket.server.local/#nuxref
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Voip.ms"
-description: "Envoyer Voip.ms notifications."
+description: "Envoyer des notifications Voip.ms."
 sidebar:
   label: "Voip.ms"
 
@@ -24,9 +24,9 @@ limits:
 
 ## Configuration du compte
 
-Inscrivez-vous a Voip.ms [from here](https://voip.ms). From your dashboard, you will have to enable API access and create a password at the following link: [here](https://voip.ms/m/api.php)
+Inscrivez-vous a Voip.ms [ici](https://voip.ms). Depuis votre tableau de bord, vous devrez activer l'acces API et creer un mot de passe a l'adresse suivante : [ici](https://voip.ms/m/api.php)
 
-You must edit your `DID` and enable `SMS/MMS ($0.0075/SMS, and $0.02/MMS)`:<br/>
+Vous devez modifier votre `DID` et activer `SMS/MMS ($0.0075/SMS, and $0.02/MMS)` :<br/>
 ![Screenshot from 2024-10-27 09-44-48](./images/75e25ff77c2f4149.png)
 
 ## Syntaxe
@@ -37,47 +37,47 @@ La syntaxe valide est la suivante :
 - `voipms://{password}:{email}/{fromPhoneNo}/{toPhoneNo}`
 - `voipms://{password}:{email}/{fromPhoneNo}/{toPhoneNo1}/{toPhoneNo2}/{toPhoneNoN}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                      |
-| ----------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| email       | Yes      | The email associated with your Voip.ms account                                                                                   |
-| password    | Yes      | The password for API access, this is different from your Voip.ms account password                                                |
-| fromPhoneNo | Yes      | Specify the phone number you registered with Voip.ms you wish the message to be identified as being sent from.                   |
-| toPhoneNo   | No       | A phone number and/or group you wish to send your notification to. You can use comma's to separate multiple entries if you wish. |
+| Variable    | Obligatoire | Description                                                                                                                                          |
+| ----------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email       | Oui         | Adresse e-mail associee a votre compte Voip.ms.                                                                                                      |
+| password    | Oui         | Mot de passe pour l'acces API. Il est different du mot de passe de votre compte Voip.ms.                                                             |
+| fromPhoneNo | Oui         | Numero de telephone enregistre chez Voip.ms que vous souhaitez utiliser comme expediteur du message.                                                 |
+| toPhoneNo   | Non         | Numero de telephone et/ou groupe auquel vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour separer plusieurs entrees. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Voip.ms notification to ourselves:
+Envoyer une notification Voip.ms a nous-meme :
 
 ```bash
-# Assume:
-#  - our {email} is test@example.com
-#  - our {password} is abc123
-#  - The {toPhoneNo} and {fromPhoneNo} is 6135551234
+# Supposons que :
+#  - notre {email} soit test@example.com
+#  - notre {password} soit abc123
+#  - les {toPhoneNo} et {fromPhoneNo} soient 6135551234
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    voipms://abc123:test@example.com/6135551234
 ```
 
-Envoyer une Voip.ms notification to another device:
+Envoyer une notification Voip.ms a un autre appareil :
 
 ```bash
-# Assume:
-#  - our {email} is test@example.com
-#  - our {password} is abc123
-#  - The {fromPhoneNo} is 6135551234
-#  - The {ToPhoneNo} is 5645554321
+# Supposons que :
+#  - notre {email} soit test@example.com
+#  - notre {password} soit abc123
+#  - le {fromPhoneNo} soit 6135551234
+#  - le {ToPhoneNo} soit 5645554321
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    voipms://abc123:test@example.com/6135551234/5645554321
 ```
 
-## Depannage
+## Dépannage
 
-There have been cases where error messages would be sent back from the VoipMS Server that are not very descriptive to what the issue is. The key things you need to verify for this service to work is:
+Il arrive que les messages d'erreur renvoyes par le serveur Voip.ms ne soient pas tres explicites. Les principaux points a verifier pour que ce service fonctionne sont les suivants :
 
-- Account has credits available to use
-- SMS/MMS is enabled (see **Setup** section above)
+- le compte dispose de credits disponibles ;
+- le service SMS/MMS est bien active, voir la section de configuration ci-dessus.
 
-In certain cases, it's possible that the Carrier you were delivering to was unable to send the message.
+Dans certains cas, il est aussi possible que l'operateur destinataire n'ait pas pu distribuer le message.

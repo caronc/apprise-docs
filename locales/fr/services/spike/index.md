@@ -1,6 +1,6 @@
 ---
 title: "Notifications Spike.sh"
-description: "Envoyer Spike.sh notifications."
+description: "Envoyer des notifications Spike.sh."
 sidebar:
   label: "Spike.sh"
 
@@ -21,30 +21,30 @@ limits:
 
 ## Configuration du compte
 
-Once you've created your alert source in Spike.sh, it will provide you with a webhook URL that looks like this:
+Une fois votre source d'alerte creee dans Spike.sh, le service vous fournira une URL webhook ressemblant a ceci :
 
 ```text
 https://api.spike.sh/v1/alerts/1234567890abcdef1234567890abcdef
 ```
 
-This long key at the end is your integration key, which can be used directly in Apprise.
+Cette longue cle a la fin est votre `integration_key`, que vous pouvez utiliser directement dans Apprise.
 
 ---
 
-### 🛠️ Setup Instructions
+### Instructions de Configuration
 
-1. Log in to your [Spike.sh dashboard](https://www.spike.sh/).
-2. Go to **Alert Sources** and create a new source (e.g., for monitoring tools).
-3. Copy the provided **Webhook URL**\*integration key\*\*.
+1. Connectez-vous a votre [tableau de bord Spike.sh](https://www.spike.sh/).
+2. Ouvrez **Alert Sources** puis creez une nouvelle source, par exemple pour un outil de supervision.
+3. Copiez l'**URL de webhook** fournie, et plus precisement son `integration_key`.
 
-Once you've created your alert source in Spike.sh, it will provide you with a webhook URL that looks like this:
+Une fois la source d'alerte creee, Spike.sh vous fournira une URL webhook comme celle-ci :
 
 ```text
 https://api.spike.sh/v1/alerts/1234567890abcdef1234567890abcdef
                               |     integration_key           |
 ```
 
-This long key at the end is your integration key, which can be used directly in Apprise.
+Cette longue cle finale est votre `integration_key`, utilisable directement dans Apprise.
 
 ## Syntaxe
 
@@ -53,34 +53,34 @@ La syntaxe valide est la suivante :
 - `https://api.spike.sh/v1/alerts/{integration_key}`
 - `spike://{integration_key}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable        | Required | Description                                                               |
-| --------------- | -------- | ------------------------------------------------------------------------- |
-| integration_key | Yes      | A 32-character token that uniquely identifies your Spike.sh alert source. |
-| token           | No       | An alias to `integration_key`                                             |
+| Variable        | Obligatoire | Description                                                                          |
+| --------------- | ----------- | ------------------------------------------------------------------------------------ |
+| integration_key | Oui         | Jeton de 32 caracteres identifiant de maniere unique votre source d'alerte Spike.sh. |
+| token           | Non         | Alias de `integration_key`.                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Using the simplified Apprise URL:
+Utilisation de l'URL Apprise simplifiee :
 
 ```bash
-# Assuming our token is 1234567890abcdef1234567890abcdef
+# Supposons que notre jeton soit 1234567890abcdef1234567890abcdef
 
 apprise -vv -t "Spike Alert" -b "Incident occurred" \
    spike://1234567890abcdef1234567890abcdef
 ```
 
-Using the token as a URL parameter:
+Utilisation du jeton comme parametre d'URL :
 
 ```bash
 apprise -vv -t "Spike Alert" -b "Incident occurred" \
    spike://?token=1234567890abcdef1234567890abcdef
 ```
 
-Using the full native webhook URL:
+Utilisation de l'URL webhook native complete :
 
 ```bash
 apprise -vv -t "Spike Alert" -b "Incident occurred" \

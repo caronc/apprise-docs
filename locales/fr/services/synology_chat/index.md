@@ -1,6 +1,6 @@
 ---
 title: "Notifications Synology"
-description: "Envoyer Synology notifications."
+description: "Envoyer des notifications Synology Chat."
 sidebar:
   label: "Synology"
 
@@ -27,22 +27,22 @@ La syntaxe valide est la suivante :
 - `synology://{user}:{password}@{hostname}/{token}`
 - `synology://{user}:{password}@{hostname}:{port}/{token}`
 
-The secure versions (https):
+Les versions securisees, en HTTPS :
 
 - `synologys://{hostname}/{token}`
 - `synologys://{hostname}:{port}/{token}`
 - `synologys://{user}:{password}@{hostname}/{token}`
 - `synologys://{user}:{password}@{hostname}:{port}/{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                 |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname                                                                                                                   |
-| token    | Yes      | The Synology Chat Incoming Token generated                                                                                                  |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **synology://** and **443** for all **synologys://** references. |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                           |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                           |
+| Variable | Obligatoire | Description                                                                                                                                            |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname | Oui         | Nom d'hote du serveur web.                                                                                                                             |
+| token    | Oui         | Jeton entrant Synology Chat genere.                                                                                                                    |
+| port     | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **synology://** et **443** pour toutes les references **synologys://**. |
+| user     | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                      |
+| password | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                      |
 
 |
 
@@ -50,13 +50,13 @@ The secure versions (https):
 
 ## Exemples
 
-Envoyer une Synology notification to all devices associated with a project:
+Envoyer une notification Synology a tous les appareils associes a un projet :
 
 ```bash
-# Assume:
-#  - our {hostname} is synology.home.arpa
-#  - our {port} is 5000
-#  - our {token} is j300012fl9y0b5AW9g9Nsejb8P
+# Supposons :
+#  - que notre {hostname} soit synology.home.arpa
+#  - que notre {port} soit 5000
+#  - que notre {token} soit j300012fl9y0b5AW9g9Nsejb8P
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    synology://synology.home.arpa:5000/j300012fl9y0b5AW9g9Nsejb8P
 ```

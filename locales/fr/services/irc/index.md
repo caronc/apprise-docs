@@ -1,6 +1,6 @@
 ---
 title: "Notifications IRC"
-description: "Envoyer IRC notifications."
+description: "Envoyer des notifications IRC."
 sidebar:
   label: "IRC"
 
@@ -23,13 +23,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-IRC does not require a formal account setup in Apprise. You only need access to an IRC server, or access to a ZNC bouncer if you plan to use bouncer mode.
+IRC ne nécessite pas de configuration de compte formelle dans Apprise. Vous avez seulement besoin d'un accès à un serveur IRC, ou d'un accès à un relayeur ZNC si vous prévoyez d'utiliser le mode relayeur.
 
-If your IRC network requires NickServ authentication, make sure you have registered your nickname and have your NickServ password ready.
+Si votre réseau IRC requiert une authentification NickServ, assurez-vous d'avoir enregistré votre pseudo et d'avoir votre mot de passe NickServ à portée de main.
 
-If you are using ZNC, ensure your bouncer is reachable and your ZNC username and password are correct.
+Si vous utilisez ZNC, vérifiez que votre relayeur est accessible et que votre nom d'utilisateur et mot de passe ZNC sont corrects.
 
 ## Syntaxe
 
@@ -38,82 +38,82 @@ La syntaxe valide est la suivante :
 - `irc://{host}/{target}`
 - `ircs://{host}/{target}`
 
-Targets are defined in the URL path as one or more entries:
+Les cibles sont définies dans le chemin de l'URL sous forme d'une ou plusieurs entrées :
 
-- Channels use `#` prefix: `#channel`
-- Users use `@` prefix: `@nickname`
+- Les canaux utilisent le préfixe `#` : `#channel`
+- Les utilisateurs utilisent le préfixe `@` : `@nickname`
 
-You can provide multiple targets by separating them with `/`:
+Vous pouvez fournir plusieurs cibles en les séparant par `/` :
 
 - `ircs://irc.example.net/#alerts/@bob/@alice`
 
-### Channel Keys
+### Clés de Canal
 
-If a channel is protected by a key, append it after the channel name using `:`:
+Si un canal est protégé par une clé, ajoutez-la après le nom du canal en utilisant `:` :
 
 - `ircs://irc.example.net/#private:channel-key`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                  |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| host     | Yes      | IRC server hostname or IP address.                                                                                                                                                                                                                                                                                                                                                                           |
-| port     | No       | IRC server port. Defaults to 6667 for `irc://` and 6697 for `ircs://`.                                                                                                                                                                                                                                                                                                                                       |
-| user     | No       | Username used for authentication. Meaning depends on `mode`.                                                                                                                                                                                                                                                                                                                                                 |
-| password | No       | Password used for authentication. Meaning depends on `mode`.                                                                                                                                                                                                                                                                                                                                                 |
-| target   | No       | One or more recipients (channels and/or users) provided in the URL path.                                                                                                                                                                                                                                                                                                                                     |
-| to       | No       | Alias of `targets`. Allows defining recipients in the query string instead of the path.                                                                                                                                                                                                                                                                                                                      |
-| nick     | No       | Nickname used when registering to the server. If not specified, the nick defaults to `user` when provided.                                                                                                                                                                                                                                                                                                   |
-| name     | No       | Real name (GECOS) used during registration.                                                                                                                                                                                                                                                                                                                                                                  |
-| mode     | No       | Authentication mode, one of: `server`, `nickserv`, `znc`. Default is `server`.                                                                                                                                                                                                                                                                                                                               |
-| join     | No       | Controls whether Apprise joins channels before sending. Default is `yes`. <br/>Channels that have a password associated with them (provided as `#channel:key` here) can not post the message without first joining the channel. Thus if this `join=no`, it will not apply to channels with assigned passwords, but will apply to everything else. This setting has no value if you are only messaging users. |
+| Variable | Requis | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| host     | Oui    | Nom d'hôte ou adresse IP du serveur IRC.                                                                                                                                                                                                                                                                                                                                                                                              |
+| port     | Non    | Port du serveur IRC. Par défaut 6667 pour `irc://` et 6697 pour `ircs://`.                                                                                                                                                                                                                                                                                                                                                            |
+| user     | Non    | Nom d'utilisateur utilisé pour l'authentification. La signification dépend du `mode`.                                                                                                                                                                                                                                                                                                                                                 |
+| password | Non    | Mot de passe utilisé pour l'authentification. La signification dépend du `mode`.                                                                                                                                                                                                                                                                                                                                                      |
+| target   | Non    | Un ou plusieurs destinataires (canaux et/ou utilisateurs) fournis dans le chemin de l'URL.                                                                                                                                                                                                                                                                                                                                            |
+| to       | Non    | Alias de `targets`. Permet de définir les destinataires dans la chaîne de requête plutôt que dans le chemin.                                                                                                                                                                                                                                                                                                                          |
+| nick     | Non    | Pseudo utilisé lors de l'enregistrement sur le serveur. Si non spécifié, le pseudo prend par défaut la valeur de `user` lorsque celui-ci est fourni.                                                                                                                                                                                                                                                                                  |
+| name     | Non    | Nom réel (GECOS) utilisé lors de l'enregistrement.                                                                                                                                                                                                                                                                                                                                                                                    |
+| mode     | Non    | Mode d'authentification, l'un des suivants : `server`, `nickserv`, `znc`. Par défaut `server`.                                                                                                                                                                                                                                                                                                                                        |
+| join     | Non    | Contrôle si Apprise rejoint les canaux avant d'envoyer. Par défaut `yes`. <br/>Les canaux protégés par un mot de passe (fourni sous la forme `#channel:key`) ne peuvent pas recevoir le message sans avoir d'abord rejoint le canal. Ainsi, si `join=no`, cela ne s'applique pas aux canaux avec des mots de passe assignés, mais s'applique à tout le reste. Ce paramètre n'a aucun effet si vous ne contactez que des utilisateurs. |
 
-### Mode Remarques
+### Remarques sur les Modes
 
-- `mode=server`: Optional `password` is sent as a server PASS during registration when provided.
-- `mode=nickserv`: Uses NickServ identify flow after connecting, then sends notifications.
-- `mode=znc`: Authenticates to the ZNC bouncer. The PASS line is built as `user:password` for compatibility with common ZNC configurations. A PING/PONG liveness check is performed prior to sending notifications.
+- `mode=server` : Le `password` optionnel est envoyé comme PASS serveur lors de l'enregistrement s'il est fourni.
+- `mode=nickserv` : Utilise le flux d'identification NickServ après la connexion, puis envoie les notifications.
+- `mode=znc` : S'authentifie auprès du relayeur ZNC. La ligne PASS est construite sous la forme `user:password` pour la compatibilité avec les configurations ZNC courantes. Une vérification de disponibilité PING/PONG est effectuée avant l'envoi des notifications.
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une message to a channel over TLS:
+Envoyer un message vers un canal via TLS :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \
   "ircs://irc.example.net/#alerts"
 ```
 
-Envoyer to multiple targets:
+Envoyer vers plusieurs cibles :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \
   "ircs://irc.example.net/#alerts/@bob/@alice"
 ```
 
-Envoyer to a password protected channel:
+Envoyer vers un canal protégé par un mot de passe :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \
   "ircs://irc.example.net/#private:channel-key"
 ```
 
-NickServ mode example:
+Exemple en mode NickServ :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \
   "ircs://user:pass@irc.example.net/#alerts?mode=nickserv&nick=MyNick"
 ```
 
-ZNC bouncer mode example:
+Exemple en mode relayeur ZNC :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \
   "ircs://zncuser:zncpass@znc.example.net/#alerts?mode=znc&nick=MyNick"
 ```
 
-ZNC mode, multiple targets:
+Mode ZNC, plusieurs cibles :
 
 ```bash
 apprise -vv -t "Title" -b "Message body" \

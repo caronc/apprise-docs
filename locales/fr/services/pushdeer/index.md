@@ -1,6 +1,6 @@
 ---
 title: "Notifications PushDeer"
-description: "Envoyer PushDeer notifications."
+description: "Envoyer des notifications PushDeer."
 sidebar:
   label: "PushDeer"
 
@@ -22,8 +22,8 @@ sample_urls:
 
 ## Configuration du compte
 
-You need to have the [PushDeer](https://www.pushdeer.com/) application and obtain a PushKey.
-Alternatively, you can also set up the service yourself based on the [PushDeer](https://github.com/easychen/pushdeer) open-source project.
+Vous devez disposer de l'application [PushDeer](https://www.pushdeer.com/) et obtenir une `PushKey`.
+Vous pouvez aussi heberger vous-meme le service a partir du projet open source [PushDeer](https://github.com/easychen/pushdeer).
 
 ## Syntaxe
 
@@ -36,28 +36,28 @@ La syntaxe valide est la suivante :
 - `pushdeer://{hostname}:{port}/{push_key}`
 - `pushdeers://{hostname}:{port}/{push_key}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                           |
-| -------- | -------- | ----------------------------------------------------- |
-| push_key | Yes      | This is the push key you have obtained from PushDeer. |
-| hostname | No       | Custom Service Host                                   |
-| port     | No       | Custom Service Port                                   |
+| Variable | Obligatoire | Description                       |
+| -------- | ----------- | --------------------------------- |
+| push_key | Oui         | Push key obtenue depuis PushDeer. |
+| hostname | Non         | Hote de service personnalise.     |
+| port     | Non         | Port de service personnalise.     |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une PushDeer notification
+Envoyer une notification PushDeer :
 
 ```bash
-# Assuming our pushdeer.com {push_key} is abcdefghijklmnop-abcdefg
+# Supposons que notre {push_key} pushdeer.com soit abcdefghijklmnop-abcdefg
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pushdeers://abcdefghijklmnop-abcdefg"
 
-# For self hosting:
-# Assuming our {push_key} is abcdefghijklmnop-abcdefg
-# Assuming our {hostname} is myserver.example.com
+# Pour un hebergement autonome :
+# Supposons que notre {push_key} soit abcdefghijklmnop-abcdefg
+# Supposons que notre {hostname} soit myserver.example.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pushdeers://myserver.example.com/abcdefghijklmnop-abcdefg
 ```

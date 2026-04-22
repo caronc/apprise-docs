@@ -1,6 +1,6 @@
 ---
 title: "Notifications Custom JSON"
-description: "Envoyer HTML/JSON based notifications."
+description: "Envoyer des notifications HTML/JSON."
 sidebar:
   label: "HTTP/JSON"
 group: "custom"
@@ -24,9 +24,9 @@ sample_urls:
 
 ## Introduction
 
-This is just a custom Notification that allows you to have this tool post to a web server as a simple JSON string. This is useful for those who want to be notified via their own custom methods.
+Il s'agit simplement d'une notification personnalisee qui permet a cet outil de publier vers un serveur web sous la forme d'une simple chaine JSON. C'est utile pour les personnes qui souhaitent etre notifiees via leurs propres methodes personnalisees.
 
-The format might look something like this:
+Le format peut ressembler a ceci :
 
 ```json
 {
@@ -37,12 +37,12 @@ The format might look something like this:
 }
 ```
 
-The _type_ will be one of the following:
+Le _type_ prendra l'une des valeurs suivantes :
 
-- **info**: An informative type message
-- **success**: A successful report
-- **failure**: A failure report
-- **warning**: A warning report
+- **info** : message de type informatif
+- **success** : rapport de succes
+- **failure** : rapport d'echec
+- **warning** : avertissement
 
 ## Syntaxe
 
@@ -53,71 +53,71 @@ La syntaxe valide est la suivante :
 - `json://{user}:{password}@{hostname}`
 - `json://{user}:{password}@{hostname}:{port}`
 
-Adding an `s` to the schema (i.e. `jsons://`) switches to a secure HTTPS connection:
+L'ajout d'un `s` au schema, c'est-a-dire `jsons://`, bascule vers une connexion HTTPS securisee :
 
 - `jsons://{hostname}`
 - `jsons://{hostname}:{port}`
 - `jsons://{user}:{password}@{hostname}`
 - `jsons://{user}:{password}@{hostname}:{port}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                         |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname                                                                                                                                                                           |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **json://** and **443** for all **jsons://** references.                                                                 |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
-| method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                         |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Nom d'hote du serveur web.                                                                                                                                                                                                          |
+| port     | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **json://** et **443** pour toutes les references **jsons://**.                                                                                      |
+| user     | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                                                                                                   |
+| password | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                                                                                                   |
+| method   | Non         | Permet facultativement de preciser la methode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Si aucune methode n'est precisee, `post` est utilise par defaut. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une JSON notification to our web server listening on port 80:
+Envoyer une notification JSON a notre serveur web a l'ecoute sur le port 80 :
 
 ```bash
-# Assuming our {hostname} is json.server.local
+# Supposons que notre {hostname} soit json.server.local
 apprise json://json.server.local
 ```
 
-### HTTP Method
+### Methode HTTP
 
-By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+Par defaut, toutes les notifications sont envoyees en `POST`. Remplacez ce comportement avec le parametre d'URL `method` :
 
 ```bash
-# Send as a PUT request
+# Envoyer comme requete PUT
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?method=put"
 
-# Send as a DELETE request
+# Envoyer comme requete DELETE
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?method=delete"
 
-# Send as a PATCH request
+# Envoyer comme requete PATCH
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?method=patch"
 ```
 
-The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+La liste complete des methodes prises en charge est : `post`, par defaut, `get`, `put`, `delete`, `patch`, `head`, `update` et `options`.
 
-> **Note:** When `method=get` is used, the JSON body is still sent as a request body. To pass parameters as URL query strings instead, use the `-` prefix (see [GET Parameter Manipulation](#get-parameter-manipulation) below).
+> **Remarque :** lorsque `method=get` est utilise, le corps JSON est tout de meme envoye comme corps de requete. Pour transmettre les parametres a la place sous forme de chaine de requete dans l'URL, utilisez le prefixe `-`, voir [Manipulation des Parametres GET](#manipulation-des-parametres-get) ci-dessous.
 
-### Payload Manipulation
+### Manipulation de la Charge Utile
 
-Making use of the `:` on the Apprise URL allows you to alter and add to the content posted upstream to a remote server.
+L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter du contenu a ce qui est publie en amont vers un serveur distant.
 
 ```bash
-# Add to the payload delivered to the remote server as if it was part
-# the prepared message Apprise would have otherwise put together
+# Ajouter a la charge utile envoyee au serveur distant comme si cela
+# faisait partie du message qu'Apprise aurait autrement prepare
 #
-# Assuming our {hostname} is localhost
-# Assuming we want to include "sound": "oceanwave" as part of the existing payload:
+# Supposons que notre {hostname} soit localhost
+# Supposons que nous voulions inclure `"sound": "oceanwave"` dans la charge utile existante :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?:sound=oceanwave"
 ```
 
-The above would post a message such as:
+L'exemple ci-dessus publierait un message comme celui-ci :
 
 ```json
 {
@@ -129,17 +129,17 @@ The above would post a message such as:
 }
 ```
 
-You can also clear entries from showing by setting their values to being empty:
+Vous pouvez aussi supprimer des entrees en definissant leur valeur comme vide :
 
 ```bash
-# Clear version and type from the payload:
-# Assuming our {hostname} is localhost
-# Assuming we want to clear both version and type from the output:
+# Vider version et type de la charge utile :
+# Supposons que notre {hostname} soit localhost
+# Supposons que nous voulions retirer version et type de la sortie :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?:version&:type"
 ```
 
-The above would post a message such as:
+L'exemple ci-dessus publierait un message comme celui-ci :
 
 ```json
 {
@@ -148,19 +148,19 @@ The above would post a message such as:
 }
 ```
 
-Finally, you can re-map values such as having the message go into a `body` tag instead:
+Enfin, vous pouvez remapper des valeurs, par exemple en envoyant le message dans une cle `body` a la place :
 
 ```bash
-# Add to the payload delivered to the remote server as if it was part
-# the prepared message Apprise would have otherwise put together
+# Ajouter a la charge utile envoyee au serveur distant comme si cela
+# faisait partie du message qu'Apprise aurait autrement prepare
 #
-# Assuming our {hostname} is localhost
-# Assuming we want to remap the message section to body:
+# Supposons que notre {hostname} soit localhost
+# Supposons que nous voulions remapper la section message vers body :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost/?:message=body"
 ```
 
-The above would post a message such as:
+L'exemple ci-dessus publierait un message comme celui-ci :
 
 ```json
 {
@@ -173,42 +173,42 @@ The above would post a message such as:
 
 ### Manipulation des en-tetes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees vers leur serveur. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost:8080/path/?+X-Token=abcdefg"
 
-# Multiple headers just require more entries defined:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-### GET Parameter Manipulation
+### Manipulation des Parametres GET
 
-Some users may require GET parameters to be part of their POST. Any parameters you pass onto the Apprise command line are interpreted by Apprise itself as options/actions you wish to perform (such as changing `method=update`, or `cto=3`). To have Apprise ignore what was specified and past the content `as-is` upstream, you just need to prefix your entries with a minus (`-`) symbol.
+Certains utilisateurs peuvent avoir besoin que des parametres GET fassent partie de leur POST. Tous les parametres que vous passez a la ligne de commande Apprise sont interpretes par Apprise lui-meme comme des options ou actions a executer, comme `method=update` ou `cto=3`. Pour qu'Apprise ignore ce qui a ete precise et transmette le contenu tel quel en amont, il suffit de prefixer vos entrees avec un symbole moins, `-`.
 
 ```bash
-# The below for example would post to http://localhost:8000?token=abcdefg
+# L'exemple ci-dessous publierait vers http://localhost:8000?token=abcdefg
 #
-# The `-` symbol will get stripped off when the upstream post takes place
-# Apprise knows not to do anything with the argument at all and pass it along as is.
+# Le symbole `-` sera retire lors de l'envoi en amont
+# Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "json://localhost:8080/?-token=abcdefg"
 
-# If you want to pass more then one element, just chain them:
-# The below would send a a POST to:
+# Si vous voulez transmettre plus d'un element, il suffit de les enchainer :
+# L'exemple ci-dessous enverrait un POST vers :
 #  https://example.ca/my/path?key1=value1&key2=value2
 #
 apprise -vv -t "Test Message Title" -b "Test Message Body" \

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushplus"
-description: "Envoyer Pushplus notifications."
+description: "Envoyer des notifications Pushplus."
 sidebar:
   label: "Pushplus"
 
@@ -19,23 +19,23 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Pushplus is a Chinese notification platform used to send alerts to WeChat or browser endpoints. It uses a token-based webhook system to deliver messages.
+Pushplus est une plateforme de notification chinoise utilisée pour envoyer des alertes vers WeChat ou des points de terminaison de navigateur. Elle utilise un système de webhook basé sur des tokens pour distribuer les messages.
 
-Once you create an account and subscribe to a channel, you will be issued a **token** used to send messages.
+Une fois que vous avez créé un compte et souscrit à un canal, un **token** vous sera attribué pour l'envoi des messages.
 
-1. Register or log into your account at [Pushplus](https://www.pushplus.plus/).
-2. From your dashboard, copy your **Token** under the "Push" section.
-3. Optionally configure the Pushplus app in WeChat for mobile delivery.
+1. Inscrivez-vous ou connectez-vous à votre compte sur [Pushplus](https://www.pushplus.plus/).
+2. Depuis votre tableau de bord, copiez votre **Token** sous la section « Push ».
+3. Configurez optionnellement l'application Pushplus dans WeChat pour la livraison mobile.
 
-Your notification URL will look like this:
+Votre URL de notification ressemblera à ceci :
 
 ```text
 https://www.pushplus.plus/send?token=abc123def456ghi789jkl012mno345pq
 ```
 
-Apprise supports both the full Pushplus native webhook URL and its simplified version.
+Apprise prend en charge à la fois l'URL native complète du webhook Pushplus et sa version simplifiée.
 
 ## Syntaxe
 
@@ -44,31 +44,31 @@ La syntaxe valide est la suivante :
 - `https://www.pushplus.plus/send?token={token}`
 - `pushplus://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                             |
-| -------- | -------- | ------------------------------------------------------- |
-| token    | Yes      | Your personal Pushplus Token from your account settings |
+| Variable | Requis | Description                                                             |
+| -------- | ------ | ----------------------------------------------------------------------- |
+| token    | Oui    | Votre token Pushplus personnel disponible dans les paramètres du compte |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Using the simplified Apprise URL:
+Utilisation de l'URL Apprise simplifiée :
 
 ```bash
 apprise -vv -t "Title" -b "This is the body" \
     pushplus://abc123def456ghi789jkl012mno345pq
 ```
 
-Using the token as a query parameter:
+Utilisation du token en tant que paramètre de requête :
 
 ```bash
 apprise -vv -t "Title" -b "This is the body" \
     pushplus://?token=abc123def456ghi789jkl012mno345pq
 ```
 
-Using the full native webhook URL:
+Utilisation de l'URL native complète du webhook :
 
 ```bash
 apprise -vv -t "Title" -b "This is the body" \

@@ -1,6 +1,6 @@
 ---
 title: "Notifications XBMC"
-description: "Envoyer XBMC notifications."
+description: "Envoyer des notifications XBMC."
 sidebar:
   label: "XBMC"
 
@@ -24,7 +24,7 @@ limits:
 <!-- SERVICE:DETAILS -->
 
 :::note
-XMBC is a legacy product and has been replaced by [[KODI|Notify_kodi]]. However for systems that can't be updated (such as a Jail Broken Apple TV2) you can use this protocol.
+XBMC est un produit historique qui a ete remplace par [[KODI|Notify_kodi]]. Cependant, pour les systemes qui ne peuvent pas etre mis a jour, comme un Apple TV2 jailbreake, vous pouvez encore utiliser ce protocole.
 :::
 
 ## Syntaxe
@@ -36,31 +36,31 @@ La syntaxe valide est la suivante :
 - `xbmc://{userid}:{password}@{hostname}`
 - `xbmc://{userid}:{password}@{hostname}:{port}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                     |
-| -------- | -------- | --------------------------------------------------------------- |
-| hostname | Yes      | The server XBMC is listening on.                                |
-| port     | No       | The port XBMC is listening on. By default the port is **8080**. |
-| userid   | No       | The account login to your XBMC server.                          |
-| password | No       | The password associated with your XBMC Server.                  |
+| Variable | Obligatoire | Description                                                     |
+| -------- | ----------- | --------------------------------------------------------------- |
+| hostname | Oui         | Serveur sur lequel XBMC ecoute.                                 |
+| port     | Non         | Port sur lequel XBMC ecoute. La valeur par defaut est **8080**. |
+| userid   | Non         | Identifiant de connexion a votre serveur XBMC.                  |
+| password | Non         | Mot de passe associe a votre serveur XBMC.                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une XBMC notification to our server listening on port 8080:
+Envoyer une notification XBMC a notre serveur a l'ecoute sur le port `8080` :
 
 ```bash
-# Assuming our {hostname} is xbmc.server.local
+# Supposons que notre {hostname} soit xbmc.server.local
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xbmc://xbmc.server.local"
 
-# You may have a password and user protecting your xbmc server; so the
-# following is another way to hit your xbmc server:
-# Assuming our {hostname} is xbmc.server.local
-# Assuming our {userid} is xbmc
-# Assuming our {password} is xbmc
+# Il est possible qu'un utilisateur et un mot de passe protegent votre serveur XBMC ;
+# dans ce cas, la variante suivante permet aussi de le joindre :
+# Supposons que notre {hostname} soit xbmc.server.local
+# Supposons que notre {userid} soit xbmc
+# Supposons que notre {password} soit xbmc
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "xbmc://xbmc:xbmc@xbmc.server.local"
 ```

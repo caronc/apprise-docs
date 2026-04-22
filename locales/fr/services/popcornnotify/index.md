@@ -1,6 +1,6 @@
 ---
 title: "Notifications PopcornNotify"
-description: "Envoyer PopcornNotify notifications."
+description: "Envoyer des notifications PopcornNotify."
 sidebar:
   label: "PopcornNotify"
 
@@ -20,7 +20,7 @@ sample_urls:
 
 ## Configuration du compte
 
-Get yourself an API Key from [their website](https://popcornnotify.com/) and you're already to use the service.
+Recuperez une cle API sur [leur site web](https://popcornnotify.com/) et vous serez deja pret a utiliser le service.
 
 ## Syntaxe
 
@@ -31,44 +31,45 @@ La syntaxe valide est la suivante :
 - `popcorn://{ApiKey}/{Email}/`
 - `popcorn://{ApiKey}/{Email1}/{Email2}/{EmailN}/`
 
-You can mix and match the information too:
+Vous pouvez aussi melanger les informations :
 
 - `popcorn://{ApiKey}/{PhoneNo1}/{Email1}/{EmailN}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                   |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ApiKey   | Yes      | The Personal API Token associated with your account.                                                                                                                                                                                                                                                                          |
-| PhoneNo  | No       | A Phone Number you wish to notify (via SMS).                                                                                                                                                                                                                                                                                  |
-| Email    | No       | The Email address you wish to notify                                                                                                                                                                                                                                                                                          |
-| to       | No       | This is an alias to the Phone/Email variable.                                                                                                                                                                                                                                                                                 |
-| batch    | No       | PopcornNotify allows a batch mode. If you identify more then one phone number and/or email, you can send all of these targets you identify on the URL in a single shot instead of the normal _Apprise_ approach (which sends them one by one). Enabling batch mode has both pros and cons. By default batch mode is disabled. |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                                                               |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ApiKey   | Oui         | Jeton API personnel associe a votre compte.                                                                                                                                                                                                                                                                                               |
+| PhoneNo  | Non         | Numero de telephone a notifier, via SMS.                                                                                                                                                                                                                                                                                                  |
+| Email    | Non         | Adresse e-mail a notifier.                                                                                                                                                                                                                                                                                                                |
+| to       | Non         | Alias de la variable Phone/Email.                                                                                                                                                                                                                                                                                                         |
+| batch    | Non         | PopcornNotify propose un mode lot. Si vous indiquez plus d'un numero de telephone et/ou e-mail, vous pouvez envoyer toutes ces cibles en une seule fois dans l'URL, au lieu de l'approche normale d'Apprise qui les envoie une par une. L'activation du mode lot a ses avantages et ses inconvenients. Par defaut, ce mode est desactive. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une PopcornNotify notification as an SMS:
+Envoyer une notification PopcornNotify sous forme de SMS :
 
 ```bash
-# Assuming our {ApiKey} is abc123456
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {ApiKey} soit abc123456
+# Supposons que notre {PhoneNo}
+#   - soit aux Etats-Unis, donc avec l'indicatif pays +1
+#   - corresponde au numero 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    popcorn:///abc123456/18005551223
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# la variante suivante aurait aussi fonctionne
+# les espaces, parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    popcorn:///abc123456/1-(800) 555-1223
 ```
 
-You can also send emails just as easily:
+Vous pouvez aussi envoyer des e-mails tout aussi simplement :
 
 ```bash
-# Assuming our {ApiKey} is abc123456
-# Assuming our {Email} is user@example.com
+# Supposons que notre {ApiKey} soit abc123456
+# Supposons que notre {Email} soit user@example.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    popcorn:///abc123456/user@example.com
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Resend"
-description: "Envoyer Resend notifications."
+description: "Envoyer des notifications Resend."
 sidebar:
   label: "Resend"
 
@@ -19,13 +19,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Creating an account with Resend is free of charge and can be done through their main page.
+La creation d'un compte Resend est gratuite et peut se faire depuis leur page principale.
 
-Once you have an account and access to [your dashboard](https://resend.com/). You will need to ensure you've correctly **authenticated your domains** with them; this is done from the [Domains](https://resend.com/domains) section of your dashboard.
+Une fois votre compte cree et l'acces a [votre tableau de bord](https://resend.com/) obtenu, vous devez vous assurer d'avoir correctement **authentifie vos domaines** chez eux. Cette operation se fait depuis la section [Domains](https://resend.com/domains) de votre tableau de bord.
 
-The last thing you need is to generate an **API Key** with at least the **Sending** permission. This can also be done through your dashboard in the [API Keys](https://resend.com/api-keys) section of your dashboard.
+La derniere etape consiste a generer une **cle API** disposant au minimum de la permission **Sending**. Cela peut egalement etre fait depuis la section [API Keys](https://resend.com/api-keys) de votre tableau de bord.
 
 ## Syntaxe
 
@@ -35,29 +35,29 @@ La syntaxe valide est la suivante :
 - `resend://{apikey}:{from_email}/{to_email}`
 - `resend://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey     | Yes      | The [API Key](https://resend.com/api-keys) you generated from within your Resend dashboard.                                                                                                                                                                                                                                                                                                                                                                                            |
-| from_email | Yes      | This is the email address will identify the email's origin (the _From_ address). This address **must** contain a domain that was previously authenticated with your Resend account (See [Domain](https://resend.com/domains) section of API).                                                                                                                                                                                                                                          |
-| to_email   | No       | This is the email address will identify the email's destination (the _To_ address). If one isn't specified then the _from_email_ is used instead.                                                                                                                                                                                                                                                                                                                                      |
-| cc         | No       | The _Carbon Copy_ (CC:) portion of the email. This is entirely optional. It should be noted that Resend immediately rejects emails where the _cc_ contains an email address that exists in the _to_ or the _bcc_ list. To avoid having issues, Apprise automatically eliminates these duplicates silently if detected.                                                                                                                                                                 |
-| bcc        | No       | The _Blind Carbon Copy_ (BCC:) portion of the email. This is entirely optional. It should be noted that Resend immediately rejects emails where the _bcc_ contains an email address that exists in the _to_ or the _cc_ list. To avoid having issues, Apprise automatically eliminates these duplicates silently if detected. If an identical email is detected in both the CC and the BCC list, the BCC list will maintain the email and it will drop from the CC list automatically. |
-| name       | No       | With respect to {from*email}, this allows you to provide a name with your \_Reply-To* address. <br/>**Note:** This field has become redundant and become synonymous to `from=`. It still behaves as it did in previous versions, but you can also follow the `A User<user@email.com>` syntax as well. To eliminate ambiguity; the values parsed from the `from=` will always trump the `name=`.                                                                                        |
-| reply      | No       | Provide a Reply-To email (or set of). More than one can be separated with a space and/or comma.                                                                                                                                                                                                                                                                                                                                                                                        |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey     | Oui         | [Cle API](https://resend.com/api-keys) generee depuis votre tableau de bord Resend.                                                                                                                                                                                                                                                                                                                                                                                              |
+| from_email | Oui         | Adresse e-mail identifiant l'origine du message, c'est-a-dire l'adresse _From_. Cette adresse **doit** appartenir a un domaine deja authentifie avec votre compte Resend. Voir la section [Domain](https://resend.com/domains) de l'API.                                                                                                                                                                                                                                         |
+| to_email   | Non         | Adresse e-mail identifiant le destinataire du message, c'est-a-dire l'adresse _To_. Si aucune valeur n'est fournie, `from_email` est utilise a la place.                                                                                                                                                                                                                                                                                                                         |
+| cc         | Non         | Partie _Carbon Copy_, CC:, de l'e-mail. Elle est entierement facultative. Il faut noter que Resend rejette immediatement les e-mails dont la liste _cc_ contient une adresse deja presente dans les listes _to_ ou _bcc_. Pour eviter ces problemes, Apprise elimine automatiquement et silencieusement ces doublons lorsqu'ils sont detectes.                                                                                                                                   |
+| bcc        | Non         | Partie _Blind Carbon Copy_, BCC:, de l'e-mail. Elle est entierement facultative. Il faut noter que Resend rejette immediatement les e-mails dont la liste _bcc_ contient une adresse deja presente dans les listes _to_ ou _cc_. Pour eviter ces problemes, Apprise elimine automatiquement et silencieusement ces doublons lorsqu'ils sont detectes. Si une meme adresse est detectee a la fois dans CC et BCC, elle est conservee dans BCC et supprimee automatiquement de CC. |
+| name       | Non         | Concernant `{from_email}`, cela vous permet de fournir un nom avec votre adresse _Reply-To_. <br/>**Remarque :** ce champ est devenu redondant et est desormais synonyme de `from=`. Il se comporte encore comme dans les versions precedentes, mais vous pouvez aussi utiliser la syntaxe `A User<user@email.com>`. Pour lever toute ambiguite, les valeurs analysees depuis `from=` auront toujours priorite sur `name=`.                                                      |
+| reply      | Non         | Permet de fournir une ou plusieurs adresses Reply-To. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                                                                                                                                                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Resend notification:
+Envoyer une notification Resend :
 
 ```bash
-# Assuming our {apikey} is re_bcd123-xyz
-# Assuming our Authenticated Domain is example.com, we might want to
-#  set our {from_email} to noreply@example.com
-# Assuming our {to_email} is someone@microsoft.com
+# Supposons que notre {apikey} soit re_bcd123-xyz
+# Supposons que notre domaine authentifie soit example.com, et que nous voulions
+# definir notre {from_email} sur noreply@example.com
+# Supposons que notre {to_email} soit someone@microsoft.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    resend:///re_bcd123-xyz:noreply@example.com/someone@microsoft.com
 ```

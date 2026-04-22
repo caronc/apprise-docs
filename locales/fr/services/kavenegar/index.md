@@ -1,6 +1,6 @@
 ---
 title: "Notifications Kavenegar"
-description: "Envoyer Kavenegar notifications."
+description: "Envoyer des notifications Kavenegar."
 sidebar:
   label: "Kavenegar"
 
@@ -24,7 +24,7 @@ limits:
 
 ## Configuration du compte
 
-To use Kavenegar, first register an account on [their website](https://kavenegar.com/). After you've done so, you can get your API Key from the [account profile](https://panel.kavenegar.com/client/setting/account) section.
+Pour utiliser Kavenegar, commencez par creer un compte sur [leur site web](https://kavenegar.com/). Une fois cela fait, vous pourrez recuperer votre cle API depuis la section [profil du compte](https://panel.kavenegar.com/client/setting/account).
 
 ## Syntaxe
 
@@ -35,29 +35,30 @@ La syntaxe valide est la suivante :
 - `kavenegar://{apikey}/{to_phone_no}/{to_phone_no2}/{to_phone_noN}/`
 - `kavenegar://{from_phone_no}@{apikey}/{to_phone_no}/{to_phone_no2}/{to_phone_noN}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                              |
-| ----------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ApiKey      | Yes      | The _API Key_ associated with your Kavengar account. This is available to you via the [account profile](https://panel.kavenegar.com/client/setting/account) section of their website (after logging in). |
-| ToPhoneNo   | Yes      | Kavengar does not handle the `+` in front of the country codes. You need to substitute the correct amount of zero's in front of the outbound number in order for the call to be completed.               |
-| FromPhoneNo | No       | The number you wish to identify your call is coming from. This argument is optional.                                                                                                                     |
+| Variable    | Obligatoire | Description                                                                                                                                                                                        |
+| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ApiKey      | Oui         | _API Key_ associee a votre compte Kavenegar. Elle est disponible dans la section [profil du compte](https://panel.kavenegar.com/client/setting/account) de leur site, apres connexion.             |
+| ToPhoneNo   | Oui         | Kavenegar ne prend pas en charge le signe `+` devant les indicatifs de pays. Vous devez donc remplacer ce prefixe par le bon nombre de zeros en tete du numero sortant pour que l'appel aboutisse. |
+| FromPhoneNo | Non         | Numero a utiliser comme identifiant de l'appelant. Cet argument est facultatif.                                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Kavenegar Notification as an SMS:
+Envoyer une notification Kavenegar sous forme de SMS :
 
 ```bash
-# Assuming our {ApiKey} is gank339l7jk3cjaE
-# Assuming our {PhoneNo} - is in the US somewhere making our country code 001
-#                        - identifies as 800-555-1223
+# Supposons que notre {ApiKey} soit gank339l7jk3cjaE
+# Supposons que notre {PhoneNo}
+#   - se trouve aux Etats-Unis, donc avec l'indicatif pays 001
+#   - corresponde a 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    kavenegar://gank339l7jk3cjaE/0018005551223
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# la variante suivante aurait aussi fonctionne
+# les espaces, parentheses et tirets sont acceptes dans ce champ :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    kavenegar://gank339l7jk3cjaE/001 - (800) 555-1223
 ```

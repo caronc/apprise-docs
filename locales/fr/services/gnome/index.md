@@ -1,6 +1,6 @@
 ---
 title: "Notifications Gnome Desktop"
-description: "Envoyer Gnome Desktop notifications."
+description: "Envoyer des notifications Gnome Desktop."
 sidebar:
   label: "Gnome Desktop Notifications"
 
@@ -22,26 +22,26 @@ limits:
 
 ## Configuration du compte
 
-Display notifications right on your Gnome desktop. This only works if you're sending the notification to the same system you're currently accessing. Hence this notification can not be sent from one PC to another.
+Affichez des notifications directement sur votre bureau Gnome. Cela ne fonctionne que si vous envoyez la notification vers le systeme que vous utilisez actuellement. Cette notification ne peut donc pas etre envoyee d'un PC a un autre.
 
 ## Syntaxe
 
-There are currently no options you can specify for this kind of notification, so it's really easy to reference.
+Il n'existe actuellement aucune option a preciser pour ce type de notification ; sa reference est donc tres simple.
 
 La syntaxe valide est la suivante :
 
 - `gnome://`
 
-## Detail des parametres
+## Détail des Paramètres
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Assuming we're on an OS that allows us to host the Gnome Desktop, we can send a notification to ourselves like so:
+Si nous sommes sur un systeme capable d'heberger le bureau Gnome, nous pouvons nous envoyer une notification ainsi :
 
 ```bash
-# Send ourselves a Gnome desktop notification
+# Nous envoyer une notification de bureau Gnome
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    gnome://
 ```

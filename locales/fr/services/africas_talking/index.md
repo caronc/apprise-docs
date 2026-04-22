@@ -1,6 +1,6 @@
 ---
 title: "Notifications Africas Talking"
-description: "Envoyer Africas Talking notifications."
+description: "Envoyer des notifications Africa's Talking."
 sidebar:
   label: "Africas Talking"
 
@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a Africas Talking [from here](https://africastalking.com/). You can access your API Key from the management section from your account.
+Inscrivez-vous a Africas Talking [ici](https://africastalking.com/). Vous pouvez recuperer votre cle API depuis la section de gestion de votre compte.
 
 ## Syntaxe
 
@@ -32,26 +32,26 @@ La syntaxe valide est la suivante :
 - `atalk://{appuser}@{apikey}/{toPhoneNo}`
 - `atalk://{appuser}@{apikey}/{toPhoneNo1}/{toPhoneNo2}/{toPhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                     |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Yes      | The API Key associated with your SMS Manager Account.                                                                                                           |
-| to       | **\*No** | A phone number and/or group you wish to send your notification to. You can use comma's to separate multiple entries if you wish. This is an alias to `targets`. |
-| from     | **\*No** | Your registered short code or alphanumeric; Defaults to `AFRICASTKNG`                                                                                           |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                                 |
-| mode     | No       | Allows you to send your SMS under different modes; options are `bulksms` (default), `premium`, or `sandbox`.                                                    |
+| Variable | Obligatoire | Description                                                                                                                                                                                     |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle API associee a votre compte SMS Manager.                                                                                                                                                    |
+| to       | **\*Non**   | Numero(s) de telephone et/ou groupe(s) auxquels vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour separer plusieurs entrees. Il s'agit d'un alias de `targets`. |
+| from     | **\*Non**   | Votre shortcode ou identifiant alphanumerique enregistre ; la valeur par defaut est `AFRICASTKNG`.                                                                                              |
+| batch    | Non         | Envoie plusieurs notifications specifiees dans un seul lot, soit 1 publication amont vers le serveur final. Par defaut, cette option est definie sur `no`.                                      |
+| mode     | Non         | Permet d'envoyer votre SMS selon differents modes ; les options sont `bulksms`, par defaut, `premium` ou `sandbox`.                                                                             |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une SMS Manager Message:
+Envoyer un message SMS Manager :
 
 ```bash
-# Assuming our {appuser} is user123
-# Assuming our {apikey} is hard-to-guess
-# Assuming our {PhoneNo} we wish to notify is +134-555-1223
+# Supposons que notre {appuser} soit user123
+# Supposons que notre {apikey} soit hard-to-guess
+# Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    atalk://user123@hard-to-guess/+134-555-1223
 ```

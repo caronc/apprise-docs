@@ -1,6 +1,6 @@
 ---
 title: "Notifications SpugPush"
-description: "Envoyer SpugPush notifications."
+description: "Envoyer des notifications SpugPush."
 sidebar:
   label: "SpugPush"
 
@@ -19,23 +19,23 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-SpugPush is a simple webhook service provided by the Spug monitoring platform. It allows applications to send alert messages using a secure access token.
+SpugPush est un service webhook simple fourni par la plateforme de supervision Spug. Il permet aux applications d'envoyer des messages d'alerte a l'aide d'un jeton d'acces securise.
 
-1. Visit the [SpugPush service](https://push.spug.dev/).
-1. Sign in and generate your **token**.
-1. Copy the full webhook URL, which will look like:
+1. Visitez le service [SpugPush](https://push.spug.dev/).
+1. Connectez-vous et generez votre **token**.
+1. Copiez l'URL webhook complete, qui ressemblera a ceci :
 
 ```text
 https://push.spug.dev/send/abc123def456ghi789jkl012mno345pq
 ```
 
-The token portion at the end is the only value Apprise requires.
+La portion `token` a la fin est la seule valeur dont Apprise a besoin.
 
-### Apprise Support
+### Prise en Charge Apprise
 
-Apprise supports both the full native webhook and a simplified URL form.
+Apprise prend en charge a la fois le webhook natif complet et une forme d'URL simplifiee.
 
 ## Syntaxe
 
@@ -44,33 +44,33 @@ La syntaxe valide est la suivante :
 - `https://push.spug.dev/send/{token}`
 - `spugpush://{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                          |
-| -------- | -------- | -------------------------------------------------------------------- |
-| token    | Yes      | The 32–64 character SpugPush token used to authenticate the request. |
+| Variable | Obligatoire | Description                                                                |
+| -------- | ----------- | -------------------------------------------------------------------------- |
+| token    | Oui         | Jeton SpugPush de 32 a 64 caracteres utilise pour authentifier la requete. |
 
-You may also use the query format: `spugpush://?token=YOUR_TOKEN`.
+Vous pouvez egalement utiliser le format avec chaine de requete : `spugpush://?token=YOUR_TOKEN`.
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Using the simplified Apprise URL:
+Utilisation de l'URL Apprise simplifiee :
 
 ```bash
 apprise -vv -t "SpugPush Title" -b "Notification content" \
    spugpush://abc123def456ghi789jkl012mno345pq
 ```
 
-Using the token as a query parameter:
+Utilisation du token comme parametre de requete :
 
 ```bash
 apprise -vv -t "SpugPush Title" -b "Notification content" \
    spugpush://?token=abc123def456ghi789jkl012mno345pq
 ```
 
-Using the full native webhook URL:
+Utilisation de l'URL webhook native complete :
 
 ```bash
 apprise -vv -t "SpugPush Title" -b "Notification content" \

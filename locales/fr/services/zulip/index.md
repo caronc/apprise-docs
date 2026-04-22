@@ -1,6 +1,6 @@
 ---
 title: "Notifications Zulip"
-description: "Envoyer Zulip notifications."
+description: "Envoyer des notifications Zulip."
 sidebar:
   label: "Zulip"
 
@@ -22,17 +22,17 @@ limits:
 
 ## Configuration du compte
 
-To use this Zulip, you must have a Zulip Chat bot defined; See [here for more details](https://zulipchat.com/help/add-a-bot-or-integration). At the time of writing this plugin the instructions were:
+Pour utiliser Zulip, vous devez disposer d'un robot Zulip Chat ; [consultez cette page pour plus de details](https://zulipchat.com/help/add-a-bot-or-integration). Au moment de la redaction de ce plugin, la procedure etait la suivante :
 
-1. From your desktop, click on the gear icon in the upper right corner.
-2. Select Settings.
-3. On the left, click Your bots.
-4. Click Add a new bot.
-5. Fill out the fields, and click Create bot.
+1. Depuis votre ordinateur, cliquez sur l'icone d'engrenage en haut a droite.
+2. Selectionnez **Settings**.
+3. Dans le menu de gauche, cliquez sur **Your bots**.
+4. Cliquez sur **Add a new bot**.
+5. Remplissez les champs puis cliquez sur **Create bot**.
 
-If you know your organization **{ID}** (as it's part of your zulipchat.com url), then you can also access your bot information by visiting: `https://ID.zulipchat.com/#settings/your-bots`
+Si vous connaissez l'**{ID}** de votre organisation, puisqu'il fait partie de votre URL `zulipchat.com`, vous pouvez aussi acceder aux informations de votre robot en visitant : `https://ID.zulipchat.com/#settings/your-bots`
 
-Upon creating a bot successfully, you'll now be able to access its API Token.
+Une fois le robot cree avec succes, vous pourrez recuperer son jeton API.
 
 ## Syntaxe
 
@@ -44,42 +44,42 @@ La syntaxe valide est la suivante :
 - `zulip://{botname}@{organization}/{token}/{email}`
 - `zulip://{botname}@{organization}/{token}/{email1}/{email2}/{emailN}`
 
-**Note**: If neither a **{stream}** or **{email}** is specified then by default the stream **general** is notified.
+**Remarque :** si ni **{stream}** ni **{email}** ne sont precises, le flux **general** est notifie par defaut.
 
-You can also mix and match the entries above too:
+Vous pouvez aussi melanger les entrees ci-dessus :
 
 - `zulip://{botname}@{organization}/{token}/{stream1}/{email1}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                                                                                                            |
-| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| organization | Yes      | The organization you created your webhook under. The trailing part of the organization reading `.zulipchat.com` is not required here, however this is gracefully handled if specified. |
-| token        | Yes      | The API token provided to you after creating a _bot_                                                                                                                                   |
-| botname      | Yes      | The botname associated with the API Key. The `-bot` portion of the bot name is not required, however this is gracefully handled if specified.                                          |
-| email        | No       | An email belonging to one of the users that have been added to your organization the private message.                                                                                  |
-| stream       | No       | A stream to notify.                                                                                                                                                                    |
+| Variable     | Obligatoire | Description                                                                                                                                                                |
+| ------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| organization | Oui         | Organisation dans laquelle vous avez cree votre webhook. La partie finale `.zulipchat.com` n'est pas obligatoire ici, mais elle est prise en charge si vous la fournissez. |
+| token        | Oui         | Jeton API fourni apres la creation du robot.                                                                                                                               |
+| botname      | Oui         | Nom du robot associe a la cle API. La partie `-bot` du nom n'est pas obligatoire, mais elle est egalement prise en charge si vous la precisez.                             |
+| email        | Non         | Adresse e-mail appartenant a l'un des utilisateurs ajoutes a votre organisation pour l'envoi d'un message prive.                                                           |
+| stream       | Non         | Flux a notifier.                                                                                                                                                           |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Zulip notification to default #general (default) stream:
+Envoyer une notification Zulip vers le flux `#general`, utilise par defaut :
 
 ```bash
-# Assuming our {organization} is apprise
-# Assuming our {token} is T1JJ3T3L2
-# Assuming our {botname} is goober
+# Supposons que notre {organization} soit apprise
+# Supposons que notre {token} soit T1JJ3T3L2
+# Supposons que notre {botname} soit goober
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    zulip:///goober@apprise/T1JJ3T3L2
 ```
 
-Envoyer une Zulip notification to the #support stream:
+Envoyer une notification Zulip vers le flux `#support` :
 
 ```bash
-# Assuming our {organization} is apprise
-# Assuming our {token} is T1JJ3T3L2
-# Assuming our {stream} is #support
+# Supposons que notre {organization} soit apprise
+# Supposons que notre {token} soit T1JJ3T3L2
+# Supposons que notre {stream} soit #support
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    zulip:///apprise/T1JJ3T3L2/support
 ```

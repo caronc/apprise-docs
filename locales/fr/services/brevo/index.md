@@ -1,6 +1,6 @@
 ---
 title: "Notifications Brevo"
-description: "Envoyer Brevo notifications."
+description: "Envoyer des notifications Brevo."
 sidebar:
   label: "Brevo"
 
@@ -18,18 +18,18 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Brevo is a transactional email platform that exposes a JSON HTTP API for sending mail. The new `NotifyBrevo` plugin integrates this API with Apprise, using a URL schema consistent with other email providers such as SendGrid and Resend. The plugin:
+Brevo est une plateforme d'e-mail transactionnel qui expose une API HTTP JSON pour l'envoi de messages. Le plugin `NotifyBrevo` intègre cette API à Apprise avec un schéma d'URL cohérent avec d'autres fournisseurs d'e-mail comme SendGrid et Resend.
 
-1. Visit [https://www.brevo.com/](https://www.brevo.com/) and sign in to your Brevo account.
-2. Navigate to **SMTP & API** in your account, then create a **Transactional email API key** with permission to send email.
-3. Copy the generated **API key**. This will be used as the `APIToken` part of your Apprise URL.
-4. Ensure you have at least one verified sender address or authenticated sending domain configured in Brevo. The **From Email** used in Apprise must be a valid sender, or Brevo will reject the request.
-5. Construct your `brevo://` URL using the syntax below, substituting your API key, From address, and target recipients.
-6. Use this URL in your Apprise configuration file or CLI calls.
+1. Rendez-vous sur [https://www.brevo.com/](https://www.brevo.com/) et connectez-vous à votre compte Brevo.
+2. Accédez à **SMTP & API** dans votre compte, puis créez une **Transactional email API key** avec la permission d'envoyer des e-mails.
+3. Copiez la **API key** générée. Elle sera utilisée comme partie `APIToken` de votre URL Apprise.
+4. Assurez-vous d'avoir au moins une adresse d'expéditeur vérifiée, ou un domaine d'envoi authentifié, configuré dans Brevo. L'adresse **From Email** utilisée dans Apprise doit être un expéditeur valide, sinon Brevo rejettera la requête.
+5. Construisez votre URL `brevo://` à l'aide de la syntaxe ci-dessous, en remplaçant la clé API, l'adresse d'expédition et les destinataires cibles.
+6. Utilisez cette URL dans votre fichier de configuration Apprise ou dans vos appels CLI.
 
-⚠️ Brevo may send you a confirmation email (`subject: Security Alert: Verify a new IP`) indicating that `Someone tried to use your organization account and make an API call with an IP address you have never used before. We wanted to check this activity with you.`. You then need to use the confirmation link to approve the IP in question. From that point forward Apprise should work uninterrupted.
+⚠️ Brevo peut vous envoyer un e-mail de confirmation, `subject: Security Alert: Verify a new IP`, indiquant que `Someone tried to use your organization account and make an API call with an IP address you have never used before. We wanted to check this activity with you.`. Vous devrez alors utiliser le lien de confirmation pour approuver l'adresse IP concernée. À partir de ce moment, Apprise devrait fonctionner sans interruption.
 
 ---
 
@@ -37,63 +37,63 @@ Brevo is a transactional email platform that exposes a JSON HTTP API for sending
 
 La syntaxe valide est la suivante :
 
-- Expediteur unique, destinataire par defaut (auto-notification). Note that the 'From Email' must be a 'Verified Sender' already with Brevo for this syntax to work.
+- Expéditeur unique, destinataire par défaut, auto-notification. Notez que le champ `From Email` doit déjà être un `Verified Sender` chez Brevo pour que cette syntaxe fonctionne.
   - `brevo://APIToken:FromEmail`
 
 - Destinataires explicites :
   - `brevo://APIToken:FromEmail/ToEmail`
   - `brevo://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN`
 
-- Parametres supplementaires :
+- Paramètres supplémentaires :
   - `?to=extra1@example.com,extra2@example.com`
   - `?cc=cc1@example.com,cc2@example.com`
   - `?bcc=bcc1@example.com,bcc2@example.com`
   - `?reply=Reply Name <reply@example.com>`
 
-Le modele d'URL du plugin est :
+Le modèle d'URL du plugin est :
 
 - `brevo://{apikey}:{from_email}`
 - `brevo://{apikey}:{from_email}/{targets}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                |
-| ----------- | -------- | -------------------------------------------------------------------------- |
-| `APIToken`  | Yes      | Your Brevo transactional API key (`api-key` header value).                 |
-| `FromEmail` | Yes      | Verified sender email address in Brevo (`sender.email`).                   |
-| `ToEmail`   | No       | One or more recipient email addresses in the URL path.                     |
-| `to`        | No       | Additional recipients as a comma-separated list in the query string.       |
-| `cc`        | No       | Carbon-copy recipients, comma-separated.                                   |
-| `bcc`       | No       | Blind carbon-copy recipients, comma-separated.                             |
-| `reply`     | No       | Reply-To header, optionally including a display name.                      |
-| `format`    | No       | Overrides default format (`html` or `text`), consistent with Apprise core. |
+| Variable    | Requis | Description                                                                                           |
+| ----------- | ------ | ----------------------------------------------------------------------------------------------------- |
+| `APIToken`  | Oui    | Clé API transactionnelle Brevo, valeur de l'en-tête `api-key`.                                        |
+| `FromEmail` | Oui    | Adresse e-mail d'expéditeur vérifiée dans Brevo, `sender.email`.                                      |
+| `ToEmail`   | Non    | Une ou plusieurs adresses e-mail destinataires dans le chemin URL.                                    |
+| `to`        | Non    | Destinataires supplémentaires sous forme de liste séparée par des virgules dans la chaîne de requête. |
+| `cc`        | Non    | Destinataires en copie, séparés par des virgules.                                                     |
+| `bcc`       | Non    | Destinataires en copie cachée, séparés par des virgules.                                              |
+| `reply`     | Non    | En-tête Reply-To, facultativement avec un nom d'affichage.                                            |
+| `format`    | Non    | Remplace le format par défaut, `html` ou `text`, de manière cohérente avec le noyau Apprise.          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une basic Brevo notification to yourself (from and to are the same):
+Envoyer une notification Brevo simple à vous-même, From et To identiques :
 
 ```bash
 apprise -vv -t "Test Title" -b "Test Message" \
    brevo://APIToken:user@example.com
 ```
 
-Envoyer an email from `user@example.com` to a single recipient:
+Envoyer un e-mail de `user@example.com` à un destinataire unique :
 
 ```bash
 apprise -vv -t "Deployment Complete" -b "The release finished successfully." \
     brevo://APIToken:user@example.com/ops@example.com
 ```
 
-Envoyer to multiple recipients with CC, BCC and a Reply-To header:
+Envoyer à plusieurs destinataires avec CC, BCC et un en-tête Reply-To :
 
 ```bash
 apprise -vv -t "Incident Report" -b "See attached logs for details." \
    "brevo://APIToken:alerts@example.com/oncall@example.com?to=dev1@example.com,dev2@example.com&cc=teamlead@example.com&bcc=manager@example.com&reply=Support%20Desk%20<support@example.com>"
 ```
 
-Envoyer with an attachment:
+Envoyer avec une pièce jointe :
 
 ```bash
 apprise -vv -t "Nightly Report" -b "Attached is the latest report." \

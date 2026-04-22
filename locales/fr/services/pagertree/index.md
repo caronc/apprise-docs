@@ -1,6 +1,6 @@
 ---
 title: "Notifications PagerTree"
-description: "Envoyer PagerTree notifications."
+description: "Envoyer des notifications PagerTree."
 sidebar:
   label: "PagerTree"
 
@@ -16,14 +16,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-1. For this to work, you'll need to signup for a [PagerTree](https://pagertree.com) account (free trial is fine). Make sure you follow the setup wizard (you'll want to be on-call for the team the integration is pointed to in Step 2)
-2. Create a [webhook integration](https://pagertree.com/docs/integration-guides/webhook) and point it to the team (default: "Devops Team")
-3. From the integration page, copy the integration Prefix ID (used for the apprise url)
+1. Pour que cela fonctionne, vous devez creer un compte [PagerTree](https://pagertree.com), l'essai gratuit convient parfaitement. Veillez a suivre l'assistant de configuration, car vous voudrez etre d'astreinte pour l'equipe vers laquelle l'integration pointera a l'etape 2.
+2. Creez une [integration webhook](https://pagertree.com/docs/integration-guides/webhook) et pointez-la vers l'equipe voulue, par defaut "Devops Team".
+3. Depuis la page de l'integration, copiez le Prefix ID de l'integration, utilise pour l'URL Apprise.
    ![image](./images/217587441-cfbf0f43-f736-4b9d-85dc-18acc6cc418c.png)
-4. Use the Prefix ID for the apprise URL `./bin/apprise -t test -b message "pagertree://int_xxxxxxxxxx"`
-   Vous devez disposer d’un compte chez [PagerTree](https://pagertree.com) and create a [webhook integration](https://pagertree.com/docs/integration-guides/webhook).
+4. Utilisez ensuite ce Prefix ID dans l'URL Apprise : `./bin/apprise -t test -b message "pagertree://int_xxxxxxxxxx"`
 
 ## Syntaxe
 
@@ -33,43 +32,43 @@ La syntaxe valide est la suivante :
 - `pagertree://{integration}?action=resolve&thirdparty_id=abc123`
 - `pagertree://{integration}?+pagertree-token=123&:env=prod&-incident=true&-incident_severity=SEV-1&-incident-message=Please join the bridge&tags=prod,server,outage`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                  |
-| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| integration | Yes      | This is the Prefix ID of your webhook integration. Found at the top of the integration page.                                                                                                                                 |
-| action      | No       | The action for the webhook. Possible values are `create`, `acknowledge`, and `resolve`. When using acknowledge or resolve, please use the `thirdparty_id` parameter to indicate to PagerTree which alert should be actioned. |
-| thirdparty  | No       | An Id PagerTree uses to map thirdparty applications to alerts. You can specify your own, or if not, a random UUID will be generated for you.                                                                                 |
-| urgency     | No       | Urgency of the alert to be generated. Possible values `silent`, `low`, `medium`, `high`, or `critical`. If not provided, PagerTree will use the integration's default.                                                       |
-| tags        | No       | Comma seperated list of tags. (ex: "prod,server,outage")                                                                                                                                                                     |
+| Variable    | Obligatoire | Description                                                                                                                                                                                                                                  |
+| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| integration | Oui         | Prefix ID de votre integration webhook. Il se trouve en haut de la page de l'integration.                                                                                                                                                    |
+| action      | Non         | Action du webhook. Les valeurs possibles sont `create`, `acknowledge` et `resolve`. Lorsque vous utilisez `acknowledge` ou `resolve`, utilisez aussi le parametre `thirdparty_id` pour indiquer a PagerTree quelle alerte doit etre traitee. |
+| thirdparty  | Non         | Identifiant utilise par PagerTree pour faire le lien entre des applications tierces et des alertes. Vous pouvez fournir le votre, sinon un UUID aleatoire sera genere pour vous.                                                             |
+| urgency     | Non         | Niveau d'urgence de l'alerte a generer. Les valeurs possibles sont `silent`, `low`, `medium`, `high` ou `critical`. Si aucune valeur n'est fournie, PagerTree utilisera celle definie par defaut dans l'integration.                         |
+| tags        | Non         | Liste de tags separes par des virgules, par exemple `prod,server,outage`.                                                                                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une PagerTree create command.
+Envoyer une commande de creation PagerTree.
 
 ```bash
 
-# Assuming our {integration_id} is int_0123456789
+# Supposons que notre {integration_id} soit int_0123456789
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagertree://int_0123456789"
 ```
 
-### Payload Manipulation
+### Manipulation du Payload
 
-Making use of the `:` on the Apprise URL allows you to alter and add to the body content posted upstream to PagerTree. This is useful when using the [Capture Additional Data feature](https://pagertree.com/docs/integration-guides/webhook#integration-options).
+L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter du contenu au corps envoye en amont a PagerTree. C'est utile lorsque vous exploitez la fonctionnalite [Capture Additional Data](https://pagertree.com/docs/integration-guides/webhook#integration-options).
 
 ```bash
-# Add to the payload delivered to PagerTree
+# Ajouter des donnees au payload envoye a PagerTree
 #
-# Assuming our {integration_id} is int_xxxxxxxxxx
-# Assuming we want to include "server": "blue-ranger-2" as part of the existing payload:
+# Supposons que notre {integration_id} soit int_xxxxxxxxxx
+# Supposons que nous voulions inclure "server": "blue-ranger-2" dans le payload existant :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagertree://int_xxxxxxxxxx/?:server=blue-ranger-2"
 ```
 
-The above would post a message such as:
+Cela publierait un message comme celui-ci :
 
 ```json
 {
@@ -81,28 +80,28 @@ The above would post a message such as:
 }
 ```
 
-### Manipulation des en-tetes
+### Manipulation des En-têtes
 
-Some users may require special HTTP headers to be present when they post their data to PagerTree. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string. This is useful when making use of the [PagerTree Token feature](https://pagertree.com/docs/integration-guides/webhook#integration-options).
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees a PagerTree. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre defini dans votre URL. C'est utile lorsque vous exploitez la fonctionnalite [PagerTree Token](https://pagertree.com/docs/integration-guides/webhook#integration-options).
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    pagertree-token: abcdefg
 #
-# Assuming our {integration_id} is int_xxxxxxxxxx
+# Supposons que notre {integration_id} soit int_xxxxxxxxxx
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagertree://int_xxxxxxxxxx?+pagertree-token=abcdefg"
 
 ```
 
-### Meta Manipulation
+### Manipulation des Métadonnées
 
-Some PagerTree functionality (like incidents) lives in the `meta` property of the payload. To add to the meta property you just need to prefix your entries with a minus (`-`) symbol. [See example.](https://pagertree.com/docs/integration-guides/webhook#example-request-2)
+Certaines fonctionnalites de PagerTree, comme les incidents, se trouvent dans la propriete `meta` du payload. Pour ajouter des donnees dans `meta`, il suffit de prefixer vos entrees avec le symbole moins, `-`. [Voir l'exemple.](https://pagertree.com/docs/integration-guides/webhook#example-request-2)
 
 ```bash
-# Indicate to PagerTree this alert should be marked as an incident
-# The `-` symbol will get stripped off when the upstream post takes place
-# Apprise knows not to do anything with the argument at all and pass it along as is.
+# Indiquer a PagerTree que cette alerte doit etre marquee comme incident
+# Le symbole `-` sera retire lors de l'envoi en amont
+# Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagertree://int_xxxxxxxxxx?-incident=true&-incident_severity=SEV-1&-incident_message=Join the war room"
 ```

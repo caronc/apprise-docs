@@ -1,6 +1,6 @@
 ---
 title: "Notifications WxPusher"
-description: "Envoyer WxPusher notifications."
+description: "Envoyer des notifications WxPusher."
 sidebar:
   label: "WxPusher"
 
@@ -20,12 +20,12 @@ sample_urls:
 
 ## Configuration du compte
 
-1. [Create an account with WxPusher](https://wxpusher.zjiecode.com/).
-1. Acquire your App Token from your profile<br/><img width="1428" alt="appToken" src="./images/1cfd1232081adc73.png"><br/>_Note: The above image was taken from [WxPusher's Help Page](https://wxpusher.zjiecode.com/docs/#/?id=%e8%8e%b7%e5%8f%96apptoken)_
+1. [Creez un compte WxPusher](https://wxpusher.zjiecode.com/).
+1. Recuperez votre `App Token` depuis votre profil.<br/><img width="1428" alt="appToken" src="./images/1cfd1232081adc73.png"><br/>_Remarque : l'image ci-dessus provient de la [page d'aide de WxPusher](https://wxpusher.zjiecode.com/docs/#/?id=%e8%8e%b7%e5%8f%96apptoken)_
 
-Targets can be either a User (`UID_DATA`) or a Topic (`<integer>`). i.e:
+Les cibles peuvent etre soit un utilisateur, `UID_DATA`, soit un topic, `<integer>`, par exemple :
 
-- `wxpusher://apptoken/123/343/UID_ABCD` would notify 2 topics (`123`, and `343`) plus one user `UID_DATA`)
+- `wxpusher://apptoken/123/343/UID_ABCD` notifierait 2 topics, `123` et `343`, ainsi qu'un utilisateur, `UID_DATA`.
 
 ## Syntaxe
 
@@ -36,46 +36,46 @@ La syntaxe valide est la suivante :
 - `wxpusher://{app_token}@{topic}`
 - `wxpusher://{app_token}@{topic1}/{topic2}/{topicN}`
 
-You can also mix/match topic's and user ids:
+Vous pouvez aussi melanger topics et identifiants utilisateur :
 
 - `wxpusher://{app_token}@{topic1}/{userid1}/...`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                      |
-| --------- | -------- | ------------------------------------------------------------------------------------------------ |
-| app_token | **Yes**  | The App Token associated with your WxPusher account. It always starts with `AT_`                 |
-| userid    | \*No     | You must specify at least 1 (one) `userid` OR 1 (one) `topic`. A `userid` has a prefix of `UID_` |
-| topic     | \*No     | You must specify at least 1 (one) `userid` OR 1 (one) `topic`. A `topic` is an integer value     |
+| Variable  | Obligatoire | Description                                                                                         |
+| --------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| app_token | **Oui**     | App Token associe a votre compte WxPusher. Il commence toujours par `AT_`.                          |
+| userid    | \*Non       | Vous devez preciser au moins un `userid` ou un `topic`. Un `userid` commence par le prefixe `UID_`. |
+| topic     | \*Non       | Vous devez preciser au moins un `userid` ou un `topic`. Un `topic` est une valeur entiere.          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une WxPusher notification using a topic a topic:
+Envoyer une notification WxPusher en utilisant un topic :
 
 ```bash
-# Assuming our {app_key} is AT_12345
-# Assuming our {topic} is 987
+# Supposons que notre {app_key} soit AT_12345
+# Supposons que notre {topic} soit 987
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
    wxpusher://AT_12345/987
 ```
 
-Here is an example of notifying a user:
+Voici un exemple de notification d'un utilisateur :
 
 ```bash
-# Assuming our {app_key} is AT_12345
-# Assuming our {user} is UID_123
+# Supposons que notre {app_key} soit AT_12345
+# Supposons que notre {user} soit UID_123
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
    wxpusher://AT_12345/UID_123
 ```
 
-We can notify a variety of users/topics by just specifying htem on the path:
+Nous pouvons notifier plusieurs utilisateurs et topics en les precisant simplement dans le chemin :
 
 ```bash
-# Assuming our {app_key} is AT_12345
-# Assuming our {user} is UID_123 and UID_456
-# Assuming our {topic} is 5555 and 4444
+# Supposons que notre {app_key} soit AT_12345
+# Supposons que nos {user} soient UID_123 et UID_456
+# Supposons que nos {topic} soient 5555 et 4444
 apprise -vv -t "Test Message Title" -b "Test Message Body" -n failure  \
    wxpusher://AT_12345/UID_123/5555/4444/UID_456
 ```

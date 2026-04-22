@@ -1,6 +1,6 @@
 ---
 title: "Notifications Custom FORM"
-description: "Envoyer HTML/Form based notifications."
+description: "Envoyer des notifications HTML/Form."
 sidebar:
   label: "HTTP/Form"
 group: "custom"
@@ -24,16 +24,16 @@ sample_urls:
 
 ## Introduction
 
-This is just a custom Notification that allows you to have this tool post to a web server as a simple FORM (`application/x-www-form-urlencoded`). This is useful for those who want to be notified via their own custom methods.
+Il s'agit simplement d'une notification personnalisee permettant a cet outil de publier vers un serveur web sous la forme d'un simple FORM, `application/x-www-form-urlencoded`. C'est utile pour les personnes qui souhaitent etre notifiees via leurs propres methodes personnalisees.
 
-The payload will include a `body`, `title`, `version`, and `type` in its response. You can add more (see below for details).
+La charge utile inclura `body`, `title`, `version` et `type` dans la requete. Vous pouvez en ajouter d'autres, voir les details ci-dessous.
 
-The _type_ will be one of the following:
+Le _type_ prendra l'une des valeurs suivantes :
 
-- **info**: An informative type message
-- **success**: A successful report
-- **failure**: A failure report
-- **warning**: A warning report
+- **info** : message de type informatif
+- **success** : rapport de succes
+- **failure** : rapport d'echec
+- **warning** : avertissement
 
 ## Syntaxe
 
@@ -46,7 +46,7 @@ La syntaxe valide est la suivante :
 - `form://{user}:{password}@{hostname}`
 - `form://{user}:{password}@{hostname}:{port}`
 
-Adding an `s` to the schema (i.e. `forms://`) switches to a secure HTTPS connection:
+L'ajout d'un `s` au schema, c'est-a-dire `forms://`, bascule vers une connexion HTTPS securisee :
 
 - `forms://{hostname}`
 - `forms://{hostname}:{port}`
@@ -55,67 +55,67 @@ Adding an `s` to the schema (i.e. `forms://`) switches to a secure HTTPS connect
 - `forms://{user}:{password}@{hostname}`
 - `forms://{user}:{password}@{hostname}:{port}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname  | Yes      | The Web Server's hostname                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| port      | No       | The port our Web server is listening on. By default the port is **80** for **form://** and **443** for all **forms://** references.                                                                                                                                                                                                                                                                                                                                                                                  |
-| user      | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| password  | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| method    | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used.                                                                                                                                                                                                                                                                                                                  |
-| attach-as | No       | Optionally override the meta filename set when there are attachments. Each attachment by default gets posted as `file01`, `file02`, etc. There have been use-cases where someone's end point expects the meta name (where the file is found on the HTTP request) to be named something specific such as `document`. Utilize this over-ride to accomplish such a feat. Also use the `*` character to allow the numbering. Hence `?attach-as=meta*` would cause Apprise to store the files as `meta01`, `meta02`, etc. |
+| Variable  | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname  | Oui         | Nom d'hote du serveur web.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| port      | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **form://** et **443** pour toutes les references **forms://**.                                                                                                                                                                                                                                                                                                                                                                                                |
+| user      | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| password  | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| method    | Non         | Permet facultativement de preciser la methode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Si aucune methode n'est precisee, `post` est utilise par defaut.                                                                                                                                                                                                                                                                                                           |
+| attach-as | Non         | Permet facultativement de remplacer le nom meta du fichier lorsqu'il y a des pieces jointes. Par defaut, chaque piece jointe est publiee sous `file01`, `file02`, etc. Il existe des cas d'usage ou le point de terminaison distant attend un nom meta precis, c'est-a-dire le champ sous lequel le fichier apparait dans la requete HTTP, comme `document`. Utilisez cette surcharge pour obtenir ce comportement. Utilisez aussi le caractere `*` pour autoriser la numerotation. Ainsi `?attach-as=meta*` donnera `meta01`, `meta02`, etc. |
 
-**Note:**: If you include file attachments; each one is concatenated into the same single post to the upstream server. The `Content-Type` header request also changes from `application/x-www-form-urlencoded` to `multipart/form-data` in this case.
+**Remarque :** si vous incluez des pieces jointes, elles sont toutes concatenees dans une seule publication vers le serveur amont. Dans ce cas, l'en-tete `Content-Type` passe aussi de `application/x-www-form-urlencoded` a `multipart/form-data`.
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une FORM Based web request to our web server listening on port 80:
+Envoyer une requete web FORM a notre serveur web a l'ecoute sur le port 80 :
 
 ```bash
-# Assuming our {hostname} is my.server.local
+# Supposons que notre {hostname} soit my.server.local
 apprise form://my.server.local
 ```
 
-### HTTP Method
+### Methode HTTP
 
-By default all notifications are sent as a `POST` request. Override this with the `method` URL parameter:
+Par defaut, toutes les notifications sont envoyees en `POST`. Remplacez ce comportement avec le parametre d'URL `method` :
 
 ```bash
-# Send as a PUT request
+# Envoyer comme requete PUT
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?method=put"
 
-# Send as a DELETE request
+# Envoyer comme requete DELETE
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?method=delete"
 
-# Send as a PATCH request
+# Envoyer comme requete PATCH
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?method=patch"
 ```
 
-The full list of supported methods is: `post` (default), `get`, `put`, `delete`, `patch`, `head`, `update`, and `options`.
+La liste complete des methodes prises en charge est : `post`, par defaut, `get`, `put`, `delete`, `patch`, `head`, `update` et `options`.
 
-> **Note:** When `method=get` is used, the form payload fields (`version`, `title`, `message`, `type`) are appended as URL query parameters rather than sent as a request body. The `Content-Type` header is not set for GET requests. File attachments are not compatible with GET.
+> **Remarque :** lorsque `method=get` est utilise, les champs de charge utile du formulaire, `version`, `title`, `message`, `type`, sont ajoutes comme parametres de requete dans l'URL au lieu d'etre envoyes dans le corps de la requete. L'en-tete `Content-Type` n'est pas defini pour les requetes GET. Les pieces jointes ne sont pas compatibles avec GET.
 
-### Payload Manipulation
+### Manipulation de la Charge Utile
 
-Making use of the `:` on the Apprise URL allows you to alter and add to the form fields posted upstream to a remote server.
+L'utilisation de `:` dans l'URL Apprise vous permet de modifier et d'ajouter des champs au formulaire publie en amont vers un serveur distant.
 
 ```bash
-# Add to the payload delivered to the remote server as if it was part
-# the prepared message Apprise would have otherwise put together
+# Ajouter a la charge utile envoyee au serveur distant comme si cela
+# faisait partie du message qu'Apprise aurait autrement prepare
 #
-# Assuming our {hostname} is localhost
-# Assuming we want to include "sound=oceanwave" as part of the existing payload:
+# Supposons que notre {hostname} soit localhost
+# Supposons que nous voulions inclure "sound=oceanwave" dans la charge utile existante :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?:sound=oceanwave"
 ```
 
-The above would POST the following form fields:
+L'exemple ci-dessus effectuerait un POST avec les champs de formulaire suivants :
 
 ```text
 version=1.0
@@ -125,32 +125,32 @@ type=info
 sound=oceanwave
 ```
 
-You can also remove built-in fields by setting their value to empty:
+Vous pouvez aussi supprimer les champs integres en definissant leur valeur comme vide :
 
 ```bash
-# Remove version and type from the payload:
-# Assuming our {hostname} is localhost
+# Supprimer version et type de la charge utile :
+# Supposons que notre {hostname} soit localhost
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?:version&:type"
 ```
 
-The above would POST:
+L'exemple ci-dessus publierait :
 
 ```text
 title=Test Message Title
 message=Test Message Body
 ```
 
-Finally, you can remap a built-in field to a different key name:
+Enfin, vous pouvez remapper un champ integre vers un nom de cle different :
 
 ```bash
-# Remap the "message" field to "body":
-# Assuming our {hostname} is localhost
+# Remapper le champ "message" vers "body" :
+# Supposons que notre {hostname} soit localhost
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost/?:message=body"
 ```
 
-The above would POST:
+L'exemple ci-dessus publierait :
 
 ```text
 version=1.0
@@ -161,72 +161,72 @@ type=info
 
 ### Manipulation des en-tetes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees vers leur serveur. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost:8080/path/?+X-Token=abcdefg"
 
-# Multiple headers just require more entries defined:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost:8080/path/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-### GET Parameter Manipulation
+### Manipulation des Parametres GET
 
-Some users may require GET parameters to be part of their POST. Any parameters you pass onto the Apprise command line are interpreted by Apprise itself as options/actions you wish to perform (such as changing `method=update`, or `cto=3`). To have Apprise ignore what was specified and past the content `as-is` upstream, you just need to prefix your entries with a minus (`-`) symbol.
+Certains utilisateurs peuvent avoir besoin que des parametres GET fassent partie de leur POST. Tous les parametres que vous passez a la ligne de commande Apprise sont interpretes par Apprise lui-meme comme des options ou actions a executer, comme `method=update` ou `cto=3`. Pour qu'Apprise ignore ce qui a ete precise et transmette le contenu tel quel en amont, il suffit de prefixer vos entrees avec un symbole moins, `-`.
 
 ```bash
-# The below for example would post to http://localhost:8000?token=abcdefg
+# L'exemple ci-dessous publierait vers http://localhost:8000?token=abcdefg
 #
-# The `-` symbol will get stripped off when the upstream post takes place
-# Apprise knows not to do anything with the argument at all and pass it along as is.
+# Le symbole `-` sera retire lors de l'envoi en amont
+# Apprise sait qu'il ne doit pas traiter cet argument et qu'il doit le transmettre tel quel.
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "form://localhost:8080/?-token=abcdefg"
 
-# If you want to pass more then one element, just chain them:
-# The below would send a a POST to:
+# Si vous voulez transmettre plus d'un element, il suffit de les enchainer :
+# L'exemple ci-dessous enverrait un POST vers :
 #  https://example.ca/my/path?key1=value1&key2=value2
 #
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "forms://example.ca/my/path?-key1=value1&-key2=value2"
 ```
 
-### Attach-As Over-Ride Options
+### Options de Surcharge `attach-as`
 
-This section expands further on the `?attach-as=` override option.
+Cette section detaille davantage l'option de surcharge `?attach-as=`.
 
-Simply add this to the URL: such as:
+Ajoutez-la simplement a l'URL, par exemple :
 
 ```bash
-# apply the override of `file{:02d}` to be `document`
+# appliquer la surcharge de `file{:02d}` vers `document`
 bin/apprise -vvvv 'forms://webhook.site/<webhook>?attach-as=document' \
    --attach test/var/apprise-test.png -b test
 ```
 
-In order to support other variations, you can do :
+Pour prendre en charge d'autres variantes, vous pouvez faire :
 
 ```bash
-# Set the file array object in the request as `{:02d}meta`
+# Definir l'objet tableau de fichiers dans la requete comme `{:02d}meta`
 bin/apprise -vvvv 'forms://webhook.site/<webhook>?attach-as=*meta' \
    --attach test/var/apprise-test.png -b test
 
-# Set the file array object in the request as `meta{:02d}`
+# Definir l'objet tableau de fichiers dans la requete comme `meta{:02d}`
 bin/apprise -vvvv 'forms://webhook.site/<webhook>?attach-as=meta*' \
    --attach test/var/apprise-test.png -b test
 
-# Set the file array object in the request as `meta{:02d}file`
+# Definir l'objet tableau de fichiers dans la requete comme `meta{:02d}file`
 bin/apprise -vvvv 'forms://webhook.site/<webhook>?attach-as=meta*file' \
    --attach test/var/apprise-test.png -b test
 ```

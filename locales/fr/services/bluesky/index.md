@@ -1,6 +1,6 @@
 ---
 title: "Notifications Bluesky"
-description: "Envoyer Bluesky notifications."
+description: "Envoyer des notifications Bluesky."
 sidebar:
   label: "Bluesky"
 
@@ -22,10 +22,10 @@ limits:
 
 ## Configuration du compte
 
-1. Create a BlueSky account
-1. Access Settings -> Privacy and Security
-1. Generate an App Password
-1. Assemble your Apprise URL like:
+1. Creez un compte Bluesky.
+1. Ouvrez `Settings -> Privacy and Security`.
+1. Generez un `App Password`.
+1. Assemblez ensuite votre URL Apprise, par exemple :
    - bluesky://handle@you-token-here
 
 ## Syntaxe
@@ -34,17 +34,17 @@ La syntaxe valide est la suivante :
 
 - `bluesky://user@app_pw`
 - `bluesky://user.host@app_pw`
-  - This is only required if the `host` is not `bsky.social`
+  - Cela n'est necessaire que si le `host` n'est pas `bsky.social`
 
 ## Exemples
 
-Envoyer une public message:
+Envoyer un message public :
 
 ```bash
-# Assuming our {Handle} is @John
-# Assuming our {AppID} is abcd-1234-efghi-6789
+# Supposons que notre {Handle} soit @John
+# Supposons que notre {AppID} soit abcd-1234-efghi-6789
 
-# our user is @testaccount
+# notre utilisateur est @testaccount
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "bluesky://John@abcd-1234-efghi-6789"
 

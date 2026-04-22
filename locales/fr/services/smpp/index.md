@@ -1,6 +1,6 @@
 ---
 title: "Notifications Short Message Peer-to-Peer (SMPP)"
-description: "Envoyer SMS notifications through an SMPP server."
+description: "Envoyer des notifications SMS via un serveur SMPP."
 sidebar:
   label: "Short Message Peer-to-Peer (SMPP)"
 
@@ -23,21 +23,21 @@ sample_urls:
 
 ## Configuration du compte
 
-SMPP (Short Message Peer-to-Peer) is a telecom protocol used to submit SMS messages to an SMSC.
-Apprise integrates with SMPP using the `smpplib` Python library.
+SMPP (Short Message Peer-to-Peer) est un protocole telecom utilise pour transmettre des SMS a un SMSC.
+Apprise s'integre a SMPP via la bibliotheque Python `smpplib`.
 
 ```bash
 pip install smpplib
 ```
 
-To use this service you will need:
+Pour utiliser ce service, vous aurez besoin de :
 
-1. The SMPP server hostname (or IP) and port.
-2. A valid SMPP username and password (sometimes called _system_id_ and _password_).
-3. A sender address, usually your E.164 phone number (the **From** phone number).
-4. One or more recipient phone numbers (targets).
+1. du nom d'hote, ou de l'adresse IP, et du port du serveur SMPP ;
+2. d'un nom d'utilisateur et d'un mot de passe SMPP valides, parfois appeles _system_id_ et _password_ ;
+3. d'une adresse expediteur, en general votre numero de telephone au format E.164, c'est-a-dire le numero **From** ;
+4. d'un ou plusieurs numeros de telephone destinataires.
 
-If you do not control an SMPP server yourself, your SMS provider can usually supply these details.
+Si vous n'administrez pas vous-meme un serveur SMPP, votre fournisseur SMS pourra generalement vous fournir ces informations.
 
 ---
 
@@ -48,22 +48,22 @@ La syntaxe valide est la suivante :
 - `smpp://{user}:{password}@{host}/{from_phone}/{targets}`
 - `smpp://{user}:{password}@{host}:{port}/{from_phone}/{targets}`
 
-Secure variants:
+Variantes securisees :
 
 - `smpps://{user}:{password}@{host}/{from_phone}/{targets}`
 - `smpps://{user}:{password}@{host}:{port}/{from_phone}/{targets}`
 
-Where `{targets}` is one or more phone numbers separated by `/`:
+Ou `{targets}` represente un ou plusieurs numeros de telephone separes par `/` :
 
 - `.../{to_phone}`
 - `.../{to_phone1}/{to_phone2}/{to_phoneN}`
 
-### Query string aliases
+### Alias de Chaine de Requete
 
-For configuration files and environments where paths are inconvenient, you may also specify:
+Pour les fichiers de configuration et les environnements ou les chemins sont peu pratiques, vous pouvez aussi utiliser :
 
-- `from=` as an alias for the sender phone number
-- `to=` as a comma-separated list of target phone numbers
+- `from=` comme alias du numero expediteur
+- `to=` comme liste separee par des virgules des numeros destinataires
 
 Exemple :
 
@@ -71,53 +71,53 @@ Exemple :
 
 ---
 
-## Important Remarques
+## Remarques Importantes
 
-- **Titles are not used** for SMS messages. If you pass a title, Apprise will merge it into the body where applicable.
-- Phone numbers should be in **E.164** format where possible (for example `+15551234567`).
-- `smpp://` is considered _insecure_ transport. Prefer `smpps://` when your provider supports it.
+- **Les titres ne sont pas utilises** pour les SMS. Si vous en fournissez un, Apprise l'integrera au corps du message lorsque c'est possible.
+- Les numeros de telephone devraient, si possible, etre fournis au format **E.164** par exemple `+15551234567`.
+- `smpp://` est considere comme un transport _non securise_. Preferez `smpps://` lorsque votre fournisseur le prend en charge.
 
 ---
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                   |
-| ------------ | -------- | --------------------------------------------------------------------------------------------- |
-| `user`       | Yes      | SMPP username (system_id).                                                                    |
-| `password`   | Yes      | SMPP password.                                                                                |
-| `host`       | Yes      | SMPP server hostname.                                                                         |
-| `port`       | No       | SMPP port. Default is **2775** for `smpp://` and **3550** for `smpps://` (unless overridden). |
-| `from_phone` | Yes      | Sender phone number (E.164 recommended).                                                      |
-| `targets`    | Yes      | One or more destination phone numbers.                                                        |
-| `from`       | No       | Query-string alias for `from_phone`.                                                          |
-| `to`         | No       | Query-string alias for additional targets as a comma-separated list.                          |
+| Variable     | Obligatoire | Description                                                                                              |
+| ------------ | ----------- | -------------------------------------------------------------------------------------------------------- |
+| `user`       | Oui         | Nom d'utilisateur SMPP (`system_id`).                                                                    |
+| `password`   | Oui         | Mot de passe SMPP.                                                                                       |
+| `host`       | Oui         | Nom d'hote du serveur SMPP.                                                                              |
+| `port`       | Non         | Port SMPP. La valeur par defaut est **2775** pour `smpp://` et **3550** pour `smpps://`, sauf surcharge. |
+| `from_phone` | Oui         | Numero de telephone expediteur, idealement au format E.164.                                              |
+| `targets`    | Oui         | Un ou plusieurs numeros de telephone destinataires.                                                      |
+| `from`       | Non         | Alias en chaine de requete pour `from_phone`.                                                            |
+| `to`         | Non         | Alias en chaine de requete pour fournir des destinataires supplementaires separes par des virgules.      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer an SMS to a single recipient:
+Envoyer un SMS a un destinataire unique :
 
 ```bash
 apprise -vv -b "Test message" \
   smpp://user:password@smpp.example.ca/+15551234567/+15557654321
 ```
 
-Envoyer to multiple recipients:
+Envoyer a plusieurs destinataires :
 
 ```bash
 apprise -vv -b "Maintenance window starts at 22:00" \
   smpp://user:password@smpp.example.ca/+15551234567/+15557654321/+15559876543
 ```
 
-Use `smpps://` (secure) on a custom port:
+Utiliser `smpps://` en mode securise sur un port personnalise :
 
 ```bash
 apprise -vv -b "Secure SMPP test" \
   smpps://user:password@smpp.example.ca:3550/+15551234567/+15557654321
 ```
 
-Use query parameters (handy for YAML and environment variables):
+Utiliser des parametres de requete, pratique dans YAML et les variables d'environnement :
 
 ```bash
 apprise -vv -b "Query string example" \

@@ -1,6 +1,6 @@
 ---
 title: "Notifications WhatsApp"
-description: "Envoyer WhatsApp notifications."
+description: "Envoyer des notifications WhatsApp."
 sidebar:
   label: "WhatsApp"
 
@@ -21,28 +21,28 @@ limits:
 
 ## Configuration du compte
 
-To send WhatsApp messages via Apprise, you must first configure your Meta WhatsApp Cloud API account. Follow these steps:
+Pour envoyer des messages WhatsApp via Apprise, vous devez d'abord configurer votre compte Meta WhatsApp Cloud API. Suivez les etapes suivantes :
 
-1. **Create a Meta Developer Account**  
-   Go to [Meta for Developers](https://developers.facebook.com/) and log in or create an account.
-1. **Create a WhatsApp App**  
-   From the Meta Developer Dashboard, create a new App and add **WhatsApp** as a product.
-1. **Generate a Permanent Access Token**
-   - Navigate to your app's **WhatsApp > API Setup** section.
-   - Select or create a **System User**, then assign a role and generate a **permanent access token** with `whatsapp_business_messaging` permissions.
-   - This token is used in the Apprise `token` field.
-1. **Locate Your `From Phone Number ID`**  
-   This is not your actual phone number. It’s a numeric ID assigned by Meta to the sender number.  
-   You can find it in your WhatsApp App > **API Setup** section under **Phone Numbers**.
-1. **Register Your Recipient Number(s)**
-   - During sandbox testing, you must verify any phone number you wish to message through Meta’s interface.
-   - For production, your business must be verified and have the appropriate messaging tier.
-1. **(Optional) Create and Approve Message Templates**
-   - Navigate to **WhatsApp > Message Templates**.
-   - Create a template (e.g., `hello_world`) and await approval.
-   - Templates allow structured messaging with variables (e.g., `{{1}}`, `{{2}}`) and can be used with Apprise's `template:` prefix. This is explained further below.
+1. **Creer un compte Meta Developer**  
+   Rendez-vous sur [Meta for Developers](https://developers.facebook.com/) puis connectez-vous ou creez un compte.
+1. **Creer une application WhatsApp**  
+   Depuis le tableau de bord Meta Developer, creez une nouvelle application et ajoutez **WhatsApp** comme produit.
+1. **Generer un jeton d'acces permanent**
+   - Ouvrez la section **WhatsApp > API Setup** de votre application.
+   - Selectionnez ou creez un **System User**, attribuez-lui un role puis generez un **permanent access token** avec les permissions `whatsapp_business_messaging`.
+   - Ce jeton sera utilise dans le champ Apprise `token`.
+1. **Recuperer votre `From Phone Number ID`**  
+   Il ne s'agit pas de votre vrai numero de telephone, mais d'un identifiant numerique attribue par Meta au numero expediteur.  
+   Vous le trouverez dans votre application WhatsApp > **API Setup**, section **Phone Numbers**.
+1. **Enregistrer les numeros destinataires**
+   - Pendant les tests en sandbox, vous devez verifier chaque numero que vous souhaitez contacter via l'interface Meta.
+   - En production, votre entreprise devra etre verifiee et disposer du niveau de messagerie approprie.
+1. **Facultatif : creer et faire approuver des modeles de message**
+   - Ouvrez **WhatsApp > Message Templates**.
+   - Creez un modele, par exemple `hello_world`, puis attendez son approbation.
+   - Les modeles permettent une messagerie structuree avec des variables comme `{{1}}`, `{{2}}`, et peuvent etre utilises via le prefixe Apprise `template:`. Cela est explique plus bas.
 
-Once everything is in place, you're ready to send WhatsApp messages through Apprise.
+Une fois tout cela en place, vous etes pret a envoyer des messages WhatsApp avec Apprise.
 
 ## Syntaxe
 
@@ -51,59 +51,59 @@ La syntaxe valide est la suivante :
 - `whatsapp://{token}@{from_phone_id}/{targets}`
 - `whatsapp://{template}:{token}@{from_phone_id}/{targets}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                |
-| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token    | Yes      | This is the **Access Token** associated with your Meta WhatsApp App                                                                                                                                        |
-| from     | Yes      | This is the **From Phone ID** associated with your Meta WhatsApp App; this isn't to be confused with your actual phone number. The ID is a separate assignment (about 14 digits long)                      |
-| targets  | Yes      | The target individuals on WhatsApp you wish to notify                                                                                                                                                      |
-| template | No       | You can optionally specify a `template_name` here (such as `hello_world` which is the default one created once you set yourself up your Meta App). This causes Apprise to pull from your template defined. |
-| lang     | No       | If you've defined a template to reference, you can optionally over-ride the default language of `en_US` to reference a different version of the template specified.                                        |
+| Variable | Obligatoire | Description                                                                                                                                                                                                |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui         | **Jeton d'acces** associe a votre application Meta WhatsApp.                                                                                                                                               |
+| from     | Oui         | **From Phone ID** associe a votre application Meta WhatsApp ; il ne faut pas le confondre avec votre vrai numero de telephone. Il s'agit d'un identifiant distinct, d'environ 14 chiffres.                 |
+| targets  | Oui         | Destinataires WhatsApp que vous souhaitez notifier.                                                                                                                                                        |
+| template | Non         | Vous pouvez facultativement specifier ici un `template_name`, comme `hello_world`, le modele par defaut cree lors de la configuration de votre application Meta. Apprise utilisera alors le modele defini. |
+| lang     | Non         | Si vous utilisez un modele, vous pouvez facultativement surcharger la langue par defaut, `en_US`, afin de pointer vers une autre version du modele specifie.                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Template Variables
+## Variables de Modele
 
-The templates you generate allow you to specify `{{1}}` and `{{2}}`, etc which are substituted during the Apprise runtime. To pre-set these values, simply leverage the `:` (colon) prefix in front of the index you wish to define.
+Les modeles que vous creez permettent de definir `{{1}}`, `{{2}}`, etc., qui seront remplaces lors de l'execution d'Apprise. Pour predefinir ces valeurs, il suffit d'utiliser le prefixe `:`, deux-points, devant l'index a renseigner.
 
-`?:3=My Value` for example would assign `My Value` to `{{3}}` during the runtime. You must identify all indexes defined or you will get an error from the upstream server.
+Par exemple, `?:3=My Value` affectera `My Value` a `{{3}}` a l'execution. Vous devez fournir tous les index attendus, sinon le serveur distant renverra une erreur.
 
-If you wish to assign the `body` or `type` from Apprise, these special keywords are specified instead with the `:` (colon) prefix providing the mapping/over-ride. For example: `?:body=1` would be accepted and would assign `{{1}}` the contents of the `body` passed into Apprise.
+Si vous souhaitez associer le `body` ou le `type` d'Apprise a un index, utilisez ces mots-cles speciaux avec le prefixe `:` pour definir la correspondance. Par exemple, `?:body=1` est accepte et placera le contenu du `body` d'Apprise dans `{{1}}`.
 
 :::note
 
-1. The template header must be set to either '' (empty) or assigned content.
-1. Variables in the message body, if any, must use the number format, e.g. `{{1}}`, as opposed to the named variables format, e.g. `{{order_id}}`
+1. L'en-tete du modele doit etre vide, `''`, ou contenir du contenu explicite.
+1. Les variables du corps du message, s'il y en a, doivent utiliser le format numerique, par exemple `{{1}}`, et non le format a nommage libre, par exemple `{{order_id}}`.
 
    :::
 
 ## Exemples
 
-Envoyer une WhatsApp Notification:
+Envoyer une notification WhatsApp :
 
 ```bash
-# Test out the changes with the following command:
+# Testez avec la commande suivante :
 apprise -b "Test Message" \
   "whatsapp://token@from_phone_id/to_phone_no/"
 
-# Templates can be handled like so:
+# Les modeles peuvent etre utilises ainsi :
 apprise -b "Test Message" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/"
 
-# If you have defined {{1}} and {{2}} tokens, you can assign them values like so:
+# Si vous avez defini les tokens {{1}} et {{2}}, vous pouvez leur attribuer des valeurs ainsi :
 apprise -b "Test Message" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:1=the data i want put here&:2=more data here"
 
-# The :<id> is how you map {{<id>}}elements. If you want to associated the body or
-# message type with an id, then there are 2 reserved keywords that you can use for this:
-# The below would make sure the Apprise Body value would be placed in the {{1}} element:
+# La forme :<id> permet d'associer les elements {{<id>}}. Si vous souhaitez mapper le body
+# ou le type du message a un index, 2 mots-cles reserves sont disponibles pour cela :
+# L'exemple ci-dessous place la valeur du body Apprise dans l'element {{1}} :
 apprise -b "Test Message" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:body=1"
 
-# You can mix and match the keywords and types:
+# Vous pouvez melanger mots-cles et index :
 apprise -b "Test Message" \
   "whatsapp://template_name:token@from_phone_id/to_phone_no/?:body=2&:type=3&1:MyID1Value"
 
-# It's up to the developer to make sure that all of the {{1}}, {{2}}, etc are assigned correctly
+# Il revient au developpeur de s'assurer que tous les {{1}}, {{2}}, etc. sont correctement renseignes
 ```

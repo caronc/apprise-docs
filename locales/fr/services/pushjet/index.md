@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushjet"
-description: "Envoyer Pushjet notifications."
+description: "Envoyer des notifications Pushjet."
 sidebar:
   label: "Pushjet"
 
@@ -21,7 +21,7 @@ sample_urls:
 <!-- SERVICE:DETAILS -->
 
 :::note
-The Pushjet online service appears to have gone dead. They did however leave behind all of our source code as open source [here on github](https://github.com/Pushjet). Thus the _apprise_ plugin _pjet://_ still works for the local hosting of a Pushjet server.
+Le service en ligne Pushjet semble avoir disparu. En revanche, l'ensemble du code source est toujours disponible en open source [sur GitHub](https://github.com/Pushjet). Le plugin _apprise_ `pjet://` reste donc utilisable pour un hebergement local d'un serveur Pushjet.
 :::
 
 ## Syntaxe
@@ -37,25 +37,25 @@ La syntaxe valide est la suivante :
 - `pjets://{user}:{password}@{host}/{secret_key}`
 - `pjets://{user}:{password}@{host}:{port}/{secret_key}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                       |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| secret_key | Yes      | The Secret Key associated with your Pushjet account.                                                                                                                                                                              |
-| host       | Yes      | The Pushjet server you're hosting                                                                                                                                                                                                 |
-| user       | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                                                 |
-| password   | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                                                 |
-| port       | No       | The Pushjet port optional and only required if you're hosting your own notification server on a different port then the standard ones. By default the port is **80** for **pjet://** and **443** for all **pjets://** references. |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                       |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| secret_key | Oui         | Secret Key associee a votre compte Pushjet.                                                                                                                                                                                                       |
+| host       | Oui         | Serveur Pushjet que vous hebergez.                                                                                                                                                                                                                |
+| user       | Non         | Si votre systeme utilise HTTP-AUTH, vous pouvez fournir le _username_ a utiliser pour l'authentification.                                                                                                                                         |
+| password   | Non         | Si votre systeme utilise HTTP-AUTH, vous pouvez fournir le _password_ a utiliser pour l'authentification.                                                                                                                                         |
+| port       | Non         | Port Pushjet facultatif, necessaire uniquement si votre serveur de notification autoheberge ecoute sur un port different des ports standards. Par defaut, **80** est utilise pour **pjet://** et **443** pour toutes les references **pjets://**. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Pushjet notification:
+Envoyer une notification Pushjet :
 
 ```bash
-# Assuming our {secret_key} is abcdefghijklmnopqrstuvwxyzabc
-# Assuming our {hostname} is localhost
+# Supposons que notre {secret_key} soit abcdefghijklmnopqrstuvwxyzabc
+# Supposons que notre {hostname} soit localhost
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pjet://abcdefghijklmnopqrstuvwxyzabc@localhost
 ```

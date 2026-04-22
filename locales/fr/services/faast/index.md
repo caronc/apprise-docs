@@ -1,6 +1,6 @@
 ---
 title: "Notifications Faast"
-description: "Envoyer Faast notifications."
+description: "Envoyer des notifications Faast."
 sidebar:
   label: "Faast"
 
@@ -17,18 +17,18 @@ ended: 2022
 
 :::note
 
-## Service End Reason
+## Raison de Fin du Service
 
-Unknown
+Inconnue
 
-💡The Service was removed from Apprise in [apprise/1022](https://github.com/caronc/apprise/issues/1222)
+💡 Ce service a ete retire d'Apprise dans [apprise/1022](https://github.com/caronc/apprise/issues/1222)
 :::
 
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
-There isn't too much configuration for Faast notifications. The message is basically just passed to your online Faast account and then gets relayed to your device(s) you've setup from there.
+La configuration des notifications Faast est tres simple. Le message est essentiellement transmis a votre compte Faast en ligne, puis relaye vers les appareils que vous y avez configures.
 
 ## Syntaxe
 
@@ -36,21 +36,21 @@ La syntaxe valide est la suivante :
 
 - `faast://{authorizationtoken}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable           | Required | Description                                                      |
-| ------------------ | -------- | ---------------------------------------------------------------- |
-| authorizationtoken | Yes      | The authorization token associated with your Faast account.      |
-| image              | No       | Associate an image with the message. By default this is enabled. |
+| Variable           | Obligatoire | Description                                                        |
+| ------------------ | ----------- | ------------------------------------------------------------------ |
+| authorizationtoken | Oui         | Jeton d'autorisation associe a votre compte Faast.                 |
+| image              | Non         | Associe une image au message. Cette option est activee par defaut. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Faast notification
+Envoyer une notification Faast :
 
 ```bash
-# Assuming our {authorizationtoken} is abcdefghijklmnop-abcdefg
+# Supposons que notre {authorizationtoken} soit abcdefghijklmnop-abcdefg
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    faast://abcdefghijklmnop-abcdefg
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Home Assistant"
-description: "Envoyer Home Assistant persistent or service notifications."
+description: "Envoyer des notifications persistantes ou de service à Home Assistant."
 sidebar:
   label: "Home Assistant"
 
@@ -23,31 +23,31 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-:::tip[Using Apprise from within Home Assistant?]
-This page covers sending notifications **to** Home Assistant from Apprise.
-If you want to use Apprise **from within** Home Assistant to fan out to
-other services (email, Telegram, etc.), see the
-[Home Assistant Integration Guide](../../guides/hassio/).
+:::tip[Utiliser Apprise depuis Home Assistant ?]
+Cette page couvre l'envoi de notifications **vers** Home Assistant depuis Apprise.
+Si vous souhaitez utiliser Apprise **à l'intérieur** de Home Assistant pour
+redistribuer vers d'autres services (email, Telegram, etc.), consultez le
+[guide d'intégration Home Assistant](../../guides/hassio/).
 :::
 
-## Configuration du compte
+## Configuration du Compte
 
-1. Log into your Home Assistant instance and navigate to your **Profile** page.
-2. Scroll to the very bottom and click **Create Token** under
+1. Connectez-vous à votre instance Home Assistant et ouvrez votre page **Profil**.
+2. Faites défiler tout en bas et cliquez sur **Create Token** sous
    **Long-Lived Access Tokens**.
-3. Give it a name (e.g. _Apprise_) and copy the generated token — you
-   will not be able to view it again.
+3. Donnez-lui un nom (par exemple _Apprise_) et copiez le jeton généré :
+   vous ne pourrez plus l'afficher ensuite.
 
 ## Syntaxe
 
-There are two operating modes depending on whether you include a
-service target in the URL.
+Deux modes de fonctionnement existent selon que vous incluez ou non une
+cible de service dans l'URL.
 
-### Persistent Notification Mode (default)
+### Mode Notification Persistante (par Défaut)
 
-When no service target is provided, Apprise posts a
-[persistent notification](https://www.home-assistant.io/integrations/persistent_notification/)
-to the Home Assistant dashboard.
+Lorsqu'aucune cible de service n'est fournie, Apprise publie une
+[notification persistante](https://www.home-assistant.io/integrations/persistent_notification/)
+sur le tableau de bord Home Assistant.
 
 ```text
 hassio://{host}/{access_token}
@@ -55,31 +55,32 @@ hassios://{host}/{access_token}
 hassio://{host}:{port}/{access_token}
 ```
 
-By default a new unique notification is created on every send. To
-instead **replace** the previous notification (useful for status
-updates), pin a fixed notification ID with `?nid=`:
+Par défaut, une nouvelle notification unique est créée à chaque envoi.
+Pour **remplacer** la notification précédente à la place (utile pour
+des mises à jour d'état), fixez un identifiant via `?nid=` :
 
 ```text
 hassio://{host}/{access_token}?nid=myid
 ```
 
-### Service Notification Mode
+### Mode Notification de Service
 
-Append one or more service targets after the access token to call any
-Home Assistant service directly. This supports mobile app push
-notifications, TTS, media players, and any other HA service domain.
+Ajoutez une ou plusieurs cibles de service après le jeton d'accès pour
+appeler directement n'importe quel service Home Assistant. Cela prend en
+charge les notifications push de l'application mobile, le TTS, les lecteurs
+média et tout autre domaine de service HA.
 
-Each target segment follows this grammar:
+Chaque segment cible suit cette grammaire :
 
-| Form                   | Example                    | Remarques                              |
-| ---------------------- | -------------------------- | -------------------------------------- |
-| `service`              | `mobile_app_phone`         | Domain defaults to `notify`            |
-| `domain.service`       | `media_player.living_room` | Explicit domain                        |
-| `service:target`       | `mobile_app_phone:user1`   | Single sub-target                      |
-| `service:t1,t2,t3`     | `notify_group:alice,bob`   | Comma (or space) separated sub-targets |
-| `domain.service:t1,t2` | `tts.google_say:en-US`     | Domain + sub-targets                   |
+| Forme                  | Exemple                    | Remarques                                  |
+| ---------------------- | -------------------------- | ------------------------------------------ |
+| `service`              | `mobile_app_phone`         | Domaine par défaut : `notify`              |
+| `domain.service`       | `media_player.living_room` | Domaine explicite                          |
+| `service:target`       | `mobile_app_phone:user1`   | Sous-cible unique                          |
+| `service:t1,t2,t3`     | `notify_group:alice,bob`   | Sous-cibles séparées par virgule ou espace |
+| `domain.service:t1,t2` | `tts.google_say:en-US`     | Domaine + sous-cibles                      |
 
-Multiple top-level targets are separated by `/` in the URL:
+Plusieurs cibles de premier niveau sont séparées par `/` dans l'URL :
 
 ```text
 hassio://{host}/{access_token}/{service}
@@ -89,95 +90,93 @@ hassio://{host}/{access_token}/{domain}.{service}:{t1},{t2}
 hassio://{host}/{access_token}/{service1}/{domain}.{service2}:{target}
 ```
 
-The **default domain** is `notify` when none is specified, so
-`hassio://host/token/mobile_app_phone` is equivalent to
+Le **domaine par défaut** est `notify` lorsqu'aucun domaine n'est précisé ;
+ainsi, `hassio://host/token/mobile_app_phone` est équivalent à
 `hassio://host/token/notify.mobile_app_phone`.
 
-:::tip[Finding your service name]
-In Home Assistant, go to **Developer Tools → Services**. The service
-names listed there map directly to `{domain}.{service}` in the Apprise
-URL. For mobile app push notifications the service is usually named
-`notify.mobile_app_{device_name}` where `{device_name}` matches what
-appears in the HA companion app settings.
+:::tip[Trouver le nom de votre service]
+Dans Home Assistant, ouvrez **Developer Tools → Services**. Les noms de
+service listés ici correspondent directement à `{domain}.{service}` dans
+l'URL Apprise. Pour les notifications push de l'application mobile, le service
+porte généralement le nom `notify.mobile_app_{device_name}`, où `{device_name}`
+correspond à ce qui apparaît dans les réglages de l'application compagnon HA.
 :::
 
-#### Reverse-Proxy Path Prefix
+#### Préfixe de Chemin pour Proxy Inverse
 
-If your Home Assistant instance is served under a sub-path (e.g.
-behind a reverse proxy at `/ha`), supply it with `?prefix=`:
+Si votre instance Home Assistant est servie sous un sous-chemin
+(par exemple derrière un reverse proxy sur `/ha`), fournissez-le avec `?prefix=` :
 
 ```text
 hassio://{host}/{access_token}/{service}?prefix=/ha
 ```
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                                                                          |
-| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| host         | Yes      | The hostname or IP address of your Home Assistant instance.                                                                                          |
-| access_token | Yes      | The **Long-Lived Access Token** generated from your profile page.                                                                                    |
-| port         | No       | Port to connect on. Defaults to **8123** for `hassio://` and **443** for `hassios://`.                                                               |
-| service      | No       | One or more `[domain.]service[:target]` entries. Omit entirely to use **Persistent Notification** mode.                                              |
-| nid          | No       | A fixed **Notification ID** for persistent notifications only. When set, each new message replaces the previous one instead of creating a new entry. |
-| prefix       | No       | A URL path prefix prepended to every API call. Required when Home Assistant is served under a sub-path (e.g. `?prefix=/ha`).                         |
-| batch        | No       | Set to `yes` to group up to 10 service targets into a single API call. Defaults to `no`.                                                             |
-| to           | No       | Alias for service targets. Equivalent to adding targets in the URL path.                                                                             |
+| Variable     | Requis | Description                                                                                                                                      |
+| ------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| host         | Oui    | Le nom d'hôte ou l'adresse IP de votre instance Home Assistant.                                                                                  |
+| access_token | Oui    | Le **Long-Lived Access Token** généré depuis votre page de profil.                                                                               |
+| port         | Non    | Port de connexion. Par défaut : **8123** pour `hassio://` et **443** pour `hassios://`.                                                          |
+| service      | Non    | Une ou plusieurs entrées `[domain.]service[:target]`. Omettez entièrement ce champ pour utiliser le mode **Notification Persistante**.           |
+| nid          | Non    | Un **Notification ID** fixe, uniquement pour les notifications persistantes. Lorsqu'il est défini, chaque nouveau message remplace le précédent. |
+| prefix       | Non    | Un préfixe de chemin URL ajouté à tous les appels API. Requis lorsque Home Assistant est servi sous un sous-chemin (par exemple `?prefix=/ha`).  |
+| batch        | Non    | Définissez `yes` pour regrouper jusqu'à 10 cibles de service dans un seul appel API. La valeur par défaut est `no`.                              |
+| to           | Non    | Alias pour les cibles de service. Équivalent à l'ajout de cibles dans le chemin URL.                                                             |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une persistent notification (creates a new entry in the HA
-dashboard on every call):
+Envoyer une notification persistante (crée une nouvelle entrée dans le tableau de bord HA à chaque appel) :
 
 ```bash
 apprise -vv -t "Alert" -b "Motion detected" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f'
 ```
 
-Envoyer une persistent notification that always **replaces** the last
-(useful for recurring status updates):
+Envoyer une notification persistante qui **remplace** toujours la précédente
+(utile pour des mises à jour d'état récurrentes) :
 
 ```bash
 apprise -vv -t "Status" -b "All systems nominal" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f?nid=apprise'
 ```
 
-Push to a mobile app notification service:
+Envoyer vers un service de notification de l'application mobile :
 
 ```bash
 apprise -vv -t "Alert" -b "Someone rang the doorbell" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_myphone'
 ```
 
-Push to multiple services in one URL:
+Envoyer vers plusieurs services dans une seule URL :
 
 ```bash
 apprise -vv -t "Alert" -b "Garage door left open" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_phone1/notify.mobile_app_phone2'
 ```
 
-Envoyer via a secure connection (`hassios://` → HTTPS on port 443):
+Envoyer via une connexion sécurisée (`hassios://` → HTTPS sur le port 443) :
 
 ```bash
 apprise -vv -t "Test" -b "Secure message" \
     'hassios://my.secure.server/4b4f2918fd-dk5f-8f91f/notify.mobile_app_myphone'
 ```
 
-Use `?to=` when constructing URLs programmatically:
+Utiliser `?to=` lors de la construction programmatique des URL :
 
 ```bash
 apprise -vv -t "Test" -b "Hello" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f?to=notify.mobile_app_myphone'
 ```
 
-## Depannage
+## Dépannage
 
-- **401 Unauthorized** — Your token is invalid or has expired. Generate
-  a new one from the Home Assistant profile page.
-- **400 Bad Request** — A service target was specified that does not
-  exist, or the payload contained unsupported parameters for that
-  service domain. Verify the domain and service name against your HA
-  instance.
-- **Self-signed certificate** — Add `?verify=no` to skip SSL
-  verification: `hassios://myserver/{token}?verify=no`
+- **401 Unauthorized** — Votre jeton est invalide ou a expiré. Générez-en
+  un nouveau depuis la page de profil Home Assistant.
+- **400 Bad Request** — Une cible de service inexistante a été fournie, ou
+  la charge utile contenait des paramètres non pris en charge pour ce domaine
+  de service. Vérifiez le domaine et le nom du service dans votre instance HA.
+- **Certificat auto-signé** — Ajoutez `?verify=no` pour ignorer la
+  vérification SSL : `hassios://myserver/{token}?verify=no`

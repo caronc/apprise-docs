@@ -1,6 +1,6 @@
 ---
 title: "Notifications API Apprise"
-description: "Envoyer API Apprise notifications."
+description: "Envoyer des notifications API Apprise."
 sidebar:
   label: "API Apprise"
 
@@ -22,9 +22,9 @@ has_selfhosted: true
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Mettez en place une instance auto-hebergee de [Apprise-API](https://github.com/caronc/apprise-api) and use this service to integrate with it remotely.
+Mettez en place une instance auto-hebergee de [Apprise-API](https://github.com/caronc/apprise-api) et utilisez ce service pour vous y integrer a distance.
 
 ## Syntaxe
 
@@ -42,25 +42,25 @@ Pour une connexion securisee, utilisez plutot `apprises`.
 - `apprises://{user}@{host}:{port}/{token}`
 - `apprises://{user}:{password}@{host}:{port}/{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                               |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname                                                                                                                 |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **apprise://** and **443** for all **apprises://** references. |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                         |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                         |
-| tags     | No       | You can optional set the tags you want to supply with your call to the API Apprise server                                                 |
+| Variable | Obligatoire | Description                                                                                                                                          |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Nom d'hote du serveur web.                                                                                                                           |
+| port     | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **apprise://** et **443** pour toutes les references **apprises://**. |
+| user     | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                    |
+| password | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                    |
+| tags     | Non         | Vous pouvez facultativement definir les tags que vous souhaitez fournir lors de votre appel au serveur API Apprise.                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notification along to an API Apprise server listening on port 80:
+Envoyer une notification a un serveur API Apprise a l'ecoute sur le port 80 :
 
 ```bash
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
+# Supposons que notre {hostname} soit apprise.server.local
+# Supposons que notre {token} soit token
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token"
 ```
@@ -68,9 +68,9 @@ apprise -vv --body="Test Message" \
 Voici un autre exemple ou vous pouvez appeler votre serveur Apprise selon les tags fournis :
 
 ```bash
-# Assuming our {hostname} is apprise.server.local
-# Assuming our {token} is token
-# Assuming we want to trigger any Notification associated with the {tag} email
+# Supposons que notre {hostname} soit apprise.server.local
+# Supposons que notre {token} soit token
+# Supposons que nous voulions declencher toute notification associee au {tag} email
 apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=email"
 ```
@@ -103,39 +103,39 @@ apprise -vv --body="Test Message" \
 
 ### Manipulation des en-tetes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees vers leur serveur. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
-# Assuming our {token} is apprise
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
+# Supposons que notre {token} soit apprise
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "apprise://localhost:8080/apprise/?+X-Token=abcdefg"
 
-# Multiple headers just require more entries defined:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
-# Assuming our {token} is apprise
-# In this example we allow for a custom URL path to be defined
-# in the event we're hosting our Apprise API here instead
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
+# Supposons que notre {token} soit apprise
+# Dans cet exemple, nous permettons la definition d'un chemin URL personnalise
+# dans le cas ou notre API Apprise serait hebergee a cet endroit
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "apprise://localhost:8080/path/apprise/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-**Note:** this service is a little redundant because you can already use the CLI and point its configuration to an existing API Apprise server (using the `--config` on the CLI or `AppriseConfig()` class via its own internal API).
+**Remarque :** ce service est un peu redondant, car vous pouvez deja utiliser la CLI et pointer sa configuration vers un serveur API Apprise existant, via `--config` dans la CLI ou la classe `AppriseConfig()` via son API interne.
 
 ```bash
-# A simple example of the Apprise CLI using a Config file instead:
-# pulling down previously stored configuration
-# Assuming our {hostname} is localhost
-# Assuming our {port} is 8080
-# Assuming our {token} is apprise
+# Exemple simple de la CLI Apprise utilisant plutot un fichier de configuration :
+# recuperation d'une configuration deja stockee
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {port} soit 8080
+# Supposons que notre {token} soit apprise
 apprise --body="test message" --config=http://localhost:8080/get/apprise
 ```

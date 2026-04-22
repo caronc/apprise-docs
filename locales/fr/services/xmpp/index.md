@@ -1,6 +1,6 @@
 ---
 title: "Notifications XMPP"
-description: "Envoyer XMPP notifications."
+description: "Envoyer des notifications XMPP."
 sidebar:
   label: "XMPP"
 
@@ -24,21 +24,21 @@ sample_urls:
 
 ## Configuration du compte
 
-XMPP support requires **slixmpp version 1.10.0 or newer**:
+La prise en charge XMPP exige **slixmpp version 1.10.0 ou plus récente** :
 
 ```bash
 pip install "slixmpp>=1.10.0"
 ```
 
-From here, you will need:
+Vous aurez besoin des éléments suivants :
 
-1. An existing XMPP account username (on a self-hosted or remotely hosted XMPP server).
-1. The password associated with that account.
-1. The **JID domain** of your XMPP account (e.g. `example.com` in `user@example.com`).
-1. (Optional) A separate **server hostname** if your XMPP server is hosted at a different address than your JID domain (see [Split Domain](#split-domain--server-hostname-override) below).
-1. (Optional) The port the XMPP server listens on.
+1. Un nom d’utilisateur de compte XMPP existant, sur un serveur XMPP auto-hébergé ou distant.
+1. Le mot de passe associé à ce compte.
+1. Le **domaine JID** de votre compte XMPP, par exemple `example.com` dans `user@example.com`.
+1. Facultativement, un **nom d’hôte serveur** distinct si votre serveur XMPP est hébergé à une adresse différente du domaine JID ; voir [Domaine Scindé](#domaine-scindé--surcharge-du-nom-dhôte-serveur) plus bas.
+1. Facultativement, le port sur lequel le serveur XMPP écoute.
 
-In Apprise, the **login JID is automatically constructed as `{user}@{host}`**. You do not need to explicitly provide a full JID. Authentication credentials are supplied using `{user}:{password}@{host}`, but the resulting login identity is always normalized to `{user}@{host}`.
+Dans Apprise, le **JID de connexion est automatiquement construit sous la forme `{user}@{host}`**. Vous n’avez pas besoin de fournir explicitement un JID complet. Les identifiants d’authentification sont fournis sous la forme `{user}:{password}@{host}`, mais l’identité finale de connexion est toujours normalisée en `{user}@{host}`.
 
 ## Syntaxe
 
@@ -52,96 +52,90 @@ La syntaxe valide est la suivante :
 - `xmpps://{user}:{password}@{host}/{jid}?verify=no`
 - `xmpps://{user}:{password}@{host}/{jid}?xmpp={xmpp_server}`
 
-Secure connections should be referenced using **`xmpps://`**, whereas
-insecure connections should be referenced using **`xmpp://`**.
+Les connexions sécurisées doivent utiliser **`xmpps://`**, tandis que
+les connexions non sécurisées doivent utiliser **`xmpp://`**.
 
-If no target is specified, Apprise sends the notification to the authenticated account itself (`{user}@{host}`).
+Si aucune cible n’est précisée, Apprise envoie la notification au compte authentifié lui-même, soit `{user}@{host}`.
 
-Targets may also be supplied using the `to=` query argument (comma-separated).
+Les cibles peuvent aussi être fournies avec l’argument de requête `to=`, séparées par des virgules.
 
-### Multi-User Chat (MUC) Rooms
+### Salons Multi-User Chat (MUC)
 
-To send to an XMPP **Multi-User Chat** room ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)), prefix the room JID with `#`:
+Pour envoyer vers un salon XMPP **Multi-User Chat** ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)), préfixez le JID du salon avec `#` :
 
 - `xmpps://{user}:{password}@{host}/#room@{conference_host}`
 - `xmpps://{user}:{password}@{host}/#room1@{ch}/#room2@{ch}`
 
-You can mix room and user targets freely in the same URL:
+Vous pouvez mélanger librement des cibles de salons et d’utilisateurs dans la même URL :
 
 - `xmpps://{user}:{password}@{host}/#room@{ch}/{jid}`
 
 :::note
-When Apprise reconstructs a URL internally (e.g. for logging or storage), MUC room prefixes are stored as `#` (or url-encoded `%23`) to avoid ambiguity with regular JID identifiers. Both forms are accepted on input.
+Lorsque Apprise reconstruit une URL en interne, par exemple pour la journalisation ou le stockage, les préfixes de salons MUC sont stockés sous la forme `#` ou `%23` encodé afin d’éviter toute ambiguïté avec des identifiants JID classiques. Les deux formes sont acceptées en entrée.
 :::
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user      | **Yes**  | XMPP username (localpart), combined with `host` to form the login JID                                                                                                                                                                                                                                                                                                                                                                                                        |
-| password  | **Yes**  | Password for the XMPP account                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| host      | **Yes**  | JID domain (e.g. `example.com` for accounts of the form `user@example.com`). Also used as the connection hostname unless `xmpp=` is set.                                                                                                                                                                                                                                                                                                                                     |
-| port      | No       | Server port (defaults: 5222 for `xmpp`, 5223 for `xmpps`)                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| xmpp      | No       | Override the TCP connection hostname without changing the JID domain. Use this when your XMPP server is reachable at a different hostname than your JID domain (e.g. `xmpp=xmpp.example.com`). All JIDs are still built from `host`. See [Split Domain](#split-domain--server-hostname-override).                                                                                                                                                                            |
-| mode      | No       | Transport secure mode override; possible values are `none`, `starttls`, or `tls`                                                                                                                                                                                                                                                                                                                                                                                             |
-| roster    | No       | Retrieves roster from the server after connection; default is `no`                                                                                                                                                                                                                                                                                                                                                                                                           |
-| keepalive | No       | Enables XMPP keepalive mode to maintain a persistent connection between notifications. This is only effective when Apprise remains resident in memory (for example, in long-running applications). It has no practical effect when using the Apprise CLI or API in one-shot mode, as the instance is created, sends the notification, and is then destroyed. Even with `?keepalive=yes`, the connection closes once the Apprise instance goes out of scope. Default is `no`. |
-| subject   | No       | Messages are sent as `mtype=chat`, which do not typically use the built-in XMPP `subject=` field. Setting this to `yes` redirects any title provided into the `subject=` field instead of concatenating it to the body (default behavior which is `subject=no`).                                                                                                                                                                                                             |
-| name      | No       | Nickname used when joining MUC rooms (alphanumeric and underscores only). The JID username is detected and used by default unless explicitly overridden here. If neither is available, the system default is used.                                                                                                                                                                                                                                                           |
-| to        | No       | Alternate way to specify target JIDs or MUC rooms (comma-separated); prefix rooms with `#`                                                                                                                                                                                                                                                                                                                                                                                   |
-| target    | No       | Recipient JID (plain user) or MUC room JID when prefixed with `#`                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Variable  | Requis  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user      | **Oui** | Nom d’utilisateur XMPP, la partie locale, combiné avec `host` pour former le JID de connexion.                                                                                                                                                                                                                                                                                                                                                                                    |
+| password  | **Oui** | Mot de passe du compte XMPP.                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| host      | **Oui** | Domaine JID, par exemple `example.com` pour un compte de la forme `user@example.com`. Sert aussi de nom d’hôte de connexion tant que `xmpp=` n’est pas défini.                                                                                                                                                                                                                                                                                                                    |
+| port      | Non     | Port serveur, avec 5222 par défaut pour `xmpp` et 5223 pour `xmpps`.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| xmpp      | Non     | Surcharge le nom d’hôte TCP de connexion sans modifier le domaine JID. Utilisez-le lorsque votre serveur XMPP est joignable à une adresse différente du domaine JID, par exemple `xmpp=xmpp.example.com`. Tous les JID continuent d’être construits à partir de `host`. Voir [Domaine Scindé](#domaine-scindé--surcharge-du-nom-dhôte-serveur).                                                                                                                                   |
+| mode      | Non     | Surcharge du mode de sécurité du transport ; valeurs possibles : `none`, `starttls` ou `tls`.                                                                                                                                                                                                                                                                                                                                                                                     |
+| roster    | Non     | Récupère le roster depuis le serveur après la connexion ; la valeur par défaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                          |
+| keepalive | Non     | Active le mode keepalive XMPP pour maintenir une connexion persistante entre les notifications. Cela n’est utile que si l’instance Apprise reste en mémoire, par exemple dans une application longue durée. Cela n’a aucun effet pratique avec la CLI ou l’API en mode one-shot, car l’instance est créée, envoie la notification, puis est détruite. Même avec `?keepalive=yes`, la connexion se ferme dès que l’instance Apprise sort de portée. La valeur par défaut est `no`. |
+| subject   | Non     | Les messages sont envoyés en `mtype=chat`, qui n’utilise généralement pas le champ XMPP intégré `subject=`. Définir `yes` redirige le titre fourni vers `subject=` au lieu de le concaténer au corps ; le comportement par défaut est `subject=no`.                                                                                                                                                                                                                               |
+| name      | Non     | Surnom utilisé lors de l’entrée dans des salons MUC, uniquement alphanumérique et underscore. Le nom d’utilisateur JID est détecté et utilisé par défaut, sauf surcharge explicite. Si aucun n’est disponible, la valeur par défaut du système est utilisée.                                                                                                                                                                                                                      |
+| to        | Non     | Autre manière de préciser les JID cibles ou les salons MUC, séparés par des virgules ; préfixez les salons avec `#`.                                                                                                                                                                                                                                                                                                                                                              |
+| target    | Non     | JID destinataire, pour un utilisateur classique, ou JID de salon MUC lorsqu’il est préfixé par `#`.                                                                                                                                                                                                                                                                                                                                                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Secure Modes
+## Modes Sécurisés
 
-The **`mode`** parameter explicitly controls how the XMPP connection is established and **overrides the schema (`xmpp://` or `xmpps://`) default**.
+Le paramètre **`mode`** contrôle explicitement la manière dont la connexion XMPP est établie et **surcharge le comportement par défaut du schéma (`xmpp://` ou `xmpps://`)**.
 
-| Mode       | Description                                |
-| ---------- | ------------------------------------------ |
-| `none`     | Plaintext connection (no TLS)              |
-| `starttls` | STARTTLS upgrade on a plaintext connection |
-| `tls`      | Direct TLS connection                      |
+| Mode       | Description                                       |
+| ---------- | ------------------------------------------------- |
+| `none`     | Connexion en clair, sans TLS                      |
+| `starttls` | Mise à niveau STARTTLS sur une connexion en clair |
+| `tls`      | Connexion TLS directe                             |
 
 :::note
-The XMPP plugin takes the most secure option when presented with an ambiguous situation:
+Le plugin XMPP choisit l’option la plus sécurisée lorsqu’il se trouve dans une situation ambiguë :
 
-1. If you use a secure schema (`xmpps://`) while also setting
-   `mode=none`, the secure schema prevails and `starttls` is used.
-1. If you use an insecure schema (`xmpp://`) while setting
-   `mode=starttls` or `mode=tls`, the secure mode you specified prevails.
+1. Si vous utilisez un schéma sécurisé, `xmpps://`, tout en définissant `mode=none`, le schéma sécurisé l’emporte et `starttls` est utilisé.
+1. Si vous utilisez un schéma non sécurisé, `xmpp://`, tout en définissant `mode=starttls` ou `mode=tls`, c’est le mode sécurisé que vous avez précisé qui l’emporte.
 
    :::
 
-   :::
+### Comportement par Défaut
 
-### Default behaviour
+- `xmpp://` utilise `mode=none` par défaut ;
+- `xmpps://` utilise `mode=starttls` par défaut.
 
-- `xmpp://` defaults to `mode=none`
-- `xmpps://` defaults to `mode=starttls`
+## Mode Maintien de Connexion
 
-## Keepalive Mode
+Le mode keepalive est destiné aux applications longues durées qui réutilisent une même instance Apprise.
 
-Keepalive mode is intended for long-running applications that reuse a
-single Apprise instance.
+Lorsqu’il est activé :
 
-When enabled:
+- la connexion XMPP reste ouverte entre les notifications ;
+- plusieurs messages réutilisent la même session ;
+- le coût de connexion est réduit.
 
-- The XMPP connection remains open between notifications.
-- Multiple messages reuse the same session.
-- Connection overhead is reduced.
+Avec la CLI ou un modèle one-shot, keepalive n’apporte aucun bénéfice car le processus s’arrête immédiatement après l’envoi.
 
-When using the CLI or a one-shot execution model, keepalive provides no
-benefit because the process exits immediately after sending.
-
-Example of enabling keepalive:
+Exemple d’activation de keepalive :
 
 ```bash
 apprise -vv -b "Persistent Message" \
   xmpps://user:password@chat.example.com?keepalive=yes
 ```
 
-In embedded usage:
+Dans un usage embarqué :
 
 ```python
 from apprise import Apprise
@@ -153,13 +147,13 @@ a.notify(body="First message")
 a.notify(body="Second message")
 ```
 
-In this scenario, the connection is reused between notifications.
+Dans ce scénario, la connexion est réutilisée entre les notifications.
 
-## JID Assembly
+## Assemblage des JID
 
-Apprise normalizes JIDs to ensure consistent and predictable behaviour, even when shorthand forms are used.
+Apprise normalise les JID afin de garantir un comportement cohérent et prévisible, même lorsque des formes abrégées sont utilisées.
 
-Consider the following Apprise XMPP URL:
+Considérez l’URL XMPP Apprise suivante :
 
 ```text
          xmpp://user:pass@example.ca
@@ -168,125 +162,125 @@ Consider the following Apprise XMPP URL:
                          default_host
 ```
 
-:::tip[Defining Resources]
-Use `%2F` to represent a resource (acts as `/`) when specifying resources in the URL path, for example: `jason@example.ca%2Fresource`.
+:::tip[Définir des Ressources]
+Utilisez `%2F` pour représenter une ressource, ce qui équivaut à `/`, lorsque vous précisez des ressources dans le chemin URL, par exemple `jason@example.ca%2Fresource`.
 
-Alternatively, use the `to=` query argument, which eliminates the need to URL-encode `/`. For example: `?to=jason@example.ca/resource`.
+Vous pouvez aussi utiliser l’argument de requête `to=`, ce qui évite d’encoder `/` dans l’URL. Par exemple : `?to=jason@example.ca/resource`.
 :::
-note[Multi-User Chat (MUC)]
-MUC is the XMPP group chat protocol ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)). A MUC room JID typically looks like `roomname@conference.example.com`. Apprise identifies MUC targets by the `#` prefix — the same convention used by IRC and many chat applications. When Apprise joins a room it uses the sender's username as the nickname.
+:::note[Multi-User Chat (MUC)]
+MUC est le protocole de discussion de groupe XMPP ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)). Un JID de salon MUC ressemble typiquement à `roomname@conference.example.com`. Apprise identifie les cibles MUC grâce au préfixe `#`, comme dans IRC et de nombreuses applications de discussion. Lorsqu’Apprise rejoint un salon, il utilise le nom d’utilisateur de l’expéditeur comme surnom.
 :::
 
-| URL                                                                      | Targets Notified                                  |
-| ------------------------------------------------------------------------ | ------------------------------------------------- |
-| `xmpps://user:pass@example.ca`                                           | `user@example.ca` (self)                          |
-| `xmpps://user:pass@example.ca/jane`                                      | `jane@example.ca`                                 |
-| `xmpps://user:pass@example.ca/jane/joe`                                  | `jane@example.ca`, `joe@example.ca`               |
-| `xmpps://user:pass@example.ca/jane@foobar.ca`                            | `jane@foobar.ca`                                  |
-| `xmpps://user:pass@example.ca/jason%2Fmobile`                            | `jason@example.ca/mobile`                         |
-| `xmpps://user:pass@example.ca/jane@foobar.ca%2Fworkstation`              | `jane@foobar.ca/workstation`                      |
-| `xmpps://user:pass@example.ca/#general@conference.example.ca`            | MUC room `general@conference.example.ca`          |
-| `xmpps://user:pass@example.ca/#general@conference.example.ca/jane`       | MUC room `general@...` and user `jane@example.ca` |
-| `xmpps://user:pass@example.ca/#room1@conference.ca/#room2@conference.ca` | MUC rooms `room1@...` and `room2@...`             |
+| URL                                                                      | Cibles notifiées                                         |
+| ------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `xmpps://user:pass@example.ca`                                           | `user@example.ca` lui-même                               |
+| `xmpps://user:pass@example.ca/jane`                                      | `jane@example.ca`                                        |
+| `xmpps://user:pass@example.ca/jane/joe`                                  | `jane@example.ca`, `joe@example.ca`                      |
+| `xmpps://user:pass@example.ca/jane@foobar.ca`                            | `jane@foobar.ca`                                         |
+| `xmpps://user:pass@example.ca/jason%2Fmobile`                            | `jason@example.ca/mobile`                                |
+| `xmpps://user:pass@example.ca/jane@foobar.ca%2Fworkstation`              | `jane@foobar.ca/workstation`                             |
+| `xmpps://user:pass@example.ca/#general@conference.example.ca`            | Salon MUC `general@conference.example.ca`                |
+| `xmpps://user:pass@example.ca/#general@conference.example.ca/jane`       | Salon MUC `general@...` et utilisateur `jane@example.ca` |
+| `xmpps://user:pass@example.ca/#room1@conference.ca/#room2@conference.ca` | Salons MUC `room1@...` et `room2@...`                    |
 
-## Split Domain / Server Hostname Override
+## Domaine Scindé / Surcharge du Nom d’Hôte Serveur
 
-Some XMPP deployments host the server at a different hostname than the JID domain. For example, accounts may be `user@example.com` but the physical server is reachable at `xmpp.example.com`. Normally XMPP resolves this via DNS SRV records, but when SRV records are absent or incorrect, connections will fail.
+Certaines installations XMPP hébergent le serveur sur un nom d’hôte différent du domaine JID. Par exemple, les comptes peuvent être de la forme `user@example.com`, alors que le serveur réel est joignable sur `xmpp.example.com`. Normalement, XMPP résout cela avec des enregistrements DNS SRV, mais si ces enregistrements sont absents ou incorrects, la connexion échoue.
 
-Use the `xmpp=` parameter to specify the connection hostname independently:
+Utilisez le paramètre `xmpp=` pour préciser séparément le nom d’hôte de connexion :
 
 ```text
 xmpps://user@example.com/joe?xmpp=xmpp.example.com
 ```
 
-This produces:
+Cela produit :
 
-| Property         | Value              |
+| Propriété        | Valeur             |
 | ---------------- | ------------------ |
-| Login JID        | `user@example.com` |
-| Target JID       | `joe@example.com`  |
-| TCP connection   | `xmpp.example.com` |
-| XMPP stream `to` | `example.com`      |
+| JID de connexion | `user@example.com` |
+| JID cible        | `joe@example.com`  |
+| Connexion TCP    | `xmpp.example.com` |
+| Flux XMPP `to`   | `example.com`      |
 
-All JIDs (login and targets) are always assembled from the URL `host` component (`example.com`). The `xmpp=` value is used **only** for the TCP connection.
+Tous les JID, de connexion comme de cible, sont toujours assemblés à partir du composant `host` de l’URL, ici `example.com`. La valeur `xmpp=` est utilisée **uniquement** pour la connexion TCP.
 
 :::note
-Without `xmpp=`, Apprise connects to `host` directly. If the server is at a different address and no DNS SRV record bridges the gap, you will see a `host-unknown` stream error from the server. Setting `xmpp=` resolves this without any URL encoding tricks.
+Sans `xmpp=`, Apprise se connecte directement à `host`. Si le serveur se trouve à une autre adresse et qu’aucun enregistrement DNS SRV ne comble l’écart, vous verrez une erreur de flux `host-unknown`. Définir `xmpp=` permet de résoudre cela sans ruse particulière d’encodage d’URL.
 :::
 
 ## Exemples
 
-Envoyer une plaintext XMPP notification:
+Envoyer une notification XMPP en clair :
 
 ```bash
 apprise -vv -b "Test Message" \
   xmpp://user:password@localhost
 ```
 
-Envoyer une STARTTLS-secured notification:
+Envoyer une notification STARTTLS sécurisée :
 
 ```bash
 apprise -vv -b "Secure Message" \
   xmpp://user:password@localhost?mode=starttls
 ```
 
-Envoyer une direct TLS notification:
+Envoyer une notification en TLS direct :
 
 ```bash
 apprise -vv -b "TLS Message" \
   xmpps://user:password@chat.example.com
 ```
 
-Envoyer une message to a specific recipient:
+Envoyer un message à un destinataire spécifique :
 
 ```bash
 apprise -vv -t "Test Title" -b "Hello from Apprise" \
   xmpps://user:password@chat.example.com/alice@example.net
 ```
 
-Envoyer une message to multiple recipients using the `to=` argument:
+Envoyer un message à plusieurs destinataires avec l’argument `to=` :
 
 ```bash
 apprise -vv -b "Group Message" \
   xmpps://user:password@chat.example.com?to=alice@example.net,bob@example.org
 ```
 
-Disable TLS certificate verification:
+Désactiver la vérification du certificat TLS :
 
 ```bash
 apprise -vv -b "Test Message" \
   xmpps://user:password@chat.example.com/alice@example.net?verify=no
 ```
 
-Envoyer une notification to a resource:
+Envoyer une notification vers une ressource :
 
 ```bash
 apprise -vv -b "Test Message" \
   xmpps://user:password@chat.example.com/?to=alice@example.net/mobile
 ```
 
-Envoyer une message to a MUC room:
+Envoyer un message vers un salon MUC :
 
 ```bash
 apprise -vv -b "Hello, room!" \
   "xmpps://user:password@chat.example.com/#general@conference.example.com"
 ```
 
-Envoyer une message to multiple MUC rooms and a direct user:
+Envoyer un message vers plusieurs salons MUC et un utilisateur direct :
 
 ```bash
 apprise -vv -b "Broadcast" \
   "xmpps://user:password@chat.example.com/#ops@conference.example.com/#dev@conference.example.com/alice@example.com"
 ```
 
-Envoyer to a MUC room using the `to=` argument:
+Envoyer vers un salon MUC avec l’argument `to=` :
 
 ```bash
 apprise -vv -b "Room message" \
   "xmpps://user:password@chat.example.com?to=#general@conference.example.com"
 ```
 
-Connect to a server at a different hostname than the JID domain:
+Se connecter à un serveur dont le nom d’hôte diffère du domaine JID :
 
 ```bash
 # JID domain is example.com; server is physically at xmpp.example.com

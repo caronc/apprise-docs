@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushed"
-description: "Envoyer Pushed notifications."
+description: "Envoyer des notifications Pushed."
 sidebar:
   label: "Pushed"
 
@@ -24,18 +24,18 @@ limits:
 
 ## Configuration du compte
 
-You'll want to _Request Developer Access_ which is asked of you when you first log in to the site. Check your email because you'll need to verify your account with them.
+Lors de votre premiere connexion au site, vous devrez demander l'option _Request Developer Access_. Pensez a verifier votre e-mail, car vous devrez valider votre compte.
 
-Once this is done you will have access to the [apps](https://account.pushed.co/apps) where you can create a new one if you don't already have one.
+Une fois cela fait, vous aurez acces a la section [apps](https://account.pushed.co/apps), ou vous pourrez creer une nouvelle application si vous n'en avez pas encore.
 
-Once this is done, you'll get access to an:
+Vous aurez alors acces aux informations suivantes :
 
 - Application Key: **{app_key}**
 - Application Secret: **{app_secret}**
 
-You'll also need something to notify; so once you've created an account and an app, you'll also need to retrieve their mobile app (for either [Android](https://play.google.com/store/apps/details?id=co.pushed.GetPushed) or [iOS](https://itunes.apple.com/us/app/get-pushed/id804777699?mt=8&uo=6&at=&ct=)) and log in.
+Vous devrez aussi disposer d'une cible a notifier. Une fois votre compte et votre application crees, telechargez egalement leur application mobile, sur [Android](https://play.google.com/store/apps/details?id=co.pushed.GetPushed) ou [iOS](https://itunes.apple.com/us/app/get-pushed/id804777699?mt=8&uo=6&at=&ct=), puis connectez-vous.
 
-Subscribe to this App; there is a _Subscription Link_ you can follow right from the settings page of the App you just created. You will need at least one subscription to use the notification service.
+Abonnez-vous a cette application ; un _Subscription Link_ est disponible directement dans la page de parametres de l'application que vous venez de creer. Vous aurez besoin d'au moins un abonnement pour utiliser ce service de notification.
 
 ## Syntaxe
 
@@ -51,26 +51,26 @@ Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jou
 
 - `pushed://{app_key}/{app_secret}/@{user_pushed_id}/#{channel_alias}/`
 
-neither a **@{user_pushed_id}** or **#{channel}** is specified, then the default configuration is to send to just the _App_ you provided keys for.
+Si ni **@{user_pushed_id}** ni **#{channel}** ne sont precises, la configuration par defaut consiste a envoyer simplement vers l'_App_ pour laquelle vous avez fourni les cles.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable       | Required | Description                                                                                                                                                                                                                                                                             |
-| -------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| app_key        | Yes      | The Application Key can be generated on the Settings page of your Pushed's account. You must have an application key for this Notification service to work.                                                                                                                             |
-| app_secret     | Yes      | The Application Secret can be generated on the Settings page of your Pushed's account. You must have an application secret for this Notification service to work.                                                                                                                       |
-| user_pushed_id | No       | Users must be prefixed with an _at_ (@) character or they will be ignored. You can identify users here by their Pushed ID.                                                                                                                                                              |
-| channel_alias  | No       | Channels must be prefixed with a _hash tag_ (#) or they will be ignored. Channels must be registered with your Pushed account to work. This must be the channel alias itself; not the channel. The alias can be retrieved from the channel settings from within your pushed.io account. |
+| Variable       | Obligatoire | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| app_key        | Oui         | Application Key generee depuis la page de parametres de votre compte Pushed. Vous devez disposer d'une application key pour utiliser ce service de notification.                                                                                                                                                            |
+| app_secret     | Oui         | Application Secret generee depuis la page de parametres de votre compte Pushed. Vous devez disposer d'une application secret pour utiliser ce service de notification.                                                                                                                                                      |
+| user_pushed_id | Non         | Les utilisateurs doivent etre prefixes par un caractere arobase, `@`, sinon ils seront ignores. Vous pouvez ici identifier les utilisateurs par leur Pushed ID.                                                                                                                                                             |
+| channel_alias  | Non         | Les canaux doivent etre prefixes par un hashtag, `#`, sinon ils seront ignores. Les canaux doivent aussi etre enregistres dans votre compte Pushed pour fonctionner. Il doit s'agir de l'alias du canal lui-meme, et non du canal. Cet alias peut etre recupere depuis les parametres du canal dans votre compte pushed.io. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Pushed notification:
+Envoyer une notification Pushed :
 
 ```bash
-# Assuming our {app_key} is sopJo0dVKVC9YK1F5wDQ
-# Assuming our {app_secret} is KWEtXxVm1PtDTTrKaEM49DhBd8MJvSMCHSvunPerbCf1MaNLO300roqOL0F8HErAl
+# Supposons que notre {app_key} soit sopJo0dVKVC9YK1F5wDQ
+# Supposons que notre {app_secret} soit KWEtXxVm1PtDTTrKaEM49DhBd8MJvSMCHSvunPerbCf1MaNLO300roqOL0F8HErAl
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pushed://sopJo0dVKVC9YK1F5wDQ/KWEtXxVm1PtDTTrKaEM49DhBd8MJvSMCHSvunPerbCf1MaNLO300roqOL0F8HErAl
 ```

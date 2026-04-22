@@ -1,6 +1,6 @@
 ---
 title: "Notifications Clickatell"
-description: "Envoyer Clickatell notifications."
+description: "Envoyer des notifications Clickatell."
 sidebar:
   label: "Clickatell"
 
@@ -23,9 +23,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a BulkSMS account [from here](https://www.clickatell.com/). You will be provided to create a user and password to associate with your account. From here you can generate an apikey; this is all you need to use this through Apprise.
+Inscrivez-vous a un compte Clickatell [ici](https://www.clickatell.com/). Les informations de votre compte vous permettront ensuite de generer une apikey ; c'est tout ce dont vous avez besoin pour utiliser ce service avec Apprise.
 
 ## Syntaxe
 
@@ -36,21 +36,21 @@ La syntaxe valide est la suivante :
 - `clickatell://{apikey}/{PhoneNo}`
 - `clickatell://{apikey}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                  |
-| -------- | -------- | ------------------------------------------------------------ |
-| apikey   | **Yes**  | The API Key you generated as part of your Clickatell account |
+| Variable | Obligatoire | Description                                                             |
+| -------- | ----------- | ----------------------------------------------------------------------- |
+| apikey   | **Oui**     | Cle API que vous avez generee dans le cadre de votre compte Clickatell. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notification to your Clickatell account:
+Envoyer une notification vers votre compte Clickatell :
 
 ```bash
-# Assuming our {apikey} is token
-# Assuming our {PhoneNo} is 1-800-555-1234
+# Supposons que notre {apikey} soit token
+# Supposons que notre {PhoneNo} soit 1-800-555-1234
 apprise -vv --body="Test Message" \
    "clickatell://token/1-800-555-1234"
 ```

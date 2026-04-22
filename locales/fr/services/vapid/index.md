@@ -1,6 +1,6 @@
 ---
 title: "Notifications Vapid/WebPush"
-description: "Envoyer Vapid/WebPush notifications."
+description: "Envoyer des notifications Vapid/WebPush."
 sidebar:
   label: "Vapid/WebPush"
 
@@ -22,9 +22,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Vapid/WebPush requires a `subscriptions.json` file that identifies all of the users you wish to notify and a `private_key.pem`
+Vapid/WebPush nécessite un fichier `subscriptions.json` qui identifie tous les utilisateurs à notifier, ainsi qu'un fichier `private_key.pem`.
 
 ## Syntaxe
 
@@ -34,16 +34,16 @@ La syntaxe valide est la suivante :
 - `vapid://subscription_id/target`
 - `vapid://subscription_id/target1/target2/targetN/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                            |
-| -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| keyfile  | **Yes**  | A `private key` in `PEM` format belonging to the account associated with the `subscription_id`                                                                                         |
-| subfile  | **Yes**  | A `subscriptions.json` file identifying the configuration you wish to reference.                                                                                                       |
-| mode     | No       | The mode to use (default `chrome`). Possible values are `chrome`, `firefox`, `edge`, and `opera`. This just simplifies the upstream source that is used when the notification is sent. |
+| Variable | Requis  | Description                                                                                                                                                                                                 |
+| -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| keyfile  | **Oui** | Une `clé privée` au format `PEM` appartenant au compte associé au `subscription_id`.                                                                                                                        |
+| subfile  | **Oui** | Un fichier `subscriptions.json` identifiant la configuration à utiliser.                                                                                                                                    |
+| mode     | Non     | Le mode à utiliser (par défaut `chrome`). Les valeurs possibles sont `chrome`, `firefox`, `edge` et `opera`. Ce paramètre simplifie uniquement la source amont utilisée lors de l'envoi de la notification. |
 
-Mode Table:
-You will see a lot of duplication (many modes pointing to the same location). The idea is if the end points change, we will update it inside Apprise so your code/URL will not have to change later.
+Tableau des modes :
+De nombreuses duplications existent (plusieurs modes pointant vers le même emplacement). L'idée est que si les points de terminaison changent, la mise à jour sera effectuée dans Apprise afin que votre code/URL n'ait pas à changer ultérieurement.
 
 | Mode    | URL                                                  |
 | ------- | ---------------------------------------------------- |
@@ -58,11 +58,11 @@ You will see a lot of duplication (many modes pointing to the same location). Th
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## subscriptions.json Setup
+## Configuration du Fichier subscriptions.json
 
-In order to use Vapid, you must have a `subscriptions.json` file that it can point to. The Vapid plugin supports the 2 following formats:
+Pour utiliser Vapid, vous devez disposer d'un fichier `subscriptions.json` vers lequel pointer. Le plugin Vapid prend en charge les 2 formats suivants :
 
-1. standalone; in the below example, the target would be `abc123`
+1. Autonome ; dans l'exemple ci-dessous, la cible serait `abc123`
 
    ```json
    {
@@ -74,7 +74,7 @@ In order to use Vapid, you must have a `subscriptions.json` file that it can poi
    }
    ```
 
-1. multiple target support; in the below example, 2 targets are created called `name1` and `name2`
+1. Prise en charge de plusieurs cibles ; dans l'exemple ci-dessous, 2 cibles sont créées, appelées `name1` et `name2`
 
    ```json
    {
@@ -94,32 +94,32 @@ In order to use Vapid, you must have a `subscriptions.json` file that it can poi
        }
    ```
 
-It is though targets that you notify one or more endpoints. If you're using persistent storage with Apprise, you can simply manage your `subscription.json` file located here and your URL can stay clean. Alternatively, you can specify `?subfile=` on your URL and point it to a subscription file you wish to load. The location can be local to the filesystem as well as a remote location (such as `subfile=https://user:pass@myhost/special/location/subscription.json`
+C'est par le biais des cibles que vous notifiez un ou plusieurs points de terminaison. Si vous utilisez le stockage persistant avec Apprise, vous pouvez simplement gérer votre fichier `subscription.json` à cet emplacement et votre URL reste épurée. Vous pouvez également spécifier `?subfile=` dans votre URL et pointer vers un fichier d'abonnements à charger. L'emplacement peut être local au système de fichiers ou distant (par exemple `subfile=https://user:pass@myhost/special/location/subscription.json`).
 
-If no target is specified on your URL, then a target that matches your own `subscriberid` is looked up in the `subcriptions.json` file
+Si aucune cible n'est spécifiée dans votre URL, une cible correspondant à votre propre `subscriberid` est recherchée dans le fichier `subcriptions.json`.
 
-## Private Key (PEM) Setup
+## Configuration de la Clé Privée (PEM)
 
-Similar to the `subscription.json`, you need to point to a `private_key.pem` file. If you are using Apprise persisent storage, you can place the file here. Alternatively you can specify `?keyfile=` on the URL and point it to a local or remote file you wish to use.
+De manière similaire au fichier `subscription.json`, vous devez pointer vers un fichier `private_key.pem`. Si vous utilisez le stockage persistant d'Apprise, vous pouvez placer le fichier ici. Vous pouvez également spécifier `?keyfile=` dans l'URL et pointer vers un fichier local ou distant à utiliser.
 
-## Persistent Storage Tips
+## Conseils sur le Stockage Persistant
 
-The following command will list all of the persistent storage locations associated with your configuration:
+La commande suivante liste tous les emplacements de stockage persistant associés à votre configuration :
 
 ```bash
 apprise storage list
 ```
 
-Simply locate the ID associated with the Vapid account you wish to update; consider that the directory ID's can be found as:
+Repérez simplement l'identifiant associé au compte Vapid que vous souhaitez mettre à jour ; les identifiants de répertoire se trouvent aux emplacements suivants :
 
-1. Microsoft Windows: `%APPDATA%/Apprise/cache`
-1. Linux: `~/.local/share/apprise/cache`
+1. Microsoft Windows : `%APPDATA%/Apprise/cache`
+1. Linux : `~/.local/share/apprise/cache`
 
-For more details on this; see [here](https://github.com/caronc/apprise/wiki/persistent_storage).
+Pour plus de détails à ce sujet, consultez [cette page](https://github.com/caronc/apprise/wiki/persistent_storage).
 
-## Apprise URL Construction
+## Construction de l'URL Apprise
 
-This is a more complicated plugin to work with since it requires a binary PEM private key and a `subscription.json` file as well. It would be advised to use a Apprise Configuration YAML file that looks like this:
+Ce plugin est plus complexe à utiliser car il nécessite une clé privée PEM binaire ainsi qu'un fichier `subscription.json`. Il est conseillé d'utiliser un fichier de configuration YAML Apprise structuré comme suit :
 
 ```yaml
 urls:
@@ -129,7 +129,7 @@ urls:
       subfile: /path/to/subscription.json
 ```
 
-Remember that both the `keyfile` and `subfile` can be URLs as well (even ones protected behind user/passwords such as:
+N'oubliez pas que `keyfile` et `subfile` peuvent également être des URLs, y compris protégées par identifiant/mot de passe :
 
 ```yaml
 urls:
@@ -139,4 +139,4 @@ urls:
       subfile: https://user:pass123@example.com/subscriptions.json
 ```
 
-If you do not define a keyfile and/or a subfile, the rules above apply as documented above and default ones are looked upon in your persistent storage directory.
+Si vous ne définissez pas de `keyfile` et/ou de `subfile`, les règles décrites ci-dessus s'appliquent et les fichiers par défaut sont recherchés dans votre répertoire de stockage persistant.

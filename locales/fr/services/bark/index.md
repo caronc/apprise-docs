@@ -1,6 +1,6 @@
 ---
 title: "Notifications Bark"
-description: "Envoyer Bark notifications."
+description: "Envoyer des notifications Bark."
 sidebar:
   label: "Bark"
 
@@ -19,9 +19,9 @@ has_selfhosted: true
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Bark is an iOS App which allows you to push custom notifications to your iPhone. Download the server for a self-hosted solution.
+Bark est une application iOS qui vous permet d'envoyer des notifications personnalisées sur votre iPhone. Téléchargez également le serveur si vous souhaitez une solution auto-hébergée.
 
 ## Syntaxe
 
@@ -30,75 +30,71 @@ La syntaxe valide est la suivante :
 - `bark://{host}/{device_key}`
 - `bark://{host}:{port}/{device_key}`
 
-Les versions securisees :
+Les versions sécurisées :
 
 - `barks://{host}/{device_key}`
 - `barks://{host}:{port}/{device_key}`
 
-Vous pouvez egalement notifier plusieurs appareils a la fois :
+Vous pouvez également notifier plusieurs appareils à la fois :
 
 - `bark://{host}:{port}/{device_key1}/{device_key2}/{device_keyN}/`
 
-## Prise en charge du format des messages
+## Prise en Charge du Format des Messages
 
-Bark supports receiving content as either plain text or Markdown.
+Bark prend en charge la réception de contenu en texte brut ou en Markdown.
 
-Apprise will automatically send one of the following payload fields,
-depending on the message format in use:
+Apprise enverra automatiquement l'un des champs de charge utile suivants, selon le format de message utilisé :
 
-- **Plain text** (default): content is sent using the `body` field.
-- **Markdown**: content is sent using the `markdown` field.
+- **Texte brut** (par défaut) : le contenu est envoyé via le champ `body`.
+- **Markdown** : le contenu est envoyé via le champ `markdown`.
 
-To explicitly control this behaviour, set the Apprise message format.
-For example:
+Pour contrôler explicitement ce comportement, définissez le format de message Apprise. Par exemple :
 
-- `?format=text` forces plain text handling.
-- `?format=markdown` enables Markdown handling.
+- `?format=text` force le traitement en texte brut.
+- `?format=markdown` active le traitement Markdown.
 
-Note that the `format` handling is done by Apprise and affects how the
-notification is assembled and delivered to Bark.
+Notez que la gestion de `format` est effectuée par Apprise et influe sur la manière dont la notification est assemblée puis remise à Bark.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                              |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| device_key | Yes      | The device key you wish to notify                                                                                                                        |
-| sound      | No       | Optionally set a sound file to be played with notification sent. Supported sounds are identified [here](https://github.com/Finb/Bark/tree/master/Sounds) |
-| click      | No       | Provide a hyperlink that should be associated with the notification                                                                                      |
-| level      | No       | Specify the message level. Can be either **active**, **timeSensitive**, or **passive**.                                                                  |
-| volume     | No       | Specify a volume between 0 and 10 (inclusive).                                                                                                           |
-| badge      | No       | Provide a numerical value of 0 (zero) or greater to associate a badge with the bark icon on the iOS device.                                              |
-| category   | No       | Associate a category with your notification                                                                                                              |
-| group      | No       | Associate a group with your notification                                                                                                                 |
-| icon       | No       | Set a custom icon URL for the notification. If not specified, Apprise may use its default notify image (unless disabled).                                |
-| image      | No       | Set to `no` if you do not want the Apprise alert level being placed as the icon associated with the message.                                             |
-| call       | No       | Boolean-like input. Accepts `yes/no`, `true/false`, `1/0`, `+/-`. When enabled, payload includes `1`.                                                    |
+| Variable   | Requis | Description                                                                                                                                                                            |
+| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| device_key | Oui    | La clé de l'appareil que vous souhaitez notifier.                                                                                                                                      |
+| sound      | Non    | Permet facultativement de définir un fichier son à jouer avec la notification envoyée. Les sons pris en charge sont identifiés [ici](https://github.com/Finb/Bark/tree/master/Sounds). |
+| click      | Non    | Fournit un lien hypertexte à associer à la notification.                                                                                                                               |
+| level      | Non    | Précise le niveau du message. Peut être **active**, **timeSensitive** ou **passive**.                                                                                                  |
+| volume     | Non    | Précise un volume entre 0 et 10, inclus.                                                                                                                                               |
+| badge      | Non    | Fournit une valeur numérique égale ou supérieure à 0 pour associer un badge à l'icône Bark sur l'appareil iOS.                                                                         |
+| category   | Non    | Associe une catégorie à votre notification.                                                                                                                                            |
+| group      | Non    | Associe un groupe à votre notification.                                                                                                                                                |
+| icon       | Non    | Définit une URL d'icône personnalisée pour la notification. Si elle n'est pas précisée, Apprise peut utiliser son image de notification par défaut, sauf si elle est désactivée.       |
+| image      | Non    | Définissez cette valeur sur `no` si vous ne souhaitez pas que le niveau d'alerte Apprise soit utilisé comme icône associée au message.                                                 |
+| call       | Non    | Entrée de type booléen. Accepte `yes/no`, `true/false`, `1/0`, `+/-`. Lorsqu'elle est activée, la charge utile inclut `1`.                                                             |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Bark notification to all devices associated with a project:
+Envoyer une notification Bark à tous les appareils associés à un projet :
 
 ```bash
-# Assume:
-#  - our {hostname} is localhost
-#  - our {port} is 8080
-#  - our {device_key} is j300012fl9y0b5AW9g9Nsejb8P
+# Supposons :
+#  - que notre {hostname} soit localhost
+#  - que notre {port} soit 8080
+#  - que notre {device_key} soit j300012fl9y0b5AW9g9Nsejb8P
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P
 ```
 
-Envoyer une Markdown formatted Bark notification:
+Envoyer une notification Bark au format Markdown :
 
 ```bash
-# Markdown content is sent using Bark's `markdown` field
+# Le contenu Markdown est envoyé via le champ `markdown` de Bark
 apprise -vv -t "Build Status" -b "# Success\n\nDeployment completed." \
    bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?format=markdown
 ```
 
-Forcer le comportement en texte brut (meme si votre configuration Apprise par defaut
-to another format):
+Forcer le comportement en texte brut, même si votre configuration Apprise par défaut utilise un autre format :
 
 ```bash
 apprise -vv -t "Plain Text" -b "**This will not be bold**" \

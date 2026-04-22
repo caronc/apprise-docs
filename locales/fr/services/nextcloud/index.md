@@ -1,6 +1,6 @@
 ---
 title: "Notifications Nextcloud"
-description: "Envoyer Nextcloud notifications."
+description: "Envoyer des notifications Nextcloud."
 sidebar:
   label: "Nextcloud"
 
@@ -21,13 +21,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-The official [Notifications app](https://github.com/nextcloud/notifications) will need to be installed. An 'app password' (also referred to as 'device-specific' password/token) of the admin-user will need to be created, see the [documentation](https://docs.nextcloud.com/server/19/user_manual/session_management.html#device-specific-passwords-and-password-changes) for more information. Don't forget to disable file system access for this password.
+L'application officielle [Notifications](https://github.com/nextcloud/notifications) doit être installée. Un « mot de passe d'application » (également appelé mot de passe/token « spécifique à l'appareil ») de l'utilisateur administrateur doit être créé ; consultez la [documentation](https://docs.nextcloud.com/server/19/user_manual/session_management.html#device-specific-passwords-and-password-changes) pour plus d'informations. N'oubliez pas de désactiver l'accès au système de fichiers pour ce mot de passe.
 
 ## Syntaxe
 
-Secure connections (via https) should be referenced using **nclouds://** where as insecure connections (via http) should be referenced via **ncloud://**.
+Les connexions sécurisées (via https) doivent être référencées avec **nclouds://** tandis que les connexions non sécurisées (via http) doivent utiliser **ncloud://**.
 
 La syntaxe valide est la suivante :
 
@@ -40,36 +40,36 @@ La syntaxe valide est la suivante :
 - `nclouds://{admin_user}:{password}@{hostname}/{targets}`
 - `nclouds://{admin_user}:{password}@{hostname}:{port}/{targets}`
 
-Targets can either be a `user` or `@group`.
+Les cibles peuvent être un `user` ou un `@group`.
 
-You can notify more then one user by simply chaining them at the end of the URL.
+Vous pouvez notifier plusieurs utilisateurs en les enchaînant simplement à la fin de l'URL.
 
 - `ncloud://{admin_user}:{password}@{hostname}/{notify_user1}/{notify_user2}/{notify_userN}`
 - `nclouds://{admin_user}:{password}@{hostname}/{notify_user1}/{notify_user2}/{notify_userN}`
 - `ncloud://{admin_user}:{password}@{hostname}/{notify_group1}/{notify_group2}/{notify_groupN}`
 - `nclouds://{admin_user}:{password}@{hostname}/{notify_group1}/{notify_group2}/{notify_groupN}`
 
-You can mix/match `@group` and `user` values as well:
+Vous pouvez également combiner des valeurs `@group` et `user` :
 
 - `ncloud://{admin_user}:{password}@{hostname}/{notify_group1}/{notify_user1}`
 - `nclouds://{admin_user}:{password}@{hostname}/{notify_group1}/{notify_user1}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                       |
-| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname    | Yes      | The hostname of the server hosting your Nextcloud service.                                                                                                                                                                        |
-| admin_user  | Yes      | The administration user of the next cloud service you have set up.                                                                                                                                                                |
-| password    | Yes      | The administrator password associated with the **admin_user** for your Nextcloud account.                                                                                                                                         |
-| notify_user | Yes      | One or more users you wish to send your notification to.                                                                                                                                                                          |
-| to          | No       | This is an alias to the notify_user variable.                                                                                                                                                                                     |
-| version     | No       | NextCloud changed their API around with v21. By default Apprise uses their latest API spec. If you're using an older version, you can sent this value accordingly and Apprise will accommodate (switching back to the older API). |
+| Variable    | Requis | Description                                                                                                                                                                                                                                                          |
+| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname    | Oui    | Le nom d'hôte du serveur hébergeant votre service Nextcloud.                                                                                                                                                                                                         |
+| admin_user  | Oui    | L'utilisateur administrateur du service Nextcloud que vous avez configuré.                                                                                                                                                                                           |
+| password    | Oui    | Le mot de passe administrateur associé à **admin_user** pour votre compte Nextcloud.                                                                                                                                                                                 |
+| notify_user | Oui    | Un ou plusieurs utilisateurs auxquels vous souhaitez envoyer votre notification.                                                                                                                                                                                     |
+| to          | Non    | Alias de la variable notify_user.                                                                                                                                                                                                                                    |
+| version     | Non    | NextCloud a modifié son API à partir de la v21. Par défaut, Apprise utilise la dernière spécification de leur API. Si vous utilisez une version plus ancienne, vous pouvez définir cette valeur en conséquence et Apprise s'adaptera (en revenant à l'ancienne API). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une secure nextcloud notification to the user _chucknorris_:
+Envoyer une notification Nextcloud sécurisée à l'utilisateur _chucknorris_ :
 
 ```bash
 # Assuming our {host} is localhost
@@ -78,9 +78,9 @@ Envoyer une secure nextcloud notification to the user _chucknorris_:
 apprise nclouds://admin:12345-67890-12345-67890-12345@localhost/chucknorris
 ```
 
-### Manipulation des en-tetes
+### Manipulation des En-têtes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a hyphen (**-**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent nécessiter la présence d'en-têtes HTTP spéciaux lors de la publication de données sur leur serveur. Cela peut être accompli en ajoutant simplement un tiret (**-**) devant tout paramètre spécifié dans la chaîne d'URL.
 
 ```bash
 # Below would set the header:
@@ -112,35 +112,35 @@ apprise -t "Title" -b "Body" "ncloud://admin:12345-67890-12345-67890-12345@local
 
 ```
 
-Users:
+Utilisateurs :
 
 ```bash
 apprise -vv -t "Title" -b "Message" \
   "ncloud://admin:pass@host/user1/user2"
 ```
 
-Group:
+Groupe :
 
 ```bash
 apprise -vv -t "Title" -b "Message" \
   "ncloud://admin:pass@host/#DevTeam"
 ```
 
-Everyone:
+Tous :
 
 ```bash
 apprise -vv -t "Title" -b "Message" \
   "ncloud://admin:pass@host/all"
 ```
 
-Mixed (deduplicated):
+Mixte (dédupliqué) :
 
 ```bash
 apprise -vv -t "Title" -b "Message" \
   "ncloud://admin:pass@host/#DevTeam/user3/all"
 ```
 
-Sub-path:
+Sous-chemin :
 
 ```bash
 apprise -vv -t "Title" -b "Message" \

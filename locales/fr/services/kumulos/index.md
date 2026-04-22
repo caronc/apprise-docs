@@ -1,6 +1,6 @@
 ---
 title: "Notifications Kumulos"
-description: "Envoyer Kumulos notifications."
+description: "Envoyer des notifications Kumulos."
 sidebar:
   label: "Kumulos"
 
@@ -20,12 +20,12 @@ limits:
 
 ## Configuration du compte
 
-To use this plugin, you must have a Kumulos account set up. Add at least 1 client and link it with your phone using the phone app (using your _Companion App_ option in the profile menu area):
+Pour utiliser ce plugin, vous devez disposer d'un compte Kumulos configure. Ajoutez au moins un client puis associez-le a votre telephone a l'aide de l'application mobile, via l'option _Companion App_ dans le menu de profil :
 
 - [Android App](https://play.google.com/store/apps/details?id=com.kumulos.companion)
 - [iOS](https://apps.apple.com/us/app/kumulos/id1463947782)
 
-To use Kumulos, you will need to acquire your _API Key_ and _Server Key_. Both of these are accessible via the Kumulos Dashboard.
+Pour utiliser Kumulos, vous devrez recuperer votre _API Key_ et votre _Server Key_. Toutes deux sont accessibles depuis le tableau de bord Kumulos.
 
 ## Syntaxe
 
@@ -33,22 +33,22 @@ La syntaxe valide est la suivante :
 
 - `kumulos://{ApiKey}/{ServerKey}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                               |
-| --------- | -------- | --------------------------------------------------------- |
-| ApiKey    | Yes      | The _API Key_ associated with your Kumulos account.       |
-| ServerKey | Yes      | The _Server Secret_ associated with your Kumulos account. |
+| Variable  | Obligatoire | Description                                     |
+| --------- | ----------- | ----------------------------------------------- |
+| ApiKey    | Oui         | _API Key_ associee a votre compte Kumulos.      |
+| ServerKey | Oui         | _Server Secret_ associe a votre compte Kumulos. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Kumulos Notification:
+Envoyer une notification Kumulos :
 
 ```bash
-# Assuming our {APIKey} is 8b799edf-6f98-4d3a-9be7-2862fb4e5752
-# Assuming our {ServerKey} is aNe8IVQvUay79KEOt8jEh2GPWOwRKAXG+lP7
+# Supposons que notre {APIKey} soit 8b799edf-6f98-4d3a-9be7-2862fb4e5752
+# Supposons que notre {ServerKey} soit aNe8IVQvUay79KEOt8jEh2GPWOwRKAXG+lP7
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    kumulos://8b799edf-6f98-4d3a-9be7-2862fb4e5752/aNe8IVQvUay79KEOt8jEh2GPWOwRKAXG+lP7
 ```

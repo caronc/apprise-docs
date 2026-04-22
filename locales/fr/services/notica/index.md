@@ -1,6 +1,6 @@
 ---
 title: "Notifications Notica"
-description: "Envoyer Notica notifications."
+description: "Envoyer des notifications Notica."
 sidebar:
   label: "Notica"
 
@@ -21,18 +21,18 @@ sample_urls:
 
 ## Configuration du compte
 
-Notica doesn't require you to create an account at all. You just have to visit [their website](https://notica.us/) at least once to both:
+Notica ne vous oblige pas a creer un compte. Il vous suffit de visiter [leur site web](https://notica.us/) au moins une fois afin de :
 
-1. Get your token
-1. Enable Browser Notifications (to be sent from the Notica website)
+1. recuperer votre jeton ;
+2. activer les notifications du navigateur, qui seront ensuite envoyees depuis le site Notica.
 
-The website will generate you a URL to post to that looks like this:
+Le site vous generera alors une URL de publication ressemblant a ceci :
 `https://notica.us/?abc123`
 
-This effectively equates to: `https://notica.us/?{token}`
-Note: _disregard the question mark on the URL as it is not part of the token_.
+Cela correspond en pratique a : `https://notica.us/?{token}`
+Remarque : _ignorez le point d'interrogation dans l'URL ; il ne fait pas partie du jeton_.
 
-From here you have two options, you can directly pass the Notica URL into apprise exactly how it is shown to you from the website, or you can reconstruct the URL into an Apprised based one (which equates to _slightly_ faster load times) as: `notica://{token}`
+A partir de la, vous avez deux possibilites : transmettre directement a Apprise l'URL Notica telle qu'elle apparait sur le site, ou la reconstruire dans le format Apprise, ce qui est legerement plus rapide a traiter : `notica://{token}`
 
 ## Syntaxe
 
@@ -41,7 +41,7 @@ La syntaxe valide est la suivante :
 - `https://notica.us/?{token}`
 - `notica://{token}`
 
-For self hosted solutions, you can use the following:
+Pour les solutions autohebergees, vous pouvez utiliser les variantes suivantes :
 
 - `notica://{host}/{token}`
 - `notica://{host}:{port}/{token}`
@@ -50,29 +50,29 @@ For self hosted solutions, you can use the following:
 - `notica://{user}:{password}@{host}/{token}`
 - `notica://{user}:{password}@{host}:{port}/{token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                        |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| token    | Yes      | The Token that was generated for you after visiting their [website](https://notica.us/). Alternatively this should be the token used by your self hosted solution. |
+| Variable | Obligatoire | Description                                                                                                                                                           |
+| -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui         | Jeton genere pour vous apres votre visite sur [le site web](https://notica.us/). Pour une instance autohebergee, il s'agit du jeton defini par votre propre solution. |
 
-A self hosted solution allows for a few more parameters:
+Une solution autohebergee prend aussi en charge quelques parametres supplementaires :
 
-| Variable | Required | Description                                                                                                                             |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Web Server's hostname.                                                                                                              |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **notica://** and **443** for all **noticas://** references. |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                       |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                       |
+| Variable | Obligatoire | Description                                                                                                                                       |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Nom d'hote du serveur web.                                                                                                                        |
+| port     | Non         | Port sur lequel votre serveur web ecoute. Par defaut, **80** est utilise pour **notica://** et **443** pour toutes les references **noticas://**. |
+| user     | Non         | Si votre systeme utilise HTTP-AUTH, vous pouvez fournir le _username_ a utiliser pour l'authentification.                                         |
+| password | Non         | Si votre systeme utilise HTTP-AUTH, vous pouvez fournir le _password_ a utiliser pour l'authentification.                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notica notification:
+Envoyer une notification Notica :
 
 ```bash
-# Assuming our {token} is abc123
+# Supposons que notre {token} soit abc123
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    notica://abc123
@@ -80,24 +80,24 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 ### Manipulation des en-tetes
 
-Self-hosted solutions may require users to set special HTTP headers when they post their data to their server. This can be accomplished by just sticking a hyphen (**-**) in front of any parameter you specify on your URL string.
+Les solutions autohebergees peuvent necessiter des en-tetes HTTP speciaux lors de l'envoi des donnees. Pour cela, il suffit d'ajouter un tiret (`-`) devant tout parametre precise dans votre URL.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming our {hostname} is localhost
-# Assuming our {token} is abc123
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {token} soit abc123
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "notica://localhost/abc123/?-X-Token=abcdefg"
 
-# Multiple headers just require more entries defined with a hyphen in front:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter d'autres entrees prefixees par `-` :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming our {hostname} is localhost
-# Assuming our {token} is abc123
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {token} soit abc123
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "notica://localhost/abc123/?-X-Token=abcdefg&-X-Apprise=is%20great"
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Threema Gateway"
-description: "Envoyer Threema Gateway notifications."
+description: "Envoyer des notifications Threema Gateway."
 sidebar:
   label: "Threema Gateway"
 
@@ -22,15 +22,15 @@ limits:
 
 ## Configuration du compte
 
-You need to set up a [Threema Gateway](https://gateway.threema.ch/) account first, which will allow you to request and access one or more 8-character Gateway IDs (each starting with an asterisk (`*`), e.g., `*THREEMA`).
+Vous devez d'abord configurer un compte [Threema Gateway](https://gateway.threema.ch/), ce qui vous permettra de demander et d'utiliser un ou plusieurs identifiants Gateway de 8 caracteres, chacun commencant generalement par un asterisque (`*`), par exemple `*THREEMA`.
 
-**Important**: Please make sure to request a "Basic" ID for now, as end-to-end encrypted Threema Gateway messages are not yet supported by Apprise. End-to-end Gateway IDs cannot be used for sending Simple Messages (encrypted on Threema Servers).
+**Important :** veillez pour le moment a demander un identifiant "Basic", car les messages Threema Gateway chiffres de bout en bout ne sont pas encore pris en charge par Apprise. Les identifiants Gateway de type end-to-end ne peuvent pas etre utilises pour envoyer des messages simples, qui sont eux chiffres sur les serveurs Threema.
 
-- Create your Threema Gateway account at <https://gateway.threema.ch/>, and confirm your e-mail address
-- For credits:
-  - Ask Threema Gateway support via e-mail (support-gateway at threema.ch) for test credits, and they will get you covered for some testing
-  - OR acquire them after logging into your Gateway account.
-- [Request](https://gateway.threema.ch/en/id-request?type=simple) your Simple Gateway ID. After a short review, Threema will then create your ID, and you will find the corresponding ID secret on the ID overview page. This usually takes no more than one or two business days.
+- Creez votre compte Threema Gateway sur <https://gateway.threema.ch/> puis confirmez votre adresse e-mail.
+- Pour les credits :
+- contactez l'assistance Threema Gateway par e-mail (`support-gateway` chez `threema.ch`) pour obtenir des credits de test ;
+- ou achetez-les apres vous etre connecte a votre compte Gateway.
+- [Demandez](https://gateway.threema.ch/en/id-request?type=simple) votre identifiant Simple Gateway. Apres une breve verification, Threema creera votre identifiant et vous trouverez le secret associe sur la page de presentation des identifiants. Cela prend en general un ou deux jours ouvrables au maximum.
 
 ## Syntaxe
 
@@ -43,40 +43,40 @@ La syntaxe valide est la suivante :
 - `threema://{gateway_id}@{secret}/{phone}`
 - `threema://{gateway_id}@{secret}/{phone1}/{phone2}/{phone3}/{phoneN}`
 
-You can also freely mix/match the variables:
+Vous pouvez aussi melanger librement les differentes cibles :
 
 - `threema://{gateway_id}@{secret}/{phone1}/{user1}/{email1}/...`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                 |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| gateway_id | Yes      | Your Gateway ID. It consists of 8 characters and usually starts with an asterisk (`*`), e.g., `*MYGWYID`. You may use `?from=` (or `gwid`) as an alias to this variable.    |
-| secret     | Yes      | The ID secret associated with your Gateway ID. You may use `?secret=` as an alias to this variable.                                                                         |
-| target     | No       | Specfiy the recipient Threema ID, e-mail address, or phone no. There is no limit to the number of targets you may specify. You may use `?to=` as an alias to this variable. |
+| Variable   | Obligatoire | Description                                                                                                                                                                             |
+| ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| gateway_id | Oui         | Votre identifiant Gateway. Il se compose de 8 caracteres et commence generalement par un asterisque (`*`), par exemple `*MYGWYID`. Vous pouvez utiliser `?from=` ou `gwid` comme alias. |
+| secret     | Oui         | Le secret associe a votre identifiant Gateway. Vous pouvez utiliser `?secret=` comme alias pour cette variable.                                                                         |
+| target     | Non         | Identifiant Threema, adresse e-mail ou numero de telephone du destinataire. Vous pouvez fournir autant de cibles que necessaire. Vous pouvez utiliser `?to=` comme alias.               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Threema (Gateway) Simple Notification
+Envoyer une notification Threema Gateway simple :
 
 ```bash
-# Assume:
-#  - our {gateway_id} is *MYGWYID
-#  - our {secret} is abc123-2345
-#  - The {toPhoneNo} is 6135551234
+# Supposons que :
+#  - notre {gateway_id} soit *MYGWYID
+#  - notre {secret} soit abc123-2345
+#  - le {toPhoneNo} soit 6135551234
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    threema://*MYGWYID@abc123-2345/6135551234
 ```
 
-Envoyer une Threema (Gateway) Simple Notification to a Threema User by specifying their ID:
+Envoyer une notification Threema Gateway simple a un utilisateur Threema en precisant son identifiant :
 
 ```bash
-# Assume:
-#  - our {gateway_id} is *MYGWYID
-#  - our {secret} is abc123-2345
-#  - The {toThreemaID} is FRIENDID
+# Supposons que :
+#  - notre {gateway_id} soit *MYGWYID
+#  - notre {secret} soit abc123-2345
+#  - le {toThreemaID} soit FRIENDID
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    threema://*MYGWYID@abc123-2345/FRIENDID
 ```

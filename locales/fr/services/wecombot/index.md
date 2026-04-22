@@ -1,6 +1,6 @@
 ---
 title: "Notifications WeCom Bot"
-description: "Envoyer WeCom Bot notifications."
+description: "Envoyer des notifications WeCom Bot."
 sidebar:
   label: "WeCom Bot"
 
@@ -16,27 +16,27 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a WeChat [from here](https://weixin.qq.com/). You will be provided to create a user and password to associate with your account. This is all you need to use this through Apprise.
+Inscrivez-vous a WeChat [ici](https://weixin.qq.com/). Un utilisateur et un mot de passe associes a votre compte vous seront fournis. C'est tout ce dont vous avez besoin pour utiliser ce service via Apprise.
 
-### WeCom for PC
+### WeCom pour PC
 
-1. On WeCom for PC, find the target WeCom group for receiving alarm notifications.
-1. Right-click the WeCom group. In the window that appears, click "Add Group Bot".
-1. In the window that appears, click Create a Bot.
-1. In the window that appears, enter a custom bot name and click Add.
-1. You will be provided a Webhook URL that looks like:
+1. Dans WeCom pour PC, trouvez le groupe WeCom cible qui recevra les notifications d'alerte.
+1. Faites un clic droit sur le groupe WeCom. Dans la fenetre qui apparait, cliquez sur "Add Group Bot".
+1. Dans la fenetre qui apparait, cliquez sur "Create a Bot".
+1. Dans la fenetre qui apparait, saisissez un nom personnalise pour le bot puis cliquez sur "Add".
+1. Une URL webhook ressemblant a ceci vous sera fournie :
    - `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd`
 
-### WeCom for Web
+### WeCom pour le Web
 
-1. On WebCom for Web, open the target WeCom group for receiving alarm notifications.
-1. Click the group settings icon in the upper-right corner.
-1. On the group settings page, choose Group Bots > Add a Bot.
-1. On the management page for adding bots, enter a custom name for the new bot.
-1. Click Add
-1. You will be provided a Webhook URL that looks like:
+1. Dans WeCom Web, ouvrez le groupe WeCom cible qui recevra les notifications d'alerte.
+1. Cliquez sur l'icone des parametres du groupe en haut a droite.
+1. Dans la page des parametres du groupe, choisissez "Group Bots > Add a Bot".
+1. Dans la page de gestion pour l'ajout de bots, saisissez un nom personnalise pour le nouveau bot.
+1. Cliquez sur Add.
+1. Une URL webhook ressemblant a ceci vous sera fournie :
    - `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd`
 
 ## Syntaxe
@@ -46,20 +46,20 @@ La syntaxe valide est la suivante :
 - `wecombot://{botkey}`
 - `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                              |
-| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| key      | No       | Can optionally use the `?key` instead of passing the key in the `hostname` field. This has more value when defining configuration files. |
+| Variable | Obligatoire | Description                                                                                                                                                               |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key      | Non         | Vous pouvez facultativement utiliser `?key` au lieu de passer la cle dans le champ `hostname`. Cela est surtout utile lors de la definition de fichiers de configuration. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une WeCom Bot Notification:
+Envoyer une notification WeCom Bot :
 
 ```bash
-# Assuming our {botkey} is abc123
+# Supposons que notre {botkey} soit abc123
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "wecombot://abc123"
 ```

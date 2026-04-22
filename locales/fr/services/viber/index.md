@@ -1,6 +1,6 @@
 ---
 title: "Notifications Viber"
-description: "Envoyer Viber Bot notifications."
+description: "Envoyer des notifications Viber."
 sidebar:
   label: "Viber"
 
@@ -21,17 +21,17 @@ limits:
 
 ## Configuration du compte
 
-Viber notifications are delivered using the **Viber Bot (Public Account) REST API**.  
-Authentication is handled using a single bot authentication token.
+Les notifications Viber sont transmises via l'**API REST Viber Bot (compte public)**.  
+L'authentification est geree a l'aide d'un unique jeton d'authentification de robot.
 
-Important: Viber bots may **only send messages to users who have subscribed to the bot**. You cannot message arbitrary users or phone numbers.
+Important : les robots Viber ne peuvent **envoyer des messages qu'aux utilisateurs abonnes au robot**. Vous ne pouvez pas contacter des utilisateurs arbitraires ni des numeros de telephone quelconques.
 
-To get started:
+Pour commencer :
 
-1. Create a Viber Bot using the Viber Developers portal.
-2. Retrieve your **Bot Authentication Token** (also referred to as an app key).
-3. Capture one or more **receiver IDs** from bot callback events such as `subscribed` or `message`.
-4. Use the token and receiver IDs with the `viber://` Apprise URL.
+1. creez un robot Viber via le portail developpeur Viber ;
+2. recuperez votre **jeton d'authentification du robot**, parfois appele cle applicative ;
+3. relevez un ou plusieurs **identifiants de destinataire** depuis les evenements de rappel du robot, comme `subscribed` ou `message` ;
+4. utilisez ensuite le jeton et les identifiants de reception avec l'URL Apprise `viber://`.
 
 ## Syntaxe
 
@@ -40,37 +40,37 @@ La syntaxe valide est la suivante :
 - `viber://{token}/{receiver}`
 - `viber://{token}/{receiver1}/{receiver2}/{receiverN}`
 
-Where `{receiver}` values are Viber receiver IDs associated with users who have subscribed to your bot.
+Les valeurs `{receiver}` correspondent aux identifiants Viber des utilisateurs abonnes a votre robot.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                 |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| token    | Yes      | Viber bot authentication token (sent as `X-Viber-Auth-Token`).                                                              |
-| receiver | Yes      | One or more Viber receiver IDs (bot subscribers).                                                                           |
-| from     | No       | Sender display name shown in Viber. Defaults to the Apprise application name and is truncated to 28 characters if required. |
-| avatar   | No       | URL to an avatar image for the sender.                                                                                      |
-| to       | No       | Alias for receiver IDs. Accepts a comma-separated list for convenience.                                                     |
+| Variable | Obligatoire | Description                                                                                                                        |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui         | Jeton d'authentification du robot Viber, envoye comme `X-Viber-Auth-Token`.                                                        |
+| receiver | Oui         | Un ou plusieurs identifiants de reception Viber, c'est-a-dire des abonnes au robot.                                                |
+| from     | Non         | Nom d'expediteur affiche dans Viber. Par defaut, le nom de l'application Apprise est utilise et tronque a 28 caracteres si besoin. |
+| avatar   | Non         | URL d'une image d'avatar pour l'expediteur.                                                                                        |
+| to       | Non         | Alias pour les identifiants `receiver`. Accepte une liste separee par des virgules pour plus de praticite.                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une message to a single receiver:
+Envoyer un message a un destinataire unique :
 
 ```bash
 apprise -vv -b "Hello from Apprise" \
   "viber://MYTOKEN/RECEIVER_ID"
 ```
 
-Envoyer une message to multiple receivers:
+Envoyer un message a plusieurs destinataires :
 
 ```bash
 apprise -vv -b "Deployment completed successfully" \
   "viber://MYTOKEN/ID1/ID2/ID3"
 ```
 
-Envoyer une message using the `to=` alias and custom sender details:
+Envoyer un message en utilisant l'alias `to=` et des details expediteur personnalises :
 
 ```bash
 apprise -vv -b "System Alert" \

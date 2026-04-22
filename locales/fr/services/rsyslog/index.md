@@ -1,6 +1,6 @@
 ---
 title: "Notifications Remote Syslog"
-description: "Envoyer Remote Syslog messages."
+description: "Envoyer des messages Remote Syslog."
 sidebar:
   label: "Remote Syslog"
 
@@ -20,7 +20,7 @@ sample_urls:
 
 ## Configuration du compte
 
-Remote Syslog is a way for network devices to send event messages to a logging server – usually known as a Syslog server. The Syslog protocol is supported by a wide range of devices and can be used to log different types of events.
+Remote Syslog permet aux equipements reseau d'envoyer des messages d'evenement vers un serveur de journalisation, generalement appele serveur Syslog. Le protocole Syslog est pris en charge par un large eventail d'equipements et peut etre utilise pour journaliser differents types d'evenements.
 
 ## Syntaxe
 
@@ -31,35 +31,35 @@ La syntaxe valide est la suivante :
 - `rsyslog://{host}/{facility}`
 - `rsyslog://{host}:{port}/{facility}`
 
-One might change the facility on a remote syslog (rsyslog) server from its default like so:
+Vous pouvez par exemple remplacer la facility par defaut sur un serveur syslog distant (rsyslog) comme ceci :
 
-- `syslog://localhost/local5`
+- `rsyslog://localhost/local5`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                               |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| host     | No       | Query a remote Syslog server (rsyslog) by optionally specifying the hostname                                                                                                                                                                                              |
-| port     | No       | The remote port associated with your rsyslog server provided. By default if this value isn't sent port **514** is used by default.                                                                                                                                        |
-| facility | No       | The facility to use, by default it is `user`. Valid options are **kern**, **user**, **mail**, **daemon**, **auth**, **syslog**, **lpr**, **news**, **uucp**, **cron**, **local0**, **local1**, **local2**, **local3**, **local4**, **local5**, **local6**, and **local7** |
-| logpid   | Yes      | Include PID as part of the log output.                                                                                                                                                                                                                                    |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                              |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| host     | Non         | Nom d'hote du serveur Syslog distant.                                                                                                                                                                                                                                                    |
+| port     | Non         | Port associe a votre serveur `rsyslog`. Si aucune valeur n'est fournie, le port **514** est utilise par defaut.                                                                                                                                                                          |
+| facility | Non         | Facility a utiliser ; la valeur par defaut est `user`. Les options valides sont **kern**, **user**, **mail**, **daemon**, **auth**, **syslog**, **lpr**, **news**, **uucp**, **cron**, **local0**, **local1**, **local2**, **local3**, **local4**, **local5**, **local6** et **local7**. |
+| logpid   | Oui         | Inclut le PID dans la sortie de journalisation.                                                                                                                                                                                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Remote Syslog notification
+Envoyer une notification Remote Syslog :
 
 ```bash
-# The following sends a syslog notification to the `user` facility
+# L'exemple ci-dessous envoie une notification syslog vers la facility `user`
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    rsyslog://localhost
 ```
 
-### Internal RSyslog Test Server
+### Serveur de Test RSyslog Interne
 
 ```bash
-# Setup a simple docker file that will run our our rsyslog server for us:
+# Creer un Dockerfile minimal qui lancera notre serveur rsyslog :
 cat << _EOF > dockerfile.syslog
 FROM ubuntu
 RUN apt update && apt install rsyslog -y
@@ -73,17 +73,16 @@ RUN echo '\$ModLoad imudp\n \\
 ENTRYPOINT ["rsyslogd", "-n"]
 _EOF
 
-# build it:
+# Construire l'image :
 docker build -t mysyslog -f dockerfile.syslog .
 
-# Now run it:
+# Puis la lancer :
 docker run  --cap-add SYSLOG --restart always \
   -v $(pwd)/log:/var/log \
   -p 514:514 -p 514:514/udp --name rsyslog mysyslog
 
-# In another terminal window, you can look into a directory
-# relative to the location you ran the above command for a directory
-# called `log`
-You may need to adjust its permissions, the log file will only get
-created after you send an apprise notification.
+# Dans un autre terminal, vous pourrez consulter le repertoire
+# `log` cree a l'emplacement depuis lequel vous avez lance la commande.
+# Il pourra etre necessaire d'ajuster ses permissions ; le fichier journal
+# ne sera cree qu'apres l'envoi d'une notification Apprise.
 ```

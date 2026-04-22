@@ -32,8 +32,8 @@ sidebar:
 
 Ce guide couvre la fonctionnalité centrale de l'API Apprise : l'envoi de notifications. Vous pouvez envoyer des notifications de deux manières :
 
-1. **Stateless :** vous fournissez les URL de configuration dans la charge utile de la requête.
-1. **Stateful :** vous référencez une clé de configuration préalablement enregistrée.
+1. **Sans état :** vous fournissez les URL de configuration dans la charge utile de la requête.
+1. **Avec état :** vous référencez une clé de configuration préalablement enregistrée.
 
 ## Formats de Réponse
 
@@ -41,7 +41,7 @@ Par défaut, les endpoints renvoient `text/plain`. Si vous préférez du JSON, e
 
 Pour les endpoints de notification (`/notify` et `/notify/{KEY}`), vous pouvez aussi demander une vue HTML simple des logs avec `Accept: text/html`. C'est principalement utile pour des tests manuels dans un navigateur.
 
-## Notifications Stateless
+## Notifications Sans État
 
 <picture class="theme-aware-sl-diagram">
   <source
@@ -50,7 +50,7 @@ Pour les endpoints de notification (`/notify` et `/notify/{KEY}`), vous pouvez a
   />
   <img
     src="../images/stateless-api-integration-light.svg"
-    alt="Stateless API Integration"
+    alt="Intégration API sans état"
     loading="lazy"
   />
 </picture>
@@ -94,7 +94,7 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
-## Notifications Stateful
+## Notifications Avec État
 
 <picture class="theme-aware-sf-diagram">
   <source
@@ -103,7 +103,7 @@ curl -X POST \
   />
   <img
     src="../images/stateful-api-integration-light.svg"
-    alt="Stateful API Integration"
+    alt="Intégration API avec état"
     loading="lazy"
   />
 </picture>

@@ -1,6 +1,6 @@
 ---
 title: "Notifications LaMetric Time/Clock"
-description: "Envoyer LaMetric Time/Clock notifications."
+description: "Envoyer des notifications LaMetric Time/Clock."
 sidebar:
   label: "LaMetric Time/Clock"
 
@@ -19,98 +19,98 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-You now have to methods of notifying your LaMetric Device:
+Vous disposez de deux methodes pour notifier votre appareil LaMetric :
 
-1. **Device Mode**: Directly query your LaMetric Device on your local network to send it a notification.
-1. **Cloud Mode**: A secure query to LaMetric's API server in the cloud to send a message to your clock. You will have limited options with this method.
+1. **Mode Appareil** : interroger directement votre appareil LaMetric sur votre reseau local pour lui envoyer une notification.
+1. **Mode nuagique** : envoyer un message a votre horloge via une requete securisee vers l'API nuagique de LaMetric. Cette methode offre moins d'options.
 
-### Device Mode Setup
+### Configuration du Mode Appareil
 
-With Device Mode, your Apprise query will directly interface with the LaMetric Time Device on your local network.
+Avec le Mode Appareil, votre requete Apprise communique directement avec l'appareil LaMetric Time present sur votre reseau local.
 
-1. Sign Up and login to the [Developer Webpage](https://developer.lametric.com).
-1. Locate your Device **API Key**; you can find it [here](https://developer.lametric.com/user/devices):
-1. You now need to know the IP address your device resides on. Your devices **IP Address** can be found in LaMetric Time app at: **Settings** -> **Wi-Fi** -> **IP Address**
+1. Creez un compte puis connectez-vous sur la [Page Developpeur](https://developer.lametric.com).
+1. Reperez la **Cle API** de votre appareil ; vous pouvez la trouver [ici](https://developer.lametric.com/user/devices).
+1. Vous devez ensuite connaitre l'adresse IP de votre appareil. Cette **Adresse IP** est visible dans l'application LaMetric Time sous : **Settings** -> **Wi-Fi** -> **IP Address**
 
-### Cloud Mode Setup
+### Configuration du Mode Nuagique
 
-**Note**: It appears that at some point in time Lametric dropped support and usage of their cloud mode. While documented in their forums with screenshots and usage examples. None of this seems to be available for the end user anymore to play/work with. For those who still have access to their upstream servers can leverage this. Alternatively those who use this Apprise plugin will need to focus on the normal Device Mode (explained above) instead.
+**Remarque** : il semble qu'a un certain moment, LaMetric ait abandonne la prise en charge de son mode nuagique. Bien qu'il soit documente dans leurs forums avec des captures d'ecran et des exemples d'utilisation, tout cela ne semble plus vraiment accessible a l'utilisateur final aujourd'hui. Ceux qui ont encore acces a leurs serveurs amont peuvent continuer a l'exploiter. Sinon, les utilisateurs de ce plugin Apprise devront se concentrer sur le mode appareil standard, explique ci-dessus.
 
-Using Cloud Mode, you will interface with your LaMetric Time device through the internet.
+En mode nuagique, vous communiquez avec votre appareil LaMetric Time via internet.
 
-1. Sign Up and login to the [Developer Webpage](https://developer.lametric.com).
-1. Create a **Indicator App** if you haven't already done so from [here](https://developer.lametric.com/applications/sources).
-   - There is a great official tutorial on how to do this [here](https://lametric-documentation.readthedocs.io/en/latest/guides/first-steps/first-lametric-indicator-app.html#publish-app-and-install-it-to-your-lametric-time)
-1. Make sure to set the **Communication Type** to **PUSH**
-1. You will be able to **Publish** your app once you've finished setting it up. This will allow it to be accessible from the internet using the `cloud` mode of this Apprise Plugin. The **Publish** button shows up from within the settings of your Lametric App upon clicking on the **Draft Vx** folder (where `x` is the version - usually a 1)
+1. Creez un compte puis connectez-vous sur la [Page Developpeur](https://developer.lametric.com).
+1. Creez une **Indicator App** si ce n'est pas deja fait, depuis [ici](https://developer.lametric.com/applications/sources).
+   - Un excellent tutoriel officiel explique la marche a suivre [ici](https://lametric-documentation.readthedocs.io/en/latest/guides/first-steps/first-lametric-indicator-app.html#publish-app-and-install-it-to-your-lametric-time)
+1. Assurez-vous de definir le **Communication Type** sur **PUSH**
+1. Une fois la configuration terminee, vous pourrez **Publish** votre application. Cela la rendra accessible depuis internet en utilisant le mode nuagique (`cloud`) de ce plugin Apprise. Le bouton **Publish** apparait dans les parametres de votre application LaMetric lorsque vous cliquez sur le dossier **Draft Vx**, ou `x` correspond a la version, generalement `1`.
 
-1. When you've completed the above steps, the site would have provided you a **PUSH URL** that looks like this:
+1. Une fois les etapes ci-dessus terminees, le site vous fournit une **PUSH URL** ressemblant a ceci :
    - `https://developer.lametric.com/api/v1/dev/widget/update/com.lametric.{app_id}/{app_ver}`
 
-   You will need to record the `{app_id}` and `{app_ver}` to use the `cloud` mode.
+   Vous devrez conserver `{app_id}` et `{app_ver}` pour utiliser le mode nuagique (`cloud`).
 
-   The same page should also provide you with an Application **Access Token**. It's approximately 86 characters with two equal (`=`) characters at the end of it. This becomes your `{app_access_token}`. Here is an example of what one might look like:
+   La meme page devrait egalement vous fournir un **Jeton d'Acces** applicatif. Il comporte environ 86 caracteres et se termine par deux signes egal, `=`. Il devient alors votre `{app_access_token}`. Voici un exemple du format attendu :
    - `K2MxWI0NzU0ZmI2NjJlZYTgViMDgDRiN8YjlmZjRmNTc4NDVhJzk0RiNjNh0EyKWW==`
 
 ## Syntaxe
 
-Valid _Device Mode_ syntax is as follows:
+La syntaxe valide pour le _Mode Appareil_ est la suivante :
 
 - `lametric://{apikey}@{hostname}`
 - `lametric://{apikey}@{hostname}:{port}`
 - `lametric://{userid}:{apikey}@{hostname}`
 - `lametric://{userid}:{apikey}@{hostname}:{port}`
 
-Valid _Cloud Mode_ syntax is as follows:
+La syntaxe valide pour le _Mode Nuagique_ est la suivante :
 
 - `lametric://{app_access_token}@{app_id}`
 - `lametric://{app_access_token}@{app_id}/{app_version}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-The breakdown of parameters depend on whether you are using the Cloud Mode or Device Mode.
+La decomposition des parametres depend du fait que vous utilisiez le mode nuagique ou le mode appareil.
 
-### Device Mode
+### Mode Appareil
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey    | Yes      | Your Device **API Key** can be found on LaMetric's website [here](https://developer.lametric.com/user/devices)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| hostname  | No       | This is the IP address or hostname of your Lametric device on your local network.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| port      | No       | The port your LaMetric device is listening on. By default the port is **8080**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| userid    | No       | The account login to your Lametric device on your local network. By default the user is set to `dev`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| mode      | No       | Define the Apprise/Lametric mode to use. This can be either set to `cloud` or `device`. It's worth pointing out that Apprise is smart enough to detect the mode you're using based on the URL you provide it. But for those who want to explicitly provide its value, they can do so.                                                                                                                                                                                                                                                                                                                                                                               |
-| cycles    | No       | The number of times message should be displayed. If cycles is set to `0`, notification will stay on the screen until user dismisses it manually. By default it is set to `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| sound     | No       | An audible alarm that can be sent with the notification. The following keywords are supported: `bicycle`, `car`, `cash`, `cat`, `dog`, `dog2`, `energy`, `knock-knock`, `letter_email`, `lose1`, `lose2`, `negative1`, `negative2`, `negative3`, `negative4`, `negative5`, `notification`, `notification2`, `notification3`, `notification4`, `open_door`, `positive1`, `positive2`, `positive3`, `positive4`, `positive5`, `positive6`, `statistic`, `thunder`, `water1`, `water2`, `win`, `win2`, `wind`, `wind_short`, `alarm1`, `alarm2`, `alarm3`, `alarm4`, `alarm5`, `alarm6`, `alarm7`, `alarm8`, `alarm9`, `alarm10`, `alarm11`, `alarm12`, and `alarm13`. |
-| priority  | No       | The priority of the message; the possible values are `info`, `warning`, and `critical`. By default `info` is used if nothing is specified.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| icon_type | No       | Represents the nature of notification; the possible values are `info`, `alert`, and `none`. By default `none` is used if nothing is specified.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Variable  | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey    | Oui         | La **Cle API** de votre appareil, disponible sur le site de LaMetric [ici](https://developer.lametric.com/user/devices).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| hostname  | Non         | Adresse IP ou nom d'hote de votre appareil LaMetric sur votre reseau local.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| port      | Non         | Port sur lequel votre appareil LaMetric ecoute. La valeur par defaut est **8080**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| userid    | Non         | Identifiant de connexion du compte de votre appareil LaMetric sur le reseau local. La valeur par defaut est `dev`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| mode      | Non         | Definit le mode Apprise/LaMetric a utiliser, `cloud` ou `device`. Il est utile de noter qu'Apprise est suffisamment intelligent pour detecter automatiquement le mode a partir de l'URL fournie. Si vous souhaitez toutefois le preciser explicitement, vous pouvez le faire.                                                                                                                                                                                                                                                                                                                                                                                             |
+| cycles    | Non         | Nombre de fois que le message doit etre affiche. Si `cycles` est defini sur `0`, la notification reste affichee jusqu'a ce que l'utilisateur la ferme manuellement. La valeur par defaut est `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| sound     | Non         | Alarme sonore pouvant etre envoyee avec la notification. Les mots-cles suivants sont pris en charge : `bicycle`, `car`, `cash`, `cat`, `dog`, `dog2`, `energy`, `knock-knock`, `letter_email`, `lose1`, `lose2`, `negative1`, `negative2`, `negative3`, `negative4`, `negative5`, `notification`, `notification2`, `notification3`, `notification4`, `open_door`, `positive1`, `positive2`, `positive3`, `positive4`, `positive5`, `positive6`, `statistic`, `thunder`, `water1`, `water2`, `win`, `win2`, `wind`, `wind_short`, `alarm1`, `alarm2`, `alarm3`, `alarm4`, `alarm5`, `alarm6`, `alarm7`, `alarm8`, `alarm9`, `alarm10`, `alarm11`, `alarm12`, et `alarm13`. |
+| priority  | Non         | Priorite du message ; les valeurs possibles sont `info`, `warning` et `critical`. Si rien n'est precise, `info` est utilise par defaut.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| icon_type | Non         | Nature de la notification ; les valeurs possibles sont `info`, `alert` et `none`. Si rien n'est precise, `none` est utilise par defaut.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-### Cloud Mode
+### Mode Nuagique
 
-| Variable         | Required | Description                                                                                                                                                                                                                                                                           |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| app_id           | Yes      | Your Indicator App's **Application ID** can be found in your \*Indicator App Configuration\*\*. You can access your application's configuration from the LaMetric's website [here](https://developer.lametric.com/applications/).                                                     |
-| app_access_token | Yes      | Your Indicator App's **Access Token** can be found in your \*Indicator App Configuration\*\*. You can access your application's configuation from the LaMetric's website [here](https://developer.lametric.com/applications/).                                                        |
-| app_ver          | No       | The version associated with your Indicator App. If this isn't specified, then the default value of `1` (One) is used.                                                                                                                                                                 |
-| mode             | No       | Define the Apprise/Lametric mode to use. This can be either set to `cloud` or `device`. It's worth pointing out that Apprise is smart enough to detect the mode you're using based on the URL you provide it. But for those who want to explicitly provide its value, they can do so. |
+| Variable         | Obligatoire | Description                                                                                                                                                                                                                            |
+| ---------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| app_id           | Oui         | **Identifiant d'Application** de votre Indicator App, disponible dans la configuration de votre application. Vous pouvez acceder a cette configuration depuis le site de LaMetric [ici](https://developer.lametric.com/applications/). |
+| app_access_token | Oui         | **Jeton d'Acces** de votre Indicator App, disponible dans la configuration de votre application. Vous pouvez acceder a cette configuration depuis le site de LaMetric [ici](https://developer.lametric.com/applications/).             |
+| app_ver          | Non         | Version associee a votre Indicator App. Si elle n'est pas precisee, la valeur par defaut `1` est utilisee.                                                                                                                             |
+| mode             | Non         | Definit le mode Apprise/LaMetric a utiliser, `cloud` ou `device`. Apprise peut generalement detecter automatiquement le mode en fonction de l'URL fournie, mais vous pouvez aussi le definir explicitement si vous le souhaitez.       |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une LaMetric Time notification using Device Mode (local to our network):
+Envoyer une notification LaMetric Time en Mode Appareil, sur notre reseau local :
 
 ```bash
-# Assuming our {apikey} is abc123
-# Assuming our {hostname} is 192.168.1.3
+# Supposons que notre {apikey} soit abc123
+# Supposons que notre {hostname} soit 192.168.1.3
 apprise -vv -b "Test Message Body" lametric://abc123@192.168.1.3
 ```
 
-Envoyer une LaMetric Time notification using Cloud Mode (using LaMetrics Developer API):
+Envoyer une notification LaMetric Time en mode nuagique, via l'API developpeur LaMetric :
 
 ```bash
-# Assuming our {app_id} ABCD1234
-# Assuming our {app_access_token} is abcdefg==
+# Supposons que notre {app_id} soit ABCD1234
+# Supposons que notre {app_access_token} soit abcdefg==
 apprise -vv -b "Test Message Body" lametric://abcdefg==@ABCD1234
 ```

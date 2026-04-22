@@ -1,6 +1,6 @@
 ---
 title: "Notifications Ryver"
-description: "Envoyer Ryver notifications."
+description: "Envoyer des notifications Ryver."
 sidebar:
   label: "Ryver"
 
@@ -23,32 +23,32 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use Ryver you'll need to have the forum(s) you intend to notify already pre-created. You'll need to do this before you follow the next set of instructions.
+Pour utiliser Ryver, vous devez avoir créé au préalable le ou les forums que vous souhaitez notifier. Cette étape est nécessaire avant de suivre les instructions ci-dessous.
 
-Next you need to define a new webhook and get the corresponding URL. This is done through:
+Ensuite, vous devez définir un nouveau webhook et obtenir l'URL correspondante. Pour ce faire :
 
-1. click on the **Integrations** > **Incoming Webhooks** beneath your settings on the left
-2. click on the **Create Webhook** button
-3. choose either **Slack** or **Plain/text Ryver** as this plugin currently supports both.
-4. Regardless of what webhook type you choose to create (Slack or Ryver), the next steps are still the same:
-   - Set the webhook type to **Chat Message**
-   - Select the forum(s) you already have set up to allow this webhook to access.
-   - Click next.
+1. Cliquez sur **Integrations** > **Incoming Webhooks** dans les paramètres à gauche.
+2. Cliquez sur le bouton **Create Webhook**.
+3. Choisissez soit **Slack** soit **Plain/text Ryver**, car ce plugin prend en charge les deux.
+4. Quel que soit le type de webhook choisi (Slack ou Ryver), les étapes suivantes restent identiques :
+   - Définissez le type de webhook sur **Chat Message**.
+   - Sélectionnez le ou les forums déjà configurés pour autoriser l'accès à ce webhook.
+   - Cliquez sur Suivant.
 
-When you've completed this process you will receive a URL that looks something like this:
+Une fois ce processus terminé, vous recevrez une URL similaire à celle-ci :
 `https://apprise.ryver.com/application/webhook/ckhrjW8w672m6HG`
 
-This effectively equates to:<br/>
+Cela correspond effectivement à :<br/>
 `https://{organization}.ryver.com/application/webhook/{token}`
 
-**Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_); you no longer need to parse the URL any further. However there is slightly less overhead (internally) if you do.
+**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la v0.7.7_) ; il n'est plus nécessaire d'analyser l'URL davantage. Toutefois, cela entraîne légèrement moins de surcharge (en interne) si vous le faites.
 
-The last part of the URL you're given is the token we're most interested in. With respect to the above example:
+La dernière partie de l'URL fournie est le token qui nous intéresse. Par rapport à l'exemple ci-dessus :
 
-- the **token** is `ckhrjW8w672m6HG`
-- the **organization** is `apprise`
+- le **token** est `ckhrjW8w672m6HG`
+- l'**organization** est `apprise`
 
 ## Syntaxe
 
@@ -59,20 +59,20 @@ La syntaxe valide est la suivante :
 - `ryver://{botname}@{organization}/{token}/`
 - `ryver://{organization}/{token}/?webhook=slack`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable     | Required | Description                                                                                                                                                                  |
-| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| organization | Yes      | The organization you created your webhook under.                                                                                                                             |
-| token        | Yes      | The token provided to you after creating a _incoming-webhook_                                                                                                                |
-| botname      | No       | Set the display name the message should appear from.                                                                                                                         |
-| webhook      | No       | The type of webhook you created (Slack or Ryver). The only possible values are **slack** and **ryver**. The default value is **ryver** if the webhook value isn't specified. |
+| Variable     | Requis | Description                                                                                                                                                                      |
+| ------------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| organization | Oui    | L'organisation sous laquelle vous avez créé votre webhook.                                                                                                                       |
+| token        | Oui    | Le token fourni après la création d'un _incoming-webhook_.                                                                                                                       |
+| botname      | Non    | Définit le nom d'affichage depuis lequel le message apparaîtra.                                                                                                                  |
+| webhook      | Non    | Le type de webhook créé (Slack ou Ryver). Les seules valeurs possibles sont **slack** et **ryver**. La valeur par défaut est **ryver** si aucune valeur webhook n'est spécifiée. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une ryver notification:
+Envoyer une notification Ryver :
 
 ```bash
 # Assuming our {organization} is apprise

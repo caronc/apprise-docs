@@ -131,14 +131,14 @@ S'ils sont présents, les logos sont affichés automatiquement sur la page du se
 
 Chaque page de service commence par un bloc frontmatter qui décrit ses capacités.
 
-Ces métadonnées sont **utilisées pour générer automatiquement la section Overview** du site.
+Ces métadonnées sont **utilisées pour générer automatiquement la section Aperçu** du site.
 
 Exemple minimal :
 
 ````md
 ---
-title: "Example Notifications"
-description: "Send notifications using Example"
+title: "Notifications Example"
+description: "Envoyer des notifications avec Example"
 sidebar:
   label: "Example"
 
@@ -155,32 +155,32 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Account Setup
+## Configuration du Compte
 
-How to get set up with Example
+Comment configurer Example
 
-## Syntax
+## Syntaxe
 
-Valid syntax is as follows:
+La syntaxe valide est la suivante :
 
 - `example://{token}`
 - `example://{token}/{target}`
 
-## Parameter Breakdown
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                    |
-| -------- | -------- | ---------------------------------------------------------------------------------------------- |
-| token    | yes      | Token to access the example server                                                             |
-| target   | no       | The target you wish to notify. If no target is specified, we send a notification to ourselves. |
+| Variable | Obligatoire | Description                                                                                           |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| token    | oui         | Jeton permettant d'acceder au serveur Example.                                                        |
+| target   | non         | Cible que vous souhaitez notifier. Si aucune cible n'est precisee, une notification nous est envoyee. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Example
+## Exemple
 
-Send a Example notification:
+Envoyer une notification Example :
 
 ```bash
-apprise -vv -t "My Title" -b "Message Body" \
+apprise -vv -t "Mon Titre" -b "Corps du Message" \
    "example://my-token/target"
 ```
 ````

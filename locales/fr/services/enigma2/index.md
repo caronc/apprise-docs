@@ -23,13 +23,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-A [_E2OpenPlugin_](https://github.com/E2OpenPlugins) called [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) can allow you to communicate with your Enigma2 devices (such as [Dreambox](http://www.dream-multimedia-tv.de/), [Vu+](http://www.vuplus.com), etc.) using a API.
+Un [_E2OpenPlugin_](https://github.com/E2OpenPlugins) appele [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) vous permet de communiquer avec vos appareils Enigma2, comme [Dreambox](http://www.dream-multimedia-tv.de/), [Vu+](http://www.vuplus.com), etc., a l'aide d'une API.
 
-Once [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) is installed, Apprise can utilize its API to send notifications to your Enigma2 device.
+Une fois [OpenWebif](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif) installe, Apprise peut utiliser son API pour envoyer des notifications a votre appareil Enigma2.
 
-Installation instructions on how to install OpenWebif onto your Engima2 device can be found on its [GitHub Page](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
+Les instructions d'installation d'OpenWebif sur votre appareil Enigma2 sont disponibles sur sa [page GitHub](https://github.com/E2OpenPlugins/e2openplugin-OpenWebif).
 
 ## Syntaxe
 
@@ -60,31 +60,31 @@ La syntaxe valide est la suivante :
 - `enigma2s://{user}:{password}@{host}:{port}`
 - `enigma2s://{user}:{password}@{host}:{port}/{fullpath}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                               |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The Enigma2 devices IP/hostname                                                                                                           |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **enigma2://** and **443** for all **enigma2s://** references. |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                         |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                         |
-| timeout  | No       | The number of seconds delivered notification stay on the screen for. The default value is 13.                                             |
-| fullpath | No       | Those hosting this internally may wish to specify the (prefix) path their service is listening on.                                        |
+| Variable | Obligatoire | Description                                                                                                                                          |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Adresse IP ou nom d'hote de l'appareil Enigma2.                                                                                                      |
+| port     | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **enigma2://** et **443** pour toutes les references **enigma2s://**. |
+| user     | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                    |
+| password | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                    |
+| timeout  | Non         | Nombre de secondes pendant lesquelles la notification envoyee reste affichee a l'ecran. La valeur par defaut est 13.                                 |
+| fullpath | Non         | Les personnes hebergeant ce service en interne peuvent souhaiter preciser le chemin, prefixe, sur lequel il ecoute.                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer an notification to our Enigma2 Device:
+Envoyer une notification a notre appareil Enigma2 :
 
 ```bash
-# Assuming our {hostname} is dreambox
+# Supposons que notre {hostname} soit dreambox
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    enigma2://dreambox
 
-# Hosting your service at /enigma2, the following can be handle this:
-# Assuming our {hostname} is dreambox
-# Assuming our {fullpath} is /enigma2
+# Si votre service est heberge sous /enigma2, l'exemple suivant peut gerer cela :
+# Supposons que notre {hostname} soit dreambox
+# Supposons que notre {fullpath} soit /enigma2
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "enigma2://dreambox/enigma2"
@@ -93,22 +93,22 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 
 ### Manipulation des en-tetes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a hyphen (**-**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin d'en-tetes HTTP speciaux lors de l'envoi de leurs donnees vers leur serveur. Pour cela, il suffit d'ajouter un symbole moins, **-**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would set the header:
+# L'exemple ci-dessous definirait l'en-tete :
 #    X-Token: abcdefg
 #
-# Assuming our {hostname} is vu-device
+# Supposons que notre {hostname} soit vu-device
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "enigma2://localhost/?-X-Token=abcdefg"
 
-# Multiple headers just require more entries defined with a hyphen in front:
-# Below would set the headers:
+# Pour plusieurs en-tetes, il suffit d'ajouter plus d'entrees precedees d'un symbole moins :
+# L'exemple ci-dessous definirait les en-tetes :
 #    X-Token: abcdefg
 #    X-Apprise: is great
 #
-# Assuming our {hostname} is localhost
+# Supposons que notre {hostname} soit localhost
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "enigma2://localhost/path/?-X-Token=abcdefg&-X-Apprise=is%20great"
 ```

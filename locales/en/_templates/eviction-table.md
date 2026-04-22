@@ -4,6 +4,7 @@
 | `paho`         | `mqtt://`                             |    ~4 MB     |
 | `gntp`         | `growl://`                            |    ~2 MB     |
 | `smpplib`      | `smpp://`, `smpps://`                 |    ~2 MB     |
+| `hid`          | `blink1://`                           |    ~2 MB     |
 | `pgpy`         | `mailto://`, `mailtos://` (PGP only)  |    ~10 MB    |
 | `cryptography` | `simplepush://`, `fcm://`, `vapid://` |   partial†   |
 

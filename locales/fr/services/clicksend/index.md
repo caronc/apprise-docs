@@ -1,6 +1,6 @@
 ---
 title: "Notifications ClickEnvoyer"
-description: "Envoyer ClickEnvoyer notifications."
+description: "Envoyer des notifications ClickSend."
 sidebar:
   label: "ClickSend"
 
@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a ClickEnvoyer account [from here](https://clicksend.com). You will be provided to create a user and password to associate with your account. This is all you need to use this through Apprise.
+Inscrivez-vous a un compte ClickSend [ici](https://clicksend.com). Un identifiant utilisateur et un mot de passe associes a votre compte vous seront fournis. C'est tout ce dont vous avez besoin pour utiliser ce service avec Apprise.
 
 ## Syntaxe
 
@@ -32,31 +32,32 @@ La syntaxe valide est la suivante :
 - `clicksend://{user}:{password}@{PhoneNo}`
 - `clicksend://{user}:{password}@{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                         |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     | Yes      | The _username_ associated with your ClickEnvoyer account.                                                                                                                                                                                                                                                           |
-| password | Yes      | The _password_ associated with your ClickEnvoyer account.                                                                                                                                                                                                                                                           |
-| PhoneNo  | Yes      | At least one phone number MUST identified to use this plugin. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion.                                                                                                     |
-| batch    | No       | ClickEnvoyer allows a batch mode. If you identify more then one phone number, you can send all of the phone numbers you identify on the URL in a single shot instead of the normal _Apprise_ approach (which sends them one by one). Enabling batch mode has both pros and cons. By default batch mode is disabled. |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                                                         |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     | Oui         | _Username_ associe a votre compte ClickSend.                                                                                                                                                                                                                                                                                        |
+| password | Oui         | _Password_ associe a votre compte ClickSend.                                                                                                                                                                                                                                                                                        |
+| PhoneNo  | Oui         | Au moins un numero de telephone doit etre precise pour utiliser ce plugin. Ce champ est assez tolerant et accepte aussi les parentheses, les espaces et les tirets si vous souhaitez formater le numero de maniere plus lisible.                                                                                                    |
+| batch    | Non         | ClickSend permet un mode lot. Si vous indiquez plus d'un numero de telephone, vous pouvez envoyer tous les numeros identifies dans l'URL en une seule fois, au lieu de l'approche habituelle d'_Apprise_, qui les envoie un par un. L'activation du mode lot a des avantages comme des inconvenients. Par defaut, il est desactive. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une ClickEnvoyer Notification as an SMS:
+Envoyer une notification ClickSend sous forme de SMS :
 
 ```bash
-# Assuming our {user} is l2g
-# Assuming our {password} is appriseIsAwesome
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {user} soit l2g
+# Supposons que notre {password} soit appriseIsAwesome
+# Supposons que notre {PhoneNo}
+#  - se trouve aux Etats-Unis, donc avec l'indicatif +1
+#  - corresponde a 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "clicksend://l2g:appriseIsAwesome@18005551223"
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# l'exemple suivant aurait egalement fonctionne, les espaces,
+# parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "clicksend://l2g:appriseIsAwesome@1-(800) 555-1223"
 ```

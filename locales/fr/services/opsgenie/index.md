@@ -1,6 +1,6 @@
 ---
 title: "Notifications Opsgenie"
-description: "Envoyer Opsgenie notifications."
+description: "Envoyer des notifications Opsgenie."
 sidebar:
   label: "Opsgenie"
 
@@ -22,16 +22,16 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-1. Visit <https://www.opsgenie.com> to create your account.
-2. [Generate your Integration API Key](https://app.opsgenie.com/settings/integration/add/API/)
+1. Rendez-vous sur <https://www.opsgenie.com> pour creer votre compte.
+2. [Generez votre cle API d'integration](https://app.opsgenie.com/settings/integration/add/API/)
 
 :::note
-You must generate an Integration API Key; this is not to be confused with the Opsgenie Management API Key.
+Vous devez generer une cle API d'integration ; elle ne doit pas etre confondue avec la cle API de gestion Opsgenie.
 :::
-caution
-Opsgenie is being retired by Atlassian. Consider migrating to [Jira Service Management](../jira/) which provides the same functionality. See the [Atlassian migration guide](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/) for details.
+:::caution
+Opsgenie est en cours d'abandon par Atlassian. Envisagez une migration vers [Jira Service Management](../jira/), qui fournit la meme fonctionnalite. Consultez le [guide de migration Atlassian](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/) pour les details.
 :::
 
 ## Syntaxe
@@ -49,65 +49,65 @@ La syntaxe valide est la suivante :
 - `opsgenie://{apikey}/#{team1}/#{team2}/#{teamN}`
 
 :::note
-If no prefix character is specified, then the target is presumed to be a user (an `@` symbol is presumed to be in front of it).
+Si aucun caractere de prefixe n'est precise, alors la cible est presumee etre un utilisateur, c'est-a-dire qu'un symbole `@` est suppose se trouver devant.
 :::
 
-You can also mix/match the targets:
+Vous pouvez aussi melanger les cibles :
 
 - `opsgenie://{apikey}/@{user}/#{team}/*{schedule}/^{escalation}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                         |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey     | Yes      | This is the API Key associated with your Opsgenie account.                                                                                                                                                          |
-| user       | No       | The user you wish to notify; this can be a `username`, `email`, or `uuid4`. This is the assumed default target type to notify, but it is advised you prefix all users with a `@` symbol to eliminate any ambiguity. |
-| team       | No       | The team you wish to notify; this can be the team name itself, or a `uuid4` associated with it. <br>**Note:** Teams must be prefixed with a `#` symbol.                                                             |
-| schedule   | No       | The schedule you wish to notify; this can be the schedule name itself, or a `uuid4` associated with it. <br>**Note:** Schedules must be prefixed with a `*` symbol.                                                 |
-| escalation | No       | The escalation you wish to notify; this can be the escalation name itself, or a `uuid4` associated with it. <br>**Note:** Escalations must be prefixed with a `^` symbol.                                           |
-| region     | No       | The 2 character region code. By default this is set to `us` if not specified. Europeans must set this to `eu` to work correctly.                                                                                    |
-| batch      | No       | Set it to **Yes** if you want all identified targets to be notified in batches (instead of individually). By default this is set to **No**.                                                                         |
-| tags       | No       | A comma separated list of tags you can associate with your Opsgenie message                                                                                                                                         |
-| priority   | No       | The priority to associate with the message. It is on a scale between 1 and 5. The default value is `3` if not specified.                                                                                            |
-| alias      | No       | The alias to associate with the message.                                                                                                                                                                            |
-| entity     | No       | The entity to associate with the message.                                                                                                                                                                           |
-| action     | No       | The action to perform. See [Alert Actions](#alert-actions) below. By default this is set to `map`.                                                                                                                  |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                     |
+| ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey     | Oui         | Cle API associee a votre compte Opsgenie.                                                                                                                                                                                                       |
+| user       | Non         | Utilisateur a notifier ; il peut s'agir d'un `username`, d'un `email` ou d'un `uuid4`. C'est le type de cible suppose par defaut, mais il est recommande de prefixer tous les utilisateurs avec le symbole `@` afin d'eliminer toute ambiguite. |
+| team       | Non         | Equipe a notifier ; il peut s'agir du nom de l'equipe elle-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les equipes doivent etre prefixees par un symbole `#`.                                                                  |
+| schedule   | Non         | Planning a notifier ; il peut s'agir du nom du planning lui-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les plannings doivent etre prefixes par un symbole `*`.                                                                |
+| escalation | Non         | Escalade a notifier ; il peut s'agir du nom de l'escalade elle-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les escalades doivent etre prefixees par un symbole `^`.                                                            |
+| region     | Non         | Code region a 2 caracteres. Par defaut, cette valeur est `us` si rien n'est precise. Les utilisateurs europeens doivent definir cette valeur sur `eu` pour que cela fonctionne correctement.                                                    |
+| batch      | Non         | Definissez cette valeur sur **Yes** si vous souhaitez notifier toutes les cibles identifiees en lot, au lieu de maniere individuelle. Par defaut, cette option est definie sur **No**.                                                          |
+| tags       | Non         | Liste de tags separes par des virgules que vous pouvez associer a votre message Opsgenie.                                                                                                                                                       |
+| priority   | Non         | Priorite a associer au message. Elle se situe sur une echelle de 1 a 5. La valeur par defaut est `3` si rien n'est precise.                                                                                                                     |
+| alias      | Non         | Alias a associer au message.                                                                                                                                                                                                                    |
+| entity     | Non         | Entite a associer au message.                                                                                                                                                                                                                   |
+| action     | Non         | Action a effectuer. Voir [Actions d'Alerte](#actions-dalerte) ci-dessous. Par defaut, cette valeur est `map`.                                                                                                                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Alert Actions
+## Actions d'Alerte
 
-The `action` parameter controls what Opsgenie operation is performed when a notification is sent. The following actions are supported:
+Le parametre `action` controle l'operation Opsgenie effectuee lorsqu'une notification est envoyee. Les actions suivantes sont prises en charge :
 
-| Action        | Description                                                                                               |
-| ------------- | --------------------------------------------------------------------------------------------------------- |
-| `map`         | **(default)** Automatically choose an action based on the Apprise notification type. See the table below. |
-| `new`         | Always create a new alert, regardless of notification type.                                               |
-| `close`       | Close a previously opened alert (requires a stored request ID from a prior `new` action).                 |
-| `acknowledge` | Acknowledge a previously opened alert (requires a stored request ID from a prior `new` action).           |
-| `note`        | Add a note to a previously opened alert (requires a stored request ID from a prior `new` action).         |
-| `delete`      | Delete a previously opened alert (requires a stored request ID from a prior `new` action).                |
+| Action        | Description                                                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `map`         | **par defaut** choisit automatiquement une action selon le type de notification Apprise. Voir le tableau ci-dessous.   |
+| `new`         | Cree toujours une nouvelle alerte, quel que soit le type de notification.                                              |
+| `close`       | Ferme une alerte precedemment ouverte, exige un identifiant de requete stocke a partir d'une action `new`.             |
+| `acknowledge` | Acquitte une alerte precedemment ouverte, exige un identifiant de requete stocke a partir d'une action `new`.          |
+| `note`        | Ajoute une note a une alerte precedemment ouverte, exige un identifiant de requete stocke a partir d'une action `new`. |
+| `delete`      | Supprime une alerte precedemment ouverte, exige un identifiant de requete stocke a partir d'une action `new`.          |
 
-When `action=map` (the default), the following mapping is applied:
+Lorsque `action=map`, valeur par defaut, la correspondance suivante est appliquee :
 
-| Apprise Type | Default Action | Rationale                                           |
-| ------------ | -------------- | --------------------------------------------------- |
-| `failure`    | `new`          | Something went wrong — open a new alert.            |
-| `warning`    | `new`          | Something may go wrong — open a new alert.          |
-| `success`    | `close`        | Issue resolved — close the associated alert.        |
-| `info`       | `note`         | Informational context — annotate an existing alert. |
+| Type Apprise | Action par Defaut | Raison                                                      |
+| ------------ | ----------------- | ----------------------------------------------------------- |
+| `failure`    | `new`             | Quelque chose a mal tourne, ouvrir une nouvelle alerte.     |
+| `warning`    | `new`             | Quelque chose peut mal tourner, ouvrir une nouvelle alerte. |
+| `success`    | `close`           | Probleme resolu, fermer l'alerte associee.                  |
+| `info`       | `note`            | Contexte informatif, annoter une alerte existante.          |
 
 :::note
-Actions other than `new` require a stored request ID from a prior `new` notification with the same `entity`, `alias`, or title. Apprise caches these IDs automatically for up to 60 days.
+Les actions autres que `new` exigent un identifiant de requete stocke a partir d'une notification `new` precedente avec le meme `entity`, `alias` ou titre. Apprise met automatiquement ces identifiants en cache pendant 60 jours maximum.
 :::
 
-### Custom Action Mapping
+### Mappage d'Action Personnalise
 
-You can override the default type-to-action mapping using `:key=value` URL parameters:
+Vous pouvez remplacer la correspondance type-vers-action par defaut en utilisant des parametres d'URL `:key=value` :
 
 - `opsgenie://{apikey}/?:failure=new&:warning=new&:success=close&:info=note`
 
-For example, to make `info` notifications create a new alert instead of adding a note:
+Par exemple, pour faire en sorte que les notifications `info` creent une nouvelle alerte au lieu d'ajouter une note :
 
 ```bash
 apprise -vv -t "Test Title" -b "Test Body" \
@@ -116,30 +116,30 @@ apprise -vv -t "Test Title" -b "Test Body" \
 
 ## Exemples
 
-Envoyer une Opsgenie notification to all devices associated with a project:
+Envoyer une notification Opsgenie a tous les appareils associes a un projet :
 
 ```bash
-# Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
+# Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 ```
 
-### Include Details (Key/Value Pairs)
+### Inclure des Détails (Paires Clé/Valeur)
 
-Opsgenie allows you to provide details composed of key/value pairs you can set with messages. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Opsgenie vous permet de fournir des details composes de paires cle/valeur que vous pouvez definir avec vos messages. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would set the key/value pair of foo=bar:
-# Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
+# L'exemple ci-dessous definirait la paire cle/valeur foo=bar :
+# Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar"
 
-# Multiple key/value pairs just require more entries:
-# Below would set the key/value pairs of:
+# Pour plusieurs paires cle/valeur, il suffit d'ajouter plus d'entrees :
+# L'exemple ci-dessous definirait les paires suivantes :
 #    foo=bar
 #    apprise=awesome
 #
-# Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
+# Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "opsgenie://a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty/?+foo=bar&+apprise=awesome"
 ```

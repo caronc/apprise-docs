@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushalot"
-description: "Envoyer Pushalot notifications."
+description: "Envoyer des notifications Pushalot."
 sidebar:
   label: "Pushalot"
 
@@ -17,23 +17,23 @@ ended: 2016-11
 
 :::note
 
-## Service End Reason
+## Raison de Fin de Service
 
-There isn't much to go on here; Here was their [last public tweet](https://twitter.com/pushalotapp/status/534758031431860224) made on November 18th, 2014:<br/>
+Il n'y a pas grand-chose à dire ici ; voici leur [dernier tweet public](https://twitter.com/pushalotapp/status/534758031431860224) publié le 18 novembre 2014 :<br/>
 ![pushalot-last-tweet](./images/53437921-a07a6c00-39cc-11e9-95cc-a120476f292e.png)
 
-There is also [this reddit post](https://www.reddit.com/r/pushalot/comments/5ctstq/pushalot_gone/) which also hints that the permanent shutdown occurred sometime in early November 2016.
+Il existe également [cette publication Reddit](https://www.reddit.com/r/pushalot/comments/5ctstq/pushalot_gone/) qui laisse entendre que la fermeture définitive a eu lieu début novembre 2016.
 
-Presumably service was never restored and they just closed up shop.
+Le service n'a vraisemblablement jamais été rétabli et ils ont simplement fermé boutique.
 
-💡The Service was removed from Apprise in [apprise/46](https://github.com/caronc/apprise/issues/46)
+💡Le service a été retiré d'Apprise dans [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-There isn't too much configuration for Pushalot notifications. The message is basically just passed to your online Pushalot account and then gets relayed to your Microsoft device(s) from there.
+La configuration des notifications Pushalot est assez simple. Le message est essentiellement transmis à votre compte Pushalot en ligne, puis relayé vers vos appareils Microsoft.
 
 ## Syntaxe
 
@@ -41,17 +41,17 @@ La syntaxe valide est la suivante :
 
 - `palot://{authorizationtoken}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable           | Required | Description                                                                                                              |
-| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| authorizationtoken | Yes      | The authorization token associated with your Pushalot account. This is an alpha-numeric string (32 characters in length) |
+| Variable           | Requis | Description                                                                                                                      |
+| ------------------ | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| authorizationtoken | Oui    | Le jeton d'autorisation associé à votre compte Pushalot. Il s'agit d'une chaîne alphanumérique (d'une longueur de 32 caractères) |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Pushalot notification
+Envoyer une notification Pushalot :
 
 ```bash
 # Assuming our {authorizationtoken} is 1f418df7577e32b89ac6511f2eb9aa68

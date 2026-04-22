@@ -1,6 +1,6 @@
 ---
 title: "Notifications Techulus Push"
-description: "Envoyer Techulus Push notifications."
+description: "Envoyer des notifications Techulus Push."
 sidebar:
   label: "Techulus Push"
 
@@ -20,13 +20,13 @@ limits:
 
 ## Configuration du compte
 
-To use this plugin, you need to first download the mobile app and sign up through there:
+Pour utiliser ce plugin, vous devez d'abord telecharger l'application mobile puis vous inscrire depuis celle-ci :
 
 - [Apple](https://itunes.apple.com/us/app/push-by-techulus/id1444391917?ls=1&mt=8)
 - [Android](https://play.google.com/store/apps/details?id=com.techulus.push)
 
-Once you've got your account, you can get your API key from [here](https://push.techulus.com/login.html).
-You can also just get the **{apikey}** right out of the phone app that is installed. The **{apikey}** will look something like:
+Une fois votre compte cree, vous pouvez recuperer votre cle API [ici](https://push.techulus.com/login.html).
+Vous pouvez aussi recuperer directement la **{apikey}** depuis l'application mobile installee. Elle ressemblera a quelque chose comme :
 
 - `b444a40f-3db9-4224-b489-9a514c41c009`
 
@@ -36,20 +36,20 @@ La syntaxe valide est la suivante :
 
 - `push://{apikey}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                            |
-| -------- | -------- | ------------------------------------------------------ |
-| apikey   | Yes      | The apikey associated with your Techulus Push account. |
+| Variable | Obligatoire | Description                                    |
+| -------- | ----------- | ---------------------------------------------- |
+| apikey   | Oui         | Cle API associee a votre compte Techulus Push. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Techulus Push notification:
+Envoyer une notification Techulus Push :
 
 ```bash
-# Assuming our {apikey} is b444a40f-3db9-4224-b489-9a514c41c009
+# Supposons que notre {apikey} soit b444a40f-3db9-4224-b489-9a514c41c009
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    push:///b444a40f-3db9-4224-b489-9a514c41c009/
 ```

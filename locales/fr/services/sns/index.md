@@ -1,6 +1,6 @@
 ---
 title: "Notifications Amazon Web Service (AWS) - Simple Notification Service (SNS)"
-description: "Envoyer Simple Notification Service (SNS) notifications."
+description: "Envoyer des notifications Simple Notification Service (SNS)."
 sidebar:
   label: "Amazon Web Service (AWS) - Simple Notification Service (SNS)"
 
@@ -23,20 +23,20 @@ limits:
 
 ## Configuration du compte
 
-You'll need to create an account with Amazon Web Service (AWS) first to use this. If you don't have one, you'll need your credit card (even though the first 12 months are free). Alternatively, if you already have one (or are using it through your company), you're good to go to the next step.
+Vous devrez d'abord creer un compte Amazon Web Service, AWS, pour utiliser ce service. Si vous n'en avez pas encore, une carte bancaire sera necessaire, meme si les 12 premiers mois sont gratuits. Si vous avez deja un compte, ou si vous l'utilisez via votre entreprise, vous pouvez passer a l'etape suivante.
 
-The next thing you'll need to do is generate an _Access Key ID_ and _Secret Access Key_.:
+L'etape suivante consiste a generer un _Access Key ID_ et un _Secret Access Key_ :
 
-1. From the [AWS Management Console](https://console.aws.amazon.com) search for **IAM** under the _AWS services_ section or simply click [here](https://console.aws.amazon.com/iam/home?#/security_credentials).
-1. Expand the section reading **Access keys (access key ID and secret access key)**
-1. Click on **Create New Access Key**
-1. It will present the information to you on screen and let you download a file containing the same information. I suggest you do so since there is no way to retrieve this key again later on (unless you delete it and create a new one).
+1. Depuis la [AWS Management Console](https://console.aws.amazon.com), recherchez **IAM** dans la section _AWS services_ ou cliquez simplement [ici](https://console.aws.amazon.com/iam/home?#/security_credentials).
+1. Developpez la section **Access keys (access key ID and secret access key)**.
+1. Cliquez sur **Create New Access Key**.
+1. Les informations s'afficheront a l'ecran et vous pourrez aussi telecharger un fichier contenant les memes donnees. Il est recommande de le faire, car il ne sera plus possible de recuperer cette cle plus tard, sauf a la supprimer puis en creer une nouvelle.
 
-So at this point, it is presumed you're set up, and you got your _Access Key ID_ and _Secret Access Key_ on hand.
+A ce stade, on suppose donc que tout est configure et que vous disposez bien de votre _Access Key ID_ et de votre _Secret Access Key_.
 
-You now have all the tools you need to send SMS messages.
+Vous avez maintenant tout ce qu'il faut pour envoyer des SMS.
 
-If you want to take advantage of sending your notifications to _topics_: from the [AWS Management Console](https://console.aws.amazon.com) search for **Simple Notification Service** under the _AWS services_ section and configure as many topics as you want. You'll be able to reference them as well using this notification service.
+Si vous souhaitez envoyer vos notifications vers des _topics_, recherchez **Simple Notification Service** dans la [AWS Management Console](https://console.aws.amazon.com), section _AWS services_, puis configurez autant de topics que necessaire. Vous pourrez ensuite les referencer avec ce service de notification.
 
 ## Syntaxe
 
@@ -47,43 +47,44 @@ La syntaxe valide est la suivante :
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic}`
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic1}/#{Topic2}/#{TopicN}`
 
-You can mix and match these entries as well:
+Vous pouvez aussi melanger ces entrees :
 
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo1}/#{Topic1}`
 
-Enforcing a hashtag (#) for _topics_ and a plus sign (+) in-front of phone numbers helps eliminate cases where ambiguity could be an issue such as a _topic_ that is comprised of all numbers. These characters are purely optional.
+Le fait de prefixer les _topics_ par un hashtag, `#`, et les numeros de telephone par un plus, `+`, permet d'eviter les ambiguities, par exemple lorsqu'un _topic_ ne contient que des chiffres. Ces caracteres restent purement facultatifs.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable        | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                              |
-| --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| AccessKeyID     | Yes      | The generated _Access Key ID_ from the AWS Management Console                                                                                                                                                                                                                                                                                                                                                            |
-| AccessKeySecret | Yes      | The generated _Access Key Secret_ from the AWS Management Console                                                                                                                                                                                                                                                                                                                                                        |
-| Region          | Yes      | The region code might look like **us-east-1**, **us-west-2**, **cn-north-1**, etc                                                                                                                                                                                                                                                                                                                                        |
-| PhoneNo         | No       | The phone number MUST include the country codes dialling prefix as well when placed. You can optionally prefix the entire number with a plus symbol (+) to enforce that the value be interpreted as a phone number (in the event it can't be auto-detected otherwise). This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. |
-| Topic           | No       | The topic you want to publish your message to.                                                                                                                                                                                                                                                                                                                                                                           |
+| Variable        | Obligatoire | Description                                                                                                                                                                                                                                                                                                                         |
+| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AccessKeyID     | Oui         | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                                                                                                                                                                            |
+| AccessKeySecret | Oui         | _Access Key Secret_ genere depuis la AWS Management Console.                                                                                                                                                                                                                                                                        |
+| Region          | Oui         | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**, etc.                                                                                                                                                                                                                                                         |
+| PhoneNo         | Non         | Le numero de telephone doit inclure le prefixe d'appel du pays. Vous pouvez facultativement prefixer tout le numero avec un plus, `+`, pour forcer son interpretation comme numero de telephone si la detection automatique ne suffit pas. Ce champ accepte aussi les parentheses, espaces et tirets pour une meilleure lisibilite. |
+| Topic           | Non         | Topic vers lequel publier votre message.                                                                                                                                                                                                                                                                                            |
 
 :::note
-This notification service does not use the title field; only the _body_ is passed along.
+Ce service de notification n'utilise pas le champ `title` ; seul le _body_ est transmis.
 :::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer an SMS message:
+Envoyer un message SMS :
 
 ```bash
-# Assuming our {AccessKeyID} is AHIAJGNT76XIMXDBIJYA
-# Assuming our {AccessKeySecret} is bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
-# Assuming our {Region} is us-east-2
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {AccessKeyID} soit AHIAJGNT76XIMXDBIJYA
+# Supposons que notre {AccessKeySecret} soit bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
+# Supposons que notre {Region} soit us-east-2
+# Supposons que notre {PhoneNo}
+#   - se trouve aux Etats-Unis, donc avec l'indicatif pays +1
+#   - corresponde au numero 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# la variante suivante aurait aussi fonctionne
+# les espaces, parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+1(800)555-1223
 

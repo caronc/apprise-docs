@@ -1,6 +1,6 @@
 ---
 title: "Notifications SMSEagle"
-description: "Envoyer SMSEagle notifications."
+description: "Envoyer des notifications SMSEagle."
 sidebar:
   label: "SMSEagle"
 
@@ -27,7 +27,7 @@ limits:
 
 ## Configuration du compte
 
-Get your SMSEagle Hardware SMS/MMS Gateway connection [from here](https://www.smseagle.eu). It is from the device you can access its web interface and configure your access token.
+Procurez-vous votre passerelle materielle SMS/MMS SMSEagle [ici](https://www.smseagle.eu). C'est depuis l'appareil que vous pourrez acceder a son interface web et configurer votre jeton d'acces.
 
 ## Syntaxe
 
@@ -36,7 +36,7 @@ La syntaxe valide est la suivante :
 - `smseagles://{token}@{hostname}/{target}`
 - `smseagles://{token}@{hostname}:{port}/{target}`
 
-A `target` can be either a phone number, a contact, or if prefixed with `#` it becomes a group. Contacts are generally prefixed with a `@`.
+Une `target` peut etre soit un numero de telephone, soit un contact, soit, si elle est prefixee par `#`, un groupe. Les contacts sont generalement prefixes par `@`.
 
 - `smseagles://{token}@{hostname}:{port}/{phoneNo}`
 - `smseagles://{token}@{hostname}:{port}/{phoneNo1}/{phoneNo2}/{phoneNoN}`
@@ -45,54 +45,51 @@ A `target` can be either a phone number, a contact, or if prefixed with `#` it b
 - `smseagles://{token}@{hostname}:{port}/#{group}`
 - `smseagles://{token}@{hostname}:{port}/#{group1}/#{group2}/#{groupN}`
 
-**Note**: If you choose to leverage Groups, make sure your group as **Public** or it will not work from the API.
+**Remarque :** si vous choisissez d'utiliser des groupes, assurez-vous que le groupe est defini comme **Public**, sinon cela ne fonctionnera pas via l'API.
 ![image](./images/188493684-1d023e26-53f1-4813-87ec-e4a96e0e5a98.png)
 
-Vous pouvez aussi melanger les formats
+Vous pouvez aussi melanger les formats :
 
 - `smseagles://{token}@{hostname}:{port}/{to_phone1}/3@{group1}/@{contact1}`
 
-For ambiguity, if you do not provide a valid phone number, and the information parsed does not exclusively have a `#` or `@` in front of it, then it is interpreted as a Contact.
+Pour lever toute ambiguite, si vous ne fournissez pas un numero de telephone valide et que la valeur analysee ne commence ni par `#` ni par `@`, elle sera interpretee comme un contact.
 
-`smseagle:///` uses port 80 (and is not encrypted) while `smseagles://` secures the connection and defaults to port 443.
+`smseagle://` utilise le port 80, sans chiffrement, tandis que `smseagles://` securise la connexion et utilise par defaut le port 443.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                     |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Yes      | The hostname belonging to SMSEagle Appliance and/or account.                                                                                    |
-| token    | Yes      | This is your generated Access Token associated with your SMSEagle account.                                                                      |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **smseagle://** and **443** for all **smseagles://** references.     |
-| target   | Yes      | A phone number, group, and/or contact you wish to send your notification to.                                                                    |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                 |
-| test     | No       | Run in SMSEagle test mode. By default (unless specified) this is set to `No`.                                                                   |
-| flash    | No       | Envoyer as SMS Flash message. By default (unless specified) this is set to `No`.                                                                |
-| priority | No       | Can be set to either `normal` or `high`. If not otherwise provided, this assumes to be `normal` by default.                                     |
-| status   | No       | Optionally include a small little ASCII string representing the notification status being sent (inline with it) by default this is set to `no`. |
+| Variable | Obligatoire | Description                                                                                                                                                       |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Nom d'hote associe a votre appliance et/ou compte SMSEagle.                                                                                                       |
+| token    | Oui         | Jeton d'acces genere et associe a votre compte SMSEagle.                                                                                                          |
+| port     | Non         | Port sur lequel votre serveur web ecoute. La valeur par defaut est **80** pour **smseagle://** et **443** pour toutes les references **smseagles://**.            |
+| target   | Oui         | Numero de telephone, groupe et/ou contact auquel vous souhaitez envoyer votre notification.                                                                       |
+| batch    | Non         | Envoie plusieurs notifications precisees dans un seul lot, soit une seule publication vers le serveur distant. Par defaut, cette option vaut `no`.                |
+| test     | Non         | Execute l'envoi en mode test SMSEagle. Par defaut, cette option vaut `No`.                                                                                        |
+| flash    | Non         | Envoie le message comme SMS Flash. Par defaut, cette option vaut `No`.                                                                                            |
+| priority | Non         | Peut etre defini sur `normal` ou `high`. Si rien n'est precise, la valeur par defaut est `normal`.                                                                |
+| status   | Non         | Permet facultativement d'inclure une petite chaine ASCII representant l'etat de la notification envoyee, integree au message. Par defaut, cette option vaut `no`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une SMSEagle notification:
+Envoyer une notification SMSEagle :
 
 ```bash
-# Assuming our {AccessToken} is abcd123
-# Assuming our {Hostname} of our SMSEagle Appliance is smseagle.example.com
-# Assuming we want to notify 555221237, and +18005551234
-# Test out the changes with the following command:
+# Supposons que notre {AccessToken} soit abcd123
+# Supposons que le {Hostname} de notre appliance SMSEagle soit smseagle.example.com
+# Supposons que nous voulions notifier 555221237 et +18005551234
+# Testez avec la commande suivante :
 apprise -t "Test Title" -b "Test Message" \
  smseagle://abcd123@smseagle.example.com/555221237/+18005551234
 
 ```
 
-SMSEagle Notifications also support attachments (Images only though):
+Les notifications SMSEagle prennent aussi en charge les pieces jointes, images uniquement :
 
 ```bash
-# Assuming our {WebhookID} is 4174216298
-# Assuming our {WebhookToken} is JHMHI8qBe7bk2ZwO5U711o3dV_js
-# Assuming our {AvatarURL} is https://i.imgur.com/FsEpmwg.jpeg
-# Also support for attachments:
+# Les pieces jointes sont egalement prises en charge :
 apprise -t "Test Title" -b "Test Message" \
  smseagle://abcd123@smseagle.example.com/555221237/+18005551234 \
  --attach /path/to/image.png

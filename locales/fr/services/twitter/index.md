@@ -1,8 +1,8 @@
 ---
-title: "Notifications X (Formerly Twitter)"
-description: "Envoyer X Notifications."
+title: "Notifications X (anciennement Twitter)"
+description: "Envoyer des notifications X."
 sidebar:
-  label: "X (Formerly Twitter)"
+  label: "X (anciennement Twitter)"
 
 source: https://x.com/
 schemas:
@@ -28,51 +28,51 @@ limits:
 
 ## Configuration du compte
 
-You need to register to X developer account at [developer.x.com](https://developer.x.com/en).
+Vous devez creer un compte developpeur X sur [developer.x.com](https://developer.x.com/en).
 
-X Direct Messages are slightly more complicated then some of the other notification services, so here is quick breakdown of what you need to know and do in order to send Notifications through it using this tool:
+Les messages directs X sont un peu plus complexes a configurer que certains autres services de notification. Voici donc un resume rapide de ce qu'il faut savoir et faire pour envoyer des notifications avec cet outil.
 
-### If there are Project and App
+### Si un Projet et une App Existent Deja
 
-When you registered to X developer account, you may have already created a default project and app. You can use this app and it's through an X App we will be able to send our DMs.
+Lors de la creation de votre compte developpeur X, un projet et une application par defaut ont peut-etre deja ete crees. Vous pouvez utiliser cette application ; c'est elle qui permettra l'envoi de vos messages directs.
 
-1. First off, you'll need to **regenerate the API Keys**. This is done by accessing the app name under **Projects & Apps** (on left menu), then under the **Consumer Keys** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place. This is **Consumer Keys**.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
-2. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
+1. Commencez par **regenerer les cles API**. Pour cela, ouvrez le nom de l'application dans **Projects & Apps** dans le menu de gauche, puis allez dans **Consumer Keys** depuis l'onglet "_Keys and tokens_". Une fois generees, copiez-les dans un endroit sur. Il s'agit des **Consumer Keys**.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
+2. Accordez ensuite les autorisations necessaires pour publier des posts ou envoyer des messages directs. Apres avoir clique sur le nom de l'application dans **Projects & Apps**, cliquez sur **Set up** dans la section **User authentication settings**.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>Dans la page **User authentication settings**, configurez :
    - **App permissions**\
-     Select **Read and write** if you want to post only. If you want to send DMs, select **Read and write and Direct message**.
+     Selectionnez **Read and write** si vous souhaitez seulement publier. Si vous voulez envoyer des DMs, choisissez **Read and write and Direct message**.
    - **Type of App**\
-     Select **Web App, Automated App or Bot**
+     Selectionnez **Web App, Automated App or Bot**
    - **App info**\
-     Enter any URL for **Callback URI / Redirect URL** and **Website URL**. If you are using Apprise to send posts or DMs, it doesn't matter what you enter.
+     Saisissez n'importe quelle URL dans **Callback URI / Redirect URL** et **Website URL**. Si vous utilisez Apprise pour publier ou envoyer des DMs, la valeur exacte n'a pas d'importance.
 
-   Once you entered them all, click **Save**.
+   Une fois tout saisi, cliquez sur **Save**.
 
-3. Lastly, you'll need to **regenerate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
+3. Enfin, vous devrez **regenerer les jetons d'acces**. Cela se fait dans **Authentication Tokens** depuis l'onglet "_Keys and tokens_". Une fois generes, copiez-les dans un endroit sur.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
 
-### If there is no Project and App
+### Si Aucun Projet ni Aucune App n'Existent
 
-1. First off, you need to create a project and an X App (not Standalone apps) from [developer.x.com](https://developer.x.com/en/portal/projects-and-apps). It's through an X App we will be able to send our DMs.<br/>![X Create Project](./images/X-Create-Project.png)<br/>X asks you to justify why you need it as long as you specify the purpose of your app in detail.
-2. Once you created the app, you'll see the **API Tokens** on the screen, so copy it to a safe place. This is **Consumer Keys**.<br/>![X App API Key](./images/X-App-API-Key.png)
-3. Next, grant the appropriate access permissions so that you can post or send DMs. After clicking on the app name under **Projects & Apps** (on left menu), click on **Set up** under the **User authentication settings** section.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>On the **User authentication settings** page, set the following
+1. Vous devez d'abord creer un projet et une application X, et non une Standalone app, depuis [developer.x.com](https://developer.x.com/en/portal/projects-and-apps). C'est via cette application X que vous pourrez envoyer vos DMs.<br/>![X Create Project](./images/X-Create-Project.png)<br/>X vous demandera de justifier votre besoin si vous decrivez le but de votre application.
+2. Une fois l'application creee, vous verrez les **jetons API** a l'ecran ; copiez-les dans un endroit sur. Il s'agit des **Consumer Keys**.<br/>![X App API Key](./images/X-App-API-Key.png)
+3. Accordez ensuite les autorisations necessaires pour publier des posts ou envoyer des DMs. Apres avoir clique sur le nom de l'application dans **Projects & Apps**, cliquez sur **Set up** dans la section **User authentication settings**.<br/>![X User authentication set up](./images/X-User-authentication-set-up.png)<br/>Dans la page **User authentication settings**, configurez :
    - **App permissions**\
-     Select **Read and write** if you want to post only. If you want to send DMs, select **Read and write and Direct message**.
+     Selectionnez **Read and write** si vous souhaitez seulement publier. Si vous voulez envoyer des DMs, choisissez **Read and write and Direct message**.
    - **Type of App**\
-     Select **Web App, Automated App or Bot**
+     Selectionnez **Web App, Automated App or Bot**
    - **App info**\
-     Enter any URL for **Callback URI / Redirect URL** and **Website URL**. If you are using Apprise to send posts or DMs, it doesn't matter what you enter.
+     Saisissez n'importe quelle URL dans **Callback URI / Redirect URL** et **Website URL**. Si vous utilisez Apprise pour publier ou envoyer des DMs, la valeur exacte n'a pas d'importance.
 
-   Once you entered them all, click **Save**.
+   Une fois tout saisi, cliquez sur **Save**.
 
-4. Lastly, you'll need to **generate the Access Tokens**. This is done under the **Authentication Tokens** from the "_Keys and tokens_" Tab. Once generated, copy it to a safe place.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
+4. Enfin, vous devrez **generer les jetons d'acces**. Cela se fait dans **Authentication Tokens** depuis l'onglet "_Keys and tokens_". Une fois generes, copiez-les dans un endroit sur.<br/>![X Generate Tokens](./images/X-Generate-Tokens.png)
 
-You should now have the following 4 tokens ready to use.
+Vous devriez maintenant disposer des 4 jetons suivants prets a l'emploi :
 
-- A Consumer Key (An API Key)
-- A Consumer Secret (An API Secret)
-- An Access Token
-- An Access Token Secret
+- une Consumer Key, c'est-a-dire une cle API ;
+- un Consumer Secret, c'est-a-dire un API Secret ;
+- un jeton d'acces ;
+- un secret de jeton d'acces.
 
-From here you're ready to go. You can post public posts or simply create DMs through the use of the `mode=` variable. By default Direct Messaging (DM) is used.
+A partir de la, vous etes pret. Vous pouvez publier des messages publics ou creer des messages directs grace a la variable `mode=`. Par defaut, le mode Direct Messaging, `dm`, est utilise.
 
 ## Syntaxe
 
@@ -81,76 +81,76 @@ La syntaxe valide est la suivante (`x://`, `twitter://` et `tweet://` sont tous 
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
 - `x://{ScreenName}@{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}`
 
-If you know the targets you wish to identify; they can be targeted by their X Screen Name:
+Si vous connaissez les cibles a identifier, vous pouvez les viser par leur nom d'utilisateur X, leur `ScreenName` :
 
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName}`
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}/{ScreenName1}/{ScreenName2}/{ScreenNameN}`
 
 > [!NOTE]
-> If no ScreenName is specified, then by default the Direct Message is sent to your own account.
+> Si aucun `ScreenName` n'est precise, le message direct est envoye par defaut a votre propre compte.
 
-A Public post can be referenced like so:
+Un post public peut etre reference ainsi :
 
 - `x://{ConsumerKey}/{ConsumerSecret}/{AccessToken}/{AccessSecret}?mode=tweet`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable       | Required | Description                                                                                                                                                 |
-| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ScreenName     | Yes      | The UserID of your account such as _l2gnux_ (if your id is @l2gnux). You must specify a `{userid}` _or_ an `{ownerid}`.                                     |
-| ConsumerKey    | Yes      | The Consumer Key (API Key)                                                                                                                                  |
-| ConsumerSecret | Yes      | The Consumer Secret Key (API Secret Key)                                                                                                                    |
-| AccessToken    | Yes      | The Access Token; you would have had to generate this one from your X App Configuration.                                                                    |
-| AccessSecret   | Yes      | The Access Secret; you would have had to generate this one from your X App Configuration.                                                                   |
-| Mode           | No       | The X mode you want to operate in. Possible values are `dm` (for Private Direct Messages) and `tweet` to make a public post. By default this is set to `dm` |
-| batch          | No       | By default images are batched together. However if you want your attachments to be posted 1 post per attachment, set this to False.                         |
+| Variable       | Obligatoire | Description                                                                                                                                                  |
+| -------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ScreenName     | Oui         | Identifiant de votre compte, par exemple _l2gnux_ si votre identifiant est `@l2gnux`. Vous devez preciser un `{userid}` ou un `{ownerid}`.                   |
+| ConsumerKey    | Oui         | Consumer Key, c'est-a-dire la cle API.                                                                                                                       |
+| ConsumerSecret | Oui         | Consumer Secret Key, c'est-a-dire l'API Secret Key.                                                                                                          |
+| AccessToken    | Oui         | Jeton d'acces genere depuis la configuration de votre application X.                                                                                         |
+| AccessSecret   | Oui         | Secret d'acces genere depuis la configuration de votre application X.                                                                                        |
+| Mode           | Non         | Mode X a utiliser. Les valeurs possibles sont `dm` pour les messages directs prives et `tweet` pour publier un message public. Par defaut, `dm` est utilise. |
+| batch          | Non         | Par defaut, les images sont regroupees ensemble. Si vous voulez publier une publication par piece jointe, definissez cette valeur sur `False`.               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une X DM to @testaccount:
+Envoyer un message direct X a `@testaccount` :
 
 ```bash
-# Assuming our {ConsumerKey} is T1JJ3T3L2
-# Assuming our {ConsumerSecret} is A1BRTD4JD
-# Assuming our {AccessToken} is TIiajkdnlazkcOXrIdevi7F
-# Assuming our {AccessSecret} is FDVJaj4jcl8chG3
-# our user is @testaccount
+# Supposons que notre {ConsumerKey} soit T1JJ3T3L2
+# Supposons que notre {ConsumerSecret} soit A1BRTD4JD
+# Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
+# notre utilisateur est @testaccount
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    twitter://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3
 ```
 
-Or
+Ou
 
 ```bash
-# Assuming our {ConsumerKey} is T1JJ3T3L2
-# Assuming our {ConsumerSecret} is A1BRTD4JD
-# Assuming our {AccessToken} is TIiajkdnlazkcOXrIdevi7F
-# Assuming our {AccessSecret} is FDVJaj4jcl8chG3
-# our user is @testaccount
+# Supposons que notre {ConsumerKey} soit T1JJ3T3L2
+# Supposons que notre {ConsumerSecret} soit A1BRTD4JD
+# Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
+# notre utilisateur est @testaccount
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    x://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3
 ```
 
-Envoyer une public post:
+Envoyer un post public :
 
 ```bash
-# Assuming our {ConsumerKey} is T1JJ3T3L2
-# Assuming our {ConsumerSecret} is A1BRTD4JD
-# Assuming our {AccessToken} is TIiajkdnlazkcOXrIdevi7F
-# Assuming our {AccessSecret} is FDVJaj4jcl8chG3
+# Supposons que notre {ConsumerKey} soit T1JJ3T3L2
+# Supposons que notre {ConsumerSecret} soit A1BRTD4JD
+# Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    twitter://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3?mode=tweet
 ```
 
-Or
+Ou
 
 ```bash
-# Assuming our {ConsumerKey} is T1JJ3T3L2
-# Assuming our {ConsumerSecret} is A1BRTD4JD
-# Assuming our {AccessToken} is TIiajkdnlazkcOXrIdevi7F
-# Assuming our {AccessSecret} is FDVJaj4jcl8chG3
+# Supposons que notre {ConsumerKey} soit T1JJ3T3L2
+# Supposons que notre {ConsumerSecret} soit A1BRTD4JD
+# Supposons que notre {AccessToken} soit TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {AccessSecret} soit FDVJaj4jcl8chG3
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    x://testaccount@T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/FDVJaj4jcl8chG3?mode=tweet
 ```

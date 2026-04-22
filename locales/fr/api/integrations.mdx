@@ -35,7 +35,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 L'API Apprise est conçue comme une passerelle de notification unique.
 Au lieu de construire des webhooks directs vers Discord, Slack, l'email et les SMS dans chaque projet, envoyez vos messages à l'API Apprise et laissez-la router le message.
 
-## Endpoints
+## Points de Terminaison
 
 :::note
 **Apprise ne vous oblige pas à ajouter Python dans votre application.**  
@@ -44,12 +44,12 @@ Apprise lui-même est écrit en Python, mais la plupart des intégrations intera
 
 | Si vous voulez...                                        | Approche recommandée                                                       |
 | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Éviter d'intégrer Python dans votre application          | API Apprise (Stateful ou Stateless)                                        |
-| Garder la logique de notification hors de votre codebase | API Apprise (Stateful)                                                     |
-| Utiliser Apprise comme simple passerelle HTTP            | API Apprise (Stateless)                                                    |
+| Éviter d'intégrer Python dans votre application          | API Apprise (Avec État ou Sans État)                                       |
+| Garder la logique de notification hors de votre codebase | API Apprise (Avec État)                                                    |
+| Utiliser Apprise comme simple passerelle HTTP            | API Apprise (Sans État)                                                    |
 | Envoyer des notifications depuis des scripts ou la CLI   | [CLI Apprise](../../cli/) ou [Bibliothèque Python Apprise](../../library/) |
 
-### Stateless
+### Sans État
 
 <picture class="theme-aware-sl-diagram">
   <source
@@ -58,20 +58,20 @@ Apprise lui-même est écrit en Python, mais la plupart des intégrations intera
   />
   <img
     src="../images/stateless-api-integration-light.svg"
-    alt="Intégration API Stateless"
+    alt="Intégration API sans état"
     loading="lazy"
   />
 </picture>
 
-Si vous ne pouvez pas, ou ne souhaitez pas, stocker la configuration côté serveur, vous pouvez également utiliser des notifications stateless :
+Si vous ne pouvez pas, ou ne souhaitez pas, stocker la configuration côté serveur, vous pouvez également utiliser des notifications sans état :
 
 - `POST /notify`
 
-Les appels stateless incluent les URL de destination Apprise dans la charge utile de la requête.
+Les appels sans état incluent les URL de destination Apprise dans la charge utile de la requête.
 
 Consultez la référence des endpoints pour la liste complète des chemins pris en charge.
 
-### Stateful
+### Avec État
 
 <picture class="theme-aware-sf-diagram">
   <source
@@ -80,12 +80,12 @@ Consultez la référence des endpoints pour la liste complète des chemins pris 
   />
   <img
     src="../images/stateful-api-integration-light.svg"
-    alt="Intégration API Stateful"
+    alt="Intégration API avec état"
     loading="lazy"
   />
 </picture>
 
-Pour les notifications stateful, recommandées pour la plupart des intégrations, vous appelez un seul endpoint :
+Pour les notifications avec état, recommandées pour la plupart des intégrations, vous appelez un seul point de terminaison :
 
 - `POST /notify/{KEY}`
 
@@ -96,15 +96,15 @@ Votre code client reste petit et stable, tandis que l'instance API Apprise conse
 
 Étant donné :
 
-- `scheme`: `http` or `https`
-- `host`: the Apprise API hostname or IP
-- `port`: optional, omit for 80 (http) or 443 (https)
-- `key`: your saved configuration key
+- `scheme` : `http` ou `https`
+- `host` : le nom d'hôte ou l'adresse IP de l'API Apprise
+- `port` : optionnel ; omettez-le pour 80 (http) ou 443 (https)
+- `key` : votre clé de configuration enregistrée
 
-Construisez :
+Construisez ensuite :
 
 - `BASE = {scheme}://{host}`
-- If a non-default port is used: `BASE = {scheme}://{host}:{port}`
+- Si un port non standard est utilisé : `BASE = {scheme}://{host}:{port}`
 - `NOTIFY = {BASE}/notify/{key}`
 
 :::note
@@ -120,23 +120,23 @@ Pour les intégrations, JSON est généralement le plus simple.
 - `title` (optionnel) : titre du message
 - `type` (optionnel) : `info` (par défaut), `success`, `warning` ou `failure`
 - `format` (optionnel) : `text` (par défaut), `markdown` ou `html`
-- `tag` (optionnel, stateful) : route vers un sous-ensemble d'URL enregistrées
+- `tag` (optionnel, avec état) : route vers un sous-ensemble d'URL enregistrées
 
 ### Tags
 
-Les tags n'ont de sens que pour les appels stateful (`/notify/{KEY}`), parce que le serveur sait déjà quelles URL appartiennent à cette clé.
+Les tags n'ont de sens que pour les appels avec état (`/notify/{KEY}`), parce que le serveur sait déjà quelles URL appartiennent à cette clé.
 
 La valeur `tag` suit les règles suivantes :
 
-| `tag` value        | Selected services                         |
-| ------------------ | ----------------------------------------- |
-| `"TagA"`           | Has `TagA`                                |
-| `"TagA TagB"`      | Has `TagA` **AND** `TagB`                 |
-| `"TagA+TagB"`      | Has `TagA` **AND** `TagB`                 |
-| `"TagA&TagB"`      | Has `TagA` **AND** `TagB`                 |
-| `"TagA,TagB"`      | Has `TagA` **OR** `TagB`                  |
-| `"TagA\|TagB"`     | Has `TagA` **OR** `TagB`                  |
-| `"TagA TagC,TagB"` | Has (`TagA` **AND** `TagC`) **OR** `TagB` |
+| Valeur de `tag`    | Services sélectionnés                        |
+| ------------------ | -------------------------------------------- |
+| `"TagA"`           | Possède `TagA`                               |
+| `"TagA TagB"`      | Possède `TagA` **ET** `TagB`                 |
+| `"TagA+TagB"`      | Possède `TagA` **ET** `TagB`                 |
+| `"TagA&TagB"`      | Possède `TagA` **ET** `TagB`                 |
+| `"TagA,TagB"`      | Possède `TagA` **OU** `TagB`                 |
+| `"TagA\|TagB"`     | Possède `TagA` **OU** `TagB`                 |
+| `"TagA TagC,TagB"` | Possède (`TagA` **ET** `TagC`) **OU** `TagB` |
 
 ## Pièces Jointes
 
@@ -224,13 +224,13 @@ Référence rapide des expressions de chemin :
 ## Exemples
 
 <Tabs>
-<TabItem value="sl" label="Exemples Stateless">
+<TabItem value="sl" label="Exemples Sans État">
 
 <Tabs>
 <TabItem value="sl-curl" label="curl">
 
 ```bash
-# Minimal stateless notification using curl
+# Notification minimale sans état avec curl
 curl -X POST "http://localhost:8000/notify" \
   -H "Content-Type: application/json" \
   -d '{
@@ -243,7 +243,7 @@ curl -X POST "http://localhost:8000/notify" \
 ```
 
 ```bash
-# Notification stateless avec une pièce jointe
+# Notification sans état avec une pièce jointe
 curl -X POST "http://localhost:8000/notify" \
   -F 'payload={
     "urls": ["discord://TOKEN/CHANNEL"],
@@ -750,7 +750,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 </TabItem>
 </Tabs>
 </TabItem>
-<TabItem value="sf" label="Exemples Stateful">
+<TabItem value="sf" label="Exemples Avec État">
 <Tabs>
 <TabItem value="sf-curl" label="curl">
 

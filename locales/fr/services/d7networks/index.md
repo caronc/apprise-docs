@@ -1,6 +1,6 @@
 ---
 title: "Notifications Direct 7 (D7) Networks"
-description: "Envoyer D7 Networks notifications."
+description: "Envoyer des notifications D7 Networks."
 sidebar:
   label: "Direct 7 (D7) Networks"
 
@@ -21,11 +21,11 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use this service you will need a D7 Networks account from their [website](https://d7networks.com/)
+Pour utiliser ce service, vous devez disposer d'un compte D7 Networks cree depuis leur [site web](https://d7networks.com/).
 
-After you've established your account you can get your API Token from the API Details section from within your [account profile area](https://d7networks.com/accounts/profile/).
+Une fois votre compte cree, vous pouvez recuperer votre jeton API depuis la section des details de l'API, dans votre [espace profil](https://d7networks.com/accounts/profile/).
 
 ## Syntaxe
 
@@ -34,31 +34,32 @@ La syntaxe valide est la suivante :
 - `d7sms://{token}@{PhoneNo}`
 - `d7sms://{token}@{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                        |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| token    | Yes      | The _API Token_ associated with your D7 Networks account. This is available to you via the **API Details** section from within your [account profile area](https://d7networks.com/accounts/profile/).                                                                                                              |
-| PhoneNo  | Yes      | At least one phone number MUST identified to use this plugin. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion.                                                                                                    |
-| from     | No       | Originating address,In cases where the rewriting of the sender's address is supported or permitted by the SMS-C. This is used to transmit the message, this number is transmitted as the originating address and is completely optional.                                                                           |
-| unicode  | No       | Message should be set to `unicode`. By default this is set `False`. When set to `False` (default), in the background: an `auto` switch is specified allowing D7 Networks to detect the message type on its own. Set this to `True` if you want to enforce all messages to be of type `unicode`.                    |
-| batch    | No       | D7 Networks allows a batch mode. If you identify more then one phone number, you can send all of the phone numbers you identify on the URL in a single shot instead of the normal _Apprise_ approach (which sends them one by one). Enabling batch mode has both pros and cons. By default batch mode is disabled. |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                                                           |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui         | _Jeton API_ associe a votre compte D7 Networks. Il est disponible via la section **API Details** dans votre [espace profil](https://d7networks.com/accounts/profile/).                                                                                                                                                                |
+| PhoneNo  | Oui         | Au moins un numero de telephone doit etre precise pour utiliser ce plugin. Ce champ est assez tolerant et accepte aussi les parentheses, les espaces et les tirets si vous souhaitez formater le numero de maniere plus lisible.                                                                                                      |
+| from     | Non         | Adresse d'origine. Dans les cas ou la reecriture de l'adresse expediteur est prise en charge ou autorisee par le SMS-C, cette valeur est utilisee pour transmettre le message ; ce numero est alors transmis comme adresse d'origine et reste entierement facultatif.                                                                 |
+| unicode  | Non         | Le message peut etre force en `unicode`. Par defaut, cette valeur est `False`. Lorsqu'elle vaut `False`, un mode `auto` est indique en arriere-plan afin de permettre a D7 Networks de detecter lui-meme le type de message. Definissez cette valeur sur `True` si vous souhaitez forcer tous les messages au type `unicode`.         |
+| batch    | Non         | D7 Networks permet un mode lot. Si vous indiquez plus d'un numero de telephone, vous pouvez envoyer tous les numeros identifies dans l'URL en une seule fois, au lieu de l'approche habituelle d'_Apprise_, qui les envoie un par un. L'activation du mode lot a des avantages comme des inconvenients. Par defaut, il est desactive. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une SMS message through D7 Networks:
+Envoyer un SMS via D7 Networks :
 
 ```bash
-# Assuming our {token} is AJfkafjA4Baghkr0Zkjk
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {token} soit AJfkafjA4Baghkr0Zkjk
+# Supposons que notre {PhoneNo}
+#  - se trouve aux Etats-Unis, donc avec l'indicatif +1
+#  - corresponde a 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "d7sms://AJfkafjA4Baghkr0Zkjk@18005551223"
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# l'exemple suivant aurait egalement fonctionne, les espaces,
+# parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "d7sms://AJfkafjA4Baghkr0Zkjk@1-(800) 555-1223"
 ```

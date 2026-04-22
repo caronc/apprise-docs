@@ -3,48 +3,48 @@ title: "Microsoft"
 description: "Utiliser Apprise avec Microsoft et les domaines Microsoft pris en charge."
 ---
 
-:::caution[SMTP and App Passwords No Longer Work for Microsoft]
+:::caution[SMTP et mots de passe d’application ne fonctionnent plus chez Microsoft]
 
-Microsoft has permanently disabled **Basic Authentication** for:
+Microsoft a désactivé de façon permanente l’**authentification basique** pour :
 
 - Outlook.com
 - Hotmail
 - Live.com
 - Office 365 (personal and business)
 
-This includes **SMTP AUTH**, even when using **App Passwords**.
+Cela inclut **SMTP AUTH**, même lors de l’utilisation de **mots de passe d’application**.
 
-If you attempt to use URLs such as:
+Si vous essayez d’utiliser des URL comme :
 
 ```text
 mailto://user:password@smtp.office365.com
 ```
 
-you will now receive errors similar to:
+vous recevrez désormais des erreurs du type :
 
 ```text
 5.7.139 Authentication unsuccessful, basic authentication is disabled
 ```
 
-This behaviour is **expected** and cannot be worked around.
+Ce comportement est **normal** et ne peut pas être contourné.
 
-**You must use OAuth 2.0 via the Microsoft Graph API**, which is what the Apprise Office 365 service provides.
+**Vous devez utiliser OAuth 2.0 via l’API Microsoft Graph**, ce que fournit le service Apprise Office 365.
 :::
 
-## Why Azure App Registration Is Required
+## Pourquoi l’Enregistrement d’une Application Azure est Requis
 
-Because Basic Authentication is disabled, Microsoft requires all email sending to use:
+Puisque l’authentification basique est désactivée, Microsoft exige que tout envoi d’e-mail utilise :
 
 - OAuth 2.0
 - Microsoft Graph API
 - An Azure Entra ID application
 
-As of recent Azure changes:
+Depuis les changements récents côté Azure :
 
-- App registrations **cannot exist outside of a directory**
-- Personal Microsoft accounts must complete Azure onboarding
-- This often requires creating a free Azure subscription
+- les enregistrements d’applications **ne peuvent pas exister en dehors d’un annuaire** ;
+- les comptes Microsoft personnels doivent passer par l’onboarding Azure ;
+- cela exige souvent la création d’un abonnement Azure gratuit.
 
-This is a Microsoft requirement, not an Apprise one.
+C’est une exigence de Microsoft, pas d’Apprise.
 
-Please use the [`azure://` Apprise plugin](../office365/) instead.
+Veuillez utiliser le plugin Apprise [`azure://`](../office365/) à la place.

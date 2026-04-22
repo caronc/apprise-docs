@@ -1,6 +1,6 @@
 ---
 title: "Notifications Flock"
-description: "Envoyer Flock notifications."
+description: "Envoyer des notifications Flock."
 sidebar:
   label: "Flock"
 
@@ -19,36 +19,36 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Flock has a lot of similarities to Slack. Flock notifications require an _incoming-webhook_ or a _app/bot_ it can connect to.
+Flock présente de nombreuses similitudes avec Slack. Les notifications Flock nécessitent un _incoming-webhook_ ou une _application/bot_ à laquelle se connecter.
 
-### Incoming Webhook
+### Webhook Entrant
 
-You can generate an Incoming webhook from [here](https://dev.flock.com/webhooks). Just follow the wizard to pre-determine the channel(s) you want your message to broadcast to. When you've completed this process you will receive a URL that looks something like this:
+Vous pouvez générer un webhook entrant depuis [ici](https://dev.flock.com/webhooks). Suivez simplement l'assistant pour prédéterminer le ou les canaux vers lesquels votre message sera diffusé. Une fois ce processus terminé, vous recevrez une URL similaire à celle-ci :
 `https://api.flock.com/hooks/sendMessage/134b8gh0-eba0-4fa9-ab9c-257ced0e8221`
 
-This effectively equates to:
+Cela correspond effectivement à :
 `https://api.flock.com/hooks/sendMessage/{token}`
 
-**Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_); you no longer need to parse the URL any further. However there is slightly less overhead (internally) if you do.
+**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la v0.7.7_) ; il n'est plus nécessaire d'analyser l'URL davantage. Toutefois, cela entraîne légèrement moins de surcharge (en interne) si vous le faites.
 
-In this example the token is `134b8gh0-eba0-4fa9-ab9c-257ced0e8221`
+Dans cet exemple, le token est `134b8gh0-eba0-4fa9-ab9c-257ced0e8221`
 
-### Bot
+### Robot
 
-Bots are a bit more difficult and presume that you followed their instructions on setting on up [your own app](https://docs.flock.com/display/flockos/Creating+an+App#CreatinganApp-HowdoIcreateaFlockOSapp?). Just like a webhook, you'll get your own **{token}** provided to you that allows you to message people and channels directly.
+Les bots sont un peu plus complexes et supposent que vous avez suivi leurs instructions pour configurer [votre propre application](https://docs.flock.com/display/flockos/Creating+an+App#CreatinganApp-HowdoIcreateaFlockOSapp?). Comme pour un webhook, vous obtiendrez votre propre **{token}** qui vous permettra d'envoyer des messages directement à des personnes et des canaux.
 
 ## Syntaxe
 
-Valid syntax with an _incoming webhook_ is as follows:
+La syntaxe valide avec un _webhook entrant_ est la suivante :
 
 - `https://api.flock.com/hooks/sendMessage/{token}`
 - `flock://{token}/`
 - `flock://{botname}@{token}/`
 
-Valid syntax with an _application / bot_ are:
-**Note:** the **userid** and **channelid** belong to the actual encoded id and not the public displayed value. For instance; if you have a channel called #general, it will have an encoded id associated with it that might look something like **g:abcd1234defg**. Users are identified in a similar fashion but are prefixed with **u:** instead of **g:**. These are the values you must specify here:
+La syntaxe valide avec une _application / bot_ est la suivante :
+**Remarque :** le **userid** et le **channelid** correspondent à l'identifiant encodé réel et non à la valeur affichée publiquement. Par exemple, si vous avez un canal appelé #general, il aura un identifiant encodé qui ressemble à quelque chose comme **g:abcd1234defg**. Les utilisateurs sont identifiés de manière similaire mais sont préfixés par **u:** au lieu de **g:**. Ce sont ces valeurs que vous devez spécifier ici :
 
 - `flock://{token}/u:userid`
 - `flock://{botname}@{token}/u:{user}`
@@ -58,21 +58,21 @@ Valid syntax with an _application / bot_ are:
 - `flock://{botname}@{token}/g:{channel1}/g:{channel2}/g:{channelN}/`
 - `flock://{botname}@{token}/g:{channel}/u:{user}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                     |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token    | Yes      | The first part of 3 tokens provided to you after creating a _incoming-webhook_ and or an _application/bot_                                                                                                                                                      |
-| botname  | No       | Identify the name of the bot that should issue the message. If one isn't specified then the default is to just use your account (associated with the _incoming-webhook_).                                                                                       |
-| channel  | No       | Channels must be prefixed with a hash tag **#** or **g:**. They must represent the encoded id of the channel name (not the human readable reference) You can specify as many channels as you want by delimiting each of them by a forward slash (/) in the url. |
-| user     | No       | Users must be prefixed with an at symbol **@** or **u:**! They must represent the encoded id of the user name (not the human readable reference) You can specify as many users as you want by delimiting each of them by a forward slash (/) in the url.        |
-| image    | No       | Associate an image with the message. By default this is enabled.                                                                                                                                                                                                |
+| Variable | Requis | Description                                                                                                                                                                                                                                                                                                          |
+| -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui    | La première partie des 3 tokens fournis après la création d'un _incoming-webhook_ et/ou d'une _application/bot_.                                                                                                                                                                                                     |
+| botname  | Non    | Identifie le nom du bot qui doit émettre le message. Si aucun n'est spécifié, le comportement par défaut est d'utiliser votre compte (associé au _incoming-webhook_).                                                                                                                                                |
+| channel  | Non    | Les canaux doivent être préfixés par un dièse **#** ou **g:**. Ils doivent représenter l'identifiant encodé du nom du canal (et non la référence lisible par l'humain). Vous pouvez spécifier autant de canaux que vous le souhaitez en les séparant par une barre oblique (/) dans l'URL.                           |
+| user     | Non    | Les utilisateurs doivent être préfixés par un symbole arobase **@** ou **u:**! Ils doivent représenter l'identifiant encodé du nom d'utilisateur (et non la référence lisible par l'humain). Vous pouvez spécifier autant d'utilisateurs que vous le souhaitez en les séparant par une barre oblique (/) dans l'URL. |
+| image    | Non    | Associe une image au message. Par défaut, cette option est activée.                                                                                                                                                                                                                                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Flock notification to our channel #nuxref (which is identified as `g:abcd1234efgh`):
+Envoyer une notification Flock à notre canal #nuxref (identifié comme `g:abcd1234efgh`) :
 
 ```bash
 # Assuming our {token} is 134b8gh0-eba0-4fa9-ab9c-257ced0e8221

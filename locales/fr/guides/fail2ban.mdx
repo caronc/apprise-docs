@@ -1,32 +1,32 @@
 ---
 title: Fail2Ban
-description: Utiliser Apprise avec Fail2ban pour les notifications d'evenements de securite
+description: Utiliser Apprise avec Fail2ban pour les notifications d'événements de sécurité
 ---
 
 import MyIPAddr from "~/components/MyIPAddr.astro";
 
-Fail2ban est un service de surveillance des journaux qui detecte les comportements suspects, comme les echecs repetes d'authentification, et bloque automatiquement les adresses IP fautives.
+Fail2ban est un service de surveillance des journaux qui détecte les comportements suspects, comme les échecs répétés d'authentification, et bloque automatiquement les adresses IP fautives.
 
-Apprise s'integre a Fail2ban comme action de notification, ce qui vous permet de recevoir des alertes via n'importe lequel des services pris en charge par Apprise, y compris l'e-mail, les notifications push, les plateformes de discussion et les webhooks.
+Apprise s'intègre à Fail2ban comme action de notification, ce qui vous permet de recevoir des alertes via n'importe lequel des services pris en charge par Apprise, y compris l'e-mail, les notifications push, les plateformes de discussion et les webhooks.
 
 Ce guide suppose :
 
-- Une installation recente de Fail2ban
+- Une installation récente de Fail2ban
 - systemd est disponible
-- Une configuration sur un seul hote
-- sshd est le premier service surveille
+- Une configuration sur un seul hôte
+- sshd est le premier service surveillé
 
-Les chemins propres a chaque distribution et les configurations avancees de prison sont volontairement laisses de cote.
+Les chemins propres à chaque distribution et les configurations avancées de prison sont volontairement laissés de côté.
 
-## Prerequis
+## Prérequis
 
-Avant de commencer, assurez-vous que les elements suivants sont installes :
+Avant de commencer, assurez-vous que les éléments suivants sont installés :
 
 - Fail2ban
 - Apprise (CLI)
-- API Apprise est facultative (si la configuration est centralisee)
+- API Apprise est facultative (si la configuration est centralisée)
 
-Verifiez que les deux sont disponibles :
+Vérifiez que les deux sont disponibles :
 
 ```bash
 fail2ban-client --version
@@ -35,16 +35,16 @@ apprise --version
 
 ## Installer Fail2ban
 
-Sur la plupart des systemes, Fail2ban est disponible via le gestionnaire de paquets du systeme.
+Sur la plupart des systèmes, Fail2ban est disponible via le gestionnaire de paquets du système.
 
-Activez et demarrez le service :
+Activez et démarrez le service :
 
 ```bash
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 ```
 
-Verifiez qu’il est en cours d’execution :
+Vérifiez qu'il est en cours d'exécution :
 
 ```bash
 sudo systemctl status fail2ban
@@ -52,12 +52,12 @@ sudo systemctl status fail2ban
 
 ## Configurer Apprise
 
-Assurez-vous d’etre a l’aise avec les [fichiers de configuration Apprise](../getting-started/configuration/) et de savoir quels [services](../services/) vous comptez utiliser. Ici, nous choisissons d’attribuer le tag `fail2ban` a tous les points de terminaison que nous souhaitons notifier lorsqu’un evenement se produit :
+Assurez-vous d'être à l'aise avec les [fichiers de configuration Apprise](../getting-started/configuration/) et de savoir quels [services](../services/) vous comptez utiliser. Ici, nous choisissons d'attribuer le tag `fail2ban` à tous les points de terminaison que nous souhaitons notifier lorsqu'un événement se produit :
 
 ```ini
 # /etc/fail2ban/apprise.conf
-# Definissez ici le tag de configuration fail2ban et assignez-le, par exemple,
-# a un webhook Discord pour les besoins de ce guide. Vous pouvez toutefois
+# Définissez ici le tag de configuration fail2ban et assignez-le, par exemple,
+# à un webhook Discord pour les besoins de ce guide. Vous pouvez toutefois
 # utiliser n'importe quel service de notification pris en charge.
 fail2ban=discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js
 
@@ -68,24 +68,24 @@ fail2ban=discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js
 ## Configurer Apprise pour Fail2ban
 
 :::note[Detected IP]
-Pour plus de commodite, ce guide a detecte votre adresse publique comme suit : <code><MyIPAddr prefix={true} /></code>. Si c’est depuis ce poste que vous vous connecterez a votre serveur, vous pouvez l’ajouter a la ligne `ignore=`.
+Pour plus de commodité, ce guide a détecté votre adresse publique comme suit : <code><MyIPAddr prefix={true} /></code>. Si c'est depuis ce poste que vous vous connecterez à votre serveur, vous pouvez l'ajouter à la ligne `ignore=`.
 :::
 
-Ajoutez ce qui suit a `/etc/fail2ban/jail.local`
+Ajoutez ce qui suit à `/etc/fail2ban/jail.local`
 
 ```ini
 # /etc/fail2ban/jail.local
 [DEFAULT]
 
-# ignoreip agit comme une liste d'autorisation ; les requetes provenant de ces
-# IP ne seront pas surveillees par Fail2Ban. Chaque entree est separee par un
+# ignoreip agit comme une liste d'autorisation ; les requêtes provenant de ces
+# IP ne seront pas surveillées par Fail2Ban. Chaque entrée est séparée par un
 # espace (' ').
-# Indiquez uniquement des points d'acces de confiance :
-#   - 127.0.0.1/8 : localhost (ce poste) ; cela evite que Fail2Ban ne bloque
-#                   des requetes internes. Le suffixe `/8` peut etre conserve.
-#   - YOUR_IP/32  : si vous accedez a distance au serveur executant Fail2Ban,
+# Indiquez uniquement des points d'accès de confiance :
+#   - 127.0.0.1/8 : localhost (ce poste) ; cela évite que Fail2Ban ne bloque
+#                   des requêtes internes. Le suffixe `/8` peut être conservé.
+#   - YOUR_IP/32  : si vous accédez à distance au serveur exécutant Fail2Ban,
 #                   remplacez 'YOUR_IP/32' ci-dessous par votre adresse IP
-#                   reelle. Ajoutez `/32` pour une adresse IPv4 ou `/128` pour
+#                   réelle. Ajoutez `/32` pour une adresse IPv4 ou `/128` pour
 #                   une adresse IPv6.
 #                   IPv6 address.
 ignoreip = 127.0.0.1/8 YOUR_IP/32
@@ -129,7 +129,7 @@ action = apprise[config="/etc/fail2ban/apprise.conf", args="--tag fail2ban"]
 ```
 
 :::tip
-Vous pouvez facilement utiliser une instance API Apprise en definissant :
+Vous pouvez facilement utiliser une instance API Apprise en définissant :
 
 ```ini
 action = apprise[config="http://api.example.ca:8000/cfg/apprise-key", args="--tag fail2ban"]
@@ -137,48 +137,48 @@ action = apprise[config="http://api.example.ca:8000/cfg/apprise-key", args="--ta
 
 :::
 
-Redemarrez Fail2ban :
+Redémarrez Fail2ban :
 
 ```bash
 sudo systemctl restart fail2ban
 ```
 
-Verifiez que la prison est active :
+Vérifiez que la prison est active :
 
 ```bash
 sudo fail2ban-client status sshd
 ```
 
-## Tester votre configuration
+## Tester votre Configuration
 
-Declenchez un bannissement de test en depassant le nombre de tentatives d’authentification, ou simulez-le manuellement :
+Déclenchez un bannissement de test en dépassant le nombre de tentatives d'authentification, ou simulez-le manuellement :
 
 ```bash
 sudo fail2ban-client set sshd banip 203.0.113.10
 ```
 
-Vous devriez recevoir une notification Apprise immediatement.
+Vous devriez recevoir une notification Apprise immédiatement.
 
-## Depannage
+## Dépannage
 
-Afficher les journaux Fail2ban :
+Affichez les journaux Fail2ban :
 
 ```bash
 journalctl -u fail2ban
 ```
 
-Augmentez la verbosite des actions Apprise (en ajoutant `-vv`) et testez pour voir ce qui se passe :
+Augmentez la verbosité des actions Apprise (en ajoutant `-vv`) et testez pour voir ce qui se passe :
 
 ```bash
 apprise -vv --tag fail2ban --config /etc/fail2ban/apprise.conf \
      --body "fail2ban trigger test"
 ```
 
-Verifiez les URL Apprise separement avant de deboguer Fail2ban.
+Vérifiez les URL Apprise séparément avant de déboguer Fail2ban.
 
-## Conseils utiles
+## Conseils Utiles
 
-Fail2ban est formidable, mais peut parfois etre fastidieux a utiliser. Avoir quelques pense-betes sous la main peut aider au depannage :
+Fail2ban est formidable, mais peut parfois être fastidieux à utiliser. Avoir quelques pense-bêtes sous la main peut aider au dépannage :
 
 ```bash
 # See all jails:

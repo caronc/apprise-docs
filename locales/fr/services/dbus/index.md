@@ -1,6 +1,6 @@
 ---
 title: "Notifications DBus Desktop"
-description: "Envoyer DBus desktop notifications."
+description: "Envoyer des notifications de bureau DBus."
 
 group: desktop
 
@@ -26,35 +26,35 @@ limits:
 
 ## Configuration du compte
 
-Display notifications right on your Gnome or KDE desktop. This only works if you're sending the notification to the same system you're currently accessing. Hence this notification can not be sent from one PC to another.
+Affichez des notifications directement sur votre bureau Gnome ou KDE. Cela ne fonctionne que si vous envoyez la notification vers le systeme que vous utilisez actuellement. Cette notification ne peut donc pas etre envoyee d'un PC a un autre.
 
-This plugin was based on lower level calls similar to how the _notify-send_ tool works that ships with some Linux distributions. It taps into the _Desktop Bus_ (DBus) and directly writes the message for QT and GLib Desktop notifications.
+Ce plugin repose sur des appels de bas niveau similaires au fonctionnement de l'outil _notify-send_, fourni avec certaines distributions Linux. Il s'appuie sur le _Desktop Bus_, DBus, et ecrit directement le message pour les notifications de bureau QT et GLib.
 
 ## Syntaxe
 
-There are currently no options you can specify for this kind of notification, so it's really easy to reference.
+Il n'existe actuellement aucune option a preciser pour ce type de notification ; sa reference est donc tres simple.
 
 La syntaxe valide est la suivante :
 
 - `dbus://`
-  - This is the probably best use of this plugin as it will attempt to connect to a QT DBus (usually KDE based) if it can, otherwise it will secondly try to connect to a glib DBus (usually Gnome/Unity based).
+  - Il s'agit probablement du meilleur mode d'utilisation de ce plugin, car il tentera d'abord de se connecter a un DBus QT, generalement base sur KDE, puis, si cela echoue, il essaiera un DBus GLib, generalement base sur Gnome ou Unity.
 - `qt://`
-  - This will explicitly only attempt to access the QT DBus (even if the GLib one is present).
+  - Cette variante tente explicitement d'acceder uniquement au DBus QT, meme si un DBus GLib est egalement present.
 - `kde://`
-  - This is just an alias to qt:// for simplicity purposes. Like qt://, this explicitly only attempt to access the QT DBus (even if the GLib one is present).
+  - Il s'agit simplement d'un alias de `qt://` pour plus de simplicite. Comme `qt://`, il tente uniquement d'acceder au DBus QT, meme si un DBus GLib est present.
 - `glib://`
-  - This will explicitly only attempt to access the GLib DBus (even if the QT one is present). A gnome:// alias was not created as Gnome support is already handled using a more mature/newer approach defined [[here|Notify_gnome]].
+  - Cette variante tente explicitement d'acceder uniquement au DBus GLib, meme si un DBus QT est present. Aucun alias `gnome://` n'a ete cree, car la prise en charge de Gnome existe deja via une approche plus recente et plus mature definie dans [[here|Notify_gnome]].
 
-## Detail des parametres
+## Détail des Paramètres
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Assuming we're on an OS that allows us to host the Gnome Desktop, we can send a notification to ourselves like so:
+Si nous sommes sur un systeme capable d'heberger le bureau Gnome, nous pouvons nous envoyer une notification ainsi :
 
 ```bash
-# Send ourselves a DBus related desktop notification
+# Nous envoyer une notification de bureau via DBus
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    dbus://
 ```

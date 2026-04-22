@@ -1,6 +1,6 @@
 ---
 title: "Notifications Twist"
-description: "Envoyer Twist notifications."
+description: "Envoyer des notifications Twist."
 sidebar:
   label: "Twist"
 
@@ -21,11 +21,11 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-[Sign in](https://twist.com/login) or [create an account](https://twist.com/signup) with the [Twist service](https://twist.com) if you don't already have one.
+[Connectez-vous](https://twist.com/login) ou [créez un compte](https://twist.com/signup) auprès du [service Twist](https://twist.com) si vous n'en avez pas encore un.
 
-The main thing with the Twist service is you always authenticate with an **{email}** and a **{password}**. Apprise can work with twist just knowing these two values as well.
+L'essentiel avec le service Twist est que vous vous authentifiez toujours avec un **{email}** et un **{password}**. Apprise peut fonctionner avec Twist en connaissant simplement ces deux valeurs.
 
 ## Syntaxe
 
@@ -34,33 +34,33 @@ La syntaxe valide est la suivante :
 - `twist://{password}:{email}`
 - `twist://{email}/{password}`
 
-**Note:** If not channel is specified then by default the **#General** channel is messaged.
+**Remarque :** Si aucun canal n'est spécifié, le canal **#General** est utilisé par défaut.
 
-You can also message one or more channels too:
+Vous pouvez également envoyer des messages à un ou plusieurs canaux :
 
 - `twist://{password}:{email}/#{channel}`
 - `twist://{email}/{password}/#{channel}`
 - `twist://{password}:{email}/#{channel1}/#{channel2}`
 - `twist://{email}/{password}/#{channel1}/#{channel2}`
 
-Twist always associates your account with a _default team_. Apprise determines this for you and by default notifies the channels you specify from within it. However, since it is possible to have your login/password associated with more then one **Team**. You can use the colon (:) as a delimiter to explicitly identify which team/channel you wish to message.
+Twist associe toujours votre compte à une _équipe par défaut_. Apprise la détermine pour vous et notifie par défaut les canaux que vous spécifiez au sein de celle-ci. Cependant, comme il est possible que votre identifiant/mot de passe soit associé à plusieurs **équipes**, vous pouvez utiliser le deux-points (:) comme délimiteur pour identifier explicitement l'équipe/canal à contacter.
 
 - `twist://{password}:{email}/#{team}:{channel}`
 - `twist://{email}/{password}/#{team}:{channel}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                            |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| email    | Yes      | This is the email address you associated with your Twist account when you signed up.                                                                                                                                                                                                                   |
-| password | Yes      | This is the password you set when you signed up with Twist                                                                                                                                                                                                                                             |
-| channel  | No       | This is the channel you wish to notify. If you don't specify one then the _#General_ channel will be used by default from within your default team. You can optionally use a colon (:) placed in front of the channel name to force the message to a specific team (if you are part of more then one). |
+| Variable | Requis | Description                                                                                                                                                                                                                                                                                                                                 |
+| -------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email    | Oui    | L'adresse e-mail associée à votre compte Twist lors de votre inscription.                                                                                                                                                                                                                                                                   |
+| password | Oui    | Le mot de passe défini lors de votre inscription à Twist.                                                                                                                                                                                                                                                                                   |
+| channel  | Non    | Le canal que vous souhaitez notifier. Si aucun n'est spécifié, le canal _#General_ sera utilisé par défaut au sein de votre équipe par défaut. Vous pouvez optionnellement utiliser un deux-points (:) placé devant le nom du canal pour forcer l'envoi du message vers une équipe spécifique (si vous faites partie de plusieurs équipes). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Twist notification to the channel #general associated with our default team.
+Envoyer une notification Twist vers le canal #general associé à notre équipe par défaut.
 
 ```bash
 # Assume:

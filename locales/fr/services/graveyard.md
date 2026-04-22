@@ -1,14 +1,14 @@
 ---
-title: "🪦 Service Graveyard"
-description: "Services that are no longer available for use."
+title: "🪦 Cimetière des Services"
+description: "Services qui ne sont plus disponibles."
 tableOfContents: false
 sidebar:
-  label: "Graveyard"
+  label: "Cimetière"
 ---
 
 ## Services
 
-The following <!-- GRAVEYARD:COUNT --> upstream apps/tools are no longer in service anymore and have been removed from Apprise:
+Les <!-- GRAVEYARD:COUNT --> applications/outils suivants ne sont plus en service et ont été supprimés d'Apprise :
 
 <div class="services-table">
 <!-- GRAVEYARD:BEGIN -->

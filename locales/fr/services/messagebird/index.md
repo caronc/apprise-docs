@@ -1,6 +1,6 @@
 ---
 title: "Notifications MessageBird"
-description: "Envoyer MessageBird notifications."
+description: "Envoyer des notifications MessageBird."
 sidebar:
   label: "MessageBird"
 
@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use MessageBird, you will need to acquire your _API Key_. This is accessible via the [MessageBird Dashboard](https://dashboard.messagebird.com/en/user/index).
+Pour utiliser MessageBird, vous devez obtenir votre _Clé API_. Elle est accessible via le [Tableau de bord MessageBird](https://dashboard.messagebird.com/en/user/index).
 
 ## Syntaxe
 
@@ -33,19 +33,19 @@ La syntaxe valide est la suivante :
 - `msgbird://{ApiKey}/{FromPhoneNo}/{ToPhoneNo}`
 - `msgbird://{ApiKey}/{FromPhoneNo}/{ToPhoneNo1}/{ToPhoneNo2}/{ToPhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                                                                                                           |
-| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ApiKey      | Yes      | The _API Key_ associated with your MessageBird account. This is available to you via the [MessageBird Dashboard](https://dashboard.messagebird.com/en/user/index).                                                                                                                                                    |
-| FromPhoneNo | Yes      | A from phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. This MUST be the the number you registered with your _MessageBird_ account. |
-| ToPhoneNo   | No       | A to phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ is notified instead.   |
+| Variable    | Requis | Description                                                                                                                                                                                                                                                                                                                      |
+| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ApiKey      | Oui    | La _Clé API_ associée à votre compte MessageBird. Elle est disponible via le [Tableau de bord MessageBird](https://dashboard.messagebird.com/en/user/index).                                                                                                                                                                     |
+| FromPhoneNo | Oui    | Un numéro de téléphone expéditeur DOIT inclure le préfixe de composition du code pays lors de sa saisie. Ce champ est très flexible et accepte les parenthèses, espaces et tirets si vous souhaitez formater le numéro de manière lisible. Ce DOIT être le numéro que vous avez enregistré avec votre compte _MessageBird_.      |
+| ToPhoneNo   | Non    | Un numéro de téléphone destinataire DOIT inclure le préfixe de composition du code pays lors de sa saisie. Ce champ est très flexible et accepte les parenthèses, espaces et tirets si vous souhaitez formater le numéro de manière lisible. Si aucun _ToPhoneNo_ n'est spécifié, le _FromPhoneNo_ est alors notifié à la place. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une MessageBird Notification as an SMS:
+Envoyer une notification MessageBird par SMS :
 
 ```bash
 # Assuming our {APIKey} is gank339l7jk3cjaE

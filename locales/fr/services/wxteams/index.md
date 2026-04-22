@@ -1,6 +1,6 @@
 ---
 title: "Notifications Webex Teams"
-description: "Envoyer Webex Teams notifications with optional file attachments."
+description: "Envoyer des notifications Webex Teams avec prise en charge optionnelle des pièces jointes."
 sidebar:
   label: "Webex Teams"
 
@@ -22,7 +22,7 @@ has_attachments: true
 limits:
   - name: "Webhook"
     max_chars: 1000
-  - name: "Bot API"
+  - name: "API Robot"
     max_chars: 7439
 ---
 
@@ -30,25 +30,26 @@ limits:
 
 ## Configuration du compte
 
-Webex Teams notifications can be sent in two modes: **Webhook** (simple,
-no attachments) and **Bot** (full API access with file attachment support).
-The mode is auto-detected from the token format, or you can force it with
-the `mode=` URL parameter.
+Les notifications Webex Teams peuvent être envoyées selon deux modes :
+**Webhook** (simple, sans pièces jointes) et **Robot** (accès API complet avec
+prise en charge des pièces jointes). Le mode est détecté automatiquement à
+partir du format du jeton, ou vous pouvez le forcer avec le paramètre d'URL `mode=`.
 
-### Mode 1 — Webhook (default)
+### Mode 1 — Webhook (par défaut)
 
-To use webhook mode, first access <https://teams.webex.com> and create an
-account if you don't already have one. You'll want to create at least one
-'space' before getting the 'incoming webhook'.
+Pour utiliser le mode webhook, accédez d'abord à <https://teams.webex.com>
+et créez un compte si vous n'en avez pas encore. Vous devrez créer au moins
+un "space" avant de récupérer le "incoming webhook".
 
-Next, install the 'Incoming webhook' integration found under the 'other'
-category at <https://apphub.webex.com/integrations/>. At the time of writing,
-[this was a direct link to it](https://apphub.webex.com/applications/incoming-webhooks-cisco-systems-38054-23307-75252).
+Ensuite, installez l'intégration "Incoming webhook" disponible dans la
+catégorie "other" sur <https://apphub.webex.com/integrations/>. Au moment
+de la rédaction, [ce lien direct](https://apphub.webex.com/applications/incoming-webhooks-cisco-systems-38054-23307-75252)
+y menait.
 
-If you're logged in, click on the 'Connect' button, accept the permissions,
-and give the webhook a name such as 'apprise'.
+Une fois connecté, cliquez sur "Connect", acceptez les permissions, puis
+donnez un nom au webhook, par exemple `apprise`.
 
-When you're complete, you will receive a URL that looks something like this:
+Une fois terminé, vous recevrez une URL ressemblant à ceci :
 
 ```text
 https://api.ciscospark.com/v1/webhooks/incoming/\
@@ -57,27 +58,27 @@ https://api.ciscospark.com/v1/webhooks/incoming/\
 
 ![image](./images/218330896-ea8715df-0e7d-4584-a803-aa23add9bd15.png)
 
-The last part of the URL is your `{token}`:
+La dernière partie de l'URL est votre `{token}` :
 
 - `https://api.ciscospark.com/v1/webhooks/incoming/{token}`
 
-**Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_).
+**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la version 0.7.7_).
 
-> **Limitation:** Incoming webhooks do **not** support file attachments.
-> Use Bot mode (below) if you need to send files.
+> **Limitation :** les incoming webhooks ne prennent **pas** en charge les pièces jointes.
+> Utilisez le mode robot (ci-dessous) si vous devez envoyer des fichiers.
 
-### Mode 2 — Bot (API token + Room ID, supports attachments)
+### Mode 2 — Robot (Jeton API + Identifiant de Salon, avec pièces jointes)
 
-1. Visit <https://developer.webex.com/my-apps> and create a new **Bot**.
-2. After creating the bot, copy the **Bot Access Token** shown on the
-   confirmation page (it is only shown once).
-3. Invite the bot to the space/room you want it to post to.
-4. Retrieve the **Room ID** for that space. You can list rooms via the
-   [Rooms API](https://developer.webex.com/docs/api/v1/rooms/list-rooms).
-   The Room ID is a long base64url string such as
+1. Rendez-vous sur <https://developer.webex.com/my-apps> et créez un nouveau **robot**.
+2. Après création du robot, copiez le **jeton d'accès du robot** affiché sur la page
+   de confirmation (il n'est visible qu'une seule fois).
+3. Invitez le robot dans l'espace/salon où il devra publier.
+4. Récupérez l'**identifiant de salon** de cet espace. Vous pouvez lister les salons via
+   la [Rooms API](https://developer.webex.com/docs/api/v1/rooms/list-rooms).
+   Cet identifiant de salon est une longue chaîne base64url comme
    `Y2lzY29zcGFyazovL3VzL1JPTU9NLzEyMzQ1`.
 
-Assemble your Apprise URL as:
+Assemblez votre URL Apprise comme suit :
 
 ```text
 wxteams://{bot_token}/{room_id}
@@ -87,64 +88,64 @@ wxteams://{bot_token}/{room_id}
 
 La syntaxe valide est la suivante :
 
-### Webhook Mode
+### Mode Webhook
 
 - `https://api.ciscospark.com/v1/webhooks/incoming/{token}`
 - `https://webexapis.com/v1/webhooks/incoming/{token}`
 - `wxteams://{token}/`
 - `webex://{token}/`
 
-### Bot Mode
+### Mode Robot
 
 - `wxteams://{bot_token}/{room_id}/`
 - `wxteams://{bot_token}/{room_id1}/{room_id2}/`
 
-You can force a mode explicitly by appending `?mode=webhook` or `?mode=bot`.
-If omitted, the mode is auto-detected from the token format:
+Vous pouvez forcer explicitement un mode en ajoutant `?mode=webhook`
+ou `?mode=bot`. Si ce paramètre est omis, le mode est détecté automatiquement
+à partir du format du jeton :
 
-- A token of 80–160 alphanumeric characters is treated as a **webhook** token.
-- Any other token (longer, or containing non-alphanumeric characters) is
-  treated as a **bot** access token and requires at least one Room ID.
+- Un jeton de 80 à 160 caractères alphanumériques est traité comme un jeton **webhook**.
+- Tout autre jeton (plus long, ou contenant des caractères non alphanumériques) est traité comme un jeton d'accès **robot** et exige au moins un identifiant de salon.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                     |
-| -------- | -------- | --------------------------------------------------------------- |
-| token    | Yes      | Webhook token _or_ Bot access token (auto-detected by format)   |
-| room_id  | Bot only | Room ID of the Webex space to post to (may repeat for multiple) |
-| mode     | No       | Force `webhook` or `bot` mode (auto-detected if omitted)        |
+| Variable | Requis          | Description                                                                    |
+| -------- | --------------- | ------------------------------------------------------------------------------ |
+| token    | Oui             | Jeton webhook _ou_ jeton d'accès robot (détection automatique selon le format) |
+| room_id  | Mode Robot seul | Identifiant du salon Webex où publier (peut être répété plusieurs fois)        |
+| mode     | Non             | Force le mode `webhook` ou `bot` (détection automatique si omis)               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Webex Teams notification via webhook:
+Envoyer une notification Webex Teams via webhook :
 
 ```bash
-# Assuming our {token} is T1JJ3T3L2DEFK543
+# Supposons que notre {token} soit T1JJ3T3L2DEFK543
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    wxteams://T1JJ3T3L2DEFK543/
 ```
 
-Envoyer une notification via Bot API to a specific room:
+Envoyer une notification via l'API robot vers un salon spécifique :
 
 ```bash
-# bot_token and room_id are placeholders for your actual values
-apprise -vv -b "Hello from Apprise Bot" \
+# {bot_token} et {room_id} sont des valeurs de remplacement pour vos vraies données
+apprise -vv -b "Bonjour depuis le robot Apprise" \
    wxteams://NThhZjI0NzQtMGQx.../Y2lzY29zcGFyazovL3Vz.../
 ```
 
-Envoyer une notification with a file attachment (Bot mode required):
+Envoyer une notification avec une pièce jointe (mode robot requis) :
 
 ```bash
-apprise -vv -b "See attached report" \
+apprise -vv -b "Voir le rapport joint" \
    --attach /path/to/report.pdf \
    wxteams://NThhZjI0NzQtMGQx.../Y2lzY29zcGFyazovL3Vz.../
 ```
 
-Post to multiple rooms from one Bot token:
+Publier dans plusieurs salons avec un seul jeton robot :
 
 ```bash
-apprise -vv -b "Broadcast message" \
+apprise -vv -b "Message diffuse" \
    wxteams://{bot_token}/{room_id1}/{room_id2}/
 ```

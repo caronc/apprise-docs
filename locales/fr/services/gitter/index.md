@@ -1,6 +1,6 @@
 ---
 title: "Notifications Gitter"
-description: "Envoyer Gitter notifications."
+description: "Envoyer des notifications Gitter."
 sidebar:
   label: "Gitter"
 
@@ -21,22 +21,22 @@ sample_urls:
 
 :::caution
 
-Gitter uses Matrix and does not have its own custom service anymore. All information below pertains to its legacy configuration for those still hosting it.
+Gitter utilise Matrix et ne dispose plus de son propre service personnalisé. Toutes les informations ci-dessous concernent sa configuration héritée pour ceux qui l'hébergent encore.
 :::
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Gitter isn't to difficult to get yourself an account [on their website](https://gitter.im/).
+Il n'est pas difficile de créer un compte Gitter [sur leur site web](https://gitter.im/).
 
-From here, you just need to get your Gitter **Personal Access Token** which is as simple as visiting their [development website](https://developer.gitter.im/apps) and signing in (if you're not already). Almost immediately you should see a pop-up box providing you your token.
+À partir de là, vous avez simplement besoin de votre **Jeton d'Accès Personnel** Gitter, ce qui est aussi simple que de visiter leur [site de développement](https://developer.gitter.im/apps) et de vous connecter (si ce n'est pas déjà fait). Presque immédiatement, une boîte de dialogue devrait apparaître vous fournissant votre jeton.
 
-\*\*Note: You can ignore the App generation feature here as it's not relevant to sending an apprise notification.
+\*\*Remarque : Vous pouvez ignorer la fonctionnalité de génération d'application ici, car elle n'est pas pertinente pour l'envoi d'une notification Apprise.
 
-The last thing you need to know about this is you need to have already joined the channel you wish to send notifications to. The **Personal Access Token** represents you, so even if you join a channel and close out of your web browser, you're still actually a part of that channel (until you log back in and leave the channel).
+La dernière chose à savoir est que vous devez avoir déjà rejoint le canal vers lequel vous souhaitez envoyer des notifications. Le **Jeton d'Accès Personnel** vous représente, donc même si vous rejoignez un canal et fermez votre navigateur web, vous faites toujours partie de ce canal (jusqu'à ce que vous vous reconnectiez et quittiez le canal).
 
-Channels identify themselves as **name**/community; you only need to focus on the name. So if the channel was [**apprise**/community](https://gitter.im/apprise-notifications/community), the channel name can be assumed to be **apprise** when using this script.
+Les canaux s'identifient sous la forme **name**/community ; vous n'avez besoin de vous concentrer que sur le nom. Ainsi, si le canal était [**apprise**/community](https://gitter.im/apprise-notifications/community), le nom du canal peut être supposé être **apprise** lors de l'utilisation de ce script.
 
 ## Syntaxe
 
@@ -46,20 +46,20 @@ La syntaxe valide est la suivante :
 - `gitter://{token}/{room1}/{room2}/{roomN}/`
 - `gitter://{token}/{room}/?image=Yes`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                        |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| token    | Yes      | The Personal Access Token associated with your account. This is available to you after signing into their [development website](https://developer.gitter.im/apps). |
-| room     | No       | The room you want to notify. You can specify as many as you want of these on the URL.                                                                              |
-| image    | No       | Envoyer an image representing the message type prior to sending the message body. This is disabled by default.                                                     |
-| to       | No       | This is an alias to the room variable.                                                                                                                             |
+| Variable | Requis | Description                                                                                                                                              |
+| -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Oui    | Le Jeton d'Accès Personnel associé à votre compte. Il est disponible après connexion sur leur [site de développement](https://developer.gitter.im/apps). |
+| room     | Non    | La salle que vous souhaitez notifier. Vous pouvez en spécifier autant que vous le souhaitez dans l'URL.                                                  |
+| image    | Non    | Envoyer une image représentant le type de message avant d'envoyer le corps du message. Cette option est désactivée par défaut.                           |
+| to       | Non    | Ceci est un alias de la variable room.                                                                                                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Gitter notification to the channel _apprise/community_:
+Envoyer une notification Gitter vers le canal _apprise/community_ :
 
 ```bash
 # Assuming our {token} is abcdefghij1234567890

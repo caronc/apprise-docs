@@ -1,6 +1,6 @@
 ---
 title: "Notifications Line"
-description: "Envoyer Line notifications."
+description: "Envoyer des notifications Line."
 sidebar:
   label: "Line"
 
@@ -23,20 +23,20 @@ limits:
 
 ## Configuration du compte
 
-1. First download Line in order to use it via [Google Play](https://play.google.com/store/apps/details?id=jp.naver.line.android) or [Apple](https://apps.apple.com/us/app/line/id443904275).
-1. Once installed, you need to open up the software on your mobile device and access the ⚙️ icon and click on **Accounts**. From here you need to associate an Email address with your account if you haven't done so already. There is a validation process you must complete.
+1. Commencez par telecharger Line depuis [Google Play](https://play.google.com/store/apps/details?id=jp.naver.line.android) ou [Apple](https://apps.apple.com/us/app/line/id443904275).
+1. Une fois l'application installee, ouvrez-la sur votre appareil mobile, touchez l'icone ⚙️ puis **Accounts**. A partir de la, vous devrez associer une adresse e-mail a votre compte si ce n'est pas deja fait. Une procedure de validation sera necessaire.
 
-### Generate a Token
+### Generer un Jeton
 
-In order to generate a token, you need to have associated an email address with your account so that you can log into the [developer console here](https://developers.line.biz/console/).
+Pour generer un jeton, vous devez avoir associe une adresse e-mail a votre compte afin de pouvoir vous connecter a la [console developpeur](https://developers.line.biz/console/).
 
-1. Create a **Provider** if you haven't done so already; when prompted you want to create a **Messaging API**
-1. Next you'll need to create a **Channel**.
-   - On the **Basic settings** tab you can acquire your BOT **User ID**. This is suggested to become your `{user}` Apprise field.
-   - On the **Messaging API** tab you can **Issue** a Long Lived **Channel access token**. This will become your `{token}` Apprise field.
-1. In your Channel settings under the **Message API** tab:
-   1. you may want to optionally turn off **Greeting messages**; I personally find it annoying but you may not. So this is up to you.
-   2. On your mobile device, you will want to chose to add a friend and scan the QR Code under this **Message API** tab (near the top)
+1. Creez un **Provider** si ce n'est pas deja fait ; lorsqu'on vous le demande, choisissez de creer une **Messaging API**.
+1. Creez ensuite un **Channel**.
+   - Dans l'onglet **Basic settings**, vous pourrez recuperer le **User ID** de votre bot. Il est recommande d'utiliser cette valeur pour votre champ Apprise `{user}`.
+   - Dans l'onglet **Messaging API**, vous pouvez generer un **Channel access token** longue duree. Il deviendra votre champ Apprise `{token}`.
+1. Dans les parametres de votre Channel, sous l'onglet **Message API** :
+   1. vous pouvez desactiver facultativement les **Greeting messages** ; certains les trouvent utiles, d'autres non ;
+   2. sur votre appareil mobile, ajoutez ensuite un ami puis scannez le QR code disponible dans cet onglet **Message API**, vers le haut de la page.
 
 ## Syntaxe
 
@@ -45,23 +45,23 @@ La syntaxe valide est la suivante :
 - `line://{token}/{user}`
 - `line://{token}/{user1}/{user2}/{userN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token    | Yes      | This is the **Long Lived Access Token** generated from the [Line](https://line.me) console (under the Message API section of your channel). This is a very long token that ends with an equal sign `=`. This token also contains numerous forward slashes in it `/`. Apprise is able to detect the API and distinguish it apart from the one or more users you've added. So you can safely paste the entire token **as is** straight into the URL. |
-| user     | Yes      | The Line users (separated by forward slash `/`) that you wish to notify. This is NOT the `@userid` you can acquire from your mobile device. It is instead the Line User ID (which usually starts with the letter `U`). For example, you can acquire your Line BOT User ID from the [developer console](https://developers.line.biz/console/) within your channel settings under the **Basic settings** tab (at the bottom).                        |
-| image    | No       | Associate the notification status via a represented icon. You can set this value to `no` if you do not want this to occur.                                                                                                                                                                                                                                                                                                                         |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| token    | Oui         | Il s'agit du jeton d'acces longue duree genere depuis la console [Line](https://line.me), dans la section **Message API** de votre canal. C'est un jeton tres long, souvent termine par un signe egal `=` et contenant de nombreux slashs `/`. Apprise sait distinguer l'API des utilisateurs que vous ajoutez ; vous pouvez donc coller le jeton complet tel quel dans l'URL.                                                       |
+| user     | Oui         | Utilisateurs Line, separes par des slashs `/`, que vous souhaitez notifier. Il ne s'agit **pas** du `@userid` visible sur votre appareil mobile, mais bien du `Line User ID`, qui commence generalement par la lettre `U`. Par exemple, vous pouvez recuperer le **Line Bot User ID** depuis la [console developpeur](https://developers.line.biz/console/) dans les parametres du canal, onglet **Basic settings**, en bas de page. |
+| image    | Non         | Associe l'etat de la notification a une icone representative. Vous pouvez definir cette valeur sur `no` si vous ne souhaitez pas ce comportement.                                                                                                                                                                                                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une line notification:
+Envoyer une notification Line :
 
 ```bash
-# Assuming our {token} is 4174216298
-# Assuming our {user} is U1234567
+# Supposons que notre {token} soit 4174216298
+# Supposons que notre {user} soit U1234567
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    line://4174216298/U1234567
 ```

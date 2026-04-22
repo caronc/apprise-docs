@@ -1,11 +1,11 @@
 ---
 title: "Fastmail"
-description: "Using Apprise with Fastmail and supported Fastmail domains."
+description: "Utiliser Apprise avec Fastmail et les domaines Fastmail pris en charge."
 ---
 
-The following Fastmail Email servers are supported (based on what was available on Dec 13th, 2018):
+Les serveurs e-mail Fastmail suivants sont pris en charge, d'après ce qui était disponible au 13 décembre 2018 :
 
-| Email Domain             | Apprise Syntaxe                                     |
+| Domaine E-mail           | Syntaxe Apprise                                     |
 | ------------------------ | --------------------------------------------------- |
 | **fastmail.com**         | mailto://{user}:{app-password}@fastmail.com         |
 | **fastmail.cn**          | mailto://{user}:{app-password}@fastmail.cn          |

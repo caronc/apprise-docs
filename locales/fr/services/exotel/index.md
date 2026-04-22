@@ -1,6 +1,6 @@
 ---
 title: "Notifications Exotel"
-description: "Envoyer Exotel notifications."
+description: "Envoyer des notifications Exotel."
 sidebar:
   label: "Exotel"
 
@@ -23,13 +23,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use Exotel, you will need your _Account SID_, _API Key_, and _API Token_. These are available from the [Exotel Dashboard](https://my.exotel.com/) under API settings.
+Pour utiliser Exotel, vous aurez besoin de votre _Account SID_, de votre _API Key_ et de votre _API Token_. Ces valeurs sont disponibles dans le [tableau de bord Exotel](https://my.exotel.com/) dans les parametres API.
 
-Exotel uses the _Account SID_ in the API endpoint and the _API Key_ with _API Token_ for HTTP Basic authentication. For backwards compatibility, Apprise uses the _Account SID_ as the API key when `apikey=` is not provided.
+Exotel utilise le _Account SID_ dans le point d'acces API ainsi que l'_API Key_ avec l'_API Token_ pour l'authentification HTTP basique. Pour des raisons de compatibilite ascendante, Apprise utilise le _Account SID_ comme cle API lorsque `apikey=` n'est pas fourni.
 
-You will also need a valid source value for **{FromPhoneNo}**. Exotel accepts an ExoPhone, an approved alphanumeric Sender ID, or an approved numeric sender ID associated with your account.
+Vous aurez aussi besoin d'une valeur source valide pour **{FromPhoneNo}**. Exotel accepte un ExoPhone, un Sender ID alphanumerique approuve ou un identifiant expediteur numerique approuve associe a votre compte.
 
 ## Syntaxe
 
@@ -41,71 +41,72 @@ La syntaxe valide est la suivante :
 - `exotel://{AccountSid}:{ApiToken}@{SenderID}/{PhoneNo}?apikey={ApiKey}`
 - `exotel://{AccountSid}:{ApiToken}@{SenderID}/{PhoneNo1}/{PhoneNo2}?batch=yes`
 
-If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ will be messaged instead; hence the following is a valid URL:
+Si aucun _ToPhoneNo_ n'est precise, alors le _FromPhoneNo_ recevra le message a la place ; l'URL suivante est donc valide :
 
 - `exotel://{AccountSid}:{ApiToken}@{FromPhoneNo}/`
 
-You can also pass values as query parameters:
+Vous pouvez aussi transmettre des valeurs sous forme de parametres de requete :
 
 - `exotel://_?sid={AccountSid}&token={ApiToken}&apikey={ApiKey}&from={FromPhoneNo}&to={PhoneNo}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                                                                                                       |
-| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AccountSid  | Yes      | The _Account SID_ associated with your Exotel account. This is used in the Exotel API path.                                                                                                                                       |
-| ApiToken    | Yes      | The _API Token_ associated with your Exotel account. This is used as the HTTP Basic authentication password.                                                                                                                      |
-| ApiKey      | **No**   | The _API Key_ associated with your Exotel account. This is used as the HTTP Basic authentication username. If omitted, Apprise uses **AccountSid** for backwards compatibility with older URLs.                                   |
-| FromPhoneNo | Yes      | An ExoPhone associated with your Exotel account. The phone number MUST include the country code dialling prefix. Spaces, brackets, and hyphens are accepted for readability.                                                      |
-| SenderID    | Yes      | An approved Exotel sender ID/header associated with your account. This may be an alphanumeric Sender ID such as `EXOTEL` or a numeric sender ID such as `600123`. Use this in place of **FromPhoneNo** when configured in Exotel. |
-| PhoneNo     | **\*No** | A phone number MUST include the country code dialling prefix. Spaces, brackets, and hyphens are accepted for readability. If no target is provided, Apprise sends the SMS to **FromPhoneNo**.                                     |
-| region      | No       | Can be either `us` or `in`. By default, the region is set to `us`. Use `in` for the Mumbai API endpoint.                                                                                                                          |
-| priority    | No       | Can be either `normal` or `high`. By default, priority is set to `normal`. Exotel recommends `high` only for OTP SMS messages.                                                                                                    |
-| unicode     | No       | Optionally tell Apprise whether the SMS should be sent as unicode. By default this is set to `yes`; set it to `no` to use plain text encoding.                                                                                    |
-| batch       | No       | Envoyer multiple targets in a single Exotel bulk SMS API request. By default this is set to `no`, so Apprise sends one upstream request per target.                                                                               |
+| Variable    | Obligatoire | Description                                                                                                                                                                                                                                                              |
+| ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AccountSid  | Oui         | _Account SID_ associe a votre compte Exotel. Il est utilise dans le chemin API Exotel.                                                                                                                                                                                   |
+| ApiToken    | Oui         | _API Token_ associe a votre compte Exotel. Il est utilise comme mot de passe pour l'authentification HTTP basique.                                                                                                                                                       |
+| ApiKey      | **Non**     | _API Key_ associee a votre compte Exotel. Elle est utilisee comme nom d'utilisateur pour l'authentification HTTP basique. Si elle est omise, Apprise utilise **AccountSid** pour assurer la compatibilite avec les anciennes URL.                                        |
+| FromPhoneNo | Oui         | ExoPhone associe a votre compte Exotel. Le numero doit inclure l'indicatif du pays. Les espaces, parentheses et tirets sont acceptes pour la lisibilite.                                                                                                                 |
+| SenderID    | Oui         | Identifiant expediteur, header, Exotel approuve et associe a votre compte. Il peut s'agir d'un Sender ID alphanumerique, tel que `EXOTEL`, ou d'un identifiant numerique, comme `600123`. Utilisez-le a la place de **FromPhoneNo** lorsqu'il est configure dans Exotel. |
+| PhoneNo     | **\*Non**   | Le numero de telephone doit inclure l'indicatif du pays. Les espaces, parentheses et tirets sont acceptes pour la lisibilite. Si aucune cible n'est fournie, Apprise envoie le SMS a **FromPhoneNo**.                                                                    |
+| region      | Non         | Peut etre `us` ou `in`. Par defaut, la region est definie sur `us`. Utilisez `in` pour le point d'acces API de Mumbai.                                                                                                                                                   |
+| priority    | Non         | Peut etre `normal` ou `high`. Par defaut, la priorite est definie sur `normal`. Exotel recommande `high` uniquement pour les messages OTP.                                                                                                                               |
+| unicode     | Non         | Permet facultativement d'indiquer a Apprise si le SMS doit etre envoye en Unicode. Par defaut, cette valeur est `yes` ; definissez-la sur `no` pour utiliser un encodage texte brut.                                                                                     |
+| batch       | Non         | Envoie plusieurs cibles dans une seule requete d'API bulk SMS Exotel. Par defaut, cette option est definie sur `no`, donc Apprise envoie une requete amont par cible.                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer an Exotel notification as an SMS:
+Envoyer une notification Exotel sous forme de SMS :
 
 ```bash
-# Assuming our {AccountSid} is acme123
-# Assuming our {ApiToken} is exo-token
-# Assuming our {FromPhoneNo} is +1-900-555-9999
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {AccountSid} soit acme123
+# Supposons que notre {ApiToken} soit exo-token
+# Supposons que notre {FromPhoneNo} soit +1-900-555-9999
+# Supposons que notre {PhoneNo}
+#  - se trouve aux Etats-Unis, donc avec l'indicatif +1
+#  - corresponde a 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    exotel://acme123:exo-token@19005559999/18005551223
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# l'exemple suivant aurait egalement fonctionne, les espaces,
+# parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    exotel://acme123:exo-token@1-(900) 555-9999/1-(800) 555-1223
 ```
 
-Envoyer through the India region using a separate API key and an approved sender ID:
+Envoyer via la region Inde en utilisant une cle API distincte et un sender ID approuve :
 
 ```bash
-# Assuming our {AccountSid} is acme123
-# Assuming our {ApiKey} is api-key
-# Assuming our {ApiToken} is exo-token
-# Assuming our {SenderID} is EXOTEL
-# Assuming our {PhoneNo} is +91-98765-43210
+# Supposons que notre {AccountSid} soit acme123
+# Supposons que notre {ApiKey} soit api-key
+# Supposons que notre {ApiToken} soit exo-token
+# Supposons que notre {SenderID} soit EXOTEL
+# Supposons que notre {PhoneNo} soit +91-98765-43210
 apprise -vv -b "Your verification code is 123456" \
    "exotel://acme123:exo-token@EXOTEL/919876543210?apikey=api-key&region=in&priority=high"
 ```
 
-Envoyer one message to multiple targets using Exotel bulk SMS:
+Envoyer un message a plusieurs cibles en utilisant les bulk SMS Exotel :
 
 ```bash
-# Assuming our {AccountSid} is acme123
-# Assuming our {ApiKey} is api-key
-# Assuming our {ApiToken} is exo-token
-# Assuming our {SenderID} is EXOTEL
-# Assuming our {PhoneNo1} is +91-98765-43210
-# Assuming our {PhoneNo2} is +91-98765-43211
+# Supposons que notre {AccountSid} soit acme123
+# Supposons que notre {ApiKey} soit api-key
+# Supposons que notre {ApiToken} soit exo-token
+# Supposons que notre {SenderID} soit EXOTEL
+# Supposons que notre {PhoneNo1} soit +91-98765-43210
+# Supposons que notre {PhoneNo2} soit +91-98765-43211
 apprise -vv -b "Your scheduled reminder" \
    "exotel://acme123:exo-token@EXOTEL/919876543210/919876543211?apikey=api-key&region=in&batch=yes"
 ```

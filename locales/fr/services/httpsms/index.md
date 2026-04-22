@@ -1,6 +1,6 @@
 ---
 title: "Notifications httpSMS"
-description: "Envoyer httpSMS notifications."
+description: "Envoyer des notifications httpSMS."
 sidebar:
   label: "httpSMS"
 
@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a httpSMS [from here](https://httpsms.com/). You will be then be able to access the /settings section of your account to obtain your API Key which you will need to use the Apprise Integration with (as `{apikey}`)
+Inscrivez-vous a httpSMS [ici](https://httpsms.com/). Vous pourrez ensuite acceder a la section `/settings` de votre compte afin d'y recuperer votre cle API, dont vous aurez besoin pour utiliser l'integration Apprise, en tant que `{apikey}`.
 
 ## Syntaxe
 
@@ -32,24 +32,24 @@ La syntaxe valide est la suivante :
 - `httpsms://{apikey}@{fromPhoneNo}`
 - `httpsms://{apikey}@{fromPhoneNo}/{target}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                     |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Yes      | The API Key associated with your httpSMS Account ([visit here](https://httpsms.com/settings) to acquire it).                                                    |
-| to       | **\*No** | A phone number and/or group you wish to send your notification to. You can use comma's to separate multiple entries if you wish. This is an alias to `targets`. |
-| from     | **\*No** | Specify the phone number you registered with httpSMS you wish the message to be identified as being sent from.                                                  |
+| Variable | Obligatoire | Description                                                                                                                                                                                     |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle API associee a votre compte httpSMS, [a recuperer ici](https://httpsms.com/settings).                                                                                                       |
+| to       | **\*Non**   | Numero(s) de telephone et/ou groupe(s) auxquels vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour separer plusieurs entrees. Il s'agit d'un alias de `targets`. |
+| from     | **\*Non**   | Numero de telephone enregistre chez httpSMS que vous souhaitez utiliser comme expediteur du message.                                                                                            |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une httpSMS Message:
+Envoyer un message httpSMS :
 
 ```bash
-# Assuming our {apikey} is hard-to-guess
-# Assuming our {PhoneNo} associated with our account is +1800-555-4444
-# Assuming our {PhoneNo} we wish to notify is +134-555-1223
+# Supposons que notre {apikey} soit hard-to-guess
+# Supposons que le {PhoneNo} associe a notre compte soit +1800-555-4444
+# Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    httpsms://hard-to-guess@+1800-555-4444/+134-555-1223
 ```

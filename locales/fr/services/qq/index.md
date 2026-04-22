@@ -1,6 +1,6 @@
 ---
 title: "Notifications QQ Push"
-description: "Envoyer QQ Push notifications."
+description: "Envoyer des notifications QQ Push."
 sidebar:
   label: "QQ Push"
 
@@ -19,21 +19,21 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-QQ Push is a third-party gateway for sending notifications to QQ users via services like [qmsg.zendee.cn](https://qmsg.zendee.cn/).
+QQ Push est une passerelle tierce permettant d'envoyer des notifications aux utilisateurs QQ via des services comme [qmsg.zendee.cn](https://qmsg.zendee.cn/).
 
-To use it with Apprise, you'll need to register and obtain a personal **Token**.
+Pour l'utiliser avec Apprise, vous devez vous inscrire et obtenir un **Token** personnel.
 
-1. Visit [qmsg.zendee.cn](https://qmsg.zendee.cn/) and sign in using your QQ account.
-2. Once logged in, generate and copy your **token**.
-3. You’ll receive a webhook URL like this:
+1. Rendez-vous sur [qmsg.zendee.cn](https://qmsg.zendee.cn/) et connectez-vous avec votre compte QQ.
+2. Une fois connecté, générez et copiez votre **token**.
+3. Vous recevrez une URL webhook ressemblant à ceci :
 
 ```text
 https://qmsg.zendee.cn/send/abc123def456ghi789jkl012mno345pq
 ```
 
-You can use the full native webhook or a simplified Apprise URL.
+Vous pouvez utiliser le webhook natif complet ou une URL Apprise simplifiée.
 
 ## Syntaxe
 
@@ -43,31 +43,31 @@ La syntaxe valide est la suivante :
 - `qq://{token}`
 - `qq://?token={token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                     |
-| -------- | -------- | ----------------------------------------------- |
-| token    | Yes      | Your personal QQ Push token from qmsg.zendee.cn |
+| Variable | Requis | Description                                                |
+| -------- | ------ | ---------------------------------------------------------- |
+| token    | Oui    | Votre token QQ Push personnel obtenu depuis qmsg.zendee.cn |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Using the simplified Apprise URL:
+En utilisant l'URL Apprise simplifiée :
 
 ```bash
 apprise -vv -t "QQ Title" -b "Message content" \
     qq://abc123def456ghi789jkl012mno345pq
 ```
 
-Using the query parameter form:
+En utilisant la forme avec paramètre de requête :
 
 ```bash
 apprise -vv -t "QQ Title" -b "Message content" \
     qq://?token=abc123def456ghi789jkl012mno345pq
 ```
 
-Using the native webhook URL:
+En utilisant l'URL webhook native :
 
 ```bash
 apprise -vv -t "QQ Title" -b "Message content" \

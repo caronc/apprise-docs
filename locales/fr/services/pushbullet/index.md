@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushbullet"
-description: "Envoyer Pushbullet notifications."
+description: "Envoyer des notifications Pushbullet."
 sidebar:
   label: "Pushbullet"
 
@@ -20,9 +20,9 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Pushbullet accounts are free; the Pro extension is optional and grants you a larger message limit and a few other features. Once you've signed up on <https://www.pushbullet.com/> You can generate your API Key by accessing your [account settings](https://www.pushbullet.com/#settings) and clicking on **Create Access Token**.
+Les comptes Pushbullet sont gratuits ; l'extension Pro est facultative et vous donne une limite de message plus elevee ainsi que quelques fonctionnalites supplementaires. Une fois inscrit sur <https://www.pushbullet.com/>, vous pouvez generer votre cle API en accedant a vos [parametres de compte](https://www.pushbullet.com/#settings) puis en cliquant sur **Create Access Token**.
 
 ## Syntaxe
 
@@ -37,25 +37,25 @@ Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jou
 
 - `pbul://{accesstoken}/{device_id}/#{channel}/{email}`
 
-If neither a **{device_id}**, **#{channel}**, or **{email}** is specified, then the default configuration is to send to _all_ of your configured _devices_.
+Si aucun **{device_id}**, **#{channel}** ou **{email}** n'est precise, alors la configuration par defaut enverra la notification a tous vos appareils configures.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable    | Required | Description                                                                                                                                               |
-| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| accesstoken | Yes      | The Access Token can be generated on the Settings page of your Pushbullet's account. You must have an access token for this Notification service to work. |
-| device_id   | No       | Associated devices with your Pushbullet account can be found in your _Settings_                                                                           |
-| channel     | No       | Channels must be prefixed with a hash (#) or they will be interpreted as a device_id. Channels must be registered with your Pushbullet account to work.   |
-| email       | No       | Emails only work if you've registered them with your Pushbullet account.                                                                                  |
+| Variable    | Obligatoire | Description                                                                                                                                                                                   |
+| ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| accesstoken | Oui         | Le jeton d'acces peut etre genere depuis la page **Settings** de votre compte Pushbullet. Vous devez disposer d'un jeton d'acces pour que ce service de notification fonctionne.              |
+| device_id   | Non         | Les appareils associes a votre compte Pushbullet peuvent etre trouves dans les parametres de votre compte.                                                                                    |
+| channel     | Non         | Les canaux doivent etre prefixes par un croisillon `#`, sinon ils seront interpretes comme un `device_id`. Les canaux doivent etre enregistres dans votre compte Pushbullet pour fonctionner. |
+| email       | Non         | Les e-mails ne fonctionnent que si vous les avez enregistres dans votre compte Pushbullet.                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Pushbullet notification to all devices:
+Envoyer une notification Pushbullet a tous les appareils :
 
 ```bash
-# Assuming our {accesstoken} is abcdefghijklmno
+# Supposons que notre {accesstoken} soit abcdefghijklmno
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pbul://abcdefghijklmno
 ```

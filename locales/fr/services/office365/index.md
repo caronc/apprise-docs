@@ -1,6 +1,6 @@
 ---
 title: "Office 365 / Outlook / Hotmail"
-description: "Envoyer notifications via Office 365, Outlook.com, and Hotmail."
+description: "Envoyer des notifications via Office 365, Outlook.com et Hotmail."
 sidebar:
   label: "Office 365 / Outlook"
 
@@ -19,112 +19,114 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Because Microsoft has disabled Basic Authentication (Username/Password), **you must register an application in Azure** to generate the credentials Apprise needs (Client ID, Secret, etc).
+Puisque Microsoft a désactivé l'authentification basique (nom d'utilisateur / mot de passe), **vous devez enregistrer une application dans Azure** afin de générer les identifiants nécessaires à Apprise (Client ID, Secret, etc.).
 
-1. From the [**Azure Portal**](https://portal.azure.com/) go to **App Registrations** ([alt link](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade))
-   - Use the search bar at the top of the Azure Portal and type `App Registrations`.
-   - If you still can't access anything, it's possible your organization restricts you from doing so. You may need to reach out to your administrator in order to proceed.<br/>![Office 365](./images/1acb45eda098a004.png)
+1. Depuis le [**portail Azure**](https://portal.azure.com/), ouvrez **App Registrations** ([lien alternatif](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)).
+   - Utilisez la barre de recherche en haut du portail Azure et tapez `App Registrations`.
+   - Si vous n'y avez toujours pas accès, il est possible que votre organisation vous le restreigne. Vous devrez peut-être contacter votre administrateur pour poursuivre.<br/>![Office 365](./images/1acb45eda098a004.png)
 
-1. Click **Register an application**
+1. Cliquez sur **Register an application**
 
    <details>
-     <summary>⚠️ Screen you may see if you do not have an Azure Account</summary>
-     You must have an Azure account (specifically a subscription) for this area to work.  Subscriptions are free, but they do still require you to put your credit card in.  To create a subscription:
+     <summary>⚠️ Écran que vous pouvez voir si vous n'avez pas de compte Azure</summary>
+     Vous devez avoir un compte Azure, plus précisément un abonnement, pour que cette partie fonctionne. Les abonnements sont gratuits, mais exigent tout de même l'enregistrement d'une carte bancaire. Pour créer un abonnement :
      <img src="/services/office365/images/2acb45bda0e8ac14.png" alt="These applications are associated with the account user@example.com but are not contained within any directory. The ability to create applications outside of a directory has been deprecated. You can get a new directory by joining the M365 Developer Program or signing up for Azure."/>
      <ul>
-       <li>Go to: <strong>Azure Portal → Subscriptions</strong></li>
-       <li>Click <strong>Add</strong></li>
-       <li>Choose <strong>Azure subscription (Free)</strong></li>
+       <li>Allez dans : <strong>Azure Portal → Subscriptions</strong></li>
+       <li>Cliquez sur <strong>Add</strong></li>
+       <li>Choisissez <strong>Azure subscription (Free)</strong></li>
      </ul>
-     <p>No resources need to be deployed. This simply completes tenant provisioning.</p>
-     <p>After this, ensure you are viewing the correct directory:</p>
+     <p>Aucune ressource n'a besoin d'être déployée. Cela permet simplement de finaliser le provisionnement du tenant.</p>
+     <p>Ensuite, assurez-vous d'être dans le bon annuaire :</p>
      <ul>
-       <li>Click your avatar (top right)</li>
-       <li>Select <strong>Switch directory</strong></li>
-       <li>Choose the directory where the subscription was created. It's possible there is only one new subscription (the one you just created).  Therefore you're already in the right place and can proceed with the steps below.</li>
+       <li>Cliquez sur votre avatar (en haut à droite)</li>
+       <li>Sélectionnez <strong>Switch directory</strong></li>
+       <li>Choisissez l'annuaire dans lequel l'abonnement a été créé. Il est possible qu'il n'y ait qu'un seul nouvel abonnement, celui que vous venez de créer. Dans ce cas, vous êtes déjà au bon endroit et pouvez poursuivre.</li>
      </ul>
    </details>
 
    <!-- This comment is required to prevent linter from placing below lines up against tag details
         stanza above which breaks the table layout below -->
-   - Give it a name (for example: `Apprise Notifications`)
-   - **Crucial:** Select the 3rd option: **Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts**.
-   - Click **Register**.
+   - Donnez-lui un nom, par exemple `Apprise Notifications`.
+   - **Point crucial :** sélectionnez la 3e option : **Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts**.
+   - Cliquez sur **Register**.
 
-1. From here (the **Overview** panel) you can acquire both:
-   - The **Application (client) ID**: our `client_id` for the `azure://**/**/client_id/**/` and
-   - The **Object ID**: our `source` for the `azure://source/**/**/**/` and
-   - The **Directory (tenant) ID**: our `tenant_id` for the `azure://**/tenant_id/**/**/`
-1. To create your `client_secret` , expand the **Manage** tab on the left:
-   - Click on **Certificates & secrets** -> **Client secrets**
-   - Click **New client secret**
-   - Provide a description (for example `Apprise Secret`) and an expiry
-   - Click **Add**.
-   - The `client_secret` is the value under the **Value** column. This will be placed in our final `azure://**/**/**/client_secret` part of our Apprise URL.
-     :::caution[This step causes the most failures]
+1. Depuis le panneau **Overview**, vous pouvez recuperer :
+   - l'**Application (client) ID** : votre `client_id` dans `azure://**/**/client_id/**/` ;
+   - l'**Object ID** : votre `source` dans `azure://source/**/**/**/` ;
+   - le **Directory (tenant) ID** : votre `tenant_id` dans `azure://**/tenant_id/**/**/`.
+1. Pour créer votre `client_secret`, développez l'onglet **Manage** à gauche :
+   - cliquez sur **Certificates & secrets** → **Client secrets** ;
+   - cliquez sur **New client secret** ;
+   - fournissez une description, par exemple `Apprise Secret`, ainsi qu'une expiration ;
+   - cliquez sur **Add** ;
+   - le `client_secret` est la valeur visible dans la colonne **Value**. C'est cette valeur qui sera placée dans la partie `azure://**/**/**/client_secret` de votre URL Apprise.
+     :::caution[Cette étape provoque le plus d'échecs]
 
-     Azure shows two values:
+     Azure affiche deux valeurs :
 
-     | Field        | Use this? |
-     | ------------ | --------- |
-     | Secret Value | ✅ Yes    |
-     | Secret ID    | ❌ No     |
+     | Champ        | A utiliser ? |
+     | ------------ | ------------ |
+     | Secret Value | Oui          |
+     | Secret ID    | Non          |
 
-     The **Secret Value**:
-     - Is only visible once
-     - Becomes masked after you leave the page
-     - Is the actual password
+     La **Secret Value** :
+     - n'est visible qu'une seule fois ;
+     - devient masquée après avoir quitté la page ;
+     - correspond au véritable mot de passe.
 
-     If unsure, simply regenerate the secret; you can delete the old and create a new one.
+     En cas de doute, régénérez simplement le secret ; vous pouvez supprimer l'ancien puis en créer un nouveau.
      :::
 
-1. To set up permissions, expand the **Manage** tab on the left (if it is collapsed for whatever reason):
-   - Click on **API permissions**. You will likely already have the **User.Read** permission set up (as a default). But we need to add more.
-   - Click **Add a permission**.
-   - Click on **Microsoft Graph**.
-   - Click on **Application Permissions** and search for **Mail.Send**.
-   - Once found; check the box (so that it can be added and click **Add permissions**.
-   - You should also add the following **Application Permission**:
-     - **User.Read.All** allows apprise to correctly look up use your Object ID the `source`.
-     - **Mail.ReadWrite** (Optional) if you intend to send large attachments (> 3MB)
+1. Pour configurer les permissions, développez l'onglet **Manage** à gauche s'il est replié :
+   - cliquez sur **API permissions**. Vous aurez probablement déjà la permission **User.Read** par défaut, mais nous devons en ajouter d'autres ;
+   - cliquez sur **Add a permission** ;
+   - cliquez sur **Microsoft Graph** ;
+   - cliquez sur **Application Permissions** puis recherchez **Mail.Send** ;
+   - une fois trouvé, cochez la case puis cliquez sur **Add permissions** ;
+   - ajoutez également les permissions d'application suivantes :
+     - **User.Read.All** permet à Apprise de résoudre correctement votre Object ID utilisé comme `source` ;
+     - **Mail.ReadWrite** (optionnel) si vous souhaitez envoyer de grosses pièces jointes (> 3 Mo).
 
-   **Important:** After adding, you must click **Grant admin consent for <Directory Name>** for the permissions to take effect. For most this may read as **Grant admin consent for Default Directory**. This option is located right beside the _Add a permission_ action you were previous using above.
+   **Important :** après ajout, vous devez cliquer sur **Grant admin consent for <Directory Name>** pour que les permissions prennent effet. Pour beaucoup d'utilisateurs, cela apparaîtra comme **Grant admin consent for Default Directory**. Cette option se trouve juste à côté de l'action _Add a permission_ utilisée précédemment.
 
-1. Now you're good to go. 🙂
+1. Vous êtes maintenant prêt. 🙂
 
 ## Syntaxe
 
-La syntaxe valide est la suivante (les alias `o365://` et `azure://` sont acceptes) :
+La syntaxe valide est la suivante, les alias `o365://` et `azure://` étant tous deux acceptés :
 
 - `o365://{source}/{tenant_id}/{client_id}/{client_secret}/`
 - `o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable      | Required | Description                                                                                                                                    |
-| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| source        | Yes      | The **Email Address** or **Object ID** associated with the Azure Account you wish to send the email from.                                      |
-| tenant_id     | Yes      | The **Tenant ID** (Directory ID) associated with your App Registration.                                                                        |
-| client_id     | Yes      | The **Client ID** (Application ID) associated with your App Registration.                                                                      |
-| client_secret | Yes      | The **Client Secret** you generated in the "Certificates & secrets" section.                                                                   |
-| from          | No       | If you want the email _ReplyTo_ address to be something other than your own email address, you can specify it here.                            |
-| to            | No       | Override the target email. By default, the email is sent to the address identified by the `source` (or the targets specified in the URL path). |
+| Variable      | Requis | Description                                                                                                                                      |
+| ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| source        | Oui    | L'**adresse e-mail** ou l'**Object ID** associé au compte Azure depuis lequel vous souhaitez envoyer l'e-mail.                                   |
+| tenant_id     | Oui    | Le **Tenant ID** (Directory ID) associé à l'enregistrement de votre application.                                                                 |
+| client_id     | Oui    | Le **Client ID** (Application ID) associé à l'enregistrement de votre application.                                                               |
+| client_secret | Oui    | Le **Client Secret** généré dans la section "Certificates & secrets".                                                                            |
+| from          | Non    | Si vous souhaitez que l'adresse _ReplyTo_ soit différente de votre propre adresse e-mail, vous pouvez la préciser ici.                           |
+| to            | Non    | Surcharge le destinataire. Par défaut, l'e-mail est envoyé à l'adresse identifiée par `source`, ou aux cibles précisées dans le chemin de l'URL. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 :::note
 
-- If no `targets` are specified, then the notification is just sent to the address identified by `{account_email}`
-- Unfortunately the `client_secret` contains a lot of characters that can drastically conflict with standard URL rules (and thus Apprise might have difficulty detecting your client secret). The `?` and `@` characters can get generated by Microsoft and will almost definitely cause you issues.
-  - Consider encoding this `client secret` before putting it into your Apprise URL. Encoding the URL can be as simple as just pasting it into the form on [this website](https://www.url-encode-decode.com/).
-  - You can also just manually escape these characters on your Apprise URL yourself manually ([explained here](../../qa/special-characters/)). Simply swap all instances of: - `?` with `%3F` - `@` with `%40`
-    :::
+- Si aucun `targets` n'est précisé, la notification est simplement envoyée à l'adresse identifiée par `{account_email}`.
+- Malheureusement, le `client_secret` contient souvent des caractères qui entrent fortement en conflit avec les règles d'URL standard. Apprise peut donc avoir du mal à détecter correctement votre client secret. Les caractères `?` et `@`, souvent générés par Microsoft, poseront presque à coup sûr problème.
+  - Pensez à encoder ce `client secret` avant de le placer dans votre URL Apprise. Cela peut être aussi simple que de le coller dans le formulaire de [ce site](https://www.url-encode-decode.com/).
+  - Vous pouvez aussi échapper manuellement ces caractères dans votre URL Apprise, comme [expliqué ici](../../qa/special-characters/). Remplacez simplement :
+    - `?` par `%3F`
+    - `@` par `%40`
+      :::
 
 ## Exemples
 
-Envoyer an email notification to our your Office 365 account:
+Envoyer une notification e-mail à votre compte Office 365 :
 
 ```bash
 # Assuming our {tenant_id} is ab-cd-ef-gh

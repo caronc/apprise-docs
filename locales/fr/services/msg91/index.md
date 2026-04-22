@@ -1,6 +1,6 @@
 ---
 title: "Notifications MSG91"
-description: "Envoyer MSG91 notifications."
+description: "Envoyer des notifications MSG91."
 sidebar:
   label: "MSG91"
 
@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use MSG91, you will need to acquire your _Authentication Key_. This is accessible via the [MSG91 Dashboard](https://control.msg91.com). In addition to this, you will need to prepare a template and assign a `body`, `title`, and `type` variable to it so that Apprise can relay its information through here.
+Pour utiliser MSG91, vous devez obtenir votre _Clé d'Authentification_. Celle-ci est accessible via le [Tableau de Bord MSG91](https://control.msg91.com). De plus, vous devrez préparer un modèle et lui assigner des variables `body`, `title` et `type` afin qu'Apprise puisse y relayer ses informations.
 
 ## Syntaxe
 
@@ -32,35 +32,35 @@ La syntaxe valide est la suivante :
 - `msg91://{TemplateID}@{AuthKey}/{PhoneNo}`
 - `msg91://{TemplateID}@{AuthKey}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                        |
-| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AuthKey    | Yes      | The _Authentication Key_ associated with your MSG91 account. This is available to you via the [MSG91 Dashboard](https://control.msg91.com/).                                                                                       |
-| TemplateID | Yes      | The _Template ID_ associated with your MSG91 account. This is available to you via the [MSG91 Dashboard](https://control.msg91.com/).                                                                                              |
-| PhoneNo    | Yes      | A phone number MUST include the country codes dialing prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion |
-| short_url  | No       | A boolean (defaults) to `No` whether the SMS messages should use the Short URL notation.                                                                                                                                           |
+| Variable   | Requis | Description                                                                                                                                                                                                     |
+| ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AuthKey    | Oui    | La _Clé d'Authentification_ associée à votre compte MSG91. Disponible via le [Tableau de Bord MSG91](https://control.msg91.com/).                                                                               |
+| TemplateID | Oui    | L'_Identifiant de Modèle_ associé à votre compte MSG91. Disponible via le [Tableau de Bord MSG91](https://control.msg91.com/).                                                                                  |
+| PhoneNo    | Oui    | Un numéro de téléphone DOIT inclure le préfixe d'appel international du pays. Ce champ est très flexible et accepte les parenthèses, espaces et tirets si vous souhaitez formater le numéro de manière lisible. |
+| short_url  | Non    | Un booléen (par défaut `Non`) indiquant si les messages SMS doivent utiliser la notation URL courte.                                                                                                            |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-### Template Variables
+### Variables de Modèle
 
-The templates you generate allow you to specify your own key mappings. B
+Les modèles que vous générez vous permettent de définir vos propres correspondances de clés.
 
-The following keys are automatically passed from Apprise to the MSG91 Template system should you chose to use them or not.
+Les clés suivantes sont automatiquement transmises par Apprise au système de modèles MSG91, que vous choisissiez de les utiliser ou non.
 
-- `##body##`: The Apprise Message Body (Title is prefixed into this if defined)
-- `##type##`: The Apprise Message Type (e.g. `warning`, `info`, `failure`, or `success`)
+- `##body##` : Le corps du message Apprise (le titre y est préfixé s'il est défini)
+- `##type##` : Le type de message Apprise (par exemple `warning`, `info`, `failure` ou `success`)
 
-If you wish to assign new types to `body` or `type` from Apprise, these special keywords are specified instead with the `:` (colon) prefix providing the mapping/over-ride. For example: `?:body=msg` would remap the default message body from apprise to the `msg` keyword instead.
+Si vous souhaitez assigner de nouveaux types à `body` ou `type` depuis Apprise, ces mots-clés spéciaux sont spécifiés avec le préfixe `:` (deux-points) pour effectuer la correspondance/substitution. Par exemple : `?:body=msg` remapperait le corps du message par défaut d'Apprise vers le mot-clé `msg`.
 
-If you wish to remove the `type` from being passed, you simply define it in the URL but do not assign it to anything such as: `?:type`.
+Si vous souhaitez exclure `type` de la transmission, définissez-le simplement dans l'URL sans lui assigner de valeur, comme ceci : `?:type`.
 
-Finally if you wish to define your own arguments, just define them as such `?:key=value` would assign a `key` the contents of `value` when being passed into your template.
+Enfin, si vous souhaitez définir vos propres arguments, définissez-les de la manière suivante : `?:key=value` assignera à `key` le contenu de `value` lors de la transmission à votre modèle.
 
 ## Exemples
 
-Envoyer une MSG91 Notification as an SMS:
+Envoyer une notification MSG91 par SMS :
 
 ```bash
 # Assuming our {TemplateID} is 12345
@@ -76,8 +76,8 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "msg91://12345@gank339l7jk3cjaE/1-(800) 555-1223"
 ```
 
-Here is a templating example:
-Envoyer une MSG91 Notification as an SMS:
+Voici un exemple de modèle :
+Envoyer une notification MSG91 par SMS :
 
 ```bash
 # Assuming our {TemplateID} is 12345

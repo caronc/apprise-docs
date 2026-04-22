@@ -1,6 +1,6 @@
 ---
 title: "Notifications Google Chat"
-description: "Envoyer Google Chat notifications."
+description: "Envoyer des notifications Google Chat."
 sidebar:
   label: "Google Chat"
 
@@ -19,18 +19,18 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-For this to work correctly you a GSuite account (there are free trials if you don't have one). You then need to create a Webhook; they can be done as follows:
+Pour que cela fonctionne correctement, vous avez besoin d'un compte GSuite (des essais gratuits existent si vous n'en avez pas). Vous devez ensuite créer un webhook, comme suit :
 
-1. [Open Google Chat in your browser](https://chat.google.com/)
-1. Go to the room to which you want to add a bot.
-1. From the room menu at the top of the page, select **Manage webhooks**.
-1. Provide it a name and optional avatar and click **SAVE**
-1. Copy the URL associated with your new webhook.
-1. Click outside the dialog box to close.
+1. [Ouvrez Google Chat dans votre navigateur](https://chat.google.com/)
+1. Accédez à la salle à laquelle vous souhaitez ajouter un robot.
+1. Dans le menu de la salle en haut de la page, sélectionnez **Manage webhooks**.
+1. Donnez-lui un nom et un avatar facultatif, puis cliquez sur **SAVE**
+1. Copiez l'URL associée à votre nouveau webhook.
+1. Cliquez en dehors de la boîte de dialogue pour fermer.
 
-When you've completed, you'll get a URL that looks a little like this:
+Une fois l'opération terminée, vous obtiendrez une URL ressemblant à ceci :
 
 ```text
 https://chat.googleapis.com/v1/spaces/AAAAkM/messages?key=AIzaSSjMm-WEfqKqqsHI&token=O7bnyri_WEXKcyFk%3D
@@ -39,11 +39,11 @@ https://chat.googleapis.com/v1/spaces/AAAAkM/messages?key=AIzaSSjMm-WEfqKqqsHI&t
                                      workspace             ... webhook_key...         ..webhook_token..
 ```
 
-Simplified, it looks like this:
+Sous une forme simplifiée, cela donne :
 
 - `https://chat.googleapis.com/v1/spaces/WORKSPACE/messages?key=WEBHOOK_KEY&token=WEBHOOK_TOKEN`
 
-Now it's important to note that while this Apprise plugin uses `gchat://`, you can also just use this URL exactly the way it was provided to you from Google when you copied and pasted. This is a perfectly valid Google Chat Apprise URL as well.
+Il est important de noter que, même si ce plugin Apprise utilise `gchat://`, vous pouvez aussi utiliser directement l'URL exactement telle qu'elle vous a été fournie par Google lors du copier-coller. C'est également une URL Google Chat Apprise parfaitement valide.
 
 ## Syntaxe
 
@@ -52,49 +52,48 @@ La syntaxe valide est la suivante :
 - `https://chat.googleapis.com/v1/spaces/{workspace}/messages?key={webhook_key}&token={webhook_token}`
 - `gchat://{workspace}/{webhook_key}/{webhook_token}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable      | Required | Description                                                                           |
-| ------------- | -------- | ------------------------------------------------------------------------------------- |
-| workspace     | Yes      | The workspace associated with your Google Chat account.                               |
-| webhook_key   | Yes      | The webhook key associated with your Google Chat account.                             |
-| webhook_token | Yes      | The webhook token associated with your Google Chat account.                           |
-| thread        | No       | You can optionally specify a `ThreadKey` on the URL to focus its notifications there. |
+| Variable      | Requis | Description                                                                                                       |
+| ------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| workspace     | Oui    | L'espace de travail associé à votre compte Google Chat.                                                           |
+| webhook_key   | Oui    | La clé webhook associée à votre compte Google Chat.                                                               |
+| webhook_token | Oui    | Le jeton webhook associé à votre compte Google Chat.                                                              |
+| thread        | Non    | Vous pouvez facultativement spécifier une `ThreadKey` dans l'URL afin de concentrer les notifications sur ce fil. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Google Chat notification
+Envoyer une notification Google Chat :
 
 ```bash
-# Assuming our {workspace} is AAAAkM
-# Assuming our {webhook_key} is AIzaSSjMm-WEfqKqqsHI
-# Assuming our {webhook_token} is O7bnyri_WEXKcyFk%3D
+# Supposons que notre {workspace} soit AAAAkM
+# Supposons que notre {webhook_key} soit AIzaSSjMm-WEfqKqqsHI
+# Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    gchat://AAAAkM/AIzaSSjMm-WEfqKqqsHI/O7bnyri_WEXKcyFk%3D
 ```
 
-Remember, you can also just use the URL as it was provided to you when configuring your Webhook:
-Envoyer une Google Chat notification
+Rappel : vous pouvez aussi utiliser directement l'URL telle qu'elle vous a été fournie lors de la configuration de votre webhook. Envoyer une notification Google Chat :
 
 ```bash
-# Assuming our {workspace} is AAAAkM
-# Assuming our {webhook_key} is AIzaSSjMm-WEfqKqqsHI
-# Assuming our {webhook_token} is O7bnyri_WEXKcyFk%3D
+# Supposons que notre {workspace} soit AAAAkM
+# Supposons que notre {webhook_key} soit AIzaSSjMm-WEfqKqqsHI
+# Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    https://chat.googleapis.com/v1/spaces/AAAAkM/messages?key=AIzaSSjMm-WEfqKqqsHI&token=O7bnyri_WEXKcyFk%3D
 ```
 
-Want to target a specific threadKey? Just do the following:
+Vous souhaitez cibler une `threadKey` précise ? Faites simplement ceci :
 
 ```bash
-# Assuming our {workspace} is AAAAkM
-# Assuming our {webhook_key} is AIzaSSjMm-WEfqKqqsHI
-# Assuming our {webhook_token} is O7bnyri_WEXKcyFk%3D
-# Assuming our {threadkey} is ABC
+# Supposons que notre {workspace} soit AAAAkM
+# Supposons que notre {webhook_key} soit AIzaSSjMm-WEfqKqqsHI
+# Supposons que notre {webhook_token} soit O7bnyri_WEXKcyFk%3D
+# Supposons que notre {threadkey} soit ABC
 
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    gchat://AAAAkM/AIzaSSjMm-WEfqKqqsHI/O7bnyri_WEXKcyFk%3D/?thread=ABC

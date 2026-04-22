@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushover"
-description: "Envoyer Pushover notifications."
+description: "Envoyer des notifications Pushover."
 sidebar:
   label: "Pushover"
 
@@ -24,17 +24,17 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-There isn't too much configuration for Pushover notifications. The message is basically just passed to your online Pushover account and then gets relayed to your device(s) you've setup from there.
+La configuration des notifications Pushover est assez simple. Le message est essentiellement transmis a votre compte Pushover en ligne, puis redirige vers les appareils que vous y avez configures.
 
-### Getting Your User Key
+### Recuperer votre User Key
 
-Once you log into [the website](https://pushover.net/), your dashboard will present your **{user_key}** in front of you.
+Une fois connecte au [site web](https://pushover.net/), votre tableau de bord affichera votre **{user_key}**.
 
-### Getting Your API Token
+### Recuperer votre Jeton API
 
-On the dashboard after logging in, if you scroll down you'll have the ability to generate an application. Upon doing so, you will be provided an API Token to associate with this application you generated. This will become your **{token}**.
+Sur le tableau de bord, apres connexion, faites defiler vers le bas pour trouver l'option permettant de generer une application. Une fois cette operation effectuee, un jeton API associe a cette application vous sera fourni. Il deviendra votre **{token}**.
 
 ## Syntaxe
 
@@ -48,65 +48,65 @@ La syntaxe valide est la suivante :
 - `pover://{user_key}@{token}?priority={priority}`
 - `pover://{user_key}@{token}?priority=emergency&expire={expire}&retry={retry}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user_key  | Yes      | The user key identifier associated with your Pushover account. This is NOT your email address. The key can be acquired from your Pushover dashboard.                                                                                                                                                                                                                                                                                                                                                                                          |
-| token     | Yes      | The token associated with your Pushover account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| device_id | No       | The device identifier to send your notification to. By default if one isn't specified then all of devices associated with your account are notified.                                                                                                                                                                                                                                                                                                                                                                                          |
-| group_key | No       | A Pushover [delivery group](https://pushover.net/api/groups) key, prefixed with `#`. Group keys look identical to user keys and allow broadcasting a message to all members of a group with a single key. Multiple groups may be specified. Groups and devices can be mixed in the same URL.                                                                                                                                                                                                                                                  |
-| priority  | No       | Can be **low**, **moderate**, **normal**, **high**, or **emergency**; the default is **normal** if a priority isn't specified. <br/>To send an emergency-priority notification, the `retry` and `expire` parameters _should_ be supplied. You may also set the priorities as documented on the [Pushover API](https://pushover.net/api#priority) where `-2` is **low**, `-1` is **moderate**, `0` is **normal**, `1` is **high** and `2` is **emergency**                                                                                     |
-| expire    | No       | The expire parameter specifies how many seconds your notification will continue to be retried for (every `retry` seconds). If the notification has not been acknowledged in `expire` seconds, it will be marked as expired and will stop being sent to the user. Note that the notification is still shown to the user after it is expired, but it will not prompt the user for acknowledgement. This parameter has a maximum value of at most 10800 seconds (3 hours). The default is 3600 seconds (1 hr) if nothing is otherwise specified. |
-| retry     | No       | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user. In a situation where your user might be in a noisy environment or sleeping, retrying the notification (with sound and vibration) will help get his or her attention. This parameter must have a value of at least 30 seconds between retries. The default is 900 seconds (15 minutes) if nothing is otherwise specified.                                                                                               |
-| sound     | No       | Can optionally identify one of the optional sound effects identified [here](https://pushover.net/api#sounds). The default sound is **pushover**.                                                                                                                                                                                                                                                                                                                                                                                              |
-| url       | No       | Can optionally provide a Supplementary URL to go with your message                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| url_title | No       | Can optionally provide a Supplementary URL Title to go with your message                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Variable  | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user_key  | Oui         | Identifiant de cle utilisateur associe a votre compte Pushover. Ce n'est **pas** votre adresse e-mail. Cette cle peut etre recuperee depuis votre tableau de bord Pushover.                                                                                                                                                                                                                                                                                                                                                |
+| token     | Oui         | Jeton associe a votre compte Pushover.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| device_id | Non         | Identifiant de l'appareil auquel envoyer la notification. Si aucune valeur n'est precisee, tous les appareils associes a votre compte seront notifies.                                                                                                                                                                                                                                                                                                                                                                     |
+| group_key | Non         | Cle d'un [groupe de diffusion](https://pushover.net/api/groups) Pushover, prefixee par `#`. Les group_key ressemblent aux user_key et permettent de diffuser un message a tous les membres d'un groupe avec une seule cle. Plusieurs groupes peuvent etre specifies. Les groupes et les appareils peuvent etre melanges dans une meme URL.                                                                                                                                                                                 |
+| priority  | Non         | Peut etre **low**, **moderate**, **normal**, **high** ou **emergency** ; la valeur par defaut est **normal** si aucune priorite n'est precisee. <br/>Pour envoyer une notification en priorite d'urgence, les parametres `retry` et `expire` _devraient_ etre fournis. Vous pouvez aussi utiliser les priorites telles que documentees dans l'[API Pushover](https://pushover.net/api#priority), ou `-2` est **low**, `-1` est **moderate**, `0` est **normal**, `1` est **high** et `2` est **emergency**.                |
+| expire    | Non         | Le parametre `expire` precise pendant combien de secondes votre notification continuera a etre retentee, toutes les `retry` secondes. Si la notification n'a pas ete acquittee avant `expire` secondes, elle sera marquee comme expiree et ne sera plus envoyee. Notez qu'elle reste visible pour l'utilisateur apres expiration, mais ne lui demandera plus d'acquittement. Cette valeur ne peut pas depasser 10800 secondes, soit 3 heures. La valeur par defaut est 3600 secondes, soit 1 heure, si rien n'est precise. |
+| retry     | Non         | Le parametre `retry` precise a quelle frequence, en secondes, les serveurs Pushover renverront la meme notification a l'utilisateur. Si l'utilisateur se trouve dans un environnement bruyant ou dort, retenter la notification, avec son et vibration, peut aider a attirer son attention. Cette valeur doit etre d'au moins 30 secondes entre deux tentatives. La valeur par defaut est 900 secondes, soit 15 minutes, si rien n'est precise.                                                                            |
+| sound     | Non         | Permet de preciser l'un des effets sonores facultatifs identifies [ici](https://pushover.net/api#sounds). Le son par defaut est **pushover**.                                                                                                                                                                                                                                                                                                                                                                              |
+| url       | Non         | Permet de fournir une URL supplementaire accompagnee de votre message.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| url_title | Non         | Permet de fournir un titre pour l'URL supplementaire accompagnee de votre message.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Custom Sounds
+## Sons Personnalises
 
-Pushover integration constrains notification sounds to a predefined list. This change adds support for custom sound in notifications, which must be uploaded and given a name. This change updates the pushover integration to allow for that name to be specified instead of throwing an error.
+L'integration Pushover limite normalement les sons de notification a une liste predefinie. Cette prise en charge ajoute la possibilite d'utiliser un son personnalise dans les notifications, a condition qu'il ait ete televerse et nomme. L'integration Pushover a donc ete mise a jour pour permettre de specifier ce nom au lieu de declencher une erreur.
 
-1. Go to Settings -> Alert Settings -> Manage custom sounds -> Upload a sound
-1. Upload a sound and specify a name (e.g. "mysound").
-1. Validate the sound is accessible and present in the sounds list for your app via <https://api.pushover.net/1/sounds.json?token={app-token}>
-1. Specify a sound in your pover call, i.e. apprise -vv -t "title" -b "test message" pover://user@app?sound=mysound
+1. Allez dans Settings -> Alert Settings -> Manage custom sounds -> Upload a sound
+1. Televersez un son et donnez-lui un nom, par exemple "mysound".
+1. Verifiez que le son est accessible et apparait dans la liste des sons de votre application via <https://api.pushover.net/1/sounds.json?token={app-token}>
+1. Precisez ensuite ce son dans votre appel `pover`, par exemple `apprise -vv -t "title" -b "test message" pover://user@app?sound=mysound`
 
-You should hear your custom sound on the notification. In cases where the custom sound name is not found, the default pushover notification sound will play.
+Vous devriez entendre votre son personnalise sur la notification. Si le nom du son personnalise n'est pas trouve, le son de notification Pushover par defaut sera joue.
 
 ## Exemples
 
-Envoyer une Pushover notification to all of our configured devices:
+Envoyer une notification Pushover a tous nos appareils configures :
 
 ```bash
-# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
-# Assuming our {token} is abcdefghijklmnop-abcdefg
+# Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
+# Supposons que notre {token} soit abcdefghijklmnop-abcdefg
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg
 ```
 
-Envoyer une Pushover notification to a delivery group:
+Envoyer une notification Pushover a un groupe de diffusion :
 
 ```bash
-# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
-# Assuming our {token} is abcdefghijklmnop-abcdefg
-# Assuming our {group_key} is gznej3rKEVAvPUxu9vvNnqpmZpokzF
-# The # prefix identifies it as a group key
+# Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
+# Supposons que notre {token} soit abcdefghijklmnop-abcdefg
+# Supposons que notre {group_key} soit gznej3rKEVAvPUxu9vvNnqpmZpokzF
+# Le prefixe # l'identifie comme une group key
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg/#gznej3rKEVAvPUxu9vvNnqpmZpokzF"
 ```
 
-Envoyer une Pushover notification with the Emergency Priority:
+Envoyer une notification Pushover avec la priorite Emergency :
 
 ```bash
-# Emergency priority advises you to also specify the expire and
-# retry values.
-# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
-# Assuming our {token} is abcdefghijklmnop-abcdefg
-# The following will set a 1hr expiry and attempt to resend
-# the message every 10 minutes:
+# La priorite Emergency recommande aussi de preciser les valeurs
+# expire et retry.
+# Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
+# Supposons que notre {token} soit abcdefghijklmnop-abcdefg
+# L'exemple ci-dessous definit une expiration de 1 heure et tente
+# de renvoyer le message toutes les 10 minutes :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?priority=emergency&retry=600&expire=3600
 ```

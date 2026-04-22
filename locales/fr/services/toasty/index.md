@@ -1,6 +1,6 @@
 ---
 title: "Notifications Super Toasty"
-description: "Envoyer Super Toasty notifications."
+description: "Envoyer des notifications Super Toasty."
 sidebar:
   label: "Super Toasty"
 
@@ -18,20 +18,20 @@ ended: 2016
 
 :::note
 
-## Service End Reason
+## Raison de Fin du Service
 
-It is hard to find much details on this project and whether or not it still exists in some form or another.
+Il est difficile de trouver des informations detaillees sur ce projet, ou meme de savoir s'il existe encore sous une forme ou une autre.
 
-Here is the open source project that extended on this: <https://github.com/JohnPersano/SuperToasts>.
+Voici le projet open source qui s'appuyait dessus : <https://github.com/JohnPersano/SuperToasts>.
 
-💡The Service was removed from Apprise in [apprise/46](https://github.com/caronc/apprise/issues/46)
+💡 Ce service a ete retire d'Apprise dans [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
-There isn't too much configuration for Super Toasty notifications. The message is basically just passed to your online Super Toasty account and then gets relayed to your device(s) you've setup from there.
+La configuration des notifications Super Toasty est tres simple. Le message est essentiellement transmis a votre compte Super Toasty en ligne, puis relaye vers les appareils que vous y avez configures.
 
 ## Syntaxe
 
@@ -40,21 +40,21 @@ La syntaxe valide est la suivante :
 - `toasty://{user_id}@{device_id}`
 - `toasty://{user_id}@{device_id1}/{device_id2}/{device_idN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                    |
-| --------- | -------- | -------------------------------------------------------------- |
-| user_id   | Yes      | The user identifier associated with your Super Toasty account. |
-| device_id | No       | The device identifier to send your notification to.            |
+| Variable  | Obligatoire | Description                                                  |
+| --------- | ----------- | ------------------------------------------------------------ |
+| user_id   | Oui         | Identifiant utilisateur associe a votre compte Super Toasty. |
+| device_id | Non         | Identifiant de l'appareil auquel envoyer votre notification. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Super Toasty notification a configured device:
+Envoyer une notification Super Toasty a un appareil configure :
 
 ```bash
-# Assuming our {user_id} is nuxref
-# Assuming our {device_id} is abcdefghijklmnop-abcdefg
+# Supposons que notre {user_id} soit nuxref
+# Supposons que notre {device_id} soit abcdefghijklmnop-abcdefg
 apprise toasty://nuxref@abcdefghijklmnop-abcdefg
 ```

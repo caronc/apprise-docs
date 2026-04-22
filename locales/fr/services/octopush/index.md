@@ -1,6 +1,6 @@
 ---
 title: "Notifications Octopush"
-description: "Envoyer Octopush notifications."
+description: "Envoyer des notifications Octopush."
 sidebar:
   label: "Octopush"
 
@@ -23,13 +23,11 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Account setup
+## Configuration du Compte
 
-To use Octopush, you will need your _API Login_ and _API Key_. The API login
-is the email address associated with your Octopush account.
+Pour utiliser Octopush, vous aurez besoin de votre _API Login_ et de votre _API Key_. L'API login correspond a l'adresse e-mail associee a votre compte Octopush.
 
-You can also optionally configure a _Sender_ value. Octopush accepts an
-alphanumeric sender of 3 to 11 characters for supported routes.
+Vous pouvez aussi definir facultativement une valeur _Sender_. Octopush accepte un expediteur alphanumerique de 3 a 11 caracteres pour les routes qui le prennent en charge.
 
 ## Syntaxe
 
@@ -40,63 +38,63 @@ La syntaxe valide est la suivante :
 - `octopush://{sender}:{api_login}/{api_key}/{phone_no}`
 - `octopush://{sender}:{api_login}/{api_key}/{phone_no1}/{phone_no2}?batch=yes`
 
-You can also pass values as query parameters:
+Vous pouvez aussi transmettre les valeurs sous forme de parametres de requete :
 
 - `octopush://_?login={api_login}&key={api_key}&to={phone_no}`
 - `octopush://_?login={api_login}&key={api_key}&sender={sender}&to={phone_no}&type=sms_low_cost`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                      |
-| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| api_login | Yes      | The _API Login_ associated with your Octopush account. This must be a valid email address.                                                                                                                                                                       |
-| api_key   | Yes      | The _API Key_ associated with your Octopush account.                                                                                                                                                                                                             |
-| sender    | No       | An optional sender ID to display when your Octopush route supports it.                                                                                                                                                                                           |
-| phone_no  | Yes      | At least one phone number must be identified to use this plugin. This field is also very friendly and supports brackets, spaces, and hyphens in the event you want to format the number in an easy to read fashion.                                              |
-| batch     | No       | Octopush allows a batch mode. If you identify more than one phone number, you can send all of the phone numbers you identify in the URL in a single shot instead of the normal Apprise approach, which sends them one by one. By default batch mode is disabled. |
-| replies   | No       | When set to `yes`, Apprise requests reply handling through Octopush. By default this is `no`.                                                                                                                                                                    |
-| purpose   | No       | The message purpose. Supported values are `alert` and `wholesale`. By default this is `alert`.                                                                                                                                                                   |
-| type      | No       | The message type. Supported values are `sms_premium` and `sms_low_cost`. By default this is `sms_premium`.                                                                                                                                                       |
+| Variable  | Obligatoire | Description                                                                                                                                                                                                                          |
+| --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| api_login | Oui         | _API Login_ associe a votre compte Octopush. Il doit s'agir d'une adresse e-mail valide.                                                                                                                                             |
+| api_key   | Oui         | _API Key_ associee a votre compte Octopush.                                                                                                                                                                                          |
+| sender    | Non         | Identifiant expediteur facultatif a afficher si votre route Octopush le prend en charge.                                                                                                                                             |
+| phone_no  | Oui         | Au moins un numero de telephone doit etre fourni pour utiliser ce plugin. Ce champ accepte aussi les parentheses, espaces et tirets pour une meilleure lisibilite.                                                                   |
+| batch     | Non         | Octopush prend en charge un mode lot. Si vous indiquez plusieurs numeros, vous pouvez les envoyer en une seule fois dans l'URL au lieu de l'approche normale d'Apprise, qui les envoie un par un. Par defaut, ce mode est desactive. |
+| replies   | Non         | Lorsque cette valeur est definie sur `yes`, Apprise demande la gestion des reponses via Octopush. Par defaut, cette option vaut `no`.                                                                                                |
+| purpose   | Non         | Objet du message. Les valeurs prises en charge sont `alert` et `wholesale`. Par defaut, cette valeur est `alert`.                                                                                                                    |
+| type      | Non         | Type de message. Les valeurs prises en charge sont `sms_premium` et `sms_low_cost`. Par defaut, cette valeur est `sms_premium`.                                                                                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer an Octopush notification as an SMS:
+Envoyer une notification Octopush sous forme de SMS :
 
 ```bash
-# Assuming our {api_login} is user@example.com
-# Assuming our {api_key} is my-api-key
-# Assuming our {phone_no} is in the US making our country code +1
-#                         and identifies as 800-555-1223
+# Supposons que notre {api_login} soit user@example.com
+# Supposons que notre {api_key} soit my-api-key
+# Supposons que notre {phone_no} soit aux Etats-Unis, donc avec l'indicatif pays +1,
+# et corresponde au numero 800-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "octopush://user@example.com/my-api-key/18005551223"
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# la variante suivante aurait aussi fonctionne
+# les espaces, parentheses et tirets sont acceptes dans ce champ :
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "octopush://user@example.com/my-api-key/1-(800) 555-1223"
 ```
 
-Envoyer via a sender ID and the low-cost route:
+Envoyer via un identifiant expediteur et la route low-cost :
 
 ```bash
-# Assuming our {api_login} is user@example.com
-# Assuming our {api_key} is my-api-key
-# Assuming our {sender} is MyCompany
-# Assuming our {phone_no} is +33-6-00-01-02-03
+# Supposons que notre {api_login} soit user@example.com
+# Supposons que notre {api_key} soit my-api-key
+# Supposons que notre {sender} soit MyCompany
+# Supposons que notre {phone_no} soit +33-6-00-01-02-03
 apprise -vv -b "Your order has shipped" \
    "octopush://MyCompany:user@example.com/my-api-key/33600010203?type=sms_low_cost"
 ```
 
-Envoyer one message to multiple targets using Octopush batch mode:
+Envoyer un message a plusieurs cibles avec le mode lot d'Octopush :
 
 ```bash
-# Assuming our {api_login} is user@example.com
-# Assuming our {api_key} is my-api-key
-# Assuming our {sender} is MyCompany
-# Assuming our {phone_no1} is +33-6-00-01-02-03
-# Assuming our {phone_no2} is +33-6-00-01-02-04
+# Supposons que notre {api_login} soit user@example.com
+# Supposons que notre {api_key} soit my-api-key
+# Supposons que notre {sender} soit MyCompany
+# Supposons que notre {phone_no1} soit +33-6-00-01-02-03
+# Supposons que notre {phone_no2} soit +33-6-00-01-02-04
 apprise -vv -b "System maintenance starts in 15 minutes" \
    "octopush://MyCompany:user@example.com/my-api-key/33600010203/33600010204?batch=yes&purpose=alert"
 ```

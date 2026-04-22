@@ -18,19 +18,19 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Creating a IFTTT account is easy. Visit there website and create your free account.
+Créer un compte IFTTT est simple. Rendez-vous sur leur site web et créez votre compte gratuit.
 
-Once you're hooked up, you'll want to visit [this URL](https://ifttt.com/services/maker_webhooks/settings) on Webhooks. This will be the gateway Apprise will use to signal any Applets you create. When you visit this page it will give you your API key in the form of a URL.
+Une fois votre compte prêt, rendez-vous sur [cette URL](https://ifttt.com/services/maker_webhooks/settings) consacrée aux Webhooks. Ce sera la passerelle utilisée par Apprise pour déclencher tous les Applets que vous créez. En visitant cette page, vous obtiendrez votre clé API sous la forme d'une URL.
 
-The URL might something like this:
+L'URL ressemblera à quelque chose comme ceci :
 `https://maker.ifttt.com/use/b1lUk7b9LpGakJARKBwRIZ`
 
-This effectively equates to:
+Cela correspond en pratique à :
 `https://maker.ifttt.com/use/{WebhookID}`
 
-In the above example the **WebhookID** is `b1lUk7b9LpGakJARKBwRIZ`. You will need this value!
+Dans l'exemple ci-dessus, le **WebhookID** est `b1lUk7b9LpGakJARKBwRIZ`. Vous aurez besoin de cette valeur.
 
 ## Syntaxe
 
@@ -42,51 +42,51 @@ La syntaxe valide est la suivante :
 - `ifttt://{WebhookID}@{Event}/?+NewArg=ArgValue`
 - `ifttt://{WebhookID}@{Event}/?-value3`
 
-By default these are the the assign default template entries:
+Par défaut, les entrées de modèle suivantes sont affectées :
 
-- **{value1}** : The **title** will go here
-- **{value2}** : The **body** will go here
-- **{value3}** : The **message type** will go here (it will read either _info_, _warning_, _critical_, or _success_)
+- **{value1}** : Le **titre** sera placé ici
+- **{value2}** : Le **corps** sera placé ici
+- **{value3}** : Le **type de message** sera placé ici (il indiquera _info_, _warning_, _critical_ ou _success_)
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| WebhookID | Yes      | Your webhooks API Key you got from [the settings area of the webhooks service itself](https://ifttt.com/services/maker_webhooks)                                                                                                                                                                                                                                                                                               |
-| Event     | Yes      | This is the **Event Name** you assigned to the Applet you created. You must at least pass in one of these. This is the event plan on triggering through the webhook.                                                                                                                                                                                                                                                           |
-| +Arg=Val  | No       | Add an additional **{Arg}** into the payload and assign it the value of **{Val}**. It's very important that your argument starts with a plus (**+**) symbol in order to use this option.                                                                                                                                                                                                                                       |
-| -Arg      | No       | This is useful if you want to eliminate one of the pre-defined arguments discussed below. You might want to include **?-value1&-value2** to just pass **value3** in the payload. It's very important that your argument starts with a hyphen/minus (**-**) symbol in order to use this option. As mentioned above, your payload will ALWAYS include **value1**, **value2**, and **value3** in it unless you specify otherwise. |
+| Variable  | Requis | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WebhookID | Oui    | Clé API Webhooks que vous avez obtenue depuis [la zone de paramètres du service Webhooks lui-même](https://ifttt.com/services/maker_webhooks).                                                                                                                                                                                                                                                                                                                   |
+| Event     | Oui    | Il s'agit du **Event Name** que vous avez attribué à l'Applet créé. Vous devez en fournir au moins un. C'est cet événement qui sera déclenché via le webhook.                                                                                                                                                                                                                                                                                                    |
+| +Arg=Val  | Non    | Ajoute un argument supplémentaire **{Arg}** dans la charge utile et lui attribue la valeur **{Val}**. Il est très important que votre argument commence par un symbole plus, **+**, pour utiliser cette option.                                                                                                                                                                                                                                                  |
+| -Arg      | Non    | Cette option est utile si vous souhaitez supprimer l'un des arguments prédéfinis présentés ci-dessous. Vous pouvez par exemple utiliser **?-value1&-value2** afin de ne transmettre que **value3** dans la charge utile. Il est très important que votre argument commence par un symbole moins, **-**, pour utiliser cette option. Comme indiqué plus haut, votre charge utile inclura toujours **value1**, **value2** et **value3** sauf indication contraire. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une IFTTT notification:
+Envoyer une notification IFTTT :
 
 ```bash
-# Assuming our {WebhookID} is b1lUk7b9LpGakJARKBwRIZ
-# Assuming our {Event} is sms_message
-# Assuming you want {value1} to read "My Title"
-# Assuming you want {value2} to read "My Body"
-# Assuming you want {value3} to read "info"
+# Supposons que notre {WebhookID} soit b1lUk7b9LpGakJARKBwRIZ
+# Supposons que notre {Event} soit sms_message
+# Supposons que nous voulions que {value1} contienne "My Title"
+# Supposons que nous voulions que {value2} contienne "My Body"
+# Supposons que nous voulions que {value3} contienne "info"
 apprise -vv -t "My Title" -b "My Value" \
    ifttt:///b1lUk7b9LpGakJARKBwRIZ@sms_message
 ```
 
-Now I realize not everyone will want to use the default **{valueX}** entries defined. In fact, you may want to just use apprise to turn on a light switch and set some complete different value like **{switch}** to '_on_'. Here is how you could accomplish this:
+Tout le monde ne voudra pas nécessairement utiliser les entrées par défaut **{valueX}**. Vous pouvez par exemple utiliser Apprise pour allumer un interrupteur et définir une valeur complètement différente comme **{switch}** sur `_on_`. Voici comment procéder :
 
 ```bash
-# Send {switch} a value of 'on'
-# Assuming our {WebhookID} is b1lUk7b9LpGakJARKBwRIZ
-# Assuming our {Event} is my_light
-# Any argument prefixed with a minus/hyphen (-) eliminates an
-# argument from our payload.  Since we know value1, value2, and
-# value3 are present in every payload, we eliminate them.
+# Envoyer la valeur 'on' à {switch}
+# Supposons que notre {WebhookID} soit b1lUk7b9LpGakJARKBwRIZ
+# Supposons que notre {Event} soit my_light
+# Tout argument préfixé par un moins, -,
+# supprime un argument de notre charge utile. Comme nous savons
+# que value1, value2 et value3 sont toujours présents, nous les supprimons.
 #
-# Now we use a plus (+) symbol in front of an argument to tell
-# the remote server we want to include a new option called
-# switch and set its value to 'on'
+# Nous utilisons ensuite un symbole plus, +, devant un argument
+# pour indiquer au serveur distant que nous voulons inclure une
+# nouvelle option appelée switch avec la valeur 'on'
 apprise -vv -b "" ifttt:///b1lUk7b9LpGakJARKBwRIZ@my_light/?-value1&-value2&-value3&+switch=on
 ```
 
-**Thoughts**: The +/- options are relatively new, but it still feels like this plugin could be made even easier to use. If you have any idea's please open a ticket and let me know your ideas!
+**Réflexion** : les options +/- sont relativement récentes, mais il semble toujours possible de rendre ce plugin encore plus simple à utiliser. Si vous avez des idées, n'hésitez pas à ouvrir un ticket et à les partager.

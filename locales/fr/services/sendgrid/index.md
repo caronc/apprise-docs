@@ -1,6 +1,6 @@
 ---
 title: "Notifications SendGrid"
-description: "Envoyer SendGrid notifications."
+description: "Envoyer des notifications SendGrid."
 sidebar:
   label: "SendGrid"
 
@@ -19,13 +19,13 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Creating an account with SendGrid is free of charge and can be done through their main page.
+La creation d'un compte SendGrid est gratuite et peut se faire depuis leur page principale.
 
-Once you have an account and access to [your dashboard](https://app.sendgrid.com/). You will need to ensure you've correctly **authenticated your domains** with them; this is done in the [Sender Authentication](https://app.sendgrid.com/settings/sender_auth) section of your dashboard. You get here by clicking on **Settings** > **Sender Authentication** from your dashboard.
+Une fois votre compte cree et l'acces a [votre tableau de bord](https://app.sendgrid.com/) obtenu, vous devez vous assurer d'avoir correctement **authentifie vos domaines** chez eux. Cette operation se fait dans la section [Sender Authentication](https://app.sendgrid.com/settings/sender_auth) de votre tableau de bord, accessible via **Settings** > **Sender Authentication**.
 
-The last thing you need is to generate an **API Key** with at least the **Mail Send** permission. This can also be done through your dashboard in the [API Keys](https://app.sendgrid.com/settings/api_keys) section of your dashboard. You can get here by clicking on **Settings** > **API Keys**
+La derniere etape consiste a generer une **API Key** disposant au minimum de la permission **Mail Send**. Cela peut egalement etre fait depuis la section [API Keys](https://app.sendgrid.com/settings/api_keys) de votre tableau de bord, accessible via **Settings** > **API Keys**.
 
 ## Syntaxe
 
@@ -35,32 +35,32 @@ La syntaxe valide est la suivante :
 - `sendgrid://{apikey}:{from_email}/{to_email}`
 - `sendgrid://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}`
 
-Template support is also supported as well, You just need to specify the UUID assigned to it as part of the URL:
+La prise en charge des modeles est egalement disponible. Il vous suffit d'indiquer dans l'URL l'UUID qui lui a ete assigne :
 
 - `sendgrid://{apikey}:{from_email}/{to_email}?template={template_uuid}`
 
-If you want to take advantage of the `dynamic_template_data` variables, just create arguments prefixed with a plus (+); for example:
+Si vous souhaitez tirer parti des variables `dynamic_template_data`, creez simplement des arguments prefixes par un plus, `+`, par exemple :
 
 - `sendgrid://{apikey}:{from_email}/{to_email}?template={template_uuid}&+{sub1}=value&+{sub2}=value2`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey     | Yes      | The [API Key](https://app.sendgrid.com/settings/api_keys) you generated from within your SendGrid dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
-| from_email | Yes      | This is the email address will identify the email's origin (the _From_ address). This address **must** contain a domain that was previously authenticated with your SendGrid account (See [Domain Authentication](https://app.sendgrid.com/settings/sender_auth)).                                                                                                                                                                                                                       |
-| to_email   | No       | This is the email address will identify the email's destination (the _To_ address). If one isn't specified then the _from_email_ is used instead.                                                                                                                                                                                                                                                                                                                                        |
-| template   | No       | You may optionally specify the UUID of a previously generated SendGrid dynamic template to base the email on.                                                                                                                                                                                                                                                                                                                                                                            |
-| cc         | No       | The _Carbon Copy_ (CC:) portion of the email. This is entirely optional. It should be noted that SendGrid immediately rejects emails where the _cc_ contains an email address that exists in the _to_ or the _bcc_ list. To avoid having issues, Apprise automatically eliminates these duplicates silently if detected.                                                                                                                                                                 |
-| bcc        | No       | The _Blind Carbon Copy_ (BCC:) portion of the email. This is entirely optional. It should be noted that SendGrid immediately rejects emails where the _bcc_ contains an email address that exists in the _to_ or the _cc_ list. To avoid having issues, Apprise automatically eliminates these duplicates silently if detected. If an identical email is detected in both the CC and the BCC list, the BCC list will maintain the email and it will drop from the CC list automatically. |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey     | Oui         | [API Key](https://app.sendgrid.com/settings/api_keys) que vous avez generee depuis votre tableau de bord SendGrid.                                                                                                                                                                                                                                                                                                                                                                 |
+| from_email | Oui         | Adresse e-mail identifiant l'origine du message, c'est-a-dire l'adresse _From_. Cette adresse **doit** appartenir a un domaine deja authentifie avec votre compte SendGrid, voir [Domain Authentication](https://app.sendgrid.com/settings/sender_auth).                                                                                                                                                                                                                           |
+| to_email   | Non         | Adresse e-mail identifiant la destination du message, c'est-a-dire l'adresse _To_. Si aucune valeur n'est fournie, `from_email` est utilise a la place.                                                                                                                                                                                                                                                                                                                            |
+| template   | Non         | Vous pouvez facultativement specifier l'UUID d'un modele dynamique SendGrid deja genere comme base pour l'e-mail.                                                                                                                                                                                                                                                                                                                                                                  |
+| cc         | Non         | Partie _Carbon Copy_, CC:, de l'e-mail. Elle est entierement facultative. Il faut noter que SendGrid rejette immediatement les e-mails dont la liste _cc_ contient une adresse deja presente dans les listes _to_ ou _bcc_. Pour eviter ces problemes, Apprise elimine automatiquement et silencieusement ces doublons lorsqu'ils sont detectes.                                                                                                                                   |
+| bcc        | Non         | Partie _Blind Carbon Copy_, BCC:, de l'e-mail. Elle est entierement facultative. Il faut noter que SendGrid rejette immediatement les e-mails dont la liste _bcc_ contient une adresse deja presente dans les listes _to_ ou _cc_. Pour eviter ces problemes, Apprise elimine automatiquement et silencieusement ces doublons lorsqu'ils sont detectes. Si une meme adresse est detectee a la fois dans CC et BCC, elle est conservee dans BCC et supprimee automatiquement de CC. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-### Dynamic Template Data
+### Données de Modèle Dynamiques
 
-Templates allow you to define {{variables}} within them that can be substituted on the fly once the email is sent. You can identify and set these variables using Apprise by simply sticking a plus (+) in front of any parameter you specify on your URL string.
+Les modeles vous permettent de definir des `{{variables}}` qui seront remplacees dynamiquement lors de l'envoi de l'e-mail. Vous pouvez identifier et definir ces variables avec Apprise en ajoutant simplement un plus, `+`, devant n'importe quel parametre precise dans votre URL.
 
-Consider the following template: `d-e624763c71314ea2a1fae38d7fa64a4a`
+Considerez le modele suivant : `d-e624763c71314ea2a1fae38d7fa64a4a`
 
 ```text
 This is a test email about {{what}}.
@@ -69,12 +69,12 @@ You can take a mapped variable on a SendGrid template
 and easily swap it with whatever you want using {{app}}.
 ```
 
-In the above example, we defined the following variables: `what` and `app`.
+Dans l'exemple ci-dessus, nous avons defini les variables suivantes : `what` et `app`.
 
-An Apprise URL might look like:<br/>
+Une URL Apprise peut ressembler a ceci :<br/>
 `sendgrid://myapikey:noreply@example.com?template=d-e624763c71314ea2a1fae38d7fa64a4a&+what=templates&+app=Apprise`
 
-The above URL would create the following:
+L'URL ci-dessus produirait le resultat suivant :
 
 ```text
 This is a test email about templates.
@@ -85,13 +85,13 @@ and easily swap it with whatever you want using Apprise.
 
 ## Exemples
 
-Envoyer une SendGrid notification:
+Envoyer une notification SendGrid :
 
 ```bash
-# Assuming our {apikey} is abcd123-xyz
-# Assuming our Authenticated Domain is example.com, we might want to
-#  set our {from_email} to noreply@example.com
-# Assuming our {to_email} is someone@microsoft.com
+# Supposons que notre {apikey} soit abcd123-xyz
+# Supposons que notre domaine authentifie soit example.com, et que nous voulions
+# definir notre {from_email} sur noreply@example.com
+# Supposons que notre {to_email} soit someone@microsoft.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    sendgrid:///abcd123-xyz:noreply@example.com/someone@microsoft.com
 ```

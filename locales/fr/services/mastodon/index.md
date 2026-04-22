@@ -1,6 +1,6 @@
 ---
 title: "Notifications Mastodon"
-description: "Envoyer Mastodon notifications."
+description: "Envoyer des notifications Mastodon."
 sidebar:
   label: "Mastodon"
 
@@ -26,19 +26,19 @@ limits:
 
 ## Configuration du compte
 
-Inscrivez-vous a any Mastodon based service. [Here are a few you can choose from today](https://joinmastodon.org/servers).
+Inscrivez-vous sur un service base sur Mastodon. [Voici quelques serveurs parmi lesquels vous pouvez choisir](https://joinmastodon.org/servers).
 
-In the **Settings** of your account, you can access the **Development** tab and create an **Application**. This is what Apprise will use to send your notifications.
+Dans les **Settings** de votre compte, ouvrez l'onglet **Development** et creez une **Application**. C'est elle qu'Apprise utilisera pour envoyer vos notifications.
 
-At the bare minimum you need to grant the following scopes on your application:
+Vous devez au minimum accorder les scopes suivants a votre application :
 
-- `write:statuses`: So Apprise can post a message
-- `write:media`: So Apprise can send an attachment
-- `read:accounts`: If you want to be able to send a DM to yourself
+- `write:statuses` : pour qu'Apprise puisse publier un message ;
+- `write:media` : pour qu'Apprise puisse envoyer une piece jointe ;
+- `read:accounts` : si vous souhaitez pouvoir vous envoyer un message direct a vous-meme.
 
-**Note**: If you change/add/remove scope entries associated with your Mastodon Application, you **MUST** regenerate your **Access Token** or your app will not take in effect the scope changes.
+**Remarque :** si vous modifiez, ajoutez ou supprimez des scopes associes a votre application Mastodon, vous **DEVEZ** regenerer votre **Access Token**, sinon les changements de scopes ne seront pas pris en compte.
 
-After you create your Application, revisit its configuration as it will now provide you with a `key`, `secret`, and `access_token`. You ONLY need the **Access Token** to have Apprise work.
+Apres avoir cree votre application, retournez dans sa configuration : elle vous fournira alors une `key`, un `secret` et un `access_token`. Seul l'**Access Token** est necessaire pour faire fonctionner Apprise.
 
 ## Syntaxe
 
@@ -53,30 +53,30 @@ La syntaxe valide est la suivante :
 - `toot://{token}@{host}/{targets}`
 - `toots://{token}@{host}/{targets}`
 
-Simply use `mastodon://` or `toot://` if access in an insecure server and `mastodons://` or `toots://` if accessing a secure one (https).
+Utilisez simplement `mastodon://` ou `toot://` si vous accedez a un serveur non securise, et `mastodons://` ou `toots://` si vous accedez a un serveur securise, en HTTPS.
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token      | Yes      | The Access Token associated with the Application you created (in Mastodon's Account Settings). Your token MUST have at the bare minimum `write:statuses` access. Additionally provide `write:media` if you intend to provide attachments.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| visibility | No       | The Mastodon visibility you want to operate in. Possible values are<br/> `direct` for Private Direct Messages)<br/>`private` for posts that will be visible only to followers<br/>`unlisted` for posts that will be public but not appear on the public timeline<br/>`public` for public posts<br/>`default` for post visibility based on the accounts _default-visiblity_ setting. <br/><br/>By default if `toot://` is used, it is presumed you want a public post (unless you explicitly specify the `visibility=` flag. However if you use `mastodon://` then your post by default will take on the _default-visibility_ associated with your account unless explicitly over-ridden here with the `visibility=`. |
-| batch      | No       | By default images are batched together. However if you want your attachments to be posted 1 toot per attachment, set this to False.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| sensitive  | No       | If this is set to `Yes` then any attachments provided will be marked as sensitive. By default this is set to `No`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| spoiler    | No       | Optionally provide _spoiler text_ that should be associated with the status message posted.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| language   | No       | Optionally provide a ISO 639 language code with your status post. E.g. `en`, `fr`, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| key        | No       | Prevent duplicate submissions of the same status. Idempotency keys are stored for up to 1 hour, and can be any arbitrary string. Consider using a hash or UUID generated client-side.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ping       | No       | Optionally append one or more Mastodon mentions or hashtags to the status. Mentions must begin with `@` (for example `@caronc` or `@alice@example.com`) and hashtags must begin with `#` (for example `#apprise`). Bare values such as `apprise` are ignored to avoid ambiguity.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token      | Oui         | Access Token associe a l'application que vous avez creee dans les parametres de compte Mastodon. Votre jeton doit au minimum disposer du scope `write:statuses`. Ajoutez egalement `write:media` si vous comptez envoyer des pieces jointes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| visibility | Non         | Niveau de visibilite Mastodon a utiliser. Les valeurs possibles sont :<br/>`direct` pour les messages directs prives<br/>`private` pour des publications visibles uniquement par les followers<br/>`unlisted` pour des publications publiques qui n'apparaissent pas dans la timeline publique<br/>`public` pour des publications publiques<br/>`default` pour utiliser la visibilite par defaut definie dans le compte.<br/><br/>Par defaut, si vous utilisez `toot://`, Apprise suppose que vous voulez faire une publication publique, sauf si vous precisez `visibility=`. Si vous utilisez `mastodon://`, la publication herite par defaut de la _default-visibility_ de votre compte, sauf surcharge explicite via `visibility=`. |
+| batch      | Non         | Par defaut, les images sont groupees ensemble. Si vous souhaitez publier une toot par piece jointe, definissez cette valeur sur `False`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| sensitive  | Non         | Si cette valeur est definie sur `Yes`, toutes les pieces jointes fournies seront marquees comme sensibles. Par defaut, cette option vaut `No`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| spoiler    | Non         | Permet facultativement de fournir un _spoiler text_ associe au statut publie.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| language   | Non         | Permet facultativement de fournir un code langue ISO 639 pour votre publication, par exemple `en`, `fr`, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| key        | Non         | Empeche les soumissions en double d'un meme statut. Les cles d'idempotence sont conservees jusqu'a une heure et peuvent etre n'importe quelle chaine arbitraire. Vous pouvez utiliser un hash ou un UUID genere cote client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ping       | Non         | Permet facultativement d'ajouter une ou plusieurs mentions Mastodon ou hashtags a la fin du statut. Les mentions doivent commencer par `@`, par exemple `@caronc` ou `@alice@example.com`, et les hashtags doivent commencer par `#`, par exemple `#apprise`. Les valeurs nues comme `apprise` sont ignorees pour eviter toute ambiguite.                                                                                                                                                                                                                                                                                                                                                                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-### Mentions and Hashtags
+### Mentions et Hashtags
 
-Mastodon resolves mentions and hashtags from the final status text. You can include them directly in the message body, provide path entries, or use `ping=` to append fixed mentions and hashtags from the Apprise URL.
+Mastodon resout les mentions et les hashtags a partir du texte final du statut. Vous pouvez les inclure directement dans le corps du message, les fournir dans le chemin, ou utiliser `ping=` pour ajouter des mentions et hashtags fixes depuis l'URL Apprise.
 
-User and hashtag path entries are preserved when the URL is rebuilt. Since `#` has special meaning in URLs, rebuilt URLs encode hashtag path entries as `%23tag`. Path entries and `ping=` entries are appended to the final status text when they are not already present, including when sending plain text.
+Les entrees de chemin pour les utilisateurs et les hashtags sont preservees lorsque l'URL est reconstruite. Comme `#` a une signification particuliere dans les URL, les hashtags dans le chemin sont encodes sous la forme `%23tag`. Les entrees de chemin et celles passees par `ping=` sont ajoutees au texte final du statut lorsqu'elles n'y figurent pas deja, y compris en texte brut.
 
-The `ping=` value accepts comma, space, semicolon, slash, or pipe separated entries. Mention entries must start with `@`, and hashtag entries must start with `#`:
+La valeur `ping=` accepte des entrees separees par des virgules, espaces, points-virgules, slashs ou pipes. Les mentions doivent commencer par `@` et les hashtags par `#` :
 
 - `ping=@caronc` appends `@caronc`
 - `ping=@alice@example.com` appends `@alice@example.com`
@@ -84,62 +84,63 @@ The `ping=` value accepts comma, space, semicolon, slash, or pipe separated entr
 - `/@caronc/%23apprise` appends `@caronc #apprise`
 - `/%23apprise/%23notifications` appends `#apprise #notifications`
 
-Bare values such as `ping=apprise` are ignored because they do not identify whether the value is intended to be a mention or a hashtag. Duplicate entries from the message body, hashtag path entries, and `ping=` are collapsed in the final status text. Hashtags must contain at least one non-numeric character.
+Les valeurs nues comme `ping=apprise` sont ignorees, car elles ne permettent pas de savoir s'il s'agit d'une mention ou d'un hashtag. Les doublons issus du corps du message, du chemin et de `ping=` sont elimines dans le texte final. Les hashtags doivent contenir au moins un caractere non numerique.
 
-### Smart Processing
+### Traitement Intelligent
 
-With Mastodon, routing of `direct` messages entirely depends on the `@users` identified in the message body. For this reason it's possible to post a status message like:
+Avec Mastodon, l'acheminement des messages `direct` depend entierement des `@users` identifies dans le corps du message. Pour cette raison, il est possible d'envoyer un statut comme celui-ci :
 
 ```bash
 apprise -b "Hey guys, this message was sent from Apprise" \
    "mastodon://accesskey/host/@caronc?visibility=direct"
 ```
 
-This will cause the message body to be created as
+Le corps du message deviendra alors :
 
 ```text
 Hey guys, this message was sent from Apprise @caronc
 ```
 
-It's important to state that if you identify `/@users` entries on your Apprise URL, they will be appended into the message so they are notified. However, that said, if you prepare a URL for `direct` visibility and do not provide a user. Apprise will look up your own credentials automatically and send the message to yourself.
+Il est important de noter que si vous indiquez des entrees `/@users` dans l'URL Apprise, elles seront ajoutees au message afin que les utilisateurs soient bien notifies. Cela dit, si vous preparez une URL avec `visibility=direct` sans fournir d'utilisateur, Apprise recuperera automatiquement vos propres informations d'identification et vous enverra le message a vous-meme.
 
 ```bash
-# Here is an example where we're specifying a `direct` message
-# as our intentions are to create a DM.  This will cause Apprise to look
-# ourselves up and notify our own account.  You MUST have the
-# 'read:accounts' scope enabled on your Mastodon application or this
-# will not work.
+# Voici un exemple ou nous precisons un message `direct`
+# car notre intention est de creer un DM. Cela amenera Apprise
+# a recuperer notre propre compte pour nous notifier nous-meme.
+# Vous DEVEZ avoir active le scope `read:accounts` sur votre
+# application Mastodon, sinon cela ne fonctionnera pas.
 #
-# Also consider there is overhead with this call as it requires an
-# extra hit on the website to get your data.  For efficiency, it's
-# ideal that you specify your @user if this is your intention.
+# Notez aussi qu'il y a une petite surcharge sur cet appel,
+# puisqu'une requete supplementaire est necessaire pour recuperer
+# vos informations. Pour plus d'efficacite, il est preferable de
+# preciser directement votre @user si c'est votre intention.
 apprise -b "Hey guys, this message was sent from Apprise" \
    "mastodon://accesskey/host/?visibility=direct"
 ```
 
-Apprise is also smart enough to pre-scan the message being posted and if it finds a `@user` identified in the body that is also identified in the URL, it will NOT be added to the end of the body. Hence; consider a status message that reads:
+Apprise est egalement assez intelligent pour preanalyser le message en cours de publication. Si un `@user` deja present dans le corps est aussi present dans l'URL, il ne sera **pas** ajoute une seconde fois a la fin du message. Prenons par exemple ce statut :
 
 ```bash
 apprise -b "Hey @caronc, Thanks for showing me the Apprise plugin!" \
    "mastodon://accesskey/host/@caronc?visibility=direct"
 ```
 
-In the above case, `@caronc` is identified as both a target to be delivered to AND also already exists in the status message being sent. As a result, no `@caronc` will be appended at the end and the message will be sent as is.
+Dans ce cas, `@caronc` est a la fois une cible de notification et deja present dans le message. En consequence, aucun `@caronc` supplementaire ne sera ajoute a la fin, et le message sera envoye tel quel.
 
 ```text
 Hey @caronc, Thanks for showing me the Apprise plugin!
 ```
 
-Let's do one more example just to show other cases:
+Voyons encore un exemple pour illustrer d'autres cas :
 
-Consider the following:
+Considerez ceci :
 
 ```bash
 apprise -b "Hey @caronc, Thanks for showing me the Apprise plugin!" \
    "mastodon://accesskey/host/@caronc/@joe/@sam?visibility=direct"
 ```
 
-The following has 3 people set up as targets, but it has already identified 1 of them in the message. The other 2 are automatically appended to the end of your status message:
+Dans l'exemple suivant, 3 personnes sont definies comme cibles, mais l'une d'elles est deja mentionnee dans le message. Les 2 autres seront automatiquement ajoutees a la fin du statut :
 
 ```text
 Hey @caronc, Thanks for showing me the Apprise plugin! @joe @sam
@@ -147,48 +148,48 @@ Hey @caronc, Thanks for showing me the Apprise plugin! @joe @sam
 
 ## Exemples
 
-Envoyer une Mastodon toot:
+Envoyer une toot Mastodon :
 
 ```bash
-# Assuming our {AccessKey} is T1JJ3T3L2
-# Assuming our {Host} is noc.social
+# Supposons que notre {AccessKey} soit T1JJ3T3L2
+# Supposons que notre {Host} soit noc.social
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social"
 ```
 
-Envoyer une Mastodon toot with path entries:
+Envoyer une toot Mastodon avec des entrees dans le chemin :
 
 ```bash
-# Assuming our {AccessKey} is T1JJ3T3L2
-# Assuming our {Host} is noc.social
+# Supposons que notre {AccessKey} soit T1JJ3T3L2
+# Supposons que notre {Host} soit noc.social
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social/@caronc/%23apprise"
 ```
 
-Envoyer une Mastodon toot with fixed pings appended:
+Envoyer une toot Mastodon avec des `ping` fixes ajoutes :
 
 ```bash
-# Assuming our {AccessKey} is T1JJ3T3L2
-# Assuming our {Host} is noc.social
+# Supposons que notre {AccessKey} soit T1JJ3T3L2
+# Supposons que notre {Host} soit noc.social
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social?ping=#apprise,#notifications"
 ```
 
-Envoyer une Mastodon DM to `@testaccount`:
+Envoyer un message direct Mastodon a `@testaccount` :
 
 ```bash
-# Assuming our {AccessKey} is T1JJ3T3L2
-# Assuming our {Host} is noc.social
-# our user is @testaccount
+# Supposons que notre {AccessKey} soit T1JJ3T3L2
+# Supposons que notre {Host} soit noc.social
+# notre utilisateur est @testaccount
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social/@testaccount?visibility=direct"
 ```
 
-Envoyer une Mastodon DM to ourselves using the built in smart-detection:
+Envoyer un message direct Mastodon a nous-memes en utilisant la detection integree :
 
 ```bash
-# Assuming our {AccessKey} is T1JJ3T3L2
-# Assuming our {Host} is noc.social
+# Supposons que notre {AccessKey} soit T1JJ3T3L2
+# Supposons que notre {Host} soit noc.social
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mastodons://T1JJ3T3L2@noc.social/?visibility=direct"
 ```

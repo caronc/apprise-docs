@@ -1,6 +1,6 @@
 ---
 title: "Développement de Plugins"
-description: "How to create your own Apprise notification plugin (service)."
+description: "Comment créer votre propre plugin de notification Apprise (service)."
 sidebar:
   order: 9
 ---
@@ -9,13 +9,16 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 ## Introduction
 
-Apprise plugins, also called **services**, are Python classes that inherit from `NotifyBase`. The fastest way to build a new one is to start from a working plugin that resembles your target integration, then adapt its URL shape, parsing, and send logic.
+Les plugins Apprise, aussi appelés **services**, sont des classes Python qui
+héritent de `NotifyBase`. La façon la plus rapide d'en créer un nouveau consiste
+à partir d'un plugin fonctionnel proche de votre intégration cible, puis à
+adapter sa forme d'URL, son parsing et sa logique d'envoi.
 
 <Tabs>
-<TabItem value="basic" label="Basic plugin">
-This pattern is ideal for:
-- Writing to a local destination (stdout, file, syslog)
-- Prototyping a URL schema before adding networking
+<TabItem value="basic" label="Plugin basique">
+Ce modèle est idéal pour :
+- écrire vers une destination locale (`stdout`, fichier, syslog) ;
+- prototyper un schéma d'URL avant d'ajouter la couche réseau.
 
 ```python
 # apprise/plugins/demo.py
@@ -56,13 +59,14 @@ class NotifyDemo(NotifyBase):
 
 </TabItem>
 
-<TabItem value="http" label="HTTP plugin">
-This pattern is ideal for:
-- Webhook-style integrations
-- REST APIs with tokens and optional authentication
+<TabItem value="http" label="Plugin HTTP">
+Ce modèle est idéal pour :
+- les intégrations de type webhook ;
+- les API REST avec jetons et authentification facultative.
 
 :::tip
-When parsing query-string flags and values, prefer the shared helpers in `apprise.utils`. See the [Utilities Reference](./utilities/).
+Lorsque vous parsez des drapeaux et valeurs de query string, privilégiez les
+helpers partagés de `apprise.utils`. Consultez la [référence des utilitaires](./utilities/).
 :::
 
 ```python
@@ -232,8 +236,8 @@ class NotifyDemoHTTP(NotifyBase):
 
 </TabItem>
 
-<TabItem value="boilerplate" label="Boilerplate plugin">
-Copy and paste this as a starting point. Search for `TODO:` and fill in the blanks.
+<TabItem value="boilerplate" label="Plugin modèle">
+Copiez-collez ce point de départ. Recherchez `TODO:` et complétez les zones manquantes.
 
 ```python
 # apprise/plugins/notify_myservice.py
@@ -485,39 +489,53 @@ class NotifyMyService(NotifyBase):
 </TabItem>
 </Tabs>
 
-## Model Overview
+## Vue d'Ensemble du Modèle
 
-### URL Parsing
+### Parsing d'URL
 
-Apprise determines what the `schema://` it has been provided and then launches the Notification Plugin's `YourPlugin.parse_url()` call to do the rest.
+Apprise détermine d'abord le `schema://` qui lui a été fourni, puis appelle
+la méthode `YourPlugin.parse_url()` du plugin de notification pour effectuer
+le reste du traitement.
 
-Usually the first call made in your `parse_url()` function is to call the parent one (from `NotifyBase`). Doing so allows Apprise to extract further common URL parts such as `schema`, `host`, `port`, `user`, `password`, and `fullpath`. Your `parse_url()` should focus on the pieces that are specific to your service, then return a `dict` whose keys match your `__init__()` signature.
+En général, le premier appel effectué dans votre fonction `parse_url()` consiste
+à appeler la méthode parente (issue de `NotifyBase`). Cela permet à Apprise
+d'extraire les éléments d'URL communs comme `schema`, `host`, `port`, `user`,
+`password` et `fullpath`. Votre `parse_url()` doit se concentrer sur les
+éléments spécifiques à votre service, puis renvoyer un `dict` dont les clés
+correspondent à la signature de votre `__init__()`.
 
-A key rule that the unit tests enforce is that your template metadata must map cleanly to `__init__()` arguments, either directly (same name) or through `map_to`.
+Une règle importante, vérifiée par les tests unitaires, est que les métadonnées
+de vos templates doivent correspondre proprement aux arguments de `__init__()`,
+soit directement (même nom), soit via `map_to`.
 
-### Throttling, Verification, and Timeouts
+### Limitation de Débit, Vérification et Timeouts
 
-`URLBase` defines common SSL verification and socket timeouts as URL arguments:
+`URLBase` définit la vérification SSL et les timeouts socket communs en tant
+qu'arguments d'URL :
 
 - `verify` controls `verify_certificate`
 - `rto` controls the socket read timeout
 - `cto` controls the socket connect timeout
 
-## url_identifier
+## `url_identifier`
 
-The `url_identifier` property exists to uniquely identify one configuration from another so cached or persistent data does not clobber different configurations. It is also how Apprise generates a consistent, stable unique id from a URL.
+La propriété `url_identifier` sert à distinguer une configuration d'une autre
+de manière unique, afin que les données en cache ou persistantes n'écrasent pas
+des configurations différentes. C'est aussi ainsi qu'Apprise génère un identifiant
+unique cohérent et stable à partir d'une URL.
 
-- **Include** scheme or protocol, credentials, and upstream connection identity.
-- **Exclude** targets (channels, recipients, endpoints).
-- **Exclude** most GET parameters. Only include a GET parameter if it fundamentally changes how the upstream communication works.
+- **Incluez** le schéma ou protocole, les identifiants et l'identité de connexion amont.
+- **Excluez** les cibles (canaux, destinataires, endpoints).
+- **Excluez** la plupart des paramètres GET. N'incluez un paramètre GET que s'il change fondamentalement le comportement de la communication amont.
 
-If two URLs describe the same effective configuration, they should generate the same `url_identifier`, and therefore the same `url_id()`.
+Si deux URL décrivent la même configuration effective, elles devraient générer
+le même `url_identifier`, et donc le même `url_id()`.
 
-Also note the storage switch:
+Notez également l'interrupteur de stockage :
 
-- If `store=no` is set, `url_id()` returns `None`, and `url()` should preserve `store=no` in its output.
+- Si `store=no` est défini, `url_id()` renvoie `None`, et `url()` doit conserver `store=no` dans sa sortie.
 
-Example:
+Exemple :
 
 ```python
 @property
@@ -532,14 +550,20 @@ def url_identifier(self):
 ```
 
 :::note
-the `url_identifier` effectively gives the URL you defined a destinct reusable unique key to identify by. This same key is used in choosing a unique file location for the Persistent Storage engine to store cached information which avoids clobbering cache from another instance.
+`url_identifier` donne concrètement à l'URL que vous avez définie une clé
+unique réutilisable permettant de l'identifier. Cette même clé est utilisée
+pour choisir un emplacement de fichier unique pour le moteur de stockage
+persistant, afin d'éviter qu'un cache n'écrase celui d'une autre instance.
 :::
 
-## Persistent storage opt-in (`storage_mode`)
+## Activation du Stockage Persistant (`storage_mode`)
 
-If your plugin performs repeated upstream lookups (OAuth tokens, discovery calls, resolved identifiers, capability checks), you should consider enabling persistent storage. It will save you from doing the check down the road and make your plugin that much faster!
+Si votre plugin effectue des consultations répétées en amont (jetons OAuth,
+appels de découverte, identifiants résolus, vérifications de capacités),
+vous devriez envisager d'activer le stockage persistant. Cela vous évitera
+de refaire ces vérifications plus tard et accélérera le plugin.
 
-To opt in, set a class-level `storage_mode`:
+Pour l'activer, définissez un `storage_mode` au niveau de la classe :
 
 ```python
 from apprise.common import PersistentStoreMode
@@ -549,24 +573,28 @@ class NotifyMyService(NotifyBase):
     storage_mode = PersistentStoreMode.AUTO
 ```
 
-Guidance:
+Recommandations :
 
-- Use `PersistentStoreMode.AUTO` for most plugins.
-- Use `PersistentStoreMode.FLUSH` only when the cached data is expensive to recompute and you want stronger durability.
-- Leave the default behaviour (memory-only) if your plugin should never persist state, or if caching provides little benefit.
+- Utilisez `PersistentStoreMode.AUTO` pour la plupart des plugins.
+- Utilisez `PersistentStoreMode.FLUSH` uniquement lorsque les données mises en cache sont coûteuses à recalculer et que vous voulez une meilleure durabilité.
+- Conservez le comportement par défaut (mémoire uniquement) si votre plugin ne doit jamais persister d'état, ou si le cache apporte peu de bénéfice.
 
-When combined with a well-formed `url_identifier` (configuration identity only), multiple instances targeting different recipients can reuse the same cache for the same upstream configuration.
+Combiné à un `url_identifier` bien formé (identité de configuration uniquement),
+cela permet à plusieurs instances visant des destinataires différents de
+réutiliser le même cache pour une même configuration amont.
 
-## Targets and \_\_len\_\_
+## Cibles et \_\_len\_\_
 
-`__len__()` allows authors and tooling to identify how many targets are loaded into a plugin.
+`__len__()` permet aux auteurs et aux outils de savoir combien de cibles sont
+chargées dans un plugin.
 
-- If you do not override it, the base implementation returns `1`.
-- Override it in plugins that support multiple targets, usually returning `len(self.targets)` with a minimum of `1`.
+- Si vous ne la redéfinissez pas, l'implémentation de base renvoie `1`.
+- Redéfinissez-la dans les plugins qui prennent en charge plusieurs cibles, généralement en renvoyant `len(self.targets)` avec un minimum de `1`.
 
-## Requirements and Optional Dependencies
+## Requirements et Dépendances Optionnelles
 
-If your plugin needs extra packages, declare them in `requirements` so Apprise can report what is required or recommended.
+Si votre plugin a besoin de paquets supplémentaires, déclarez-les dans
+`requirements` afin qu'Apprise puisse indiquer ce qui est requis ou recommandé.
 
 ```python
 from ..locale import gettext_lazy as _
@@ -578,9 +606,11 @@ requirements = {
 }
 ```
 
-### `runtime_deps()` — Memory Eviction Hint
+### `runtime_deps()` : Indice d'Éviction Mémoire
 
-If your plugin **conditionally imports a heavy third-party library**, also override `runtime_deps()` to tell the plugin manager which top-level package names it loaded.
+Si votre plugin **importe conditionnellement une bibliothèque tierce lourde**,
+redéfinissez aussi `runtime_deps()` pour indiquer au gestionnaire de plugins
+quels noms de paquets de premier niveau ont été chargés.
 
 ```python
 class NotifyMyService(NotifyBase):
@@ -591,98 +621,112 @@ class NotifyMyService(NotifyBase):
         return ("mylibrary",)
 ```
 
-The return value is a **tuple of importable top-level package names** — the same string you would pass to `import`, not the pip install name (e.g. `"paho"` for `paho-mqtt`).
+La valeur renvoyée est un **tuple de noms de paquets de premier niveau
+importables** : la même chaîne que vous passeriez à `import`, et non le nom
+du paquet pip (par exemple `"paho"` pour `paho-mqtt`).
 
-The [Notification Manager](./extending/notification-manager/#library-eviction) tracks a reference count for each declared library. When every plugin that uses a given library is disabled and `N_MGR.evict_on_disable` is `True`, the manager removes that library — and all of its submodules — from `sys.modules`, releasing the associated Python objects from memory.
+Le [gestionnaire de notifications](./extending/notification-manager/#library-eviction)
+maintient un compteur de références pour chaque bibliothèque déclarée. Lorsque
+tous les plugins qui utilisent une bibliothèque donnée sont désactivés et que
+`N_MGR.evict_on_disable` vaut `True`, le gestionnaire retire cette bibliothèque,
+ainsi que tous ses sous-modules, de `sys.modules`, libérant ainsi les objets
+Python associés en mémoire.
 
-- Return the base-class default `()` (an empty tuple) if your plugin has no optional runtime dependencies worth evicting.
-- Submodules are handled automatically; declare only the top-level name.
-- This is separate from `requirements`, which names pip packages for human-readable dependency reporting. `runtime_deps()` names importable packages for runtime memory management.
+- Renvoyez la valeur par défaut de la classe de base `()` (tuple vide) si votre plugin n'a pas de dépendances runtime optionnelles justifiant une éviction.
+- Les sous-modules sont gérés automatiquement ; ne déclarez que le nom de premier niveau.
+- Cela est distinct de `requirements`, qui nomme des paquets pip à des fins de reporting humainement lisible. `runtime_deps()` nomme les paquets importables pour la gestion mémoire à l'exécution.
 
 :::note
-`runtime_deps()` is only useful when the library is loaded conditionally (imported only if the plugin is active). If your plugin always imports the library at module load time, eviction has no practical effect because the module is already resident.
+`runtime_deps()` n'est utile que lorsque la bibliothèque est chargée
+conditionnellement (importée uniquement si le plugin est actif). Si votre plugin
+importe toujours la bibliothèque au chargement du module, l'éviction n'a pas
+d'effet pratique, car le module est déjà résident.
 :::
 
-## Plugin Base Defaults
+## Valeurs par Défaut de la Base Plugin
 
-The following identifies the default values of variables defined in your plugin automatically if not otherwise overridden.
+La section suivante récapitule les valeurs par défaut des variables définies
+automatiquement dans votre plugin, sauf surcharge explicite.
 
-## URLBase Defaults
+## Valeurs par Défaut de URLBase
 
-`NotifyBase` inherits from the `URLBase` object which sets these defaults:
+`NotifyBase` hérite de l'objet `URLBase`, qui définit les valeurs par défaut suivantes :
 
-| Attribute                | Default                | Purpose                                                                         | When To Override                                                                                                      |
-| :----------------------- | :--------------------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------- |
-| `request_rate_per_sec`   | `0`                    | Base throttle interval (seconds). `0` disables throttling at the URLBase level. | Typically override at `NotifyBase` or your plugin, not at URLBase.                                                    |
-| `socket_connect_timeout` | `4.0`                  | Default connect timeout, used when `cto` is not provided.                       | If your service routinely needs longer TCP handshakes.                                                                |
-| `socket_read_timeout`    | `4.0`                  | Default read timeout, used when `rto` is not provided.                          | If your service returns slowly or streams responses.                                                                  |
-| `verify_certificate`     | `True`                 | SSL certificate verification, used when `verify` is not provided.               | Only if your service runs in controlled networks with self-signed certs and you are comfortable allowing `verify=no`. |
-| `templates`              | `()`                   | Documentation templates.                                                        | Almost always, so tooling and docs can describe the plugin accurately.                                                |
-| `template_tokens`        | `{}`                   | Metadata describing URL path tokens.                                            | Almost always, for non-trivial schemas.                                                                               |
-| `template_args`          | `{ verify, rto, cto }` | Common URL args and their defaults.                                             | Usually extend rather than replace.                                                                                   |
-| `template_kwargs`        | `{}`                   | Metadata for prefixed key/value arguments.                                      | If you support `+headers`, `:payload`, `-params`, etc.                                                                |
+| Attribut                 | Défaut                 | Rôle                                                                                                      | Quand le Surcharger                                                                                                         |
+| :----------------------- | :--------------------- | :-------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `request_rate_per_sec`   | `0`                    | Intervalle de limitation de débit de base (secondes). `0` désactive la limitation au niveau de `URLBase`. | À surcharger en général dans `NotifyBase` ou votre plugin, pas dans `URLBase`.                                              |
+| `socket_connect_timeout` | `4.0`                  | Timeout de connexion par défaut, utilisé quand `cto` n'est pas fourni.                                    | Si votre service nécessite régulièrement des handshakes TCP plus longs.                                                     |
+| `socket_read_timeout`    | `4.0`                  | Timeout de lecture par défaut, utilisé quand `rto` n'est pas fourni.                                      | Si votre service répond lentement ou diffuse des réponses en streaming.                                                     |
+| `verify_certificate`     | `True`                 | Vérification des certificats SSL, utilisée quand `verify` n'est pas fourni.                               | Seulement si votre service tourne dans des réseaux contrôlés avec certificats auto-signés et que `verify=no` vous convient. |
+| `templates`              | `()`                   | Templates de documentation.                                                                               | Presque toujours, afin que les outils et la documentation décrivent correctement le plugin.                                 |
+| `template_tokens`        | `{}`                   | Métadonnées décrivant les jetons du chemin URL.                                                           | Presque toujours, pour les schémas non triviaux.                                                                            |
+| `template_args`          | `{ verify, rto, cto }` | Arguments d'URL communs et leurs valeurs par défaut.                                                      | En général, on les étend plutôt que de les remplacer.                                                                       |
+| `template_kwargs`        | `{}`                   | Métadonnées pour les arguments clé/valeur préfixés.                                                       | Si vous prenez en charge `+headers`, `:payload`, `-params`, etc.                                                            |
 
-### NotifyBase Defaults
+### Valeurs par Défaut de NotifyBase
 
-Your plugin should be configured to inherit from `NotifyBase` granting you these defaults
+Votre plugin devrait hériter de `NotifyBase`, ce qui lui donne les valeurs par défaut suivantes :
 
-| Attribute                           | Default    | Purpose                                                    | When To Override                                                     |
-| :---------------------------------- | :--------- | :--------------------------------------------------------- | :------------------------------------------------------------------- |
-| `enabled`                           | `True`     | If `False`, the plugin is not used.                        | Disable for platform-specific or dependency-specific reasons.        |
-| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).           | Usually leave as-is.                                                 |
-| `requirements.details`              | `None`     | Human-friendly requirements text.                          | If you need to explain optional or required packages.                |
-| `requirements.packages_required`    | `[]`       | Required packages for full function.                       | If your plugin requires extra libraries.                             |
-| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                   | If you can run without them, but benefit from them.                  |
-| `service_url`                       | `None`     | Vendor or upstream product URL.                            | For public services, set this.                                       |
-| `setup_url`                         | `None`     | Apprise setup page for your service.                       | Set this to your `appriseit.com/services/<service>/` page.           |
-| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                       | Tune for vendor rate limits, or set to `0` for local-only.           |
-| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.          | Set when your service expects a specific size.                       |
-| `body_maxlen`                       | `32768`    | Max body characters before truncation.                     | Set based on upstream constraints.                                   |
-| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported. | Set to `0` for title-less endpoints, or tune to vendor constraints.  |
-| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation. | If upstream is line-sensitive.                                       |
-| `persistent_storage`                | `True`     | Allows the persistent store to be used.                    | If your plugin must never store identifiers or state.                |
-| `storage_mode`                      | `memory`   | Default persistent store mode.                             | Rare, but can be tuned for special behaviours.                       |
-| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                 | If your service must always operate in a specific timezone.          |
-| `notify_format`                     | `text`     | Default message format.                                    | If your service is Markdown or HTML-first.                           |
-| `overflow_mode`                     | `upstream` | Default overflow strategy.                                 | If you want Apprise to split, truncate, or alter overflow behaviour. |
-| `interpret_emojis`                  | `False`    | Emoji interpretation.                                      | If the upstream service benefits from emoji conversion.              |
-| `attachment_support`                | `False`    | Attachment enablement.                                     | Set to `True` if you accept attachments.                             |
-| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.    | Rare, unless you want different formatting.                          |
+| Attribut                            | Défaut     | Rôle                                                                                        | Quand le Surcharger                                                           |
+| :---------------------------------- | :--------- | :------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
+| `enabled`                           | `True`     | Si `False`, le plugin n'est pas utilisé.                                                    | À désactiver pour des raisons spécifiques à la plateforme ou aux dépendances. |
+| `category`                          | `"native"` | Classe l'origine du plugin (`native` vs `custom`).                                          | En général, laissez tel quel.                                                 |
+| `requirements.details`              | `None`     | Texte de requirements lisible humainement.                                                  | Si vous devez expliquer des paquets optionnels ou requis.                     |
+| `requirements.packages_required`    | `[]`       | Paquets requis pour le fonctionnement complet.                                              | Si votre plugin nécessite des bibliothèques supplémentaires.                  |
+| `requirements.packages_recommended` | `[]`       | Paquets optionnels qui améliorent le fonctionnement.                                        | Si le plugin peut tourner sans eux, mais en tire bénéfice.                    |
+| `service_url`                       | `None`     | URL du fournisseur ou du produit amont.                                                     | Pour les services publics, définissez-la.                                     |
+| `setup_url`                         | `None`     | Page de configuration Apprise pour votre service.                                           | Définissez-la vers votre page `appriseit.com/services/<service>/`.            |
+| `request_rate_per_sec`              | `5.5`      | Intervalle de limitation de débit par défaut (secondes).                                    | Ajustez-le selon les limites du fournisseur, ou mettez `0` en local.          |
+| `image_size`                        | `None`     | Taille d'image préférée, pour le pré-redimensionnement.                                     | À définir si votre service attend une taille précise.                         |
+| `body_maxlen`                       | `32768`    | Nombre maximal de caractères du corps avant troncature.                                     | À régler selon les contraintes amont.                                         |
+| `title_maxlen`                      | `250`      | Nombre maximal de caractères du titre. Mettez `0` si les titres ne sont pas pris en charge. | Mettez `0` pour les endpoints sans titre, ou ajustez selon le fournisseur.    |
+| `body_max_line_count`               | `0`        | Nombre maximal de lignes conservées. `0` désactive la troncature par lignes.                | Si le service amont est sensible au nombre de lignes.                         |
+| `persistent_storage`                | `True`     | Autorise l'utilisation du stockage persistant.                                              | Si votre plugin ne doit jamais stocker d'identifiants ni d'état.              |
+| `storage_mode`                      | `memory`   | Mode de stockage persistant par défaut.                                                     | Rare, mais ajustable pour des comportements particuliers.                     |
+| `timezone`                          | `None`     | Utilise le fuseau détecté par le serveur quand `None`.                                      | Si votre service doit toujours fonctionner dans un fuseau précis.             |
+| `notify_format`                     | `text`     | Format de message par défaut.                                                               | Si votre service privilégie Markdown ou HTML.                                 |
+| `overflow_mode`                     | `upstream` | Stratégie de dépassement par défaut.                                                        | Si vous voulez qu'Apprise découpe, tronque ou modifie le dépassement.         |
+| `interpret_emojis`                  | `False`    | Interprétation des emojis.                                                                  | Si le service amont bénéficie d'une conversion des emojis.                    |
+| `attachment_support`                | `False`    | Activation des pièces jointes.                                                              | Définissez `True` si vous acceptez les pièces jointes.                        |
+| `default_html_tag_id`               | `"b"`      | Utilisé pour injecter le titre dans le corps pour les services sans titre.                  | Rare, sauf si vous souhaitez un formatage différent.                          |
 
-## Templates and Metadata
+## Templates et Métadonnées
 
-## Template types
+## Types de Templates
 
-Apprise validates types using a strict pattern: `((choice|list):)?(string|bool|int|float)`.
+Apprise valide les types à l'aide d'un motif strict :
+`((choice|list):)?(string|bool|int|float)`.
 
-| Type            | Where used   | Meaning                      | Required directives           | Notes                                                                                 |
-| :-------------- | :----------- | :--------------------------- | :---------------------------- | :------------------------------------------------------------------------------------ |
-| `string`        | tokens, args | A single string              | none                          | Common for hostnames, tokens, and names.                                              |
-| `int`           | tokens, args | A single integer             | none                          | Use `min` and `max` to bound port values, counts, etc.                                |
-| `float`         | tokens, args | A single float               | none                          | Use `min` and `max` for bounds.                                                       |
-| `bool`          | tokens, args | A boolean flag               | `default` (required for args) | Boolean args must provide a default.                                                  |
-| `choice:string` | tokens, args | One value from a fixed set   | `values`                      | Choice entries must provide `values`, and `default` must be one of them if specified. |
-| `choice:int`    | tokens, args | One integer from a fixed set | `values`                      | Use for mode selectors or enumerations.                                               |
-| `choice:float`  | tokens, args | One float from a fixed set   | `values`                      | Rare, but supported.                                                                  |
-| `list:string`   | tokens, args | A list of strings            | `delim`                       | List entries must provide delimiters.                                                 |
-| `list:int`      | tokens, args | A list of integers           | `delim`                       | Split and then coerce to int.                                                         |
-| `list:float`    | tokens, args | A list of floats             | `delim`                       | Split and then coerce to float.                                                       |
+| Type            | Utilisé dans | Signification                      | Directives requises          | Notes                                                                                             |
+| :-------------- | :----------- | :--------------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------ |
+| `string`        | tokens, args | Une seule chaîne                   | aucune                       | Courant pour les noms d'hôte, jetons et noms.                                                     |
+| `int`           | tokens, args | Un seul entier                     | aucune                       | Utilisez `min` et `max` pour borner les ports, comptes, etc.                                      |
+| `float`         | tokens, args | Un seul flottant                   | aucune                       | Utilisez `min` et `max` pour fixer des bornes.                                                    |
+| `bool`          | tokens, args | Un booléen                         | `default` (requis pour args) | Les args booléens doivent fournir une valeur par défaut.                                          |
+| `choice:string` | tokens, args | Une valeur parmi un ensemble fixe  | `values`                     | Les entrées `choice` doivent fournir `values`, et `default` doit en faire partie s'il est défini. |
+| `choice:int`    | tokens, args | Un entier parmi un ensemble fixe   | `values`                     | Utile pour des sélecteurs de mode ou des énumérations.                                            |
+| `choice:float`  | tokens, args | Un flottant parmi un ensemble fixe | `values`                     | Rare, mais pris en charge.                                                                        |
+| `list:string`   | tokens, args | Une liste de chaînes               | `delim`                      | Les entrées de liste doivent fournir des délimiteurs.                                             |
+| `list:int`      | tokens, args | Une liste d'entiers                | `delim`                      | Découpe puis conversion en entier.                                                                |
+| `list:float`    | tokens, args | Une liste de flottants             | `delim`                      | Découpe puis conversion en flottant.                                                              |
 
-Additional rules that matter:
+Autres règles importantes :
 
-- `choice:bool` is not allowed, use `bool` instead.
-- `regex` must be a 2-tuple `(pattern, option)`, and patterns must start with `^` and end with `$`. |
-- If `required` or `private` are not provided, they default to `False`.
-- If `values` is a dictionary, it is converted to a list of keys.
+- `choice:bool` n'est pas autorisé ; utilisez `bool` à la place.
+- `regex` doit être un 2-tuple `(pattern, option)`, et les motifs doivent commencer par `^` et se terminer par `$`.
+- Si `required` ou `private` ne sont pas fournis, ils valent `False` par défaut.
+- Si `values` est un dictionnaire, il est converti en liste de clés.
 
-## Template layout patterns
+## Modèles d'Organisation des Templates
 
-These examples focus only on how template metadata, `__init__()`, and `parse_url()` connect.
+Ces exemples se concentrent uniquement sur la manière dont les métadonnées
+de template, `__init__()` et `parse_url()` s'articulent.
 
 <Tabs>
-<TabItem label="No tokens">
+<TabItem label="Sans jetons">
 
-No tokens are required when the templates do not include custom `{token}` entries.
+Aucun jeton n'est requis lorsque les templates n'incluent pas d'entrées
+personnalisées `{token}`.
 
 ```python
 class MyPlugin(NotifyBase):
@@ -698,9 +742,11 @@ class MyPlugin(NotifyBase):
 ```
 
 </TabItem>
-<TabItem label="Built-in tokens only">
+<TabItem label="Jetons intégrés uniquement">
 
-If you only use built-in tokens like `host`, `port`, `user`, and `password`, you can omit `template_tokens`. Those tokens are already known to the framework.
+Si vous n'utilisez que des jetons intégrés comme `host`, `port`, `user`
+et `password`, vous pouvez omettre `template_tokens`. Ces jetons sont déjà
+connus du framework.
 
 ```python
 class MyPlugin(NotifyBase):
@@ -716,9 +762,11 @@ class MyPlugin(NotifyBase):
 ```
 
 </TabItem>
-<TabItem label="Tokens and args">
+<TabItem label="Jetons et arguments">
 
-If you define a `template_token`, `template_arg`, or `template_kwarg`, you should handle it in `parse_url()`, because the `dict` returned from `parse_url()` is used to initialize the class.
+Si vous définissez un `template_token`, `template_arg` ou `template_kwarg`,
+vous devez le prendre en charge dans `parse_url()`, car le `dict` renvoyé
+par `parse_url()` sert à initialiser la classe.
 
 ```python
 import re
@@ -775,9 +823,12 @@ class MyPlugin(NotifyBase):
 ```
 
 </TabItem>
-<TabItem label="Multiple target tokens">
+<TabItem label="Jetons de cibles multiples">
 
-Multiple token names can map to the same `__init__()` argument using `map_to`. Tests ensure all map_to values are valid `__init__()` arguments (or one of the framework-recognized keywords).
+Plusieurs noms de jetons peuvent pointer vers le même argument `__init__()`
+via `map_to`. Les tests vérifient que toutes les valeurs de `map_to`
+correspondent à des arguments valides de `__init__()` ou à l'un des mots-clés
+reconnus par le framework.
 
 ```python
 import re
@@ -848,59 +899,69 @@ class MyPlugin(NotifyBase):
 </TabItem>
 </Tabs>
 
-### Template directives Reference
+### Référence des Directives de Template
 
-The unit tests enforce allowed keys and type constraints.
+Les tests unitaires imposent les clés autorisées et les contraintes de type.
 
-| Directive    | Where used           | Meaning                                                                                                                      |
-| :----------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| `name`       | tokens, args, kwargs | Human-friendly label, usually wrapped in `gettext_lazy()`.                                                                   |
-| `type`       | tokens, args         | Value type, validated by the strict type regex.                                                                              |
-| `required`   | tokens, args         | Marks an entry as mandatory. If omitted, defaults to `False`.                                                                |
-| `private`    | tokens, args         | Marks an entry as sensitive. If omitted, defaults to `False`.                                                                |
-| `default`    | args                 | Default used when the URL does not specify a value. Required for `bool` args.                                                |
-| `values`     | choice types         | Allowed values for choice types, required for any `choice:*` type.                                                           |
-| `min`, `max` | int, float           | Bounds for numeric types.                                                                                                    |
-| `regex`      | tokens, args         | Validation regex, always `(pattern, option)` with `^...$` anchoring.                                                         |
-| `delim`      | list types           | Delimiters used for list splitting, required for `list:*` types.                                                             |
-| `prefix`     | kwargs               | Required for kwargs, must be one of `:`, `+`, or `-`.                                                                        |
-| `map_to`     | tokens, args, kwargs | Maps a key to a different `__init__()` argument name. Tests enforce it maps to a function argument (or a framework keyword). |
-| `alias_of`   | args, kwargs         | Declares an alias for an existing token or arg, often used to make YAML configuration easier.                                |
-| `group`      | tokens               | Used for grouping when multiple tokens map into a list-style entry.                                                          |
+| Directive    | Utilisée dans        | Signification                                                                                                                          |
+| :----------- | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`       | tokens, args, kwargs | Libellé lisible humainement, généralement enveloppé dans `gettext_lazy()`.                                                             |
+| `type`       | tokens, args         | Type de valeur, validé par l'expression régulière stricte des types.                                                                   |
+| `required`   | tokens, args         | Marque une entrée comme obligatoire. Si omis, vaut `False`.                                                                            |
+| `private`    | tokens, args         | Marque une entrée comme sensible. Si omis, vaut `False`.                                                                               |
+| `default`    | args                 | Valeur par défaut utilisée quand l'URL ne précise rien. Requise pour les args `bool`.                                                  |
+| `values`     | types `choice`       | Valeurs autorisées pour les types `choice`, requises pour tout type `choice:*`.                                                        |
+| `min`, `max` | int, float           | Bornes pour les types numériques.                                                                                                      |
+| `regex`      | tokens, args         | Regex de validation, toujours sous la forme `(pattern, option)` avec ancrage `^...$`.                                                  |
+| `delim`      | types `list`         | Délimiteurs utilisés pour découper les listes, requis pour les types `list:*`.                                                         |
+| `prefix`     | kwargs               | Requis pour les kwargs, doit être l'un de `:`, `+` ou `-`.                                                                             |
+| `map_to`     | tokens, args, kwargs | Associe une clé à un autre nom d'argument `__init__()`. Les tests vérifient qu'il s'agit d'un argument valide ou d'un mot-clé reconnu. |
+| `alias_of`   | args, kwargs         | Déclare un alias pour un token ou argument existant, souvent pour faciliter la configuration YAML.                                     |
+| `group`      | tokens               | Utilisé pour regrouper plusieurs jetons mappés dans une entrée de type liste.                                                          |
 
-Framework-recognized map targets include common URL fields and shared arguments, even if they are not in your plugin `__init__()`, such as `user`, `password`, `host`, `port`, `schema`, `fullpath`, `format`, `overflow`, `emojis`, `tz`, `verify`, `cto`, `rto`, and `store`.
+Les cibles `map_to` reconnues par le framework incluent les champs d'URL
+courants et les arguments partagés, même s'ils ne figurent pas dans le
+`__init__()` de votre plugin, comme `user`, `password`, `host`, `port`,
+`schema`, `fullpath`, `format`, `overflow`, `emojis`, `tz`, `verify`,
+`cto`, `rto` et `store`.
 
-### Mapping Rules
+### Règles de Mapping
 
-Apprise uses your template metadata as a contract, and tests enforce consistency:
+Apprise utilise les métadonnées de vos templates comme un contrat, et les
+tests en garantissent la cohérence :
 
-- Every item in `template_tokens` must map to a real `__init__()` argument, either directly (same key name) or using `map_to`.
-- Aliases (`alias_of`) are allowed in args and kwargs, not in tokens.
-- Every `alias_of` must point to a real token or arg, and cannot just point to itself unless it also exists in tokens.
-- For kwargs entries, `prefix` is required, and must be one of `:`, `+`, or `-`.
+- Chaque élément de `template_tokens` doit correspondre à un véritable argument de `__init__()`, soit directement (même clé), soit via `map_to`.
+- Les alias (`alias_of`) sont autorisés dans les args et kwargs, mais pas dans les tokens.
+- Chaque `alias_of` doit pointer vers un vrai token ou arg, et ne peut pas simplement se pointer lui-même, sauf s'il existe aussi dans les tokens.
+- Pour les entrées kwargs, `prefix` est obligatoire et doit être l'un de `:`, `+` ou `-`.
 
-### alias_of Inheritance Rule
+### Règle d'Héritage de `alias_of`
 
-Alias entries must **never** redeclare properties that are inherited from the target. The following keys are forbidden on any entry that contains `alias_of`:
+Les entrées alias ne doivent **jamais** redéclarer des propriétés héritées
+de leur cible. Les clés suivantes sont interdites sur toute entrée contenant
+`alias_of` :
 
 `private`, `type`, `required`, `regex`, `default`, `min`, `max`, `map_to`, `prefix`, `group`
 
-These are resolved at runtime by following the alias chain — consumers such as the [URL Builder](../url-builder/) read them from the target, not from the alias itself. The only permitted extras alongside `alias_of` are:
+Ces propriétés sont résolues à l'exécution en suivant la chaîne d'alias.
+Des consommateurs comme le [générateur d'URL](../url-builder/) les lisent
+depuis la cible, et non depuis l'alias lui-même. Les seuls ajouts autorisés
+aux côtés de `alias_of` sont :
 
-| Extra key | When allowed                                                                                 |
-| :-------- | :------------------------------------------------------------------------------------------- |
-| `name`    | Required when `alias_of` lists **multiple** targets, to provide a grouping label for the UI. |
-| `delim`   | Allowed when the aliased target is a `list:*` type, to override the delimiter character(s).  |
+| Clé supplémentaire | Quand elle est autorisée                                                                                            |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------ |
+| `name`             | Requise lorsque `alias_of` liste **plusieurs** cibles, afin de fournir un libellé de regroupement pour l'interface. |
+| `delim`            | Autorisée lorsque la cible aliasée est de type `list:*`, afin de surcharger le ou les délimiteurs.                  |
 
-Valid approaches:
+Approches valides :
 
-1. Single alias — only alias_of
+1. Alias simple : `alias_of` uniquement
 
    ```python
    "t": {"alias_of": "token"},
    ```
 
-1. Multiple aliases — alias_of + name for grouping label
+1. Alias multiples : `alias_of` + `name` pour le libellé de regroupement
 
    ```python
    "tok": {
@@ -909,7 +970,7 @@ Valid approaches:
    },
    ```
 
-1. List alias with delimiter override
+1. Alias de liste avec surcharge du délimiteur
 
    ```python
    "to": {
@@ -918,7 +979,8 @@ Valid approaches:
    },
    ```
 
-Additional tokens outside of what was identified above can not be used. For example, the following is not valid:
+Des propriétés supplémentaires en dehors de celles identifiées ci-dessus ne
+peuvent pas être utilisées. Par exemple, ceci n'est pas valide :
 
 ```python
 # do NOT redeclare inherited properties
@@ -928,41 +990,43 @@ Additional tokens outside of what was identified above can not be used. For exam
 },
 ```
 
-### Round-Trip Requirements
+### Exigences d'Aller-Retour
 
-Two functions should work together:
+Deux fonctions doivent travailler ensemble :
 
-- `parse_url()` should extract every argument you expose through `template_args` and `template_kwargs`.
-- `url()` should emit a URL that can recreate the same object, and should generate the same `url_identifier` when re-instantiated.
+- `parse_url()` doit extraire chaque argument exposé via `template_args` et `template_kwargs`.
+- `url()` doit émettre une URL capable de recréer le même objet, et doit générer le même `url_identifier` lorsqu'il est réinstancié.
 
-## Template Schema Reference
+## Référence du Schéma de Template
 
-This table documents the most common directives supported by `template_tokens`, `template_args`, and `template_kwargs`.
+Ce tableau documente les directives les plus courantes prises en charge par
+`template_tokens`, `template_args` et `template_kwargs`.
 
-| Directive  | Where used           | Meaning                                                                                             |
-| :--------- | :------------------- | :-------------------------------------------------------------------------------------------------- |
-| `name`     | tokens, args, kwargs | Human-friendly label, usually wrapped in `gettext_lazy()`.                                          |
-| `type`     | tokens, args         | Value type, such as `string`, `int`, `bool`, `choice:string`, `list:string`.                        |
-| `required` | tokens, args         | Marks an entry as mandatory for initialization or validation.                                       |
-| `default`  | args                 | Default used when the URL does not specify a value. Required for `bool` types.                      |
-| `private`  | tokens, args         | Marks a value as sensitive and should be hidden or masked in privacy views.                         |
-| `regex`    | tokens, args         | A 2-tuple `(pattern, flags)` used to validate values. Patterns should be anchored with `^` and `$`. |
-| `values`   | choice types         | Allowed values for `choice:*` types. If a `default` is provided, it must be in `values`.            |
-| `delim`    | list types           | Allowed delimiters for `list:*` types.                                                              |
-| `prefix`   | kwargs               | Required for kwargs entries, defines injection prefix `:`, `+`, or `-`.                             |
-| `map_to`   | tokens, args, kwargs | Maps the directive key to a different `__init__()` argument name.                                   |
-| `alias_of` | args, kwargs         | Provides an alternative name that behaves exactly like another token or argument.                   |
+| Directive  | Utilisée dans        | Signification                                                                                                   |
+| :--------- | :------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| `name`     | tokens, args, kwargs | Libellé lisible humainement, généralement enveloppé dans `gettext_lazy()`.                                      |
+| `type`     | tokens, args         | Type de valeur, comme `string`, `int`, `bool`, `choice:string`, `list:string`.                                  |
+| `required` | tokens, args         | Marque une entrée comme obligatoire pour l'initialisation ou la validation.                                     |
+| `default`  | args                 | Valeur par défaut utilisée quand l'URL ne précise rien. Requise pour les types `bool`.                          |
+| `private`  | tokens, args         | Marque une valeur comme sensible et destinée à être masquée dans les vues de confidentialité.                   |
+| `regex`    | tokens, args         | Un 2-tuple `(pattern, flags)` utilisé pour valider les valeurs. Les motifs doivent être ancrés avec `^` et `$`. |
+| `values`   | types `choice`       | Valeurs autorisées pour les types `choice:*`. Si un `default` est fourni, il doit appartenir à `values`.        |
+| `delim`    | types `list`         | Délimiteurs autorisés pour les types `list:*`.                                                                  |
+| `prefix`   | kwargs               | Requis pour les entrées kwargs ; définit le préfixe d'injection `:`, `+` ou `-`.                                |
+| `map_to`   | tokens, args, kwargs | Associe la clé de directive à un autre nom d'argument `__init__()`.                                             |
+| `alias_of` | args, kwargs         | Fournit un nom alternatif se comportant exactement comme un autre token ou argument.                            |
 
-### templates
+### `templates`
 
-- A tuple of URL patterns (strings) showing valid forms.
-- Use `{schema}` in templates, and keep tokens consistent across templates.
+- Un tuple de motifs d'URL (chaînes) montrant les formes valides.
+- Utilisez `{schema}` dans les templates, et gardez des jetons cohérents d'un template à l'autre.
 
-It is documentation and structured metadata that can be used by tooling to describe supported URL shapes.
+Il s'agit à la fois de documentation et de métadonnées structurées pouvant être
+utilisées par les outils pour décrire les formes d'URL prises en charge.
 
-### template_tokens
+### `template_tokens`
 
-Variables taken from the URL core structure such:
+Variables issues de la structure centrale de l'URL, comme :
 
 ```text
 schema://credentials/direction/?options=
@@ -970,25 +1034,31 @@ schema://credentials/direction/?options=
          | variables here    |
 ```
 
-### template_args
+### `template_args`
 
-Args describe query string arguments. `NotifyBase` already provides `format`, `overflow`, `emojis`, `store`, and `tz`. `URLBase` already provides `verify`, `rto`, and `cto`.
+Les args décrivent les arguments de query string. `NotifyBase` fournit déjà
+`format`, `overflow`, `emojis`, `store` et `tz`. `URLBase` fournit déjà
+`verify`, `rto` et `cto`.
 
-Common patterns:
+Modèles fréquents :
 
-- Use `alias_of` to add synonyms.
-- Use `map_to` to map user-facing arg names onto your `__init__()` parameter names.
-- Use a `default` to clearly document behaviour.
+- utilisez `alias_of` pour ajouter des synonymes ;
+- utilisez `map_to` pour faire correspondre des noms d'arguments orientés utilisateur avec les paramètres de votre `__init__()` ;
+- utilisez `default` pour documenter clairement le comportement.
 
-### template_kwargs
+### `template_kwargs`
 
-Kwargs are for prefixed arguments that can appear multiple times, typically used for key/value injection:
+Les kwargs servent aux arguments préfixés pouvant apparaître plusieurs fois,
+typiquement pour l'injection clé/valeur :
 
-- `+` is often used for headers
-- `-` is often used for URL parameters
-- `:` is often used for payload extras
+- `+` est souvent utilisé pour les headers ;
+- `-` est souvent utilisé pour les paramètres d'URL ;
+- `:` est souvent utilisé pour les champs supplémentaires du payload.
 
-Each `template_kwargs` entry requires a `prefix` and a `name`, and those are also surfaced in the [URL Builder](../url-builder/) as a **Custom Parameters** table where users can add any number of key/value rows.
+Chaque entrée `template_kwargs` exige un `prefix` et un `name`, et ces
+informations sont aussi exposées dans le [générateur d'URL](../url-builder/)
+sous la forme d'un tableau **Paramètres Personnalisés** où les utilisateurs peuvent
+ajouter autant de lignes clé/valeur qu'ils le souhaitent.
 
 ```python
 template_kwargs = dict(
@@ -1010,13 +1080,15 @@ template_kwargs = dict(
 )
 ```
 
-In a URL these look like: `?+X-Custom-Header=foo&-debug=1&:extra=bar`
+Dans une URL, cela ressemble à :
+`?+X-Custom-Header=foo&-debug=1&:extra=bar`
 
-## Requirements And Optional Dependencies
+## Requirements Et Dépendances Optionnelles
 
-If your plugin needs extra packages, declare them in `requirements` so Apprise can report what is required or recommended.
+Si votre plugin nécessite des paquets supplémentaires, déclarez-les dans
+`requirements` afin qu'Apprise puisse indiquer ce qui est requis ou recommandé.
 
-Example:
+Exemple :
 
 ```python
 from ..locale import gettext_lazy as _
@@ -1028,52 +1100,59 @@ requirements = {
 }
 ```
 
-## Attachment Support
+## Prise en Charge des Pièces Jointes
 
-Plugins that support file attachments **must** explicitly declare support by
-setting the following class attribute:
+Les plugins qui prennent en charge les pièces jointes **doivent** déclarer
+explicitement cette prise en charge en définissant l'attribut de classe suivant :
 
 ```python
 class NotifyExample(NotifyBase):
     attachment_support = True
 ```
 
-When enabled, attachments are provided to the plugin as a list of
-`AppriseAttachment` objects. These objects abstract file access and may be
-backed by local files, in-memory data, or remote HTTP resources.
+Une fois activée, les pièces jointes sont fournies au plugin sous la forme
+d'une liste d'objets `AppriseAttachment`. Ces objets abstraient l'accès aux
+fichiers et peuvent reposer sur des fichiers locaux, des données en mémoire
+ou des ressources HTTP distantes.
 
-Full details on attachment handling, lifecycle management, size limits, and
-common implementation patterns are documented here:
+Les détails complets sur la gestion des pièces jointes, le cycle de vie,
+les limites de taille et les modèles d'implémentation courants sont
+documentés ici :
 
-- [Attachments](./attachments.mdx)
+- [Pièces Jointes](./attachments.mdx)
 
-Authors are strongly encouraged to review the attachment documentation before
-implementing support, as incorrect handling can easily lead to excessive memory
-usage or failed deliveries.
+Il est fortement recommandé aux auteurs de consulter cette documentation avant
+d'implémenter cette prise en charge, car une gestion incorrecte peut facilement
+entraîner une consommation mémoire excessive ou des envois échoués.
 
-## URL Builder Integration
+## Intégration avec le Générateur d'URL
 
-The [Apprise URL Builder](../url-builder/) generates its form entirely from the metadata exported by your plugin. Well-formed metadata leads to a polished, user-friendly experience.
+Le [générateur d'URL Apprise](../url-builder/) construit son formulaire
+entièrement à partir des métadonnées exportées par votre plugin. Des
+métadonnées bien formées offrent une expérience plus propre et conviviale.
 
-### Checklist for URL Builder quality
+### Checklist de Qualité pour le Générateur d'URL
 
-| What to set                          | Why it matters                                                                                                                |
-| :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `service_name`                       | Shown as the service display name in search results.                                                                          |
-| `service_url`                        | Powers the "Service website" link next to the form.                                                                           |
-| `setup_url`                          | Powers the "Setup guide" link for step-by-step instructions.                                                                  |
-| `name` on every token/arg            | Appears as the form field label. Without it the raw key name is shown.                                                        |
-| `private: True` on secrets           | Renders the field as a password input with a reveal toggle, and prevents the value from leaking into the browser address bar. |
-| `required: True` on mandatory tokens | Marks fields with an asterisk (`*`) and blocks URL generation until filled.                                                   |
-| `regex` on validated tokens          | Provides client-side format hints (not enforced in the browser, but surfaced in schema metadata).                             |
-| `default` on optional args           | Shown as the placeholder in dropdowns and number inputs.                                                                      |
-| `templates` ordered simple → complex | The URL Builder defaults to the most complex template so all fields are visible from the start.                               |
+| Élément à définir                            | Pourquoi c'est important                                                                                                           |
+| :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| `service_name`                               | Affiché comme nom du service dans les résultats de recherche.                                                                      |
+| `service_url`                                | Alimente le lien "Site du service" à côté du formulaire.                                                                           |
+| `setup_url`                                  | Alimente le lien "Guide de configuration" pour les instructions pas à pas.                                                         |
+| `name` sur chaque token/arg                  | Apparaît comme libellé du champ du formulaire. Sans lui, la clé brute est affichée.                                                |
+| `private: True` sur les secrets              | Rend le champ comme un mot de passe avec bouton d'affichage, et empêche la valeur de fuiter dans la barre d'adresse du navigateur. |
+| `required: True` sur les tokens obligatoires | Marque les champs d'un astérisque (`*`) et bloque la génération d'URL tant qu'ils ne sont pas remplis.                             |
+| `regex` sur les tokens validés               | Fournit des indications de format côté client (non imposées dans le navigateur, mais exposées dans les métadonnées du schéma).     |
+| `default` sur les args optionnels            | Affiché comme texte indicatif dans les listes déroulantes et les champs numériques.                                                |
+| `templates` ordonnés simple → complexe       | Le générateur d'URL utilise par défaut le template le plus complexe afin que tous les champs soient visibles dès le départ.        |
 
-### template ordering
+### Ordre des Templates
 
-The URL Builder picks the **most complex** template by default (the one with the most `{token}` slots). As the user fills fields it switches to the simplest template that covers every filled token.
+Le générateur d'URL choisit par défaut le template **le plus complexe**
+(celui qui contient le plus de champs `{token}`). À mesure que l'utilisateur
+remplit des champs, il bascule vers le template le plus simple qui couvre
+tous les jetons renseignés.
 
-Order your `templates` tuple from simplest to most complex:
+Ordonnez votre tuple `templates` du plus simple au plus complexe :
 
 ```python
 templates = (
@@ -1083,25 +1162,30 @@ templates = (
 )
 ```
 
-### private flag matters
+### L'Importance du Flag `private`
 
-Mark every API key, token, password, or secret with `"private": True` in both `template_tokens` and `template_args`. The URL Builder:
+Marquez chaque clé d'API, jeton, mot de passe ou secret avec `"private": True`
+dans `template_tokens` comme dans `template_args`. Le générateur d'URL :
 
-1. Renders the input as a password field with an eye-toggle button.
-2. Shows `••••••` in the assembled URL display instead of the real value.
-3. Excludes the value from the browser address bar (share links never expose secrets).
+1. rend le champ comme un mot de passe avec un bouton d'affichage ;
+2. affiche `••••••` dans l'URL assemblée à la place de la vraie valeur ;
+3. exclut la valeur de la barre d'adresse du navigateur afin que les liens partagés n'exposent jamais les secrets.
 
-Alias entries (`alias_of`) **inherit** the `private` flag from their target — do not redeclare it on the alias.
+Les entrées alias (`alias_of`) **héritent** du flag `private` de leur cible :
+ne le redéclarez pas sur l'alias.
 
-### service_url vs setup_url
+### `service_url` vs `setup_url`
 
-| Attribute     | Purpose                                                                                                                                      |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| `service_url` | Links to the upstream vendor or product landing page (e.g. `https://discord.com/`). Shown in the URL Builder as "Service website".           |
-| `setup_url`   | Links to the Apprise-specific integration guide on `appriseit.com` (e.g. `https://appriseit.com/services/discord/`). Shown as "Setup guide". |
+| Attribut      | Rôle                                                                                                                                                                       |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `service_url` | Lien vers la page d'accueil du fournisseur ou du produit amont (par exemple `https://discord.com/`). Affiché comme "Site du service" dans le générateur d'URL.             |
+| `setup_url`   | Lien vers le guide d'intégration spécifique à Apprise sur `appriseit.com` (par exemple `https://appriseit.com/services/discord/`). Affiché comme "Guide de configuration". |
 
-Both should always be set. Generic or local-only plugins (e.g. MQTT, Windows notifications) may omit `service_url` if there is no applicable upstream URL.
+Les deux devraient toujours être définis. Les plugins génériques ou purement
+locaux (par exemple MQTT, notifications Windows) peuvent omettre `service_url`
+s'il n'existe pas d'URL amont pertinente.
 
-## Format and Overflow
+## Format et Dépassement
 
-Also note that `NotifyBase` provides URL-level behaviour flags like `format`, `overflow`, `emojis`, and persistent storage (`store`).
+Notez également que `NotifyBase` fournit des drapeaux de comportement au niveau
+de l'URL, comme `format`, `overflow`, `emojis` et le stockage persistant (`store`).

@@ -1,6 +1,6 @@
 ---
 title: "Notifications Microsoft Windows"
-description: "Envoyer Microsoft Windows notifications."
+description: "Envoyer des notifications Microsoft Windows."
 sidebar:
   label: "Microsoft Windows Notifications"
 
@@ -20,11 +20,11 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Display notifications right inside of your windows application. This only works if you're sending the notification to the same windows system you're currently accessing. Hence this notification can not be sent from one PC to another.
+Affichez des notifications directement dans votre application Windows. Cela ne fonctionne que si vous envoyez la notification au même système Windows auquel vous accédez actuellement. Cette notification ne peut donc pas être envoyée d'un PC à un autre.
 
-You may have to install a dependency on your windows system to get this to work. Simply run:
+Vous devrez peut-être installer une dépendance sur votre système Windows pour que cela fonctionne. Exécutez simplement :
 
 ```bash
 # windows:// minimum requirements
@@ -33,23 +33,23 @@ pip install pywin32
 
 ## Syntaxe
 
-There are currently no options you can specify for this kind of notification, so it's really easy to reference.
+Il n'existe actuellement aucune option à spécifier pour ce type de notification, ce qui le rend très simple à référencer.
 
 La syntaxe valide est la suivante :
 
 - `windows://`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                       |
-| -------- | -------- | ------------------------------------------------------------------------------------------------- |
-| duration | No       | Optionally set the duration of the popup message in seconds. By default this value is set to `12` |
+| Variable | Requis | Description                                                                                                       |
+| -------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| duration | Non    | Définit facultativement la durée du message contextuel en secondes. Par défaut, cette valeur est définie sur `12` |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Assuming we're on a Windows computer, we can send a Windows Notification to ourselves:
+En supposant que nous sommes sur un ordinateur Windows, nous pouvons nous envoyer une notification Windows :
 
 ```bash
 # Send ourselves a windows notification
@@ -57,7 +57,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "windows://"
 ```
 
-Here is an example where we shorten the duration the popup stays active for:
+Voici un exemple où nous réduisons la durée d'affichage de la fenêtre contextuelle :
 
 ```bash
 # Send ourselves a windows notification

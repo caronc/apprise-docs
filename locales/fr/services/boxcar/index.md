@@ -1,6 +1,6 @@
 ---
 title: "Notifications Boxcar"
-description: "Envoyer Boxcar notifications."
+description: "Envoyer des notifications Boxcar."
 sidebar:
   label: "Boxcar"
 
@@ -21,20 +21,20 @@ ended: 2019-02
 
 :::note
 
-## Service End Reason
+## Raison de Fin de Service
 
-Unknown
+Inconnue
 
-💡The Service was removed from Apprise in [apprise/1219](https://github.com/caronc/apprise/issues/1219)
+💡Le service a ete retire d'Apprise dans [apprise/1219](https://github.com/caronc/apprise/issues/1219)
 :::
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Boxcar just has a development platform these days. You can't get notifications through your AppleOS or Android devices anymore. You can still however sign up for an account [on their website](https://boxcar.io/). From there you can create projects through them.
+Boxcar ne propose aujourd'hui plus qu'une plateforme de developpement. Vous ne pouvez plus recevoir de notifications sur vos appareils AppleOS ou Android, mais vous pouvez toujours creer un compte [sur leur site web](https://boxcar.io/) et y creer des projets.
 
-Each _project_ you create with them will grant you access to your own unique **Access Key** and a **Secret Key**. You can post notifications knowing these 2 values.
+Chaque _project_ que vous creez vous donnera acces a votre propre **Access Key** unique ainsi qu'a une **Secret Key**. Vous pourrez publier des notifications a l'aide de ces 2 valeurs.
 
 ## Syntaxe
 
@@ -42,12 +42,12 @@ La syntaxe valide est la suivante :
 
 - `boxcar://{access_key}/{secret_key}`
 
-Tags support:
+Prise en charge des tags :
 
 - `boxcar://{access_key}/{secret_key}/@{tag_id}`
 - `boxcar://{access_key}/{secret_key}/@{tag_id01}/@{tag_id02}/@{tag_idNN}`
 
-Device Tokens:
+Jetons d'appareil :
 
 - `boxcar://{access_key}/{secret_key}/{device_id}`
 - `boxcar://{access_key}/{secret_key}/{device_id01}/{device_id02}/{device_idNN}`
@@ -56,25 +56,25 @@ Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jou
 
 - `boxcar://{access_key}/{secret_key}/@{tag_id}**/{device_id}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                   |
-| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| access_key | Yes      | This is required for your account to work. You will be provided one from boxcar's website upon creating an account with them. |
-| secure_key | Yes      | This is required for your account to work. You will be provided one from boxcar's website upon creating an account with them. |
-| device_id  | No       | Associated devices with your Boxcar setup. All _device_ids_ are 64 characters in length.                                      |
-| tag_id     | No       | Tags must be prefixed with a @ symbol or they will be interpreted as a _device_id_ and/or _alias_.                            |
+| Variable   | Obligatoire | Description                                                                                                                          |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| access_key | Oui         | Cette valeur est requise pour que votre compte fonctionne. Elle vous est fournie par le site Boxcar lors de la creation d'un compte. |
+| secure_key | Oui         | Cette valeur est requise pour que votre compte fonctionne. Elle vous est fournie par le site Boxcar lors de la creation d'un compte. |
+| device_id  | Non         | Appareils associes a votre configuration Boxcar. Tous les _device_ids_ font 64 caracteres.                                           |
+| tag_id     | Non         | Les tags doivent etre prefixes par un symbole `@`, sinon ils seront interpretes comme un _device_id_ et/ou un _alias_.               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Boxcar notification to all devices associated with a project:
+Envoyer une notification Boxcar a tous les appareils associes a un projet :
 
 ```bash
-# Assume:
-#  - our {access_key} is pJz1KEP5zGo9KwDnIb-7_Kab
-#  - our {secret_key} is j300012fl9y0b5AW9g9Nsejb8P
+# Supposons :
+#  - que notre {access_key} soit pJz1KEP5zGo9KwDnIb-7_Kab
+#  - que notre {secret_key} soit j300012fl9y0b5AW9g9Nsejb8P
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    boxcar://pJz1KEP5zGo9KwDnIb-7_Kab/j300012fl9y0b5AW9g9Nsejb8P
 ```

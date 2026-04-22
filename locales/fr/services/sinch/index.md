@@ -1,6 +1,6 @@
 ---
 title: "Notifications Sinch"
-description: "Envoyer Sinch notifications."
+description: "Envoyer des notifications Sinch."
 sidebar:
   label: "Sinch"
 
@@ -21,11 +21,11 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-To use Sinch, you will need to acquire your _Service Plan ID_ and _API Token_. Both of these are accessible via the [Sinch Dashboard](https://dashboard.sinch.com/sms/overview) or through [the API section](https://dashboard.sinch.com/sms/api/rest).
+Pour utiliser Sinch, vous devez obtenir votre _Service Plan ID_ et votre _API Token_. Ces deux éléments sont accessibles via le [tableau de bord Sinch](https://dashboard.sinch.com/sms/overview) ou depuis [la section API](https://dashboard.sinch.com/sms/api/rest).
 
-You'll need to have a number defined as an Active Number ([from your dashboard here](https://dashboard.sinch.com/numbers/your-numbers/number)). This will become your **{FromPhoneNo}** when identifying the details below.
+Vous devez avoir un numéro défini comme numéro actif ([depuis votre tableau de bord ici](https://dashboard.sinch.com/numbers/your-numbers/number)). Ce numéro deviendra votre **{FromPhoneNo}** lors de l'identification des détails ci-dessous.
 
 ## Syntaxe
 
@@ -34,31 +34,31 @@ La syntaxe valide est la suivante :
 - `sinch://{ServicePlanID}:{ApiToken}@{FromPhoneNo}/{PhoneNo}`
 - `sinch://{ServicePlanID}:{ApiToken}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ will be messaged instead; hence the following is a valid URL:
+Si aucun _ToPhoneNo_ n'est spécifié, le _FromPhoneNo_ sera utilisé comme destinataire ; la syntaxe suivante est donc valide :
 
 - `sinch://{ServicePlanID}:{ApiToken}@{FromPhoneNo}/`
 
-Short Codes are also supported but require at least 1 Target PhoneNo
+Les codes courts (Short Codes) sont également pris en charge, mais nécessitent au moins un numéro de téléphone cible (Target PhoneNo) :
 
 - `sinch://{ServicePlanID}:{ApiToken}@{ShortCode}/{PhoneNo}`
 - `sinch://{ServicePlanID}:{ApiToken}@{ShortCode}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable      | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ServicePlanID | Yes      | The _Account SID_ associated with your Sinch account. This is available to you via the Sinch Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ApiToken      | Yes      | The _Auth Token_ associated with your Sinch account. This is available to you via the Sinch Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| FromPhoneNo   | **\*No** | The [Active Phone Number](https://dashboard.sinch.com/numbers/your-numbers/number) associated with your Sinch account you wish the SMS message to come from. It must be a number registered with Sinch. As an alternative to the **FromPhoneNo**, you may also provide a **ShortCode** here instead. The phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. |
-| ShortCode     | **\*No** | The ShortCode associated with your Sinch account you wish the SMS message to come from. It must be a number registered with Sinch. As an alternative to the **ShortCode**, you may provide a **FromPhoneNo** instead.                                                                                                                                                                                                                                                                                                                       |
-| PhoneNo       | **\*No** | A phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion.<br/>**Note:** If you're using a _ShortCode_, then at least one _PhoneNo_ MUST be defined.                                                                                                                                                                                                              |
-| Region        | **No**   | Can be either `us` or `eu`. By default the region is set to `us`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Variable      | Requis    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ServicePlanID | Oui       | L'_Account SID_ associé à votre compte Sinch. Il est disponible depuis le tableau de bord Sinch.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ApiToken      | Oui       | L'_Auth Token_ associé à votre compte Sinch. Il est disponible depuis le tableau de bord Sinch.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| FromPhoneNo   | **\*Non** | Le [numéro de téléphone actif](https://dashboard.sinch.com/numbers/your-numbers/number) associé à votre compte Sinch depuis lequel vous souhaitez envoyer le SMS. Ce doit être un numéro enregistré auprès de Sinch. En alternative au **FromPhoneNo**, vous pouvez également fournir un **ShortCode**. Le numéro de téléphone DOIT inclure le préfixe d'indicatif du pays. Ce champ est très flexible et prend en charge les parenthèses, les espaces et les tirets pour faciliter la lisibilité du numéro. |
+| ShortCode     | **\*Non** | Le code court (ShortCode) associé à votre compte Sinch depuis lequel vous souhaitez envoyer le SMS. Ce doit être un numéro enregistré auprès de Sinch. En alternative au **ShortCode**, vous pouvez fournir un **FromPhoneNo**.                                                                                                                                                                                                                                                                              |
+| PhoneNo       | **\*Non** | Un numéro de téléphone DOIT inclure le préfixe d'indicatif du pays. Ce champ est très flexible et prend en charge les parenthèses, les espaces et les tirets pour faciliter la lisibilité du numéro.<br/>**Remarque :** Si vous utilisez un _ShortCode_, au moins un _PhoneNo_ DOIT être défini.                                                                                                                                                                                                             |
+| Region        | **Non**   | Peut être soit `us` soit `eu`. Par défaut, la région est définie sur `us`.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Sinch Notification as an SMS:
+Envoyer une notification Sinch par SMS :
 
 ```bash
 # Assuming our {ServicePlanID} is AC735c307c62944b5a

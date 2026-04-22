@@ -1,6 +1,6 @@
 ---
 title: "Notifications Free-Mobile"
-description: "Envoyer Free-Mobile notifications."
+description: "Envoyer des notifications Free-Mobile."
 sidebar:
   label: "Free-Mobile"
 
@@ -22,7 +22,7 @@ limits:
 
 ## Configuration du compte
 
-Sign up with Free Mobile ([link](https://mobile.free.fr/)) and use your credentials (user and pass) to send a notification.
+Inscrivez-vous chez Free Mobile ([lien](https://mobile.free.fr/)) puis utilisez vos identifiants, `user` et `password`, pour envoyer une notification.
 
 ## Syntaxe
 
@@ -30,22 +30,22 @@ La syntaxe valide est la suivante :
 
 - `freemobile://{user}@{password}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                      |
-| -------- | -------- | -------------------------------------------------------------------------------- |
-| user     | Yes      | The user associated with your [Free-Mobile Account](https://mobile.free.fr/)     |
-| password | Yes      | The password associated with your [Free-Mobile Account](https://mobile.free.fr/) |
+| Variable | Obligatoire | Description                                                                 |
+| -------- | ----------- | --------------------------------------------------------------------------- |
+| user     | Oui         | Identifiant associe a votre [compte Free-Mobile](https://mobile.free.fr/).  |
+| password | Oui         | Mot de passe associe a votre [compte Free-Mobile](https://mobile.free.fr/). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Free-Mobile Notification:
+Envoyer une notification Free-Mobile :
 
 ```bash
-# Assuming our {user} is abc123
-# Assuming our {password} is 98765
+# Supposons que notre {user} soit abc123
+# Supposons que notre {password} soit 98765
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "freemobile://abc123@98765"
 ```

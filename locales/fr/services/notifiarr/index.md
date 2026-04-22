@@ -1,37 +1,37 @@
 ---
-title: "Notifications notifiarr"
-description: "Envoyer notifiarr notifications."
+title: "Notifications Notifiarr"
+description: "Envoyer des notifications Notifiarr."
 ---
 
-## Notifiarr Notifications
+## Notifications Notifiarr
 
-- **Source**: <https://notifiarr.com>
-- **Icon Support**: No
-- **Attachment Support**: No
-- **Message Format**: Text
-- **Message Limit**: 32768 Characters per message
+- **Source** : <https://notifiarr.com>
+- **Prise en Charge des Icônes** : Non
+- **Prise en Charge des Pièces Jointes** : Non
+- **Format des Messages** : Texte
+- **Limite des Messages** : 32768 caractères par message
 
-## Configuration du compte
+## Configuration du Compte
 
-You need to first set up an account with [Notifiarr](https://notifiarr.com) if you don't have one already. From there you can generate yourself your `{api_key}`. You will need to use your “global” API key, the integration-specific Notifiarr API keys do not work with Apprise.
+Vous devez d'abord creer un compte chez [Notifiarr](https://notifiarr.com) si vous n'en avez pas deja un. A partir de la, vous pourrez generer votre `{api_key}`. Vous devrez utiliser votre cle API “globale” ; les cles API Notifiarr specifiques aux integrations ne fonctionnent pas avec Apprise.
 
-### Discord Channel IDs
+### Identifiants de Canal Discord
 
-To use Notifiarr, you need your Discord ChannelID. **It must be the numeric version of it**. [Here is some great instructions on how to get it](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
+Pour utiliser Notifiarr, vous avez besoin de votre identifiant de canal Discord. **Il doit s'agir de sa version numerique**. [Voici de bonnes instructions pour le recuperer](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
 
-In short:
+En bref :
 
-- **Enable Developer Mode** by visiting your _Discord Settings_ and going to **Appearance**.
+- **Activez le mode developpeur** en allant dans les _parametres Discord_, puis dans **Appearance**.
 
 ### Mentionner des roles, tags et utilisateurs
 
-The notifiarr message body can contain content such as the following to trigger the appropriate pings
+Le corps du message Notifiarr peut contenir des elements comme les suivants pour declencher les pings appropries :
 
-- **user**: `<@123>`
-- **role**: `<@&456>`
-- **tag**: `@everyone`
+- **user** : `<@123>`
+- **role** : `<@&456>`
+- **tag** : `@everyone`
 
-**Note**: that as of this time (2024 Jul 28th), the upstream webhook to Notifiarr only supports 1 user/role in the payload. If you provide more then one, only the first will be passed upstream.
+**Remarque :** a la date du 28 juillet 2024, le webhook amont vers Notifiarr ne prend en charge qu'un seul utilisateur ou role dans la charge utile. Si vous en fournissez plusieurs, seul le premier sera transmis en amont.
 
 ## Syntaxe
 
@@ -40,36 +40,36 @@ La syntaxe valide est la suivante :
 - `notifiarr://{api_key}/{channel_id}`
 - `notifiarr://{api_key}/{channel1_id}/{channel2_id}/{channelN_id}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                             |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| api_key  | Yes      | Your global (not integration-specific) Notifiarr API Key                                                                                |
-| source   | No       | Optionally provide the source of the notification as a descriptive string (you can also use `from` as an alias to this same variable)   |
-| event    | No       | Optionally specify the Notifiarr Event ID you want your notification update. If none is specified, then a new notification is generated |
+| Variable | Obligatoire | Description                                                                                                                                                              |
+| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| api_key  | Oui         | Votre cle API Notifiarr globale, et non specifique a une integration.                                                                                                    |
+| source   | Non         | Permet facultativement de fournir la source de la notification sous forme de chaine descriptive, vous pouvez aussi utiliser `from` comme alias.                          |
+| event    | Non         | Permet facultativement de specifier l'identifiant d'evenement Notifiarr que vous souhaitez mettre a jour. Si aucun n'est precise, une nouvelle notification est generee. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une discord notification:
+Envoyer une notification Discord :
 
 ```bash
-# Assuming our {APIKey} is 4174216298
-# Assuming our {ChannelID} is 123456789
-# Test out the changes with the following command:
+# Supposons que notre {APIKey} soit 4174216298
+# Supposons que notre {ChannelID} soit 123456789
+# Testez les changements avec la commande suivante :
 apprise -t "Test Title" -b "Test Message" \
 "notifiarr://4174216298/123456789"
 
 ```
 
-If you have a Discord Event ID you wish to reference, you can do the following:
+Si vous avez un Discord Event ID que vous souhaitez reutiliser, vous pouvez faire ceci :
 
 ```bash
-# Assuming our {APIKey} is 4174216298
-# Assuming our {ChannelID} is 123456789
-# Assuming our {EventID} is 1234
-# Test out the changes with the following command:
+# Supposons que notre {APIKey} soit 4174216298
+# Supposons que notre {ChannelID} soit 123456789
+# Supposons que notre {EventID} soit 1234
+# Testez les changements avec la commande suivante :
 apprise -t "Test Title" -b "Test Message" \
 "notifiarr://4174216298/123456789?event=1234"
 

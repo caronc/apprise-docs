@@ -21,9 +21,9 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Inscrivez-vous a BulkVS [from here](https://www.bulkvs.com/). You will be provided to create a user and password to associate with your account. This is all you need to use this through Apprise.
+Inscrivez-vous a BulkVS [ici](https://www.bulkvs.com/). Un identifiant utilisateur et un mot de passe associes a votre compte vous seront fournis. C'est tout ce dont vous avez besoin pour utiliser ce service avec Apprise.
 
 ## Syntaxe
 
@@ -32,26 +32,26 @@ La syntaxe valide est la suivante :
 - `bulkvs://{user}:{password}@{fromPhoneNo}`
 - `bulkvs://{user}:{password}@{fromPhoneNo}/{target}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                     |
-| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     | Yes      | The username associated with your BulkVS Account.                                                                                                               |
-| password | Yes      | The password associated with your BulkVS Account.                                                                                                               |
-| to       | **\*No** | A phone number and/or group you wish to send your notification to. You can use comma's to separate multiple entries if you wish. This is an alias to `targets`. |
-| from     | **\*No** | Specify the phone number you registered with BulkVS you wish the message to be identified as being sent from.                                                   |
-| batch    | No       | Envoyer multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                                 |
+| Variable | Obligatoire | Description                                                                                                                                                                                     |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     | Oui         | Nom d'utilisateur associe a votre compte BulkVS.                                                                                                                                                |
+| password | Oui         | Mot de passe associe a votre compte BulkVS.                                                                                                                                                     |
+| to       | **\*Non**   | Numero(s) de telephone et/ou groupe(s) auxquels vous souhaitez envoyer votre notification. Vous pouvez utiliser des virgules pour separer plusieurs entrees. Il s'agit d'un alias de `targets`. |
+| from     | **\*Non**   | Numero de telephone enregistre chez BulkVS que vous souhaitez utiliser comme expediteur du message.                                                                                             |
+| batch    | Non         | Envoie plusieurs notifications specifiees dans un seul lot, soit 1 publication amont vers le serveur final. Par defaut, cette option est definie sur `no`.                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une BulkVS Message:
+Envoyer un message BulkVS :
 
 ```bash
-# Assuming our {user} is joe
-# Assuming our {password} is hard-to-guess
-# Assuming the {PhoneNo} we wish to notify is +134-555-1223
+# Supposons que notre {user} soit joe
+# Supposons que notre {password} soit hard-to-guess
+# Supposons que le {PhoneNo} que nous voulons notifier soit +134-555-1223
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    bulkvs://joe:hard-to-guess@+134-555-1223
 ```

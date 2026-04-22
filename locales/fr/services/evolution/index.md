@@ -1,6 +1,6 @@
 ---
 title: "Notifications Evolution API"
-description: "Envoyer WhatsApp notifications via a self-hosted Evolution API instance."
+description: "Envoyer des notifications WhatsApp via une instance Evolution API auto-hébergée."
 sidebar:
   label: "Evolution API"
 
@@ -23,13 +23,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-[Evolution API](https://github.com/EvolutionAPI/evolution-api) is a self-hosted WhatsApp gateway that exposes a REST API on top of the WhatsApp Web protocol.
+[Evolution API](https://github.com/EvolutionAPI/evolution-api) est une passerelle WhatsApp auto-hébergée qui expose une API REST au-dessus du protocole WhatsApp Web.
 
-### 1. Deploy Evolution API
+### 1. Déployer Evolution API
 
-The recommended way is via Docker:
+La méthode recommandée passe par Docker :
 
 ```bash
 docker run -d \
@@ -38,65 +38,65 @@ docker run -d \
   atendai/evolution-api:latest
 ```
 
-Full deployment instructions and docker-compose examples are available in the [official repository](https://github.com/EvolutionAPI/evolution-api).
+Les instructions complètes de déploiement ainsi que des exemples `docker-compose` sont disponibles dans le [dépôt officiel](https://github.com/EvolutionAPI/evolution-api).
 
-### 2. Create and connect an instance
+### 2. Créer et Connecter une Instance
 
-1. Open the Evolution API dashboard (e.g. `http://yourserver:8080`).
-2. Create a new **instance** and give it a name (e.g. `MyInstance`).
-3. Scan the **QR code** shown in the dashboard with the WhatsApp mobile app to link your account.
-4. Once connected, the instance status will change to **open**.
+1. Ouvrez le tableau de bord Evolution API (par exemple `http://yourserver:8080`).
+2. Créez une nouvelle **instance** et donnez-lui un nom (par exemple `MyInstance`).
+3. Scannez le **QR code** affiché dans le tableau de bord avec l'application mobile WhatsApp pour lier votre compte.
+4. Une fois connecté, l'état de l'instance passe à **open**.
 
-### 3. Obtain your API key
+### 3. Récupérer Votre Clé API
 
-The API key is displayed in the instance settings page of the dashboard. Copy it — you will use it as `{apikey}` in the Apprise URL.
+La clé API est affichée dans la page de paramètres de l'instance, dans le tableau de bord. Copiez-la : vous l'utiliserez comme `{apikey}` dans l'URL Apprise.
 
-### Phone number format
+### Format des Numéros de Téléphone
 
-All phone numbers must be supplied in **international format without the leading `+`**, e.g.:
+Tous les numéros de téléphone doivent être fournis au **format international sans le `+` initial**, par exemple :
 
-| Country | Number            | Format for Apprise |
-| ------- | ----------------- | ------------------ |
-| Brazil  | +55 11 99999-9999 | `5511999999999`    |
-| USA     | +1 (555) 123-4567 | `15551234567`      |
-| Germany | +49 30 12345678   | `493012345678`     |
+| Pays      | Numéro            | Format pour Apprise |
+| --------- | ----------------- | ------------------- |
+| Brésil    | +55 11 99999-9999 | `5511999999999`     |
+| USA       | +1 (555) 123-4567 | `15551234567`       |
+| Allemagne | +49 30 12345678   | `493012345678`      |
 
 ## Syntaxe
 
-Plain HTTP (default port 80):
+HTTP simple (port 80 par défaut) :
 
 - `evolution://{apikey}@{host}/{instance}/{phoneNo}`
 - `evolution://{apikey}@{host}:{port}/{instance}/{phoneNo}`
 
-HTTPS (default port 443):
+HTTPS (port 443 par défaut) :
 
 - `evolutions://{apikey}@{host}/{instance}/{phoneNo}`
 - `evolutions://{apikey}@{host}:{port}/{instance}/{phoneNo}`
 
-Multiple recipients:
+Destinataires multiples :
 
 - `evolution://{apikey}@{host}/{instance}/{phoneNo1}/{phoneNo2}/{phoneNoN}`
 
-Extra recipients via query parameter:
+Destinataires supplémentaires via un paramètre de requête :
 
 - `evolution://{apikey}@{host}/{instance}/{phoneNo}?to={phoneNo2}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                          |
-| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Yes      | The API Key shown in your Evolution API instance settings.                                                                                           |
-| host     | Yes      | The hostname or IP address where Evolution API is running.                                                                                           |
-| port     | No       | The port Evolution API listens on. Defaults to **80** for `evolution://` and **443** for `evolutions://`.                                            |
-| instance | Yes      | The name of the WhatsApp instance you created in the Evolution API dashboard.                                                                        |
-| phoneNo  | Yes      | One or more destination phone numbers in international format without the leading `+`. Delimit multiple numbers with a forward slash `/` in the URL. |
-| to       | No       | Alias for `phoneNo`. Can be used as a query parameter (`?to=`) to specify additional recipients.                                                     |
+| Variable | Requis | Description                                                                                                                                          |
+| -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui    | La clé API affichée dans les paramètres de votre instance Evolution API.                                                                             |
+| host     | Oui    | Le nom d'hôte ou l'adresse IP sur lequel Evolution API s'exécute.                                                                                    |
+| port     | Non    | Le port écouté par Evolution API. Par défaut : **80** pour `evolution://` et **443** pour `evolutions://`.                                           |
+| instance | Oui    | Le nom de l'instance WhatsApp créée dans le tableau de bord Evolution API.                                                                           |
+| phoneNo  | Oui    | Un ou plusieurs numéros de destination au format international sans le `+` initial. Séparez plusieurs numéros avec une barre oblique `/` dans l'URL. |
+| to       | Non    | Alias de `phoneNo`. Peut être utilisé comme paramètre de requête (`?to=`) pour préciser des destinataires supplémentaires.                           |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une WhatsApp message over HTTP:
+Envoyer un message WhatsApp via HTTP :
 
 ```bash
 # Assuming our {apikey} is abc123secret
@@ -107,7 +107,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "evolution://abc123secret@myserver.local:8080/MyInstance/5511999999999"
 ```
 
-Envoyer over HTTPS (Evolution API behind a reverse proxy with TLS):
+Envoyer via HTTPS (Evolution API derrière un reverse proxy avec TLS) :
 
 ```bash
 # Assuming our {apikey} is abc123secret
@@ -117,7 +117,7 @@ apprise -vv -t "Alert" -b "Server is down!" \
    "evolutions://abc123secret@api.example.com/MyInstance/5511999999999"
 ```
 
-Envoyer to multiple recipients:
+Envoyer à plusieurs destinataires :
 
 ```bash
 # Notify two numbers in a single command

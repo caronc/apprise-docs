@@ -1,6 +1,6 @@
 ---
 title: "Notifications Nextcloud Talk"
-description: "Envoyer Nextcloud Talk notifications."
+description: "Envoyer des notifications Nextcloud Talk."
 sidebar:
   label: "Nextcloud Talk"
 
@@ -20,13 +20,13 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-The official [Nextcloud Talk app](https://github.com/nextcloud/spreed) will need to be installed. An 'app password' (also referred to as 'device-specific' password/token) of one member of the chat will need to be created, see the [documentation](https://docs.nextcloud.com/server/stable/user_manual/session_management.html#managing-devices) for more information. Don't forget to disable file system access for this password.
+L'[application officielle Nextcloud Talk](https://github.com/nextcloud/spreed) doit être installée. Un 'mot de passe d'application' (également appelé mot de passe/jeton 'spécifique à l'appareil') d'un membre du salon de discussion doit être créé ; consultez la [documentation](https://docs.nextcloud.com/server/stable/user_manual/session_management.html#managing-devices) pour plus d'informations. N'oubliez pas de désactiver l'accès au système de fichiers pour ce mot de passe.
 
 ## Syntaxe
 
-Secure connections (via https) should be referenced using **nctalks://** where as insecure connections (via http) should be referenced via **nctalk://**.
+Les connexions sécurisées (via https) doivent utiliser **nctalks://** tandis que les connexions non sécurisées (via http) doivent utiliser **nctalk://**.
 
 La syntaxe valide est la suivante :
 
@@ -35,25 +35,25 @@ La syntaxe valide est la suivante :
 - `nctalks://{user}:{password}@{hostname}/{room_id}`
 - `nctalks://{user}:{password}@{hostname}:{port}/{room_id}`
 
-You can post in multiple chats by simply chaining them at the end of the URL.
+Vous pouvez publier dans plusieurs salons en les enchaînant simplement à la fin de l'URL.
 
 - `nctalk://{user}:{password}@{hostname}:{port}/{room_id1}/{room_id2}/{room_id3}`
 - `nctalks://{user}:{password}@{hostname}:{port}/{room_id1}/{room_id2}/{room_id3}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                           |
-| -------- | -------- | --------------------------------------------------------------------- |
-| hostname | Yes      | The hostname of the server hosting your Nextcloud service.            |
-| user     | Yes      | The user of the nextcloud service you have set up.                    |
-| password | Yes      | The password associated with the **user** for your Nextcloud account. |
-| room_id  | Yes      | The room_id of Nextcloud Talk.                                        |
+| Variable | Requis | Description                                                            |
+| -------- | ------ | ---------------------------------------------------------------------- |
+| hostname | Oui    | Le nom d'hôte du serveur hébergeant votre service Nextcloud.           |
+| user     | Oui    | L'utilisateur du service Nextcloud que vous avez configuré.            |
+| password | Oui    | Le mot de passe associé à l'**utilisateur** de votre compte Nextcloud. |
+| room_id  | Oui    | L'identifiant de salon Nextcloud Talk.                                 |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une secure nextcloud talk message to the room _93nfkdn3_:
+Envoyer un message Nextcloud Talk sécurisé vers le salon _93nfkdn3_ :
 
 ```bash
 # Assuming our {host} is localhost
@@ -62,9 +62,9 @@ Envoyer une secure nextcloud talk message to the room _93nfkdn3_:
 apprise nctalks://user1:12345-67890-12345-67890-12345@localhost/93nfkdn3
 ```
 
-### Manipulation des en-tetes
+### Manipulation des En-têtes
 
-Some users may require special HTTP headers to be present when they post their data to their server. This can be accomplished by just sticking a hyphen (**-**) in front of any parameter you specify on your URL string.
+Certains utilisateurs peuvent avoir besoin d'en-têtes HTTP spéciaux lors de l'envoi de données vers leur serveur. Cela peut être accompli en ajoutant un tiret (**-**) devant tout paramètre spécifié dans la chaîne d'URL.
 
 ```bash
 # Below would set the header:

@@ -1,6 +1,6 @@
 ---
 title: "Notifications PagerDuty"
-description: "Envoyer PagerDuty notifications."
+description: "Envoyer des notifications PagerDuty."
 sidebar:
   label: "PagerDuty"
 
@@ -19,11 +19,11 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-Vous devez disposer d’un compte chez [PagerDuty](https://www.pagerduty.com) and generate/access your API key.
+Vous devez disposer d'un compte chez [PagerDuty](https://www.pagerduty.com) et generer, ou recuperer, votre cle API.
 
-From there you can define an API V2 Integration.
+Ensuite, vous pouvez definir une integration API V2.
 
 ## Syntaxe
 
@@ -33,61 +33,61 @@ La syntaxe valide est la suivante :
 - `pagerduty://{integration_key}@{api_key}/{source}`
 - `pagerduty://{integration_key}@{api_key}/{source}/{component}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable        | Required | Description                                                                                                                                                                                                                           |
-| --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| integration_key | Yes      | This is provided to you on the Events API V2 integration's detail page. This can also be referred to as a Routing Key.                                                                                                                |
-| api_key         | Yes      | The API Key associated with your setup                                                                                                                                                                                                |
-| group           | No       | Provide a group (string) as part of the payload                                                                                                                                                                                       |
-| class           | No       | Provide a class (string) as part of the payload                                                                                                                                                                                       |
-| region          | No       | By default this takes on the value of **us**. But you can optionally set it to **eu** as well.                                                                                                                                        |
-| source          | No       | Provide a source (string) as part of the payload; the default is **Apprise** if one isn't specified.                                                                                                                                  |
-| component       | No       | Provide a component (string) as part of the payload; the default is **Notification** if one isn't specified.                                                                                                                          |
-| click           | No       | Provide a clickable URL to associate with the notice.                                                                                                                                                                                 |
-| image           | No       | Associate the notification status via a represented icon. You can set this value to `no` if you do not want this to occur.                                                                                                            |
-| severity        | No       | The notification severity is otherwise detected on its own, however if you wish to force a specific mode always, you can do so by providing this as part of the URL. Possible values are: `info`, `warning`, `critical`, and `error`. |
+| Variable        | Obligatoire | Description                                                                                                                                                                                                                                       |
+| --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| integration_key | Oui         | Cette valeur vous est fournie sur la page de details de l'integration Events API V2. Elle peut aussi etre appelee Routing Key.                                                                                                                    |
+| api_key         | Oui         | Cle API associee a votre configuration.                                                                                                                                                                                                           |
+| group           | Non         | Fournit un groupe, sous forme de chaine, dans la charge utile.                                                                                                                                                                                    |
+| class           | Non         | Fournit une classe, sous forme de chaine, dans la charge utile.                                                                                                                                                                                   |
+| region          | Non         | La valeur par defaut est **us**. Vous pouvez egalement la definir sur **eu**.                                                                                                                                                                     |
+| source          | Non         | Fournit une source, sous forme de chaine, dans la charge utile ; la valeur par defaut est **Apprise** si rien n'est precise.                                                                                                                      |
+| component       | Non         | Fournit un composant, sous forme de chaine, dans la charge utile ; la valeur par defaut est **Notification** si rien n'est precise.                                                                                                               |
+| click           | Non         | Fournit une URL cliquable a associer a l'avis.                                                                                                                                                                                                    |
+| image           | Non         | Associe l'etat de la notification a une icone representative. Vous pouvez definir cette valeur sur `no` si vous ne souhaitez pas ce comportement.                                                                                                 |
+| severity        | Non         | Le niveau de gravite de la notification est normalement detecte automatiquement, mais si vous souhaitez toujours imposer un mode specifique, vous pouvez le faire via l'URL. Les valeurs possibles sont `info`, `warning`, `critical` et `error`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Pager Duty trigger to our **source** `node01.local` and the **component** `drive_sda`
+Envoyer un declenchement PagerDuty pour notre **source** `node01.local` et le **component** `drive_sda`
 
 ```bash
 
-# Assuming our {integration_key} is A1BRTD4JD
-# Assuming our {api_key} is TIiajkdnlazkcOXrIdevi7F
-# Assuming our {source} is node01.local
-# Assuming our {component} is drive_sda
+# Supposons que notre {integration_key} soit A1BRTD4JD
+# Supposons que notre {api_key} soit TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {source} soit node01.local
+# Supposons que notre {component} soit drive_sda
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/node01.local/drive_sda/"
 ```
 
-### Custom Details
+### Détails Personnalisés
 
-You can provide custom details as part of the payload as well. This can be accomplished by just sticking a plus symbol (**+**) in front of any parameter you specify on your URL string.
+Vous pouvez aussi fournir des details personnalises dans la charge utile. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
 
 ```bash
-# Below would pass along in the `custom_details` payload of the API
+# L'exemple ci-dessous transmettrait dans `custom_details` de l'API
 #    "disk_space_left": "145GB"
 #
-# Assuming our {integration_key} is abc123
-# Assuming our {api_key} is 98754
-# Assuming our {source} is node01.local
-# Assuming our {component} is drive_sda
+# Supposons que notre {integration_key} soit abc123
+# Supposons que notre {api_key} soit 98754
+# Supposons que notre {source} soit node01.local
+# Supposons que notre {component} soit drive_sda
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB"
 
-# Multiple details just require more entries defined:
-# Below would set the custom details to:
+# Pour plusieurs details, il suffit d'ajouter plus d'entrees :
+# L'exemple ci-dessous definirait les details personnalises suivants :
 #    "disk_space_left": "145GB"
 #    "disk_space_total": "500GB"
 #
-# Assuming our {integration_key} is abc123
-# Assuming our {api_key} is 98754
-# Assuming our {source} is node01.local
-# Assuming our {component} is drive_sda
+# Supposons que notre {integration_key} soit abc123
+# Supposons que notre {api_key} soit 98754
+# Supposons que notre {source} soit node01.local
+# Supposons que notre {component} soit drive_sda
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagerduty://abc123@98754/node01.local/drive_sda/?+disk_space_left=145GB&+disk_space_total=500GB"
 ```

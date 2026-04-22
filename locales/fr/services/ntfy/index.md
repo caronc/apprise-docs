@@ -1,6 +1,6 @@
 ---
 title: "Notifications Ntfy"
-description: "Envoyer Ntfy (Notify) notifications."
+description: "Envoyer des notifications Ntfy (Notify)."
 sidebar:
   label: "Ntfy"
 
@@ -22,21 +22,20 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
-[Ntfy](https://ntfy.sh/) is an easy to use messaging service that supports both
-public cloud usage (`https://ntfy.sh`) and self-hosted private servers.
+[Ntfy](https://ntfy.sh/) est un service de messagerie simple a utiliser qui prend en charge a la fois l'offre nuagique publique, `https://ntfy.sh`, et les serveurs prives auto-heberges.
 
-Apprise supports both insecure (`ntfy://`) and secure (`ntfys://`) schemas.
+Apprise prend en charge les schemas non securises, `ntfy://`, ainsi que les schemas securises, `ntfys://`.
 
 ---
 
 ## Syntaxe
 
-Ntfy can send notifications through the following **modes**:
+Ntfy peut envoyer des notifications via les **modes** suivants :
 
-- **private**: A locally hosted private server <https://github.com/binwiederhier/ntfy>
-- **cloud**: A setup pointing to <https://ntfy.sh>
+- **private** : un serveur prive heberge localement <https://github.com/binwiederhier/ntfy>
+- **cloud** : une configuration pointant vers <https://ntfy.sh>
 
 La syntaxe valide est la suivante :
 
@@ -49,7 +48,7 @@ La syntaxe valide est la suivante :
 - `ntfy://{user}:{password}@{host}:{port}/{topics}`
 - `ntfy://{token}@{hostname}/{topics}`
 
-Les versions securisees :
+Les versions securisees sont les suivantes :
 
 - `ntfys://{topic}`
 - `ntfys://{host}/{topic}`
@@ -60,77 +59,66 @@ Les versions securisees :
 - `ntfys://{user}:{password}@{host}:{port}/{topics}`
 - `ntfys://{token}@{hostname}/{topics}`
 
-You can specify more than one topic:
+Vous pouvez specifier plus d'un sujet :
 
 - `ntfy://{user}:{password}@{hostname}/{topic1}/{topic2}`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                      |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user       | No       | The user account to authenticate with.                                                                                                                                                                                                                                                                                           |
-| password   | No       | The password used for authentication.                                                                                                                                                                                                                                                                                            |
-| hostname   | No       | The ntfy server to send notifications to.                                                                                                                                                                                                                                                                                        |
-| port       | No       | Defaults to **80** for `ntfy://` and **443** for `ntfys://`.                                                                                                                                                                                                                                                                     |
-| topic      | Yes      | At least one topic must be defined.                                                                                                                                                                                                                                                                                              |
-| token      | No       | Authorization token (auto-detected if provided in URL).                                                                                                                                                                                                                                                                          |
-| mode       | No       | Authentication mode. Auto-detected. Possible values: `private`, `cloud`.                                                                                                                                                                                                                                                         |
-| auth       | No       | `basic` (default) or `token`.                                                                                                                                                                                                                                                                                                    |
-| email      | No       | Associate an email address with the ntfy post.                                                                                                                                                                                                                                                                                   |
-| xtags      | No       | **ntfy message tags** (sent as the `X-Tags` header) to associate with the notification. Use comma and/or space to specify more than one. The legacy `tags=` parameter is still accepted as a backward-compatible alias. These are not to be confused with Apprise tags; [see here for more details](#ntfy-tags-vs-apprise-tags). |
-| attach     | No       | URL pointing to a remote attachment to reference.                                                                                                                                                                                                                                                                                |
-| filename   | No       | Override the attachment filename.                                                                                                                                                                                                                                                                                                |
-| click      | No       | Hyperlink users are directed to when clicking the notification.                                                                                                                                                                                                                                                                  |
-| priority   | No       | One of `max`, `high`, `default`, `low`, or `min`. Defaults to `default`.                                                                                                                                                                                                                                                         |
-| actions    | No       | ntfy action button definitions.                                                                                                                                                                                                                                                                                                  |
-| delay      | No       | Delay message delivery.                                                                                                                                                                                                                                                                                                          |
-| image      | No       | Defaults to `Yes`; includes image preview when available.                                                                                                                                                                                                                                                                        |
-| avatar_url | No       | Override the Apprise icon with a custom image URL.                                                                                                                                                                                                                                                                               |
+| Variable   | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                          |
+| ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user       | Non         | Compte utilisateur utilise pour l'authentification.                                                                                                                                                                                                                                                                                                  |
+| password   | Non         | Mot de passe utilise pour l'authentification.                                                                                                                                                                                                                                                                                                        |
+| hostname   | Non         | Serveur ntfy vers lequel envoyer les notifications.                                                                                                                                                                                                                                                                                                  |
+| port       | Non         | La valeur par defaut est **80** pour `ntfy://` et **443** pour `ntfys://`.                                                                                                                                                                                                                                                                           |
+| topic      | Oui         | Au moins un sujet doit etre defini.                                                                                                                                                                                                                                                                                                                  |
+| token      | Non         | Jeton d'autorisation, detecte automatiquement s'il est fourni dans l'URL.                                                                                                                                                                                                                                                                            |
+| mode       | Non         | Mode d'authentification, detecte automatiquement. Valeurs possibles : `private`, `cloud`.                                                                                                                                                                                                                                                            |
+| auth       | Non         | `basic`, par defaut, ou `token`.                                                                                                                                                                                                                                                                                                                     |
+| email      | Non         | Associe une adresse e-mail a la publication ntfy.                                                                                                                                                                                                                                                                                                    |
+| xtags      | Non         | **Etiquettes de message ntfy**, envoyees dans l'en-tete `X-Tags`, a associer a la notification. Utilisez des virgules et/ou des espaces pour en specifier plusieurs. L'ancien parametre `tags=` est toujours accepte comme alias compatible. A ne pas confondre avec les tags Apprise ; [voir ici pour plus de details](#tags-ntfy-vs-tags-apprise). |
+| attach     | Non         | URL pointant vers une piece jointe distante a referencer.                                                                                                                                                                                                                                                                                            |
+| filename   | Non         | Remplace le nom du fichier joint.                                                                                                                                                                                                                                                                                                                    |
+| click      | Non         | Lien vers lequel les utilisateurs sont rediriges lorsqu'ils cliquent sur la notification.                                                                                                                                                                                                                                                            |
+| priority   | Non         | Une des valeurs `max`, `high`, `default`, `low` ou `min`. La valeur par defaut est `default`.                                                                                                                                                                                                                                                        |
+| actions    | Non         | Definitions des boutons d'action ntfy.                                                                                                                                                                                                                                                                                                               |
+| delay      | Non         | Differe la livraison du message.                                                                                                                                                                                                                                                                                                                     |
+| image      | Non         | La valeur par defaut est `Yes` ; inclut un apercu de l'image lorsqu'il est disponible.                                                                                                                                                                                                                                                               |
+| avatar_url | Non         | Remplace l'icone Apprise par une URL d'image personnalisee.                                                                                                                                                                                                                                                                                          |
 
-If your Ntfy server is behind an HTTPS (Secure) hosted setup, then you simply use `ntfys://`:
+Si votre serveur Ntfy est heberge derriere une configuration HTTPS securisee, utilisez simplement `ntfys://` :
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Ntfy Tags vs Apprise Tags
+## Tags Ntfy vs Tags Apprise
 
-The `xtags=` parameter above refers to **ntfy message tags only** (sent as
-the `X-Tags` header). The legacy `tags=` spelling is still accepted for
-backward compatibility but `xtags=` is preferred going forward.
+Le parametre `xtags=` ci-dessus fait reference **uniquement aux tags de message ntfy**, envoyes dans l'en-tete `X-Tags`. L'ancienne orthographe `tags=` reste acceptee pour des raisons de compatibilite ascendante, mais `xtags=` est desormais a privilegier.
 
-These tags are sent directly to the ntfy server and appear as labels or
-emojis on the delivered notification.
+Ces tags sont envoyes directement au serveur ntfy et apparaissent sous forme d'etiquettes ou d'emojis sur la notification livree.
 
-They are **not** the same as Apprise routing tags.
+Ils **ne correspondent pas** aux tags de routage Apprise.
 
-Apprise routing tags are configured in your Apprise configuration file
-(using `tag:` or `tags:` in YAML) and control which notification services
-are triggered. They have no effect on the `X-Tags` header sent to the ntfy
-server.
+Les tags de routage Apprise sont configures dans votre fichier de configuration Apprise, avec `tag:` ou `tags:` en YAML, et determinent quels services de notification sont declenches. Ils n'ont aucun effet sur l'en-tete `X-Tags` envoye au serveur ntfy.
 
 :::caution
-The old `tags=` spelling was renamed to `xtags=` because the Apprise YAML
-config parser also uses `tags:` as a key for routing tags. Using `tags=`
-inside a YAML-loaded ntfy URL could cause the value to be silently
-interpreted as an Apprise routing tag instead of an ntfy message tag,
-preventing the notification from being delivered when no tag filter is
-active. Using `xtags=` avoids this ambiguity entirely.
+L'ancienne orthographe `tags=` a ete renommee en `xtags=` parce que l'analyseur YAML d'Apprise utilise lui aussi `tags:` comme cle pour les tags de routage. Employer `tags=` dans une URL ntfy chargee depuis un fichier YAML pouvait faire interpreter silencieusement la valeur comme un tag de routage Apprise plutot que comme un tag de message ntfy, empechant alors la livraison de la notification si aucun filtre de tag n'etait actif. Utiliser `xtags=` elimine completement cette ambiguite.
 :::
 
-Below is an example of a Ntfy message being sent that includes tags:
+Voici un exemple de message Ntfy envoye avec des tags :
 
 ```bash
 apprise -vv -t "Failure" -b "Something went wrong" \
    "ntfy://localhost/mytopic?priority=high&xtags=warning"
 ```
 
-Below is an example that furthers onto the above by showing multiple (Ntfy) tags are supported too:
+Voici un exemple reprenant le precedent pour montrer que plusieurs tags Ntfy sont egalement pris en charge :
 
 ```bash
 apprise -vv -t "Alert" -b "Disk space low" \
    "ntfy://localhost/mytopic?priority=high&xtags=warning,storage"
 ```
 
-Apprise YAML configuration files can sometimes introduce confusion since they also use tags. Below shows the clear separation between Apprise `tag:` and ntfy `xtags=`.
+Les fichiers de configuration YAML d'Apprise peuvent parfois preter a confusion puisqu'ils utilisent eux aussi des tags. L'exemple ci-dessous montre clairement la difference entre `tag:` dans Apprise et `xtags=` dans ntfy.
 
 ```yaml
 # apprise.yaml
@@ -139,10 +127,10 @@ urls:
       tag: ntfy-alert
 ```
 
-In the example above:
+Dans l'exemple ci-dessus :
 
-- `xtags=warning`: Ntfy message tag (sets the `X-Tags: warning` header)
-- `tag: ntfy-alert`: Apprise routing tag; this would later be expected to be triggered by:
+- `xtags=warning` : tag de message Ntfy, qui definit l'en-tete `X-Tags: warning`
+- `tag: ntfy-alert` : tag de routage Apprise ; il serait ensuite utilise lors du declenchement suivant :
 
   ```bash
   apprise -vv -t "Alert" -b "Disk space low" \
@@ -151,43 +139,43 @@ In the example above:
 
 ## Exemples
 
-Envoyer une notification to a local Ntfy server:
+Envoyer une notification vers un serveur Ntfy local :
 
 ```bash
-# Assuming our {hostname} is localhost
-# Assuming our {topic} is great-place
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {topic} soit great-place
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    ntfy://localhost/great-place
 ```
 
-We can also send a notification to the ntfy.sh (cloud) server:
+Nous pouvons aussi envoyer une notification au serveur ntfy.sh, en mode cloud :
 
 ```bash
-# Assuming our {topic} is great-place
+# Supposons que notre {topic} soit great-place
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    ntfy://great-place
 ```
 
-Ntfy also supports Markdown; if you want to leverage this, simply add `?format=markdown` to your Apprise URL; eg:
+Ntfy prend egalement en charge Markdown ; pour en profiter, ajoutez simplement `?format=markdown` a votre URL Apprise, par exemple :
 
 ```bash
-# Assuming our {hostname} is localhost
-# Assuming our {topic} is great-place
-# Assuming we want to leverage the markdown support
+# Supposons que notre {hostname} soit localhost
+# Supposons que notre {topic} soit great-place
+# Supposons que nous voulions tirer parti de la prise en charge de markdown
 apprise -vv -t "Test Message Title" -b "# Markdown Support" \
    "ntfy://localhost/great-place?format=markdown"
 ```
 
-Secure HTTPS usage:
+Utilisation securisee en HTTPS :
 
 ```bash
-# Assuming our SECURE {hostname} is localhost
-# Assuming our {topic} is great-topic
+# Supposons que notre {hostname} SECURISE soit localhost
+# Supposons que notre {topic} soit great-topic
 apprise -vv -t "Test Secure Message Title" -b "Test Message Body" \
    ntfys://localhost/great-topic
 ```
 
-Using ntfy action buttons:
+Utilisation des boutons d'action ntfy :
 
 ```bash
 apprise -vv -t "Title" -b "Message content" \

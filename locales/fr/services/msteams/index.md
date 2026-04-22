@@ -1,6 +1,6 @@
 ---
 title: "Notifications Microsoft Teams"
-description: "Envoyer Microsoft Teams notifications."
+description: "Envoyer des notifications Microsoft Teams."
 sidebar:
   label: "Microsoft Teams"
 
@@ -23,13 +23,13 @@ limits:
 
 ## Configuration du compte
 
-Create a free account at <https://teams.microsoft.com>.
+Créez un compte gratuit sur <https://teams.microsoft.com>.
 
-You will need to create an **Incoming Webhook** to attach Apprise. This can be accomplished through the **the app store** (bottom left hand side of slack like interface); don't worry, it's free. From within the app store, search for **Incoming Webhook**. Once you click on it you can associate it with your team. You can also assign it a name, and an avatar. Finally you will have to assign it to a channel.
+Vous devrez créer un **Incoming Webhook** pour relier Apprise. Cela peut se faire via le **magasin d'applications** en bas à gauche de l'interface de type Slack ; ne vous inquiétez pas, c'est gratuit. Depuis ce magasin, recherchez **Incoming Webhook**. Une fois sélectionné, vous pourrez l'associer à votre équipe, lui attribuer un nom et un avatar, puis le rattacher à un canal.
 
-Alternatively, go to the channel where you want to add the webhook and select ••• icon (More options) from the top navigation bar. Search for **Incoming Webhook** and select **Add**.
+Vous pouvez aussi ouvrir le canal où vous souhaitez ajouter le webhook, cliquer sur l'icône ••• (_More options_) dans la barre de navigation supérieure, rechercher **Incoming Webhook**, puis sélectionner **Add**.
 
-When you've completed this, it will generate you a URL that looks like:
+Une fois cette étape terminée, une URL ressemblant à ceci sera générée :
 
 ```text
 https://team-name.office.com/webhook/ \
@@ -38,37 +38,36 @@ https://team-name.office.com/webhook/ \
           a2329f43-0ffb-46ab-948b-c9abdad9d643
 ```
 
-Yes... The URL is that big... but at the end of the day this effectively equates to:
+Oui, l'URL est effectivement aussi longue... mais au final cela correspond à :
 `https://{team}.office.com/webhook/{tokenA}/IncomingWebhook/{tokenB}/{tokenC}`
 
-Hence:
-The team name can be found in the generated webhook which looks like:
+Ainsi, le nom de l'équipe se trouve dans le webhook généré, qui ressemble à ceci :
 
 ```text
 # https://TEAM-NAME.office.com/webhook/ABCD/IncomingWebhook/DEFG/HIJK
 #             ^                         ^                    ^    ^
 #             |                         |                    |    |
-#  These are important <----------------^--------------------^----^
+#  Ces éléments sont importants <--------^--------------------^----^
 ```
 
-vs the legacy URL which looked like (always stating `outlook` as the team name):
+Par comparaison, l'ancienne URL ressemblait à ceci, avec `outlook` comme nom d'équipe fixe :
 
 ```text
 # https://outlook.office.com/webhook/ABCD/IncomingWebhook/DEFG/HIJK
 #           ^                         ^                    ^    ^
 #           |                         |                    |    |
-#   legacy team reference: 'outlook'  |                    |    |
+#   ancienne reference d'equipe : 'outlook' |             |    |
 #                                     |                    |    |
-#  These are important <--------------^--------------------^----^
+#  Ces éléments sont importants <------^--------------------^----^
 ```
 
-So as you can see, we have is 3 separate tokens. These are what you need to build your apprise URL with. In the above example the tokens are as follows:
+Comme vous pouvez le voir, nous avons 3 jetons distincts. Ce sont eux qui vous servent à construire votre URL Apprise. Dans l'exemple ci-dessus, les jetons sont les suivants :
 
-1. **TokenA** is `ABCD@WXYZ`
-2. **TokenB** is `DEFG`
-3. **TokenC** is `HIJK`
+1. **TokenA** est `ABCD@WXYZ`
+2. **TokenB** est `DEFG`
+3. **TokenC** est `HIJK`
 
-**Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_); you no longer need to parse the URL any further. However there is slightly more overhead (internally) if you do use it this way.
+**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la version 0.7.7_). Vous n'avez donc plus besoin de la reparser davantage. Il y a toutefois un léger surcoût interne si vous l'utilisez de cette manière.
 
 ## Syntaxe
 
@@ -77,40 +76,40 @@ La syntaxe valide est la suivante :
 - `https://team-name.office.com/webhook/{tokenA}/IncomingWebhook/{tokenB}/{tokenC}`
 - `msteams://{team}/{tokenA}/{tokenB}/{tokenC}/`
 
-The Legacy format is also still supported. The below URL would automatically set the team name to `outlook`
+L'ancien format est lui aussi toujours pris en charge. L'URL ci-dessous définirait automatiquement le nom d'équipe à `outlook` :
 
 - `msteams://{tokenA}/{tokenB}/{tokenC}/`
 
-## Detail des parametres
+## Détail des Paramètres
 
-| Variable | Required | Description                                                                                                                                                                                                                               |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| team     | Yes      | Extracted from the _incoming-webhook_.                                                                                                                                                                                                    |
-| tokenA   | Yes      | The first part of 3 tokens provided to you after creating a _incoming-webhook_                                                                                                                                                            |
-| tokenB   | Yes      | The second part of 3 tokens provided to you after creating a _incoming-webhook_                                                                                                                                                           |
-| tokenC   | Yes      | The last part of 3 tokens provided to you after creating a _incoming-webhook_                                                                                                                                                             |
-| template | No       | Optionally point to your own custom JSON formatted Microsoft Teams **MessageCard**; [See here for details on their formatting](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using). |
+| Variable | Requis | Description                                                                                                                                                                                                                      |
+| -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| team     | Oui    | Extrait de l'_incoming-webhook_.                                                                                                                                                                                                 |
+| tokenA   | Oui    | La première partie des 3 jetons fournis après la création d'un _incoming-webhook_.                                                                                                                                               |
+| tokenB   | Oui    | La deuxième partie des 3 jetons fournis après la création d'un _incoming-webhook_.                                                                                                                                               |
+| tokenC   | Oui    | La dernière partie des 3 jetons fournis après la création d'un _incoming-webhook_.                                                                                                                                               |
+| template | Non    | Permet de pointer vers votre propre **MessageCard** Microsoft Teams au format JSON ; [voir ici les détails du format](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une Microsoft Teams notification:
+Envoyer une notification Microsoft Teams :
 
 ```bash
-# Assuming our {team} is Apprise
-# Assuming our {tokenA} is T1JJ3T3L2@DEFK543
-# Assuming our {tokenB} is A1BRTD4JD
-# Assuming our {tokenC} is TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {team} soit Apprise
+# Supposons que notre {tokenA} soit T1JJ3T3L2@DEFK543
+# Supposons que notre {tokenB} soit A1BRTD4JD
+# Supposons que notre {tokenC} soit TIiajkdnlazkcOXrIdevi7F
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    msteams:///Apprise/T1JJ3T3L2@DEFK543/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/
 ```
 
-## Templating
+## Modèles
 
-### The `template` URL Argument
+### L'Argument d'URL `template`
 
-Define a `?template=` argument that points to a predefined **MessageCard** you've already prepared for Microsoft Teams. The `template` parameter can either point to a local file or a web based URL. Its contents must be JSON (or you'll get an error trying to process it), and it at the very minimum must have the basic pattern:
+Définissez un argument `?template=` pointant vers une **MessageCard** prédéfinie que vous avez déjà préparée pour Microsoft Teams. Le paramètre `template` peut viser un fichier local ou une URL web. Son contenu doit être du JSON, faute de quoi une erreur sera levée lors du traitement. Au minimum, il doit respecter la structure suivante :
 
 ```json
 {
@@ -119,9 +118,9 @@ Define a `?template=` argument that points to a predefined **MessageCard** you'v
 }
 ```
 
-#### The Template Tokens
+#### Les Jetons de Modèle
 
-The `template=` you point to, can either be fully populate and ready to go as is (up to the MSTeams chat server), or you can dynamically populate it on the fly each time you call Apprise. You do this by using the double curly brace `{{` and `}}` to surround a keyword that you invent; here is an example:
+Le `template=` vers lequel vous pointez peut soit être déjà entièrement rempli et prêt à être envoyé au serveur de discussion MSTeams, soit être alimenté dynamiquement à chaque appel Apprise. Pour cela, utilisez des doubles accolades `{{` et `}}` autour d'un mot-clé de votre choix, comme dans l'exemple ci-dessous :
 
 ```json
 {
@@ -138,32 +137,32 @@ The `template=` you point to, can either be fully populate and ready to go as is
 }
 ```
 
-In the above example, we introduce several tokens... `app_id`, `app_title`, `target` and `whence`. There are a few entries that will ALWAYS be set and you can not over-ride them. They are:
+Dans l'exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_title`, `target` et `whence`. Certaines entrées seront TOUJOURS définies et ne peuvent pas être surchargées :
 
-- **app_id**: The Application identifier; usually set to `Apprise`, but developers of custom applications may choose to over-ride this and place their name here. this is how you acquire this value.
-- **app_desc**: Similar the the Application Identifier, this is the Application Description. It's usually just a slightly more descriptive alternative to the _app_id_. This is usually set to `Apprise Notification` unless it has been over-ridden by a developer.
-- **app_color**: A hex code that identifies a colour associate with a message. For instance, `info` type messages are generally blue where as `warning` ones are orange, etc.
-- **app_type**: The message type itself; it may be `info`, `warning`, `success`, etc
-- **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
-- **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.
-- **app_image_url**: The image URL associated with the message type (`info`, `warning`, etc) if one exists and/or was not specified to be turned off from the URL (`image=no`)
-- **app_url**: The URL associated with the Apprise instance (found in the **AppriseAsset()** object). Unless this has been over-ridden by a developer, its value will be `https://github.com/caronc/apprise`.
+- **app_id** : l’identifiant de l’application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
+- **app_desc** : la description de l’application, souvent une variante un peu plus explicite de `app_id`. Elle vaut en général `Apprise Notification` sauf surcharge.
+- **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont généralement bleus tandis que les messages `warning` sont orange.
+- **app_type** : le type du message lui-même, par exemple `info`, `warning`, `success`, etc.
+- **app_title** : le titre réel transmis à la notification Apprise (`--title` ou `-t` en ligne de commande).
+- **app_body** : le corps réel transmis à la notification Apprise (`--body` ou `-b` en ligne de commande).
+- **app_image_url** : l’URL d’image associée au type de message (`info`, `warning`, etc.) si elle existe et si elle n’a pas été désactivée dans l’URL (`image=no`).
+- **app_url** : l’URL associée à l’instance Apprise, trouvée dans l’objet **AppriseAsset()**. Sauf surcharge explicite, sa valeur est `https://github.com/caronc/apprise`.
 
-Anything you invent outside of that is yours. So lets get back to the `target` and `whence` that was define. Template tokens can be dynamically set by using the colon `:` operator before any URL argument you identify. For example we can set these values on our Apprise URL like so:
+Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de template peuvent être définis dynamiquement en utilisant l’opérateur `:` devant tout argument d’URL que vous choisissez. Par exemple :
 
 - `msteams://credentials/?template=/path/to/template.json&:target=Chris&:whence=this%20afternoon`
 - `msteams://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon`
 
-A notification like so:
+Une notification comme celle-ci :
 
 ```bash
-# using colons, we can set our target and whence dynamically from the
-# command line:
+# En utilisant des deux-points, nous pouvons definir dynamiquement
+# target et whence depuis la ligne de commande :
 apprise -t "My Title" -b "This is Ignored" \
    "msteams://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 
-Would post to MSTeams (with respect to our template above):
+Publierait dans MSTeams, sur la base du template ci-dessus :
 
 ```json
 {
@@ -180,7 +179,7 @@ Would post to MSTeams (with respect to our template above):
 }
 ```
 
-The default Apprise template today (and still has no change even after this commit looks like this):
+Le template Apprise par défaut à ce jour ressemble à ceci :
 
 ```json
 # Prepare our payload
@@ -199,7 +198,7 @@ payload = {
 }
 ```
 
-#### Other Template Exemples
+#### Autres Exemples de Modèle
 
 ```json
 {
@@ -238,10 +237,10 @@ payload = {
 }
 ```
 
-#### Additional Template Remarques
+#### Remarques Supplémentaires sur les Modèles
 
-- Tokens can have white space around them for readability if you like. Hence `{{ token }}` is no different then `{{token}}`.
-- All tokens are escaped properly, so don't worry if your defined token has a double quote in it (`"`); it would be correctly escaped before it is sent upstream.
-- Tokens ARE case sensitive, so `{{Token}}` NEEDS to be populated with a `:Token=` value on your URL.
-- Tokens that are not matched correctly simply are not swapped and the {{keyword}} will remain as is in the message.
-- Apprise always requires you to specify a `--body` (`-b`) at a very minimum which can be optionally referenced as `{{app_body}}` in your template. Even if you choose not to use this token, you must still pass in something (anything) just to satisfy this requirement and make use of the template calls.
+- Les jetons peuvent contenir des espaces autour d’eux pour améliorer la lisibilité. Ainsi, `{{ token }}` n’est pas différent de `{{token}}`.
+- Tous les jetons sont correctement échappés ; ne vous inquiétez donc pas si une valeur contient un guillemet double (`"`), il sera correctement échappé avant l’envoi en amont.
+- Les jetons sont **sensibles à la casse**. Ainsi, `{{Token}}` doit être alimenté par une valeur `:Token=` dans votre URL.
+- Les jetons qui ne correspondent à rien ne sont tout simplement pas remplacés, et `{{keyword}}` restera tel quel dans le message.
+- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé en tant que `{{app_body}}` dans votre template. Même si vous ne l’utilisez pas, vous devez quand même fournir quelque chose pour satisfaire cette exigence et tirer parti des appels de template.
