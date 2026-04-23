@@ -19,6 +19,21 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
+:::caution[Les comptes Microsoft personnels ne sont pas pris en charge]
+
+Ce plugin utilise le flux **OAuth2 client credentials** (authentification applicative / daemon). Ce flux nécessite un **administrateur Microsoft Entra ID** pour accorder des permissions au niveau de l'application. Les comptes consommateurs personnels (`@outlook.com`, `@hotmail.com`, `@live.com`) **n'ont pas** d'administrateur de tenant et s'appuient sur le système d'identité grand public de Microsoft — le point de terminaison `/consumers` ne délivre pas de jetons `client_credentials`.
+
+De plus, la permission applicative `Mail.Send` utilisée par ce plugin exige que la boîte aux lettres expéditrice soit hébergée dans **Exchange Online**, disponible uniquement dans les offres Microsoft 365 Business payantes (E1, E3, E5, Apps for Business, etc.).
+
+**Si vous obtenez une erreur `401`**, vérifiez que :
+
+1. Votre application Azure est enregistrée sous un compte **professionnel ou scolaire** (organisationnel), et **non** un compte Microsoft personnel.
+2. La boîte aux lettres `source` dispose d'une licence **Exchange Online**.
+3. Vous avez copié la **Secret Value** (et non le Secret ID) depuis le portail Azure.
+
+Les domaines personnalisés hébergés dans **Microsoft 365 Business** (par ex. `user@votreentreprise.com`) fonctionnent correctement — ils sont adossés à Exchange Online comme n'importe quel autre tenant organisationnel.
+:::
+
 ## Configuration du Compte
 
 Puisque Microsoft a désactivé l'authentification basique (nom d'utilisateur / mot de passe), **vous devez enregistrer une application dans Azure** afin de générer les identifiants nécessaires à Apprise (Client ID, Secret, etc.).
@@ -51,6 +66,11 @@ Puisque Microsoft a désactivé l'authentification basique (nom d'utilisateur / 
         stanza above which breaks the table layout below -->
    - Donnez-lui un nom, par exemple `Apprise Notifications`.
    - **Point crucial :** sélectionnez la 3e option : **Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts**.
+
+     :::note
+     Sélectionner « and personal Microsoft accounts » lors de l'enregistrement de l'application ne permet **pas** aux comptes consommateurs personnels de fonctionner avec ce plugin. Le flux daemon `client_credentials` utilisé par ce plugin échouera toujours pour les comptes `@outlook.com`/`@hotmail.com` — consultez le bloc d'avertissement en haut de cette page pour plus de détails.
+     :::
+
    - Cliquez sur **Register**.
 
 1. Depuis le panneau **Overview**, vous pouvez recuperer :
@@ -103,14 +123,18 @@ La syntaxe valide est la suivante, les alias `o365://` et `azure://` étant tous
 
 ## Détail des Paramètres
 
-| Variable      | Requis | Description                                                                                                                                      |
-| ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| source        | Oui    | L'**adresse e-mail** ou l'**Object ID** associé au compte Azure depuis lequel vous souhaitez envoyer l'e-mail.                                   |
-| tenant_id     | Oui    | Le **Tenant ID** (Directory ID) associé à l'enregistrement de votre application.                                                                 |
-| client_id     | Oui    | Le **Client ID** (Application ID) associé à l'enregistrement de votre application.                                                               |
-| client_secret | Oui    | Le **Client Secret** généré dans la section "Certificates & secrets".                                                                            |
-| from          | Non    | Si vous souhaitez que l'adresse _ReplyTo_ soit différente de votre propre adresse e-mail, vous pouvez la préciser ici.                           |
-| to            | Non    | Surcharge le destinataire. Par défaut, l'e-mail est envoyé à l'adresse identifiée par `source`, ou aux cibles précisées dans le chemin de l'URL. |
+| Variable      | Requis | Description                                                                                                                                                                                                                                                                                      |
+| ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| source        | \*Oui  | L'**adresse e-mail** ou l'**Object ID** de la boîte aux lettres Exchange Online utilisée pour envoyer les e-mails. Cette boîte doit disposer de la permission applicative `Mail.Send`.                                                                                                           |
+| tenant_id     | \*Oui  | Le **Tenant ID** (Directory ID) associé à l'enregistrement de votre application.                                                                                                                                                                                                                 |
+| client_id     | \*Oui  | Le **Client ID** (Application ID) associé à l'enregistrement de votre application.                                                                                                                                                                                                               |
+| client_secret | \*Oui  | Le **Client Secret** généré dans la section "Certificates & secrets".                                                                                                                                                                                                                            |
+| targets       | Non    | Une ou plusieurs adresses e-mail destinataires. Si omis, l'e-mail est envoyé à l'adresse identifiée par `source`.                                                                                                                                                                                |
+| to            | Non    | Alias de `targets`. Pratique dans une configuration YAML.                                                                                                                                                                                                                                        |
+| cc            | Non    | Une ou plusieurs adresses en **copie carbone**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                                                                                                                           |
+| bcc           | Non    | Une ou plusieurs adresses en **copie carbone invisible**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                                                                                                                 |
+| reply_to      | Non    | Une ou plusieurs adresses **Répondre à**. Lorsqu'un destinataire répond à l'e-mail de notification, sa réponse est dirigée ici plutôt que vers la boîte `source`. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                         |
+| from          | Non    | Remplace la boîte aux lettres expéditrice utilisée dans l'appel Graph API. La boîte spécifiée ici doit être une boîte Exchange Online disposant de la permission `Mail.Send`. Cela modifie quelle boîte signe l'e-mail — ce n'est pas une substitution ReplyTo. Utilisez `reply_to` à cet effet. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -122,7 +146,8 @@ La syntaxe valide est la suivante, les alias `o365://` et `azure://` étant tous
   - Vous pouvez aussi échapper manuellement ces caractères dans votre URL Apprise, comme [expliqué ici](../../qa/special-characters/). Remplacez simplement :
     - `?` par `%3F`
     - `@` par `%40`
-      :::
+
+:::
 
 ## Exemples
 
@@ -135,4 +160,18 @@ Envoyer une notification e-mail à votre compte Office 365 :
 # Assuming our {client_secret} is rt/djdwjjd
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    azure:///user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt/djdwjjd
+```
+
+Envoyer à plusieurs destinataires avec CC et BCC :
+
+```bash
+apprise -vv -t "Titre" -b "Corps" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/destinataire@example.com?cc=manager@example.com&bcc=audit@example.com"
+```
+
+Envoyer avec une adresse Répondre à (utile pour les formulaires de contact — les réponses des destinataires sont dirigées vers l'utilisateur final, et non vers la boîte expéditrice) :
+
+```bash
+apprise -vv -t "Formulaire de contact" -b "Quelqu'un vous a contacté" \
+   "o365://noreply@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/support@example.com?reply_to=client@externe.com"
 ```

@@ -19,6 +19,21 @@ sample_urls:
 
 <!-- SERVICE:DETAILS -->
 
+:::caution[Personal Microsoft accounts are not supported]
+
+This plugin uses the **OAuth2 client credentials** flow (app-only / daemon auth). That flow requires a **Microsoft Entra ID tenant admin** to grant application-level permissions. Personal consumer accounts (`@outlook.com`, `@hotmail.com`, `@live.com`) do **not** have a tenant admin and live on Microsoft's consumer identity system — the `/consumers` endpoint does not issue `client_credentials` tokens.
+
+In addition, the `Mail.Send` **application permission** used by this plugin requires the sender mailbox to be backed by **Exchange Online**, which is only available in paid Microsoft 365 Business plans (E1, E3, E5, Apps for Business, etc.).
+
+**If you receive a `401` error**, verify that:
+
+1. Your Azure app is registered under a **work/school** (organizational) account, **not** a personal Microsoft account.
+2. The `source` mailbox has an **Exchange Online** license assigned.
+3. You copied the **Secret Value** (not the Secret ID) from the Azure portal.
+
+Custom domains hosted in **Microsoft 365 Business** (e.g. `user@yourcompany.com`) work correctly — they are backed by Exchange Online like any other organizational tenant.
+:::
+
 ## Account Setup
 
 Because Microsoft has disabled Basic Authentication (Username/Password), **you must register an application in Azure** to generate the credentials Apprise needs (Client ID, Secret, etc).
@@ -51,6 +66,11 @@ Because Microsoft has disabled Basic Authentication (Username/Password), **you m
         stanza above which breaks the table layout below -->
    - Give it a name (for example: `Apprise Notifications`)
    - **Crucial:** Select the 3rd option: **Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts**.
+
+     :::note
+     Selecting "and personal Microsoft accounts" during app registration does **not** make personal consumer accounts work with this plugin. The `client_credentials` daemon flow this plugin uses will still fail for `@outlook.com`/`@hotmail.com` accounts — see the caution block at the top of this page for details.
+     :::
+
    - Click **Register**.
 
 1. From here (the **Overview** panel) you can acquire both:
@@ -103,14 +123,18 @@ Valid syntax is as follows (both `o365://` and `azure://` are accepted aliases):
 
 ## Parameter Breakdown
 
-| Variable      | Required | Description                                                                                                                                    |
-| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| source        | Yes      | The **Email Address** or **Object ID** associated with the Azure Account you wish to send the email from.                                      |
-| tenant_id     | Yes      | The **Tenant ID** (Directory ID) associated with your App Registration.                                                                        |
-| client_id     | Yes      | The **Client ID** (Application ID) associated with your App Registration.                                                                      |
-| client_secret | Yes      | The **Client Secret** you generated in the "Certificates & secrets" section.                                                                   |
-| from          | No       | If you want the email _ReplyTo_ address to be something other than your own email address, you can specify it here.                            |
-| to            | No       | Override the target email. By default, the email is sent to the address identified by the `source` (or the targets specified in the URL path). |
+| Variable      | Required | Description                                                                                                                                                                                                                                                                        |
+| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| source        | \*Yes    | The **Email Address** or **Object ID** of the Exchange Online mailbox used to send mail. This mailbox must have the `Mail.Send` application permission granted.                                                                                                                    |
+| tenant_id     | \*Yes    | The **Tenant ID** (Directory ID) associated with your App Registration.                                                                                                                                                                                                            |
+| client_id     | \*Yes    | The **Client ID** (Application ID) associated with your App Registration.                                                                                                                                                                                                          |
+| client_secret | \*Yes    | The **Client Secret** you generated in the "Certificates & secrets" section.                                                                                                                                                                                                       |
+| targets       | No       | One or more recipient email addresses. If omitted, the email is sent to the address identified by `source`.                                                                                                                                                                        |
+| to            | No       | Alias for `targets`. Useful in YAML configuration.                                                                                                                                                                                                                                 |
+| cc            | No       | One or more **Carbon Copy** recipient email addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                                                                                                                                       |
+| bcc           | No       | One or more **Blind Carbon Copy** recipient email addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                                                                                                                                 |
+| reply_to      | No       | One or more **Reply-To** addresses. When a recipient replies to the notification email, their reply is directed here instead of to `source`. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                                                 |
+| from          | No       | Override the sending mailbox used in the Graph API call. The mailbox specified here must be a licensed Exchange Online mailbox the app has `Mail.Send` permission for. This changes which mailbox signs the email — it is not a ReplyTo override. Use `reply_to` for that purpose. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -133,4 +157,18 @@ Send an email notification to our your Office 365 account:
 # Assuming our {client_secret} is rt/djdwjjd
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    azure:///user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt/djdwjjd
+```
+
+Send to multiple recipients with CC and BCC:
+
+```bash
+apprise -vv -t "Test Title" -b "Test Body" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/recipient@example.com?cc=manager@example.com&bcc=audit@example.com"
+```
+
+Send with a Reply-To address (useful for contact forms — replies from the notification recipient go to the end user, not the sending mailbox):
+
+```bash
+apprise -vv -t "Contact Form" -b "Someone contacted you" \
+   "o365://noreply@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/support@example.com?reply_to=customer@external.com"
 ```
