@@ -15,8 +15,6 @@ sample_urls:
   - dot://{apitoken}@{device_id}
 ---
 
-## Dot. Notifications
-
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
