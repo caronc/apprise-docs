@@ -39,7 +39,9 @@ function walk(dir) {
       out.push(...walk(p));
       continue;
     }
-    if (entry.isFile() && entry.name.endsWith(".md")) out.push(p);
+    if (entry.isFile() && (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))) {
+      out.push(p);
+    }
   }
   return out;
 }
@@ -52,8 +54,37 @@ function extractFrontmatter(text) {
 }
 
 let failed = false;
+const files = walk(ROOT);
 
-for (const file of walk(ROOT)) {
+/**
+ * Disallow `.md` + `.mdx` siblings with the same basename.
+ * During the migration, this causes route/content ambiguity and stale pages
+ * can win unexpectedly.
+ */
+const byDir = new Map();
+for (const file of files) {
+  const dir = path.dirname(file);
+  const ext = path.extname(file);
+  const base = path.basename(file, ext);
+
+  if (!byDir.has(dir)) byDir.set(dir, new Map());
+  const byBase = byDir.get(dir);
+  if (!byBase.has(base)) byBase.set(base, new Set());
+  byBase.get(base).add(ext);
+}
+
+for (const [dir, byBase] of byDir.entries()) {
+  for (const [base, exts] of byBase.entries()) {
+    if (exts.has(".md") && exts.has(".mdx")) {
+      failed = true;
+      console.error(
+        `[docs] ${path.relative(ROOT, dir)}: ambiguous page slug "${base}" exists as both "${base}.md" and "${base}.mdx"`
+      );
+    }
+  }
+}
+
+for (const file of files) {
   const text = fs.readFileSync(file, "utf8");
   const fm = extractFrontmatter(text);
   if (!fm) continue;
