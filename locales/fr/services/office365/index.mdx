@@ -1,0 +1,584 @@
+---
+title: "Office 365 / Outlook / Hotmail"
+description: "Envoyer des notifications via Office 365, Outlook.com et Hotmail."
+sidebar:
+  label: "Office 365 / Outlook"
+
+schemas:
+  - o365
+  - azure
+
+has_attachments: true
+
+sample_urls:
+  - o365://{source}/{tenant_id}/{client_id}/{client_secret}/
+  - o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}
+  - azure://{source}/{tenant_id}/{client_id}/{client_secret}/
+  - azure://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}
+  - o365://{source}/{client_id}/{refresh_token}/
+  - o365://{source}/{client_id}/{refresh_token}/{targets}
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/* SERVICE:DETAILS */}
+
+## Quel Mode Choisir ?
+
+Choisissez **Personnel** si vous envoyez depuis une boîte Microsoft grand
+public comme `@outlook.com`, `@hotmail.com`, `@live.com` ou `@msn.com`. Cette
+méthode utilise une connexion unique pour obtenir un `refresh_token`, ensuite
+renouvelé automatiquement par Apprise au fil des envois.
+
+Choisissez **Organisationnel** si vous envoyez depuis un tenant Microsoft 365
+professionnel ou scolaire adossé à Exchange Online. Cette méthode repose sur
+un enregistrement d'application Azure et le flux `client_credentials` avec
+votre `tenant_id`, `client_id` et `client_secret`.
+
+<Tabs>
+
+<TabItem label="Personnel">
+
+Les comptes consommateurs personnels — `@outlook.com`, `@hotmail.com`,
+`@live.com`, `@msn.com` et les variantes régionales Hotmail/Live — utilisent
+un flux par **jeton de rafraîchissement** à la place du flux client credentials
+organisationnel.
+
+Ce processus comporte deux phases :
+
+- **Configuration unique :** enregistrez une application cliente publique dans
+  Azure, puis exécutez un court script pour vous connecter et capturer votre
+  `refresh_token`.
+- **Utilisation courante :** Apprise utilise le `refresh_token` stocké pour
+  obtenir automatiquement des jetons d'accès de courte durée. Chaque envoi
+  réussi renouvelle silencieusement le jeton de rafraîchissement, de sorte
+  qu'il reste actif tant qu'Apprise est utilisé au moins une fois tous les
+  90 jours.
+
+## Enregistrement de l'application
+
+1. Allez dans [**App Registrations**](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
+   dans le portail Azure et cliquez sur **Register an application**.
+   - Donnez-lui un nom (ex. `Apprise Personnel`).
+   - Sous **Supported account types**, sélectionnez **Personal Microsoft
+     accounts only**.
+   - Sous **Redirect URI**, choisissez **Public client / native (mobile &amp;
+     desktop)** et définissez l'URI sur :
+
+     ```text
+     https://login.microsoftonline.com/common/oauth2/nativeclient
+     ```
+
+   - Cliquez sur **Register**.
+
+1. Depuis le panneau **Overview**, copiez l'**Application (client) ID** - c'est
+   votre `client_id`.
+
+1. Sous **Manage -> Authentication**, faites défiler jusqu'à **Advanced settings**
+   et définissez **Allow public client flows** sur **Yes**, puis cliquez sur
+   **Save**. Cela active le flux de code d'appareil utilisé pour obtenir le
+   jeton initial.
+
+1. Sous **Manage -> API permissions** :
+   - Cliquez sur **Add a permission** -> **Microsoft Graph** ->
+     **Delegated Permissions**
+   - Recherchez et cochez **Mail.Send**, puis cliquez sur **Add permissions**
+
+   :::note
+   `offline_access` (requis pour recevoir un jeton de rafraîchissement
+   rotatif) est inclus automatiquement - il n'est pas nécessaire de l'ajouter
+   séparément.
+
+   Aucune étape de consentement administrateur n'est requise pour les
+   permissions déléguées sur les comptes personnels.
+   :::
+
+## Obtenir votre jeton de rafraîchissement
+
+Il s'agit d'une **étape unique**. Les scripts ci-dessous utilisent le
+[flux de code d'appareil](https://learn.microsoft.com/fr-fr/entra/identity-platform/v2-oauth2-device-code)
+de Microsoft : votre script affiche un code court et un lien ; vous ouvrez ce
+lien dans n'importe quel navigateur et vous connectez ; le script capture
+automatiquement votre `refresh_token`.
+
+L'ensemble du processus prend généralement moins de deux minutes.
+
+<Tabs>
+<TabItem label="Python">
+
+Seul `requests` est requis - déjà installé si vous avez Apprise.
+
+Modifiez la ligne `CLIENT_ID`, puis copiez et collez l'intégralité du bloc
+dans votre terminal.
+
+```python
+import time, requests
+
+# - Modifiez cette ligne
+CLIENT_ID = "your-client-id-here"   # Application (client) ID depuis Azure
+# -
+
+DEVICE_URL = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode"
+TOKEN_URL  = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+SCOPE      = "Mail.Send offline_access"
+
+# Étape 1 - demander un code d'appareil
+r = requests.post(DEVICE_URL, data={"client_id": CLIENT_ID, "scope": SCOPE})
+r.raise_for_status()
+d = r.json()
+
+# Étape 2 - le script affiche un lien et un code court ; ouvrez le lien dans
+#            un navigateur et entrez le code pour vous connecter à votre compte
+print("\n" + d["message"] + "\n")
+
+# Étape 3 - interroger silencieusement jusqu'à la fin de la connexion (< 60 s)
+interval = d.get("interval", 5)
+while True:
+    time.sleep(interval)
+    r = requests.post(TOKEN_URL, data={
+        "client_id":   CLIENT_ID,
+        "grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
+        "device_code": d["device_code"],
+    })
+    t = r.json()
+    if "refresh_token" in t:
+        print("Votre refresh_token (à utiliser dans votre URL Apprise) :\n")
+        print(t["refresh_token"])
+        break
+    if t.get("error") == "slow_down":
+        interval += 5
+    elif t.get("error") != "authorization_pending":
+        print("Erreur :", t.get("error_description", t))
+        break
+```
+
+</TabItem>
+<TabItem label="Bash · curl">
+
+Aucun outil externe au-delà de `curl` n'est nécessaire. Exécutez les étapes
+ci-dessous dans la **même session de terminal** pour que les variables soient
+conservées entre les étapes.
+
+**Étape 1 - Définir votre client ID et demander un code d'appareil**
+
+```bash
+# - Modifiez cette ligne, puis collez l'intégralité du bloc
+CLIENT_ID="your-client-id-here"   # Application (client) ID depuis Azure
+# -
+
+curl -s -X POST \
+  "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode" \
+  --data "client_id=${CLIENT_ID}&scope=Mail.Send+offline_access"
+```
+
+La réponse est du JSON. Repérez deux valeurs :
+
+- `user_code` - le code court à saisir dans le navigateur (ex. `ABCD-EFGH`)
+- `device_code` - la longue chaîne opaque à coller à l'Étape 3 ci-dessous
+
+**Étape 2 - Se connecter chez Microsoft**
+
+Ouvrez [**microsoft.com/devicelogin**](https://microsoft.com/devicelogin) dans
+un navigateur et saisissez
+le `user_code` obtenu ci-dessus. Connectez-vous avec votre compte Hotmail /
+Outlook / Live et approuvez les permissions demandées.
+
+**Étape 3 - Coller le code d'appareil et récupérer votre jeton de
+rafraîchissement**
+
+```bash
+# - Modifiez cette ligne avec la valeur device_code de l'Étape 1
+DEVICE_CODE="paste-device_code-here"   # longue chaîne issue du JSON ci-dessus
+# -
+
+# Exécutez ceci après avoir terminé l'Étape 2.
+# Si la réponse indique "authorization_pending", attendez quelques secondes
+# et réessayez - ou utilisez la boucle d'attente automatique dans l'astuce.
+curl -s -X POST \
+  "https://login.microsoftonline.com/consumers/oauth2/v2.0/token" \
+  --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}"
+```
+
+Repérez `"refresh_token"` dans la réponse JSON — cette valeur est celle à
+placer dans votre URL Apprise.
+
+:::tip[Préférer une attente automatique ?]
+
+Remplacez l'Étape 3 par cette boucle. Elle interroge le serveur toutes les
+5 secondes et affiche le jeton dès que la connexion dans le navigateur est
+terminée :
+
+```bash
+while true; do
+  RESULT=$(curl -s -X POST \
+    "https://login.microsoftonline.com/consumers/oauth2/v2.0/token" \
+    --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}")
+  echo "$RESULT" | grep -q '"refresh_token"' && { echo "$RESULT"; break; }
+  sleep 5
+done
+```
+
+:::
+
+</TabItem>
+<TabItem label="PowerShell">
+
+Fonctionne sous Windows, macOS et Linux. Aucun module supplémentaire n'est
+requis - `Invoke-RestMethod` est intégré.
+
+Modifiez la ligne `$ClientId`, puis copiez et collez l'intégralité du bloc
+dans un terminal PowerShell.
+
+```powershell
+# - Modifiez cette ligne
+$ClientId = "your-client-id-here"   # Application (client) ID depuis Azure
+# -
+
+$Scope     = "Mail.Send offline_access"
+$DeviceUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode"
+$TokenUrl  = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+
+# Étape 1 - demander un code d'appareil
+$DeviceResp = Invoke-RestMethod -Method Post -Uri $DeviceUrl `
+    -Body @{ client_id = $ClientId; scope = $Scope }
+
+# Étape 2 - le script affiche un lien et un code court ; ouvrez le lien dans
+#            un navigateur et entrez le code pour vous connecter
+Write-Host ""
+Write-Host $DeviceResp.message
+Write-Host ""
+
+# Étape 3 - interroger silencieusement jusqu'à la fin de la connexion
+$DeviceCode = $DeviceResp.device_code
+$Interval   = $DeviceResp.interval
+
+do {
+    Start-Sleep -Seconds $Interval
+    try {
+        $TokenResp = Invoke-RestMethod -Method Post -Uri $TokenUrl `
+            -Body @{
+                client_id   = $ClientId
+                grant_type  = "urn:ietf:params:oauth:grant-type:device_code"
+                device_code = $DeviceCode
+            }
+    } catch {
+        $TokenResp = $_.ErrorDetails.Message | ConvertFrom-Json
+        if ($TokenResp.error -eq "slow_down") { $Interval += 5 }
+    }
+} until ($TokenResp.refresh_token -or
+         $TokenResp.error -notin @("authorization_pending", "slow_down"))
+
+if ($TokenResp.refresh_token) {
+    Write-Host "Votre refresh_token (à utiliser dans votre URL Apprise) :`n"
+    Write-Host $TokenResp.refresh_token
+} else {
+    Write-Host "Erreur : $($TokenResp.error_description)"
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::note[Durée de vie et rotation du jeton]
+
+Les jetons de rafraîchissement Microsoft expirent s'ils ne sont pas utilisés
+pendant **90 jours**. Tant qu'Apprise envoie au moins une notification dans
+cette fenêtre, le jeton se renouvelle automatiquement à chaque envoi réussi.
+En cas d'expiration, relancez simplement l'un des scripts ci-dessus.
+
+:::
+
+## Syntaxe personnelle
+
+La syntaxe valide est la suivante, les alias `o365://` et `azure://` étant tous
+deux acceptés :
+
+- `o365://{source}/{client_id}/{refresh_token}/`
+- `o365://{source}/{client_id}/{refresh_token}/{targets}`
+
+Apprise détecte automatiquement le mode personnel lorsque `source` est un
+domaine consommateur connu (`outlook.com`, `hotmail.com`, `live.com`, `msn.com`
+et variantes régionales). Utilisez `?mode=personal` pour forcer le mode
+personnel sur tout autre domaine.
+
+## Paramètres personnels
+
+| Variable      | Requis | Description                                                                                                                                                                                          |
+| ------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| source        | \*Oui  | Votre adresse e-mail consommateur (ex. `user@outlook.com`). Utilisée comme expéditeur et, si aucun `targets` n'est précisé, également comme destinataire.                                            |
+| client_id     | \*Oui  | L'**Application (client) ID** issu de votre enregistrement d'application Azure.                                                                                                                      |
+| refresh_token | \*Oui  | Le jeton de rafraîchissement obtenu lors de la configuration unique ci-dessus. Apprise le renouvelle automatiquement à chaque envoi réussi.                                                          |
+| targets       | Non    | Une ou plusieurs adresses e-mail destinataires. Si omis, l'e-mail est envoyé à `source`.                                                                                                             |
+| to            | Non    | Alias de `targets`. Pratique dans une configuration YAML.                                                                                                                                            |
+| cc            | Non    | Une ou plusieurs adresses en **copie carbone**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                               |
+| bcc           | Non    | Une ou plusieurs adresses en **copie carbone invisible**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                     |
+| reply_to      | Non    | Une ou plusieurs adresses **Répondre à**. Lorsqu'un destinataire répond, sa réponse est dirigée ici plutôt que vers `source`. Accepte des valeurs séparées par des virgules et des adresses nommées. |
+| mode          | Non    | Force le mode personnel sur un domaine non standard : `?mode=personal`.                                                                                                                              |
+
+{/* TEMPLATE:SERVICE-PARAMS */}
+
+:::note
+
+Des alias de requête sont également pris en charge : `oauth_id` pour
+`client_id` et `oauth_secret` pour `refresh_token`.
+
+Le `refresh_token` est une longue chaîne qui contient souvent des caractères
+(`+`, `=`, `/`) entrant en conflit avec l'analyse d'URL. Si Apprise ne parvient
+pas à analyser votre URL correctement, encodez d'abord le jeton sur
+[ce site](https://www.url-encode-decode.com/) ou remplacez manuellement :
+
+- `+` -> `%2B`
+- `=` -> `%3D`
+- `/` -> `%2F`
+
+:::
+
+## Exemples personnels
+
+Envoyer depuis un compte Outlook personnel (le mode est détecté automatiquement
+depuis le domaine) :
+
+```bash
+# source:        vous@outlook.com
+# client_id:     aa-bb-cc-dd-ee
+# refresh_token: (issu du script ci-dessus)
+apprise -vv -t "Titre du test" -b "Corps du test" \
+   "o365://vous@outlook.com/aa-bb-cc-dd-ee/votre-refresh-token-ici/"
+```
+
+Envoyer à un destinataire différent depuis un compte Hotmail :
+
+```bash
+apprise -vv -t "Bonjour" -b "Corps du message" \
+   "o365://moi@hotmail.com/aa-bb-cc-dd-ee/votre-refresh-token-ici/ami@example.com"
+```
+
+Forcer le mode personnel sur un domaine non standard :
+
+```bash
+apprise -vv -t "Bonjour" -b "Corps du message" \
+   "o365://moi@custom.com/aa-bb-cc-dd-ee/votre-refresh-token-ici/?mode=personal"
+```
+
+</TabItem>
+
+<TabItem label="Organisationnel">
+
+## Configuration du Compte
+
+Puisque Microsoft a désactivé l'authentification basique (nom d'utilisateur /
+mot de passe), **vous devez enregistrer une application dans Azure** afin de
+générer les identifiants nécessaires à Apprise (Client ID, Secret, etc.).
+
+1. Depuis le [**portail Azure**](https://portal.azure.com/), ouvrez
+   **App Registrations**
+   ([lien alternatif](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)).
+   - Utilisez la barre de recherche en haut du portail Azure et tapez
+     `App Registrations`.
+   - Si vous n'y avez toujours pas accès, il est possible que votre
+     organisation vous le restreigne. Vous devrez peut-être contacter votre
+     administrateur pour poursuivre.<br/>
+     ![Office 365](/services/office365/images/1acb45eda098a004.png)
+
+1. Cliquez sur **Register an application**.
+
+<details>
+<summary>
+  Attention : écran que vous pouvez voir si vous n'avez pas de compte Azure
+</summary>
+
+Vous devez avoir un compte Azure, plus précisément un abonnement, pour que
+cette partie fonctionne. Les abonnements sont gratuits, mais exigent tout de
+même l'enregistrement d'une carte bancaire. Pour créer un abonnement :
+
+<img
+  src="/services/office365/images/2acb45bda0e8ac14.png"
+  alt="These applications are associated with the account user@example.com
+   but are not contained within any directory. The ability to create
+   applications outside of a directory has been deprecated."
+/>
+<ul>
+  <li>
+    Allez dans : <strong>Azure Portal -> Subscriptions</strong>
+  </li>
+  <li>
+    Cliquez sur <strong>Add</strong>
+  </li>
+  <li>
+    Choisissez <strong>Azure subscription (Free)</strong>
+  </li>
+</ul>
+<p>
+  Aucune ressource n'a besoin d'être déployée. Cela permet simplement de
+  finaliser le provisionnement du tenant.
+</p>
+<p>Ensuite, assurez-vous d'être dans le bon annuaire :</p>
+<ul>
+  <li>Cliquez sur votre avatar (en haut à droite)</li>
+  <li>
+    Sélectionnez <strong>Switch directory</strong>
+  </li>
+  <li>
+    Choisissez l'annuaire dans lequel l'abonnement a été créé. Il est
+    possible qu'il n'y ait qu'un seul nouvel abonnement, celui que vous
+    venez de créer. Dans ce cas, vous êtes déjà au bon endroit et pouvez
+    poursuivre.
+  </li>
+</ul>
+</details>
+
+1. Dans le formulaire d'enregistrement :
+   - Donnez-lui un nom, par exemple `Apprise Notifications`.
+   - **Point crucial :** sélectionnez la 3e option : **Accounts in any
+     organizational directory (Any Microsoft Entra ID tenant - Multitenant)
+     and personal Microsoft accounts**.
+
+   :::note
+   Sélectionner « and personal Microsoft accounts » lors de l'enregistrement
+   de l'application ne permet **pas** aux comptes consommateurs personnels de
+   fonctionner avec ce flux. Le flux daemon `client_credentials` utilisé ici
+   échouera toujours pour les comptes `@outlook.com`/`@hotmail.com`. Utilisez
+   l'onglet **Personnel** pour ces comptes.
+   :::
+   - Cliquez sur **Register**.
+
+1. Depuis le panneau **Overview**, vous pouvez récupérer :
+   - l'**Application (client) ID** -> votre `client_id`
+   - l'**Object ID** -> votre `source` (si vous utilisez un Object ID plutôt
+     qu'une adresse e-mail)
+   - le **Directory (tenant) ID** -> votre `tenant_id`
+
+1. Pour créer votre `client_secret`, développez l'onglet **Manage** à gauche :
+   - Cliquez sur **Certificates & secrets** -> **Client secrets**
+   - Cliquez sur **New client secret**
+   - Fournissez une description (par ex. `Apprise Secret`) et une expiration
+   - Cliquez sur **Add**
+
+   :::caution[Cette étape provoque le plus d'échecs]
+
+   Azure affiche deux valeurs :
+
+   | Champ        | À utiliser ? |
+   | ------------ | ------------ |
+   | Secret Value | ✅ Oui       |
+   | Secret ID    | ❌ Non       |
+
+   La **Secret Value** :
+   - n'est visible qu'une seule fois ;
+   - devient masquée après avoir quitté la page ;
+   - correspond au véritable mot de passe.
+
+   En cas de doute, régénérez simplement le secret — supprimez l'ancien puis
+   créez-en un nouveau.
+   :::
+
+1. Pour configurer les permissions, développez l'onglet **Manage** à gauche :
+   - Cliquez sur **API permissions**. Vous aurez probablement déjà la permission
+     **User.Read** par défaut ; nous devons en ajouter d'autres.
+   - Cliquez sur **Add a permission** -> **Microsoft Graph** ->
+     **Application Permissions**
+   - Recherchez et cochez **Mail.Send**, puis cliquez sur **Add permissions**
+   - Ajoutez également :
+     - **User.Read.All** - permet à Apprise de résoudre votre Object ID utilisé
+       comme `source`
+     - **Mail.ReadWrite** (optionnel) - requis uniquement pour les pièces
+       jointes volumineuses (> 3 Mo)
+
+   **Important :** après ajout, vous devez cliquer sur **Grant admin consent
+   for &lt;Directory Name&gt;** pour que les permissions prennent effet. Ce
+   bouton se trouve juste à côté de **Add a permission**.
+
+:::caution[Licence Exchange Online requise]
+
+La permission applicative `Mail.Send` exige que la boîte aux lettres
+expéditrice soit hébergée dans **Exchange Online** — disponible uniquement
+dans les offres Microsoft 365 Business payantes (E1, E3, E5, Apps for
+Business, etc.).
+
+Les domaines personnalisés hébergés dans Microsoft 365 Business
+(ex. `user@votreentreprise.com`) fonctionnent correctement — ils sont
+adossés à Exchange Online comme n'importe quel autre tenant organisationnel.
+
+**Si vous obtenez une erreur `401`**, vérifiez que :
+
+1. Votre application Azure est enregistrée sous un compte
+   **professionnel ou scolaire**, et **non** un compte Microsoft personnel.
+1. La boîte aux lettres `source` dispose d'une licence **Exchange Online**.
+1. Vous avez copié la **Secret Value** (et non le Secret ID).
+
+   :::
+
+1. Vous êtes maintenant prêt. 🙂
+
+## Syntaxe Organisationnelle
+
+La syntaxe valide est la suivante, les alias `o365://` et `azure://` étant tous
+deux acceptés :
+
+- `o365://{source}/{tenant_id}/{client_id}/{client_secret}/`
+- `o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}`
+
+## Paramètres Organisationnels
+
+| Variable      | Requis | Description                                                                                                                                                                                                                                                              |
+| ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| source        | \*Oui  | L'**adresse e-mail** ou l'**Object ID** de la boîte aux lettres Exchange Online utilisée pour envoyer les e-mails. Cette boîte doit disposer de la permission applicative `Mail.Send`.                                                                                   |
+| tenant_id     | \*Oui  | Le **Tenant ID** (Directory ID) associé à l'enregistrement de votre application.                                                                                                                                                                                         |
+| client_id     | \*Oui  | Le **Client ID** (Application ID) associé à l'enregistrement de votre application.                                                                                                                                                                                       |
+| client_secret | \*Oui  | Le **Client Secret** généré dans la section "Certificates & secrets".                                                                                                                                                                                                    |
+| targets       | Non    | Une ou plusieurs adresses e-mail destinataires. Si omis, l'e-mail est envoyé à l'adresse identifiée par `source`.                                                                                                                                                        |
+| to            | Non    | Alias de `targets`. Pratique dans une configuration YAML.                                                                                                                                                                                                                |
+| cc            | Non    | Une ou plusieurs adresses en **copie carbone**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                                                                                                   |
+| bcc           | Non    | Une ou plusieurs adresses en **copie carbone invisible**. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`).                                                                                                         |
+| reply_to      | Non    | Une ou plusieurs adresses **Répondre à**. Lorsqu'un destinataire répond à l'e-mail de notification, sa réponse est dirigée ici plutôt que vers la boîte `source`. Accepte des valeurs séparées par des virgules et des adresses nommées (ex. `Nom <email@example.com>`). |
+
+{/* TEMPLATE:SERVICE-PARAMS */}
+
+:::note
+
+- Des alias de requête sont également pris en charge : `oauth_id` pour
+  `client_id` et `oauth_secret` pour `client_secret`.
+- Si aucun `targets` n'est précisé, la notification est simplement envoyée à
+  l'adresse identifiée par `source`.
+- Le `client_secret` contient souvent des caractères (`?`, `@`, `/`) qui
+  entrent en conflit avec les règles d'URL standard. Si Apprise ne parvient pas
+  à analyser votre URL, encodez d'abord la valeur sur
+  [ce site](https://www.url-encode-decode.com/) ou remplacez manuellement
+  ([expliqué ici](/qa/special-characters/)) :
+  - `?` -> `%3F`
+  - `@` -> `%40`
+  - `/` -> `%2F`
+
+:::
+
+## Exemples Organisationnels
+
+Envoyer une notification e-mail depuis une boîte Exchange Online :
+
+```bash
+# tenant_id:  ab-cd-ef-gh
+# source:     user@example.com
+# client_id:  zz-yy-xx-ww
+# secret:     rt/djdwjjd  (/ encodé en %2F)
+apprise -vv -t "Titre du message" -b "Corps du message" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/"
+```
+
+Envoyer à plusieurs destinataires avec CC et BCC :
+
+```bash
+apprise -vv -t "Titre" -b "Corps" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/destinataire@example.com?cc=manager@example.com&bcc=audit@example.com"
+```
+
+Envoyer avec une adresse Répondre à (utile pour les formulaires de contact -
+les réponses sont dirigées vers l'utilisateur final, et non vers la boîte
+expéditrice) :
+
+```bash
+apprise -vv -t "Formulaire de contact" -b "Quelqu'un vous a contacté" \
+   "o365://noreply@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/support@example.com?reply_to=client@externe.com"
+```
+
+</TabItem>
+</Tabs>

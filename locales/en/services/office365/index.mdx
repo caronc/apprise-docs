@@ -1,0 +1,560 @@
+---
+title: "Office 365 / Outlook / Hotmail"
+description: "Send notifications via Office 365, Outlook.com, and Hotmail."
+sidebar:
+  label: "Office 365 / Outlook"
+
+schemas:
+  - o365
+  - azure
+
+has_attachments: true
+
+sample_urls:
+  - o365://{source}/{tenant_id}/{client_id}/{client_secret}/
+  - o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}
+  - azure://{source}/{tenant_id}/{client_id}/{client_secret}/
+  - azure://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}
+  - o365://{source}/{client_id}/{refresh_token}/
+  - o365://{source}/{client_id}/{refresh_token}/{targets}
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/* SERVICE:DETAILS */}
+
+## Which Setup Should I Use?
+
+Choose **Personal** if you send from a consumer Microsoft mailbox such as
+`@outlook.com`, `@hotmail.com`, `@live.com`, or `@msn.com`. This path uses a
+one-time sign-in to obtain a `refresh_token`, which Apprise then rotates
+automatically during normal use.
+
+Choose **Organizational** if you send from a work or school Microsoft 365
+tenant backed by Exchange Online. This path uses an Azure app registration plus
+the `client_credentials` flow with your `tenant_id`, `client_id`, and
+`client_secret`.
+
+<Tabs>
+
+<TabItem label="Personal">
+
+Personal consumer accounts — `@outlook.com`, `@hotmail.com`, `@live.com`,
+`@msn.com`, and regional Hotmail/Live variants — use a **refresh token** flow
+instead of the organizational client credentials flow.
+
+This involves two phases:
+
+- **One-time setup:** register a public-client app in Azure, then run a short
+  script to sign in and capture your `refresh_token`.
+- **Ongoing:** Apprise uses the stored `refresh_token` to obtain short-lived
+  access tokens automatically. Every successful send silently rotates the
+  refresh token, so it stays alive as long as Apprise is used at least once
+  every 90 days.
+
+## App Registration
+
+1. Go to [**App Registrations**](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
+   in the Azure portal and click **Register an application**.
+   - Give it a name (e.g. `Apprise Personal`).
+   - Under **Supported account types**, select **Personal Microsoft accounts
+     only**.
+   - Under **Redirect URI**, choose **Public client / native (mobile &amp;
+     desktop)** and set the URI to:
+
+     ```text
+     https://login.microsoftonline.com/common/oauth2/nativeclient
+     ```
+
+   - Click **Register**.
+
+1. From the **Overview** panel, copy the **Application (client) ID** - this
+   is your `client_id`.
+
+1. Under **Manage -> Authentication**, scroll to **Advanced settings** and set
+   **Allow public client flows** to **Yes**, then click **Save**. This enables
+   the device code flow used to obtain the initial token.
+
+1. Under **Manage -> API permissions**:
+   - Click **Add a permission** -> **Microsoft Graph** ->
+     **Delegated Permissions**
+   - Search for and check **Mail.Send**, then click **Add permissions**
+
+   :::note
+   `offline_access` (required to receive a rotating refresh token) is included
+   automatically - you do not need to add it separately.
+
+   No admin consent step is required for delegated permissions on personal
+   accounts.
+   :::
+
+## Getting Your Refresh Token
+
+This is a **one-time step**. The scripts below use Microsoft's
+[Device Code Flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code):
+your script prints a short code and a link; you open that link in any browser
+and sign in; the script captures your `refresh_token` automatically.
+
+The whole process typically takes under two minutes.
+
+<Tabs>
+<TabItem label="Python">
+
+Only `requests` is required - already installed if you have Apprise.
+
+Edit the `CLIENT_ID` line, then copy and paste the entire block into your
+terminal.
+
+```python
+import time, requests
+
+# - Edit this line
+CLIENT_ID = "your-client-id-here"   # Application (client) ID from Azure
+# -
+
+DEVICE_URL = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode"
+TOKEN_URL  = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+SCOPE      = "Mail.Send offline_access"
+
+# Step 1 - request a device code
+r = requests.post(DEVICE_URL, data={"client_id": CLIENT_ID, "scope": SCOPE})
+r.raise_for_status()
+d = r.json()
+
+# Step 2 - the script prints a link and a short code; open the link in a
+#           browser and enter the code to sign in with your Microsoft account
+print("\n" + d["message"] + "\n")
+
+# Step 3 - poll quietly until you finish signing in (usually under 60 sec)
+interval = d.get("interval", 5)
+while True:
+    time.sleep(interval)
+    r = requests.post(TOKEN_URL, data={
+        "client_id":   CLIENT_ID,
+        "grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
+        "device_code": d["device_code"],
+    })
+    t = r.json()
+    if "refresh_token" in t:
+        print("Your refresh_token (use this in your Apprise URL):\n")
+        print(t["refresh_token"])
+        break
+    if t.get("error") == "slow_down":
+        interval += 5
+    elif t.get("error") != "authorization_pending":
+        print("Error:", t.get("error_description", t))
+        break
+```
+
+</TabItem>
+<TabItem label="Bash · curl">
+
+No external tools beyond `curl` are needed. Run the steps below in the
+**same terminal session** so the variables carry over between steps.
+
+**Step 1 - Set your client ID and request a device code**
+
+```bash
+# - Edit this line, then paste the whole block
+CLIENT_ID="your-client-id-here"   # Application (client) ID from Azure
+# -
+
+curl -s -X POST \
+  "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode" \
+  --data "client_id=${CLIENT_ID}&scope=Mail.Send+offline_access"
+```
+
+The response is JSON. Look for two values:
+
+- `user_code` - the short code you type in the browser (e.g. `ABCD-EFGH`)
+- `device_code` - the long opaque string you paste into Step 3 below
+
+**Step 2 - Sign in at Microsoft**
+
+Open [**microsoft.com/devicelogin**](https://microsoft.com/devicelogin) in a
+browser and enter the
+`user_code` from the JSON above. Sign in with your Hotmail / Outlook / Live
+account and approve the requested permissions.
+
+**Step 3 - Paste the device code and retrieve your refresh token**
+
+```bash
+# - Edit this line with the device_code value from Step 1
+DEVICE_CODE="paste-device_code-here"   # long string from the JSON above
+# -
+
+# Run this after completing Step 2.
+# If the response shows "authorization_pending", wait a few seconds and
+# run it again - or use the auto-poll loop in the tip below.
+curl -s -X POST \
+  "https://login.microsoftonline.com/consumers/oauth2/v2.0/token" \
+  --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}"
+```
+
+Look for `"refresh_token"` in the JSON response — that value is what goes into
+your Apprise URL.
+
+:::tip[Prefer to wait automatically?]
+
+Replace Step 3 with this loop. It polls every 5 seconds and prints the token
+the moment your browser sign-in completes:
+
+```bash
+while true; do
+  RESULT=$(curl -s -X POST \
+    "https://login.microsoftonline.com/consumers/oauth2/v2.0/token" \
+    --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}")
+  echo "$RESULT" | grep -q '"refresh_token"' && { echo "$RESULT"; break; }
+  sleep 5
+done
+```
+
+:::
+
+</TabItem>
+<TabItem label="PowerShell">
+
+Works on Windows, macOS, and Linux. No extra modules needed -
+`Invoke-RestMethod` is built in.
+
+Edit the `$ClientId` line, then copy and paste the entire block into a
+PowerShell terminal.
+
+```powershell
+# - Edit this line
+$ClientId = "your-client-id-here"   # Application (client) ID from Azure
+# -
+
+$Scope     = "Mail.Send offline_access"
+$DeviceUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode"
+$TokenUrl  = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+
+# Step 1 - request a device code
+$DeviceResp = Invoke-RestMethod -Method Post -Uri $DeviceUrl `
+    -Body @{ client_id = $ClientId; scope = $Scope }
+
+# Step 2 - the script prints a link and a short code; open the link in a
+#           browser and enter the code to sign in with your Microsoft account
+Write-Host ""
+Write-Host $DeviceResp.message
+Write-Host ""
+
+# Step 3 - poll quietly until you finish signing in (usually under 60 sec)
+$DeviceCode = $DeviceResp.device_code
+$Interval   = $DeviceResp.interval
+
+do {
+    Start-Sleep -Seconds $Interval
+    try {
+        $TokenResp = Invoke-RestMethod -Method Post -Uri $TokenUrl `
+            -Body @{
+                client_id   = $ClientId
+                grant_type  = "urn:ietf:params:oauth:grant-type:device_code"
+                device_code = $DeviceCode
+            }
+    } catch {
+        $TokenResp = $_.ErrorDetails.Message | ConvertFrom-Json
+        if ($TokenResp.error -eq "slow_down") { $Interval += 5 }
+    }
+} until ($TokenResp.refresh_token -or
+         $TokenResp.error -notin @("authorization_pending", "slow_down"))
+
+if ($TokenResp.refresh_token) {
+    Write-Host "Your refresh_token (use this in your Apprise URL):`n"
+    Write-Host $TokenResp.refresh_token
+} else {
+    Write-Host "Error: $($TokenResp.error_description)"
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::note[Token lifetime and rotation]
+
+Microsoft's refresh tokens expire if unused for **90 days**. As long as Apprise
+sends at least one notification within that window, the token renews itself
+automatically on every successful send. If it does expire, simply re-run any
+of the scripts above.
+
+:::
+
+## Personal Syntax
+
+Valid syntax is as follows (both `o365://` and `azure://` are accepted aliases):
+
+- `o365://{source}/{client_id}/{refresh_token}/`
+- `o365://{source}/{client_id}/{refresh_token}/{targets}`
+
+Apprise automatically detects personal mode when `source` is a known consumer
+domain (`outlook.com`, `hotmail.com`, `live.com`, `msn.com`, and regional
+variants). Use `?mode=personal` to force personal mode on any other domain.
+
+## Personal Parameters
+
+| Variable      | Required | Description                                                                                                                                                     |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| source        | \*Yes    | Your consumer email address (e.g. `user@outlook.com`). Used as the sender and, when no `targets` are given, also as the recipient.                              |
+| client_id     | \*Yes    | The **Application (client) ID** from your Azure app registration.                                                                                               |
+| refresh_token | \*Yes    | The refresh token from the one-time setup above. Apprise rotates this automatically on each successful send.                                                    |
+| targets       | No       | One or more recipient email addresses. If omitted, email is sent to `source`.                                                                                   |
+| to            | No       | Alias for `targets`. Useful in YAML configuration.                                                                                                              |
+| cc            | No       | One or more **Carbon Copy** addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                                    |
+| bcc           | No       | One or more **Blind Carbon Copy** addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                              |
+| reply_to      | No       | One or more **Reply-To** addresses. When a recipient replies, their reply goes here instead of to `source`. Accepts comma-separated values and named addresses. |
+| mode          | No       | Force personal mode on a non-standard domain: `?mode=personal`.                                                                                                 |
+
+{/* TEMPLATE:SERVICE-PARAMS */}
+
+:::note
+
+Query-style aliases are also supported: `oauth_id` for `client_id` and
+`oauth_secret` for `refresh_token`.
+
+The `refresh_token` is a long string that often contains characters (`+`, `=`,
+`/`) that conflict with URL parsing. If Apprise cannot parse your URL correctly,
+URL-encode the token first using [this site](https://www.url-encode-decode.com/)
+or replace characters manually:
+
+- `+` -> `%2B`
+- `=` -> `%3D`
+- `/` -> `%2F`
+
+:::
+
+## Personal Examples
+
+Send from a personal Outlook account (mode is auto-detected from the domain):
+
+```bash
+# source:        you@outlook.com
+# client_id:     aa-bb-cc-dd-ee
+# refresh_token: (from the script above)
+apprise -vv -t "Test Title" -b "Test Body" \
+   "o365://you@outlook.com/aa-bb-cc-dd-ee/your-refresh-token-here/"
+```
+
+Send to a different recipient from your Hotmail account:
+
+```bash
+apprise -vv -t "Hello" -b "Message body" \
+   "o365://me@hotmail.com/aa-bb-cc-dd-ee/your-refresh-token-here/friend@example.com"
+```
+
+Force personal mode on a non-standard domain:
+
+```bash
+apprise -vv -t "Hello" -b "Message body" \
+   "o365://me@custom.com/aa-bb-cc-dd-ee/your-refresh-token-here/?mode=personal"
+```
+
+</TabItem>
+
+<TabItem label="Organizational">
+
+## Account Setup
+
+Because Microsoft has disabled Basic Authentication (Username/Password),
+**you must register an application in Azure** to generate the credentials
+Apprise needs (Client ID, Secret, etc).
+
+1. From the [**Azure Portal**](https://portal.azure.com/) go to
+   **App Registrations**
+   ([alt link](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)).
+   - Use the search bar at the top of the portal and type `App Registrations`.
+   - If you still cannot access anything, your organization may restrict this.
+     You may need to contact your administrator to proceed.<br/>
+     ![Office 365](/services/office365/images/1acb45eda098a004.png)
+
+1. Click **Register an application**.
+
+<details>
+<summary>Warning: screen you may see if you do not have an Azure account</summary>
+
+You must have an Azure account (specifically a subscription) for this area to
+work. Subscriptions are free but still require a credit card on file. To
+create a subscription:
+
+<img
+  src="/services/office365/images/2acb45bda0e8ac14.png"
+  alt="These applications are associated with the account user@example.com
+   but are not contained within any directory. The ability to create
+   applications outside of a directory has been deprecated."
+/>
+<ul>
+  <li>
+    Go to: <strong>Azure Portal -> Subscriptions</strong>
+  </li>
+  <li>
+    Click <strong>Add</strong>
+  </li>
+  <li>
+    Choose <strong>Azure subscription (Free)</strong>
+  </li>
+</ul>
+<p>
+  No resources need to be deployed. This simply completes tenant
+  provisioning.
+</p>
+<p>After this, ensure you are viewing the correct directory:</p>
+<ul>
+  <li>Click your avatar (top right)</li>
+  <li>
+    Select <strong>Switch directory</strong>
+  </li>
+  <li>Choose the directory where the subscription was created.</li>
+</ul>
+</details>
+
+1. In the registration form:
+   - Give it a name (for example: `Apprise Notifications`).
+   - **Crucial:** Select the 3rd option: **Accounts in any organizational
+     directory (Any Microsoft Entra ID tenant - Multitenant) and personal
+     Microsoft accounts**.
+
+   :::note
+   Selecting "and personal Microsoft accounts" during registration does
+   **not** make personal consumer accounts work with this flow. The
+   organizational `client_credentials` grant still fails for
+   `@outlook.com` / `@hotmail.com` accounts. Use the **Personal** tab
+   for those.
+   :::
+   - Click **Register**.
+
+1. From the **Overview** panel you can retrieve:
+   - The **Application (client) ID** -> your `client_id`
+   - The **Object ID** -> your `source` (when using an Object ID instead of an
+     email address)
+   - The **Directory (tenant) ID** -> your `tenant_id`
+
+1. To create your `client_secret`, expand **Manage** on the left:
+   - Click **Certificates & secrets** -> **Client secrets**
+   - Click **New client secret**
+   - Provide a description (for example `Apprise Secret`) and an expiry
+   - Click **Add**
+
+   :::caution[This step causes the most failures]
+
+   Azure shows two values:
+
+   | Field        | Use this? |
+   | ------------ | --------- |
+   | Secret Value | ✅ Yes    |
+   | Secret ID    | ❌ No     |
+
+   The **Secret Value**:
+   - Is only visible once
+   - Becomes masked after you leave the page
+   - Is the actual password
+
+   If unsure, simply regenerate the secret — delete the old one and create a
+   new one.
+   :::
+
+1. To set up permissions, expand **Manage** on the left:
+   - Click **API permissions**. You will likely already have **User.Read** as
+     a default; we need to add more.
+   - Click **Add a permission** -> **Microsoft Graph** ->
+     **Application Permissions**
+   - Search for and check **Mail.Send**, then click **Add permissions**
+   - Also add:
+     - **User.Read.All** - allows Apprise to resolve your Object ID when used
+       as `source`
+     - **Mail.ReadWrite** (optional) - required only for large attachments
+       (> 3 MB)
+
+   **Important:** After adding, click **Grant admin consent for &lt;Directory
+   Name&gt;** for the permissions to take effect. This button is next to
+   **Add a permission**.
+
+:::caution[Exchange Online license required]
+
+The `Mail.Send` **application permission** requires the sender mailbox to
+be backed by **Exchange Online** — available only in paid Microsoft 365
+Business plans (E1, E3, E5, Apps for Business, etc.).
+
+Custom domains hosted under Microsoft 365 Business (e.g.
+`user@yourcompany.com`) work correctly — they are backed by Exchange Online
+like any other organizational tenant.
+
+**If you receive a `401` error**, verify that:
+
+1. Your Azure app is registered under a **work/school** (organizational)
+   account, **not** a personal Microsoft account.
+1. The `source` mailbox has an **Exchange Online** license.
+1. You copied the **Secret Value** (not the Secret ID) from the portal.
+
+   :::
+
+1. You are ready. 🙂
+
+## Organizational Syntax
+
+Valid syntax is as follows (both `o365://` and `azure://` are accepted aliases):
+
+- `o365://{source}/{tenant_id}/{client_id}/{client_secret}/`
+- `o365://{source}/{tenant_id}/{client_id}/{client_secret}/{targets}`
+
+## Organizational Parameters
+
+| Variable      | Required | Description                                                                                                                                                     |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| source        | \*Yes    | The **email address** or **Object ID** of the Exchange Online mailbox used to send mail. This mailbox must have the `Mail.Send` application permission granted. |
+| tenant_id     | \*Yes    | The **Tenant ID** (Directory ID) associated with your App Registration.                                                                                         |
+| client_id     | \*Yes    | The **Client ID** (Application ID) associated with your App Registration.                                                                                       |
+| client_secret | \*Yes    | The **Client Secret** you generated in "Certificates & secrets".                                                                                                |
+| targets       | No       | One or more recipient email addresses. If omitted, the email is sent to the address identified by `source`.                                                     |
+| to            | No       | Alias for `targets`. Useful in YAML configuration.                                                                                                              |
+| cc            | No       | One or more **Carbon Copy** addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                                    |
+| bcc           | No       | One or more **Blind Carbon Copy** addresses. Accepts comma-separated values and named addresses (e.g. `Name <email@example.com>`).                              |
+| reply_to      | No       | One or more **Reply-To** addresses. When a recipient replies, their reply goes here instead of to `source`. Accepts comma-separated values and named addresses. |
+
+{/* TEMPLATE:SERVICE-PARAMS */}
+
+:::note
+
+- Query-style aliases are also supported: `oauth_id` for `client_id` and
+  `oauth_secret` for `client_secret`.
+- If no `targets` are specified, the notification is sent to the address
+  identified by `source`.
+- The `client_secret` often contains characters (`?`, `@`, `/`) that conflict
+  with URL parsing. If Apprise cannot parse your URL, URL-encode the value
+  first. You can use [this site](https://www.url-encode-decode.com/) or swap
+  characters manually ([explained here](/qa/special-characters/)):
+  - `?` -> `%3F`
+  - `@` -> `%40`
+  - `/` -> `%2F`
+
+:::
+
+## Organizational Examples
+
+Send an email notification from an Exchange Online mailbox:
+
+```bash
+# tenant_id:  ab-cd-ef-gh
+# source:     user@example.com
+# client_id:  zz-yy-xx-ww
+# secret:     rt/djdwjjd  (/ URL-encoded as %2F)
+apprise -vv -t "Test Title" -b "Test Body" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/"
+```
+
+Send to multiple recipients with CC and BCC:
+
+```bash
+apprise -vv -t "Test Title" -b "Test Body" \
+   "o365://user@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/recipient@example.com?cc=manager@example.com&bcc=audit@example.com"
+```
+
+Send with a Reply-To address (useful for contact forms - replies go to the end
+user, not the sending mailbox):
+
+```bash
+apprise -vv -t "Contact Form" -b "Someone contacted you" \
+   "o365://noreply@example.com/ab-cd-ef-gh/zz-yy-xx-ww/rt%2Fdjdwjjd/support@example.com?reply_to=customer@external.com"
+```
+
+</TabItem>
+
+</Tabs>
