@@ -84,11 +84,14 @@ Apprise also accepts `wecom://` as a schema prefix for WeCom users. It automatic
 
 #### Named Webhook Endpoint
 
-When using `?channel=webhook` you can also target a specific named endpoint using `?name=`:
+When using `?channel=webhook` you can also target a specific named endpoint. Two equivalent forms are accepted:
 
 ```text
 pushplus://{token}?channel=webhook&name={webhook_name}
+pushplus://{webhook_name}@{token}
 ```
+
+In the second form (`schema://{name}@{token}`) the webhook channel is implied -- you do not need to add `?channel=webhook` explicitly. An explicit `?channel=` always overrides the implication if you need a different channel alongside a user@ name.
 
 ### Message Rendering
 
@@ -113,16 +116,17 @@ Valid syntax is as follows:
 - `pushplus://{token}?channel={channel}`
 - `pushplus://{token}/{topic}?channel={channel}`
 - `pushplus://{token}?channel=webhook&name={webhook_name}`
+- `pushplus://{webhook_name}@{token}`
 - `wecom://{token}`
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                 |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| token    | \*Yes    | Your personal PushPlus token from the dashboard. May also be supplied as `?token=`.                                                         |
-| topic    | No       | Group code placed in the URL path. Multiple topics may appear; one API call is made per topic. May also be supplied as `?topic=` or `?to=`. |
-| channel  | No       | Delivery channel. One of `wechat` (default), `webhook`, `cp`, `wecom`, `mail`, `sms`. Supplied as `?channel=` or its alias `?mode=`.        |
-| name     | No       | Webhook endpoint name. Only used when `?channel=webhook`. Supplied as `?name=`.                                                             |
+| Variable | Required | Description                                                                                                                                                        |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| token    | \*Yes    | Your personal PushPlus token from the dashboard. May also be supplied as `?token=`.                                                                                |
+| topic    | No       | Group code placed in the URL path. Multiple topics may appear; one API call is made per topic. May also be supplied as `?topic=` or `?to=`.                        |
+| channel  | No       | Delivery channel. One of `wechat` (default), `webhook`, `cp`, `wecom`, `mail`, `sms`. Supplied as `?channel=` or its alias `?mode=`.                               |
+| name     | No       | Webhook endpoint name. Only used when `?channel=webhook`. Supplied as `?name=` or as the user@ component: `pushplus://{name}@{token}` (implies `channel=webhook`). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -174,11 +178,18 @@ apprise -vv -t "Title" -b "Group email" \
     "pushplus://abc123def456ghi789jkl012mno345pq/myteamgroup?channel=mail"
 ```
 
-Deliver via a named webhook endpoint:
+Deliver via a named webhook endpoint (long form):
 
 ```bash
 apprise -vv -t "Title" -b "Webhook payload" \
     "pushplus://abc123def456ghi789jkl012mno345pq?channel=webhook&name=myhook"
+```
+
+Deliver via a named webhook endpoint (compact form -- channel implied):
+
+```bash
+apprise -vv -t "Title" -b "Webhook payload" \
+    "pushplus://myhook@abc123def456ghi789jkl012mno345pq"
 ```
 
 Use the WeCom schema alias (equivalent to `?channel=cp`):

@@ -84,11 +84,14 @@ Apprise accepte également `wecom://` comme préfixe de schéma pour les utilisa
 
 #### Point de Terminaison Webhook Nommé
 
-Lorsque vous utilisez `?channel=webhook`, vous pouvez également cibler un point de terminaison nommé spécifique avec `?name=` :
+Lorsque vous utilisez `?channel=webhook`, vous pouvez également cibler un point de terminaison nommé spécifique. Deux formes équivalentes sont acceptées :
 
 ```text
 pushplus://{token}?channel=webhook&name={webhook_name}
+pushplus://{webhook_name}@{token}
 ```
+
+Dans la deuxième forme (`schema://{name}@{token}`), le canal webhook est implicite -- il n'est pas nécessaire d'ajouter `?channel=webhook` explicitement. Un `?channel=` explicite remplace toujours cette implication si vous avez besoin d'un canal différent.
 
 ### Rendu des Messages
 
@@ -113,16 +116,17 @@ La syntaxe valide est la suivante :
 - `pushplus://{token}?channel={channel}`
 - `pushplus://{token}/{topic}?channel={channel}`
 - `pushplus://{token}?channel=webhook&name={webhook_name}`
+- `pushplus://{webhook_name}@{token}`
 - `wecom://{token}`
 
 ## Détail des Paramètres
 
-| Variable | Requis | Description                                                                                                                                                                  |
-| -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token    | \*Oui  | Votre token PushPlus personnel depuis le tableau de bord. Peut également être fourni via `?token=`.                                                                          |
-| topic    | Non    | Code de groupe placé dans le chemin de l'URL. Plusieurs topics peuvent apparaître ; un appel API est effectué par topic. Peut également être fourni via `?topic=` ou `?to=`. |
-| channel  | Non    | Canal de livraison. L'un des suivants : `wechat` (défaut), `webhook`, `cp`, `wecom`, `mail`, `sms`. Fourni via `?channel=` ou son alias `?mode=`.                            |
-| name     | Non    | Nom du point de terminaison webhook. Utilisé uniquement lorsque `?channel=webhook`. Fourni via `?name=`.                                                                     |
+| Variable | Requis | Description                                                                                                                                                                                   |
+| -------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | \*Oui  | Votre token PushPlus personnel depuis le tableau de bord. Peut également être fourni via `?token=`.                                                                                           |
+| topic    | Non    | Code de groupe placé dans le chemin de l'URL. Plusieurs topics peuvent apparaître ; un appel API est effectué par topic. Peut également être fourni via `?topic=` ou `?to=`.                  |
+| channel  | Non    | Canal de livraison. L'un des suivants : `wechat` (défaut), `webhook`, `cp`, `wecom`, `mail`, `sms`. Fourni via `?channel=` ou son alias `?mode=`.                                             |
+| name     | Non    | Nom du point de terminaison webhook. Utilisé uniquement lorsque `?channel=webhook`. Fourni via `?name=` ou via le composant user@ : `pushplus://{name}@{token}` (implique `channel=webhook`). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -174,11 +178,18 @@ apprise -vv -t "Titre" -b "E-mail de groupe" \
     "pushplus://abc123def456ghi789jkl012mno345pq/mongroupe?channel=mail"
 ```
 
-Livrer via un point de terminaison webhook nommé :
+Livrer via un point de terminaison webhook nommé (forme longue) :
 
 ```bash
 apprise -vv -t "Titre" -b "Charge utile webhook" \
     "pushplus://abc123def456ghi789jkl012mno345pq?channel=webhook&name=monhook"
+```
+
+Livrer via un point de terminaison webhook nommé (forme compacte -- canal implicite) :
+
+```bash
+apprise -vv -t "Titre" -b "Charge utile webhook" \
+    "pushplus://monhook@abc123def456ghi789jkl012mno345pq"
 ```
 
 Utiliser l'alias de schéma WeCom (équivalent à `?channel=cp`) :
