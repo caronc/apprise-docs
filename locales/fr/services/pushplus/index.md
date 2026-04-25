@@ -1,6 +1,6 @@
 ---
 title: "Notifications Pushplus"
-description: "Envoyer des notifications Pushplus."
+description: "Envoyer des notifications WeChat et multi-canaux via la plateforme PushPlus."
 sidebar:
   label: "Pushplus"
 
@@ -8,10 +8,14 @@ source: https://www.pushplus.plus/
 
 schemas:
   - pushplus
+  - wecom
 
 sample_urls:
   - https://www.pushplus.plus/send?token={token}
   - pushplus://{token}
+  - pushplus://{token}/{topic}
+  - pushplus://{token}?channel={channel}
+  - wecom://{token}
 
 limits:
   max_chars: 20000
@@ -21,21 +25,82 @@ limits:
 
 ## Configuration du Compte
 
-Pushplus est une plateforme de notification chinoise utilisée pour envoyer des alertes vers WeChat ou des points de terminaison de navigateur. Elle utilise un système de webhook basé sur des tokens pour distribuer les messages.
+PushPlus est une plateforme de notification chinoise qui distribue les messages via WeChat et plusieurs autres canaux (e-mail, SMS, WeCom, webhook). Elle utilise un token personnel pour authentifier les requêtes.
 
-Une fois que vous avez créé un compte et souscrit à un canal, un **token** vous sera attribué pour l'envoi des messages.
+1. Inscrivez-vous ou connectez-vous sur [PushPlus](https://www.pushplus.plus/).
+2. Copiez le **Token** affiché dans votre tableau de bord sous la section « Push ».
+3. Installez optionnellement le mini-programme PushPlus dans WeChat pour recevoir les messages sur votre téléphone.
 
-1. Inscrivez-vous ou connectez-vous à votre compte sur [Pushplus](https://www.pushplus.plus/).
-2. Depuis votre tableau de bord, copiez votre **Token** sous la section « Push ».
-3. Configurez optionnellement l'application Pushplus dans WeChat pour la livraison mobile.
-
-Votre URL de notification ressemblera à ceci :
+L'URL de notification pour le cas d'usage le plus simple est :
 
 ```text
-https://www.pushplus.plus/send?token=abc123def456ghi789jkl012mno345pq
+pushplus://{token}
 ```
 
-Apprise prend en charge à la fois l'URL native complète du webhook Pushplus et sa version simplifiée.
+### Envoi en Groupe (Topic)
+
+PushPlus prend également en charge l'envoi d'une notification à tous les membres abonnés à un groupe nommé.
+
+1. Ouvrez la section **Group Push** de la console PushPlus.
+2. Créez un groupe et notez son **code de groupe** — c'est la valeur du topic.
+3. Les abonnés rejoignent le groupe dans WeChat ; lorsque vous envoyez au topic, tous les membres reçoivent le message.
+
+Placez un ou plusieurs codes de groupe directement dans le chemin de l'URL :
+
+```text
+pushplus://{token}/{topic}
+pushplus://{token}/{topic1}/{topic2}
+```
+
+Lorsque plusieurs topics sont listés, Apprise envoie la notification à chaque groupe dans un appel API séparé.
+
+### Canaux de Livraison
+
+Par défaut, les notifications arrivent via WeChat. Vous pouvez les rediriger vers un canal différent en utilisant le paramètre de requête `?channel=` (ou son synonyme `?mode=`) :
+
+| Valeur `?channel=` | Canal                                   |
+| ------------------ | --------------------------------------- |
+| `wechat`           | WeChat (défaut — peut être omis)        |
+| `webhook`          | Point de terminaison webhook configuré  |
+| `cp`               | WeCom (WeChat Work / Enterprise WeChat) |
+| `wecom`            | Alias convivial pour `cp` — même canal  |
+| `mail`             | Adresse e-mail enregistrée              |
+| `sms`              | SMS                                     |
+
+```text
+pushplus://{token}?channel=mail
+pushplus://{token}/{topic}?channel=cp
+```
+
+`channel=` et `mode=` sont entièrement interchangeables ; utilisez celui qui se lit le plus naturellement dans votre configuration.
+
+#### Alias de Schéma
+
+Apprise accepte également `wecom://` comme préfixe de schéma pour les utilisateurs WeCom. Il définit automatiquement le canal de livraison à `cp` — aucun paramètre de requête supplémentaire n'est nécessaire :
+
+| Schéma            | Équivalent à                    |
+| ----------------- | ------------------------------- |
+| `wecom://{token}` | `pushplus://{token}?channel=cp` |
+
+#### Point de Terminaison Webhook Nommé
+
+Lorsque vous utilisez `?channel=webhook`, vous pouvez également cibler un point de terminaison nommé spécifique avec `?name=` :
+
+```text
+pushplus://{token}?channel=webhook&name={webhook_name}
+```
+
+### Rendu des Messages
+
+Le corps du message est rendu par PushPlus sur leurs serveurs en utilisant un template qui correspond au paramètre de format standard d'Apprise :
+
+| `?format=` Apprise | PushPlus rend comme                       |
+| ------------------ | ----------------------------------------- |
+| `html` (défaut)    | HTML — gras, liens et images fonctionnent |
+| `markdown`         | Markdown — titres, gras, listes, etc.     |
+| `text`             | Texte brut — sans mise en forme           |
+
+Il n'y a pas de paramètre spécifique à PushPlus ; définissez `?format=markdown` (ou l'équivalent dans votre YAML/config) de la même manière que pour tout autre service Apprise.
 
 ## Syntaxe
 
@@ -43,34 +108,89 @@ La syntaxe valide est la suivante :
 
 - `https://www.pushplus.plus/send?token={token}`
 - `pushplus://{token}`
+- `pushplus://{token}/{topic}`
+- `pushplus://{token}/{topic1}/{topic2}`
+- `pushplus://{token}?channel={channel}`
+- `pushplus://{token}/{topic}?channel={channel}`
+- `pushplus://{token}?channel=webhook&name={webhook_name}`
+- `wecom://{token}`
 
 ## Détail des Paramètres
 
-| Variable | Requis | Description                                                             |
-| -------- | ------ | ----------------------------------------------------------------------- |
-| token    | Oui    | Votre token Pushplus personnel disponible dans les paramètres du compte |
+| Variable | Requis | Description                                                                                                                                                                  |
+| -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | \*Oui  | Votre token PushPlus personnel depuis le tableau de bord. Peut également être fourni via `?token=`.                                                                          |
+| topic    | Non    | Code de groupe placé dans le chemin de l'URL. Plusieurs topics peuvent apparaître ; un appel API est effectué par topic. Peut également être fourni via `?topic=` ou `?to=`. |
+| channel  | Non    | Canal de livraison. L'un des suivants : `wechat` (défaut), `webhook`, `cp`, `wecom`, `mail`, `sms`. Fourni via `?channel=` ou son alias `?mode=`.                            |
+| name     | Non    | Nom du point de terminaison webhook. Utilisé uniquement lorsque `?channel=webhook`. Fourni via `?name=`.                                                                     |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## Voir Aussi
+
+Si vous souhaitez envoyer des messages directement à un bot de groupe WeCom — sans passer par PushPlus — consultez le plugin [WeCom Bot](../wecombot/) (`wecombot://`). Il utilise l'API webhook WeCom Group Bot directement et requiert une clé de bot, non un token PushPlus.
+
 ## Exemples
 
-Utilisation de l'URL Apprise simplifiée :
+Envoyer une notification personnelle simple :
 
 ```bash
-apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
+apprise -vv -t "Titre" -b "Bonjour depuis Apprise" \
     pushplus://abc123def456ghi789jkl012mno345pq
 ```
 
-Utilisation du token en tant que paramètre de requête :
+Envoyer un message formaté en Markdown :
 
 ```bash
-apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
-    pushplus://?token=abc123def456ghi789jkl012mno345pq
+apprise -vv -t "Alerte" -b "## Avertissement\n\nQuelque chose s'est produit." \
+    "pushplus://abc123def456ghi789jkl012mno345pq?format=markdown"
 ```
 
-Utilisation de l'URL native complète du webhook :
+Envoyer à un groupe (topic) :
 
 ```bash
-apprise -vv -t "Title" -b "Ceci est le Corps du Message" \
-    https://www.pushplus.plus/send?token=abc123def456ghi789jkl012mno345pq
+apprise -vv -t "Alerte Équipe" -b "Déploiement terminé." \
+    pushplus://abc123def456ghi789jkl012mno345pq/mongroupe
+```
+
+Envoyer à deux groupes simultanément (un appel API par groupe) :
+
+```bash
+apprise -vv -t "Diffusion" -b "Maintenance système dans 30 minutes." \
+    pushplus://abc123def456ghi789jkl012mno345pq/equipe-ops/equipe-dev
+```
+
+Livrer par e-mail :
+
+```bash
+apprise -vv -t "Titre" -b "Corps de l'e-mail" \
+    "pushplus://abc123def456ghi789jkl012mno345pq?channel=mail"
+```
+
+Envoyer à un groupe et livrer par e-mail :
+
+```bash
+apprise -vv -t "Titre" -b "E-mail de groupe" \
+    "pushplus://abc123def456ghi789jkl012mno345pq/mongroupe?channel=mail"
+```
+
+Livrer via un point de terminaison webhook nommé :
+
+```bash
+apprise -vv -t "Titre" -b "Charge utile webhook" \
+    "pushplus://abc123def456ghi789jkl012mno345pq?channel=webhook&name=monhook"
+```
+
+Utiliser l'alias de schéma WeCom (équivalent à `?channel=cp`) :
+
+```bash
+apprise -vv -t "Titre" -b "Message WeCom" \
+    wecom://abc123def456ghi789jkl012mno345pq
+```
+
+Utiliser l'URL native de l'API PushPlus directement :
+
+```bash
+apprise -vv -t "Titre" -b "Bonjour" \
+    "https://www.pushplus.plus/send?token=abc123def456ghi789jkl012mno345pq"
 ```

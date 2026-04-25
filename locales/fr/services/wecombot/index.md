@@ -54,6 +54,10 @@ La syntaxe valide est la suivante :
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## Voir Aussi
+
+Si vous utilisez [PushPlus](../pushplus/), son alias de schéma `wecom://` (`wecom://{token_pushplus}`) livre également les messages vers WeCom via la plateforme PushPlus — un chemin d'intégration différent qui nécessite un token personnel PushPlus plutôt qu'une clé de bot WeCom.
+
 ## Exemples
 
 Envoyer une notification WeCom Bot :
