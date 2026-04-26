@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "Documentation Apprise",
-    "description": "Documentation Apprise. Envoyez des notifications vers plus de 120 services, y compris des e-mails, des plateformes de clavardage et des fournisseurs SMS.",
+    "description": "Documentation Apprise. Envoyez des notifications vers {template:service:count} services, y compris des e-mails, des plateformes de clavardage et des fournisseurs SMS.",
     "logo": "Apprise"
   },
   "nav": {
