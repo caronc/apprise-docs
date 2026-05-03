@@ -56,7 +56,10 @@ La syntaxe valide est la suivante :
 
 ## Voir Aussi
 
-Si vous utilisez [PushPlus](../pushplus/), son alias de schéma `wecom://` (`wecom://{token_pushplus}`) livre également les messages vers WeCom via la plateforme PushPlus — un chemin d'intégration différent qui nécessite un token personnel PushPlus plutôt qu'une clé de bot WeCom.
+Apprise propose deux integrations WeCom/WeChat complementaires :
+
+- **[WeChat (WeCom)](../wechat/)** -- envoie directement aux utilisateurs, departements et etiquettes WeCom via l'API de messages de l'application WeCom ; necessite un CorpID, un Secret d'Application et un AgentID depuis la console d'administration WeCom.
+- **[PushPlus](../pushplus/)** -- achemine les notifications via la plateforme PushPlus, qui prend en charge la livraison via WeChat, WeCom, email et SMS depuis un seul token personnel.
 
 ## Exemples
 

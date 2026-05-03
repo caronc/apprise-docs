@@ -132,7 +132,10 @@ La syntaxe valide est la suivante :
 
 ## Voir Aussi
 
-Si vous souhaitez envoyer des messages directement à un bot de groupe WeCom — sans passer par PushPlus — consultez le plugin [WeCom Bot](../wecombot/) (`wecombot://`). Il utilise l'API webhook WeCom Group Bot directement et requiert une clé de bot, non un token PushPlus.
+Apprise propose deux integrations WeCom/WeChat complementaires :
+
+- **[WeChat (WeCom)](../wechat/)** -- envoie directement aux utilisateurs, departements et etiquettes WeCom via l'API de messages de l'application WeCom ; necessite un CorpID, un Secret d'Application et un AgentID depuis la console d'administration WeCom.
+- **[WeCom Bot](../wecombot/)** -- envoie dans un groupe WeCom via une cle de webhook ; plus simple a configurer, mais livre dans un groupe plutot qu'a des utilisateurs ou departements specifiques.
 
 ## Exemples
 
