@@ -440,6 +440,8 @@ Il existe deux tags spéciaux que vous pouvez utiliser pour contrôler le compor
 | `always` | Si vous attribuez le tag `always` à une URL dans votre configuration, elle sera **TOUJOURS** déclenchée, même si vous filtrez sur un autre tag via le CLI.                      |
 | `all`    | Utilisé lors de l'_envoi_ d'une notification (par exemple `apprise --tag=all`). Cela demande à Apprise d'ignorer tous les filtres et de notifier **tous** les services définis. |
 
+Pour les fonctionnalités avancées de tags -- chaînes d'escalade par priorité, filtrage exclusif, tentatives/délai par service et remplacements par appel -- consultez [Routage par Tags & Tentatives](../../library/tag-routing/).
+
 ## Configuration Web Hébergée en Privé
 
 Si vous hébergez votre configuration sur un serveur web privé, Apprise détecte le format en fonction de l'en-tête **Content-Type** renvoyé par le serveur, ou via un paramètre d'URL explicite.

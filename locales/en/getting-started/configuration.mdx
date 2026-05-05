@@ -440,6 +440,8 @@ There are two special tags you can use to control notification behavior.
 | `always` | If you assign the tag `always` to a URL in your config, it will **ALWAYS** trigger, even if you are filtering for a different tag via the CLI.                      |
 | `all`    | Used when _sending_ a notification (e.g. `apprise --tag=all`). This tells Apprise to ignore all filters and notify **every** service defined in your configuration. |
 
+For advanced tagging features -- priority-based escalation chains, exclusive priority filtering, per-service retry and wait, and per-call retry overrides -- see [Tag Routing & Retry](../../library/tag-routing/).
+
 ## Private Web Hosted Configuration
 
 If you are hosting your configuration on a private web server, Apprise detects the format based on the **Content-Type** header returned by the server, or by an explicit URL parameter.

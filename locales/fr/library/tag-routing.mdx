@@ -1,0 +1,382 @@
+---
+title: "Routage par Tags & Tentatives"
+description: "Escalade par priorité, filtrage exclusif, tentatives et délai par service, et remplacement par appel."
+sidebar:
+  order: 4
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Les tags Apprise ne font pas que regrouper des services -- ils peuvent piloter l'**ordre de livraison**, les **chaînes de secours** et le **comportement en cas d'échec** sans modifier une seule ligne de code applicatif.
+
+Cette page explique comment configurer ces fonctionnalités dans vos fichiers de configuration et comment les contrôler depuis la bibliothèque Python ou la CLI.
+
+---
+
+## Tags de Priorité
+
+Chaque tag dans un fichier de configuration peut porter un préfixe numérique de priorité séparé par deux-points : `N:nomdetag`.
+
+Les numéros inférieurs signifient une **urgence plus haute** -- ils sont traités en premier.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Priorité 1 -- canaux d'alerte principaux (urgence maximale)
+1:alerts=slack://tokenA/tokenB/tokenC
+1:alerts=discord://webhook_id/webhook_token
+
+# Priorité 2 -- canaux secondaires (utilisés uniquement si la priorité 1 échoue entièrement)
+2:alerts=telegram://bottoken/chatid
+
+# Priorité 5 -- dernier recours
+5:alerts=mailto://user:pass@example.com
+```
+
+Les tags sans préfixe de priorité ont par défaut la priorité **0** (urgence maximale).
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Priorité 1 -- canaux d'alerte principaux (urgence maximale)
+  - slack://tokenA/tokenB/tokenC:
+      tag: 1:alerts
+
+  - discord://webhook_id/webhook_token:
+      tag: 1:alerts
+
+  # Priorité 2 -- canaux secondaires (utilisés uniquement si la priorité 1 échoue entièrement)
+  - telegram://bottoken/chatid:
+      tag: 2:alerts
+
+  # Priorité 5 -- dernier recours
+  - mailto://user:pass@example.com:
+      tag: 5:alerts
+```
+
+Les tags sans préfixe de priorité ont par défaut la priorité **0** (urgence maximale).
+
+</TabItem>
+</Tabs>
+
+---
+
+## Fonctionnement de l'Envoi
+
+### Mode Escalade (par défaut)
+
+Lorsque vous déclenchez un tag **sans** préfixe de priorité, Apprise utilise la **chaîne d'escalade** :
+
+1. Les services sont regroupés par priorité de tag configurée.
+2. Le groupe au numéro le plus bas (urgence la plus haute) s'exécute en premier.
+3. Si **chaque** service de ce groupe réussit, Apprise retourne `True` immédiatement -- les groupes de numéros supérieurs ne sont jamais déclenchés.
+4. Si un service du groupe échoue, Apprise **escalade** vers le niveau de priorité suivant.
+
+```python
+# Déclencher tous les services 'alerts' avec la chaîne d'escalade.
+# Les entrées de priorité 1 s'exécutent en premier. Si elles réussissent toutes,
+# les entrées de priorité 5 ne sont jamais déclenchées.
+apobj.notify(body="Utilisation disque à 90%", tag="alerts")
+```
+
+```bash
+# Équivalent CLI
+apprise --config=config.yml --tag="alerts" --body="Utilisation disque à 90%"
+```
+
+### Formation des Groupes
+
+Tous les services partageant le **même nom de tag et le même numéro de priorité** sont traités comme un seul groupe. Le groupe est considéré comme réussi uniquement si **chaque** service qu'il contient réussit. Si un seul service échoue, Apprise escalade immédiatement vers le groupe au numéro supérieur suivant.
+
+Les tags sans préfixe numérique ont par défaut la priorité **0** -- le niveau d'urgence le plus élevé. Cela signifie qu'il est possible de mélanger des versions simples et préfixées d'un même tag pour créer une chaîne d'escalade sans modifier les entrées d'URL existantes :
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Priorité 0 (par défaut, urgence maximale) -- ces deux entrées forment le premier groupe
+abc=slack://tokenA/tokenB/tokenC
+abc=discord://webhook_id/webhook_token
+
+# Priorité 1 -- secours si le groupe de priorité 0 échoue
+1:abc=telegram://bottoken/chatid
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Priorité 0 (par défaut, urgence maximale) -- ces deux entrées forment le premier groupe
+  - slack://tokenA/tokenB/tokenC:
+      tag: abc
+
+  - discord://webhook_id/webhook_token:
+      tag: abc
+
+  # Priorité 1 -- secours si le groupe de priorité 0 échoue
+  - telegram://bottoken/chatid:
+      tag: 1:abc
+```
+
+</TabItem>
+</Tabs>
+
+Lorsque `notify(tag="abc")` est appelé avec la configuration ci-dessus :
+
+1. Le groupe de priorité 0 (Slack + Discord) s'exécute en premier.
+2. Si **les deux** réussissent, `True` est retourné -- Telegram n'est jamais contacté.
+3. Si **l'un ou l'autre** échoue, Apprise escalade vers le groupe de priorité 1 (Telegram).
+
+### Mode Exclusif
+
+Lorsque vous spécifiez un **préfixe** de priorité dans le filtre, Apprise ignore la chaîne d'escalade et ne notifie que les services dont le tag correspondant porte **exactement** cette priorité.
+
+```python
+# Déclencher UNIQUEMENT les entrées 'alerts' configurées avec la priorité 2.
+# Les entrées de priorité 1 et 5 ne sont pas affectées.
+apobj.notify(body="Fenêtre de maintenance planifiée", tag="2:alerts")
+```
+
+```bash
+# Équivalent CLI
+apprise --config=config.yml --tag="2:alerts" --body="Fenêtre de maintenance planifiée"
+```
+
+| Valeur du filtre | Comportement                                                             |
+| :--------------- | :----------------------------------------------------------------------- |
+| `"alerts"`       | Chaîne d'escalade -- priorité la plus haute (numéro le plus bas) d'abord |
+| `"2:alerts"`     | Exclusif -- uniquement les entrées `alerts` de priorité 2                |
+| `"0:alerts"`     | Exclusif -- uniquement les entrées sans priorité (priorité par défaut)   |
+
+:::note
+Si aucun service ne correspond à la priorité exacte spécifiée, **rien n'est envoyé**. `notify()` retourne `None`
+et la CLI se termine avec le code `3` (aucun service correspondant trouvé). C'est intentionnel -- un filtre
+exclusif est une sélection précise, pas une demande de secours.
+:::
+
+---
+
+## Tentatives et Délai par Service
+
+Chaque service peut être configuré avec son propre nombre de tentatives et délai inter-tentative. Ces paramètres sont indépendants de la chaîne d'escalade et s'appliquent à chaque échec de livraison.
+
+- **`retry`** -- nombre de tentatives supplémentaires après le premier échec (0 = pas de nouvelle tentative).
+- **`wait`** -- secondes de pause entre les tentatives (décimales acceptées ; 0.0 = pas de pause).
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+Ajoutez `?retry=N` et/ou `?wait=S` directement à l'URL sous forme de paramètres de requête.
+
+```apache
+# jusqu'à 3 nouvelles tentatives, avec 5 secondes d'attente entre chacune
+1:alerts=slack://tokenA/tokenB/tokenC?retry=3&wait=5
+
+# jusqu'à 2 nouvelles tentatives avec 1,5 seconde d'attente
+1:alerts=discord://webhook_id/webhook_token?retry=2&wait=1.5
+
+# Canal de secours -- pas besoin de nouvelles tentatives (comportement par défaut)
+5:alerts=mailto://user:pass@example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+Utilisez les clés `retry:` et `wait:` sous chaque entrée d'URL.
+
+```yaml
+version: 1
+urls:
+  # jusqu'à 3 nouvelles tentatives, avec 5 secondes d'attente entre chacune
+  - slack://tokenA/tokenB/tokenC:
+      tag: 1:alerts
+      retry: 3
+      wait: 5
+
+  # jusqu'à 2 nouvelles tentatives avec 1,5 seconde d'attente
+  - discord://webhook_id/webhook_token:
+      tag: 1:alerts
+      retry: 2
+      wait: 1.5
+
+  # Canal de secours -- pas besoin de nouvelles tentatives
+  - mailto://user:pass@example.com:
+      tag: 5:alerts
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+`wait` n'a de sens que lorsque `retry` est supérieur à zéro. Un service avec `retry=0`
+effectue exactement une tentative quelle que soit la valeur de `wait`.
+:::
+
+### Valeurs acceptées
+
+| Paramètre | Type    | Contraintes                                          | Par défaut |
+| :-------- | :------ | :--------------------------------------------------- | :--------- |
+| `retry`   | `int`   | `0` à `10`                                           | `0`        |
+| `wait`    | `float` | `0.0` à `20.0` ; les entiers sont promus en flottant | `0.5`      |
+
+Les valeurs invalides (nombres négatifs, chaînes non numériques, `inf`, `nan`) sont rejetées et reviennent à la valeur par défaut de l'asset (voir [Valeurs par Défaut Globales](#valeurs-par-défaut-globales-via-appriseasset) ci-dessous).
+
+---
+
+## Valeurs par Défaut Globales via AppriseAsset
+
+Si vous souhaitez que **chaque** service d'une session Apprise partage les mêmes valeurs par défaut de tentatives et d'attente sans modifier chaque URL, définissez-les sur `AppriseAsset` :
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(
+    default_service_retry=2,   # jusqu'à 2 nouvelles tentatives en cas d'échec avant d'abandonner
+    default_service_wait=3.0,  # attendre 3 secondes entre les tentatives
+)
+
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+apobj.add("discord://webhook_id/webhook_token")
+
+apobj.notify(body="Valeurs par défaut retry/wait appliquées à chaque service")
+```
+
+Les valeurs par URL (`?retry=` / `?wait=` ou clés YAML) **remplacent** les valeurs par défaut de l'asset pour ce service spécifique uniquement. Tous les autres services utilisent toujours les valeurs par défaut de l'asset.
+
+---
+
+## Remplacement du Nombre de Tentatives par Appel
+
+Un `:N` en fin de **valeur de filtre de tag** remplace le nombre de tentatives pour chaque service correspondant, pour **cet appel uniquement**. La configuration permanente du service n'est pas modifiée.
+
+```python
+# Réessayer chaque service correspondant jusqu'à 5 fois pour cet appel uniquement
+apobj.notify(body="Alerte critique", tag="alerts:5")
+
+# Correspondance exclusive priorité 2 ET jusqu'à 3 tentatives par service
+apobj.notify(body="Priorité 2 uniquement", tag="2:alerts:3")
+```
+
+```bash
+# Équivalents CLI
+apprise --config=config.yml --tag="alerts:5"   --body="Alerte critique"
+apprise --config=config.yml --tag="2:alerts:3" --body="Priorité 2 uniquement"
+```
+
+Le suffixe `:N` suit les mêmes règles de validation que le paramètre URL `retry`. Sa spécification n'affecte **pas** `wait` -- chaque service utilise toujours sa valeur d'attente configurée entre les tentatives.
+
+---
+
+## Exemple Complet
+
+L'exemple suivant combine les trois fonctionnalités : escalade par priorité, tentatives/attente par service, et remplacement du nombre de tentatives par appel.
+
+<Tabs>
+<TabItem label="Fichier de configuration">
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# --- Canaux principaux (priorité 1) ---
+# jusqu'à 2 nouvelles tentatives, 2 secondes d'attente entre chacune
+1:alerts=slack://tokenA/tokenB/tokenC?retry=2&wait=2
+1:alerts=discord://webhook_id/webhook_token?retry=2&wait=2
+
+# --- Canal secondaire (priorité 5 -- secours) ---
+# Une seule tentative suffit ; les canaux principaux ont déjà réessayé
+5:alerts=mailto://user:pass@pagerduty.example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Canaux principaux (priorité 1)
+  - slack://tokenA/tokenB/tokenC:
+      tag: 1:alerts
+      retry: 2
+      wait: 2
+
+  - discord://webhook_id/webhook_token:
+      tag: 1:alerts
+      retry: 2
+      wait: 2
+
+  # Canal secondaire (priorité 5 -- secours)
+  # Une seule tentative ; les canaux principaux ont déjà réessayé
+  - mailto://user:pass@pagerduty.example.com:
+      tag: 5:alerts
+```
+
+</TabItem>
+</Tabs>
+
+</TabItem>
+
+<TabItem label="Bibliothèque Python">
+
+```python
+from apprise import Apprise, AppriseConfig
+
+config = AppriseConfig()
+config.add("config.yml")
+
+apobj = Apprise()
+apobj.add(config)
+
+# Alerte normale -- chaîne d'escalade
+# Slack et Discord (priorité 1) s'exécutent en premier ; chacun réessaie jusqu'à 2 fois
+# avec une pause de 2 secondes. Si les deux réussissent, PagerDuty (priorité 5) est ignoré.
+apobj.notify(body="Utilisation disque à 90%", tag="alerts")
+
+# Incident critique -- jusqu'à 5 nouvelles tentatives pour cet appel uniquement
+apobj.notify(body="Base de données inaccessible", tag="alerts:5")
+
+# Fenêtre de maintenance -- cibler uniquement le canal email de secours (priorité 5)
+apobj.notify(body="Coupure planifiée dans 30 min", tag="5:alerts")
+```
+
+</TabItem>
+
+<TabItem label="CLI">
+
+```bash
+# Alerte normale -- chaîne d'escalade
+apprise --config=config.yml --tag="alerts" \
+        --body="Utilisation disque à 90%"
+
+# Incident critique -- jusqu'à 5 nouvelles tentatives pour cet appel uniquement
+apprise --config=config.yml --tag="alerts:5" \
+        --body="Base de données inaccessible"
+
+# Fenêtre de maintenance -- cibler uniquement le canal email de secours (priorité 5)
+apprise --config=config.yml --tag="5:alerts" \
+        --body="Coupure planifiée dans 30 min"
+```
+
+</TabItem>
+</Tabs>
+
+---
+
+## Récapitulatif
+
+| Fonctionnalité                    | Où le configurer                                                        | Portée                          |
+| :-------------------------------- | :---------------------------------------------------------------------- | :------------------------------ |
+| Priorité de tag                   | `N:nomdetag` dans le fichier de configuration (TEXT ou YAML)            | Par définition de service       |
+| Nombre de tentatives par service  | Paramètre URL `?retry=N` ou clé YAML `retry:`                           | Par définition de service       |
+| Délai inter-tentative par service | Paramètre URL `?wait=S` ou clé YAML `wait:`                             | Par définition de service       |
+| Valeurs par défaut globales       | `AppriseAsset(default_service_retry=N, default_service_wait=S)`         | Tous les services de la session |
+| Envoi en escalade                 | `notify(tag="nomdetag")` ou `--tag nomdetag` (sans préfixe de priorité) | Un appel notify() / CLI         |
+| Envoi exclusif                    | `notify(tag="N:nomdetag")` ou `--tag N:nomdetag`                        | Un appel notify() / CLI         |
+| Remplacement des tentatives       | `notify(tag="nomdetag:N")` ou `--tag nomdetag:N`                        | Un appel notify() / CLI         |
