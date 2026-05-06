@@ -342,7 +342,7 @@ apobj.add(config)
 # with a 2 second pause. If both succeed, PagerDuty (priority 5) is skipped.
 apobj.notify(body="Disk usage at 90%", tag="alerts")
 
-# Critical incident -- force 5 retries for this single call
+# Critical incident -- retry each service up to 5 more times on failure
 apobj.notify(body="Database unreachable", tag="alerts:5")
 
 # Maintenance window -- target only the email backup channel (priority 5)
@@ -358,7 +358,7 @@ apobj.notify(body="Scheduled downtime in 30 min", tag="5:alerts")
 apprise --config=config.yml --tag="alerts" \
         --body="Disk usage at 90%"
 
-# Critical incident -- force 5 retries for this single call
+# Critical incident -- retry each service up to 5 more times on failure
 apprise --config=config.yml --tag="alerts:5" \
         --body="Database unreachable"
 
