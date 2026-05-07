@@ -19,6 +19,15 @@ Chaque tag dans un fichier de configuration peut porter un préfixe numérique d
 
 Les numéros inférieurs signifient une **urgence plus haute** -- ils sont traités en premier.
 
+:::note
+Le numero de priorite est **uniquement un marqueur de regroupement et d'ordre de tri**.
+Les services qui partagent le meme nom de tag et le meme numero de priorite sont
+dispatches ensemble comme un seul groupe. Les groupes s'executent dans l'ordre numerique
+croissant (le numero le plus bas en premier). Les valeurs choisies n'ont pas d'importance
+en elles-memes -- `2`, `50` et `9999` sont aussi valides que `1`, `2` et `3`.
+Seul leur ordre relatif compte.
+:::
+
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
@@ -133,6 +142,12 @@ Lorsque `notify(tag="abc")` est appelé avec la configuration ci-dessus :
 2. Si **les deux** réussissent, `True` est retourné -- Telegram n'est jamais contacté.
 3. Si **l'un ou l'autre** échoue, Apprise escalade vers le groupe de priorité 1 (Telegram).
 
+Les tags sans préfixe ayant par défaut la priorité **0**, les définitions `abc` et `0:abc` sont
+entièrement équivalentes dans une configuration de service. Toutes deux placent le service dans le
+groupe de priorité 0, et un filtre `"abc"` comme un filtre `"0:abc"` correspondent aux services
+définis avec l'une ou l'autre forme. Si les deux formes figurent dans le même fichier de
+configuration, ces services seront toujours distribués ensemble comme un groupe unique.
+
 ### Mode Exclusif
 
 Lorsque vous spécifiez un **préfixe** de priorité dans le filtre, Apprise ignore la chaîne d'escalade et ne notifie que les services dont le tag correspondant porte **exactement** cette priorité.
@@ -148,17 +163,41 @@ apobj.notify(body="Fenêtre de maintenance planifiée", tag="2:alerts")
 apprise --config=config.yml --tag="2:alerts" --body="Fenêtre de maintenance planifiée"
 ```
 
-| Valeur du filtre | Comportement                                                             |
-| :--------------- | :----------------------------------------------------------------------- |
-| `"alerts"`       | Chaîne d'escalade -- priorité la plus haute (numéro le plus bas) d'abord |
-| `"2:alerts"`     | Exclusif -- uniquement les entrées `alerts` de priorité 2                |
-| `"0:alerts"`     | Exclusif -- uniquement les entrées sans priorité (priorité par défaut)   |
+| Valeur du filtre | Comportement                                                                              |
+| :--------------- | :---------------------------------------------------------------------------------------- |
+| `"alerts"`       | Chaîne d'escalade -- priorité la plus haute (numéro le plus bas) d'abord                  |
+| `"2:alerts"`     | Exclusif -- uniquement les entrées `alerts` de priorité 2                                 |
+| `"0:alerts"`     | Exclusif -- uniquement les entrées de priorité 0 (`alerts` et `0:alerts` sont identiques) |
 
 :::note
 Si aucun service ne correspond à la priorité exacte spécifiée, **rien n'est envoyé**. `notify()` retourne `None`
 et la CLI se termine avec le code `3` (aucun service correspondant trouvé). C'est intentionnel -- un filtre
 exclusif est une sélection précise, pas une demande de secours.
 :::
+
+### Comportement en cas d'echec de chaine
+
+Quand `notify()` execute plusieurs chaines OR independantes en parallele, le comportement par defaut est de laisser **chaque chaine se terminer** avant de retourner -- meme si une chaine a deja echoue. Cela garantit que chaque service configure obtient au moins une tentative.
+
+Pour arreter immediatement tous les rounds d'escalade restants des qu'une chaine epuise ses groupes de priorite sans succes, definissez `abort_on_chain_failure=True` sur votre `AppriseAsset` :
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(abort_on_chain_failure=True)
+apobj = Apprise(asset=asset)
+
+# ...ajout des services...
+
+# Si la chaine 'ops' echoue completement, Apprise s'arrete immediatement
+# et ne lance pas de nouveaux rounds d'escalade pour la chaine 'securite'.
+apobj.notify(body="Alerte critique", tag=["ops", "securite"])
+```
+
+| `abort_on_chain_failure` | Comportement en cas d'echec d'une chaine                              |
+| :----------------------- | :-------------------------------------------------------------------- |
+| `False` (defaut)         | Toutes les chaines se terminent ; chaque service est tente            |
+| `True`                   | Les rounds restants sont ignores ; `False` est retourne immediatement |
 
 ---
 
@@ -272,6 +311,54 @@ apprise --config=config.yml --tag="2:alerts:3" --body="Priorité 2 uniquement"
 
 Le suffixe `:N` suit les mêmes règles de validation que le paramètre URL `retry`. Sa spécification n'affecte **pas** `wait` -- chaque service utilise toujours sa valeur d'attente configurée entre les tentatives.
 
+### Filtres OR et AND multi-tags
+
+Apprise supporte deux façons de combiner des noms de tags dans un seul appel
+à notify.
+
+| Motif                                                             | Signification                                                       | Exemple                                                                            |
+| :---------------------------------------------------------------- | :------------------------------------------------------------------ | :--------------------------------------------------------------------------------- |
+| **OR** -- plusieurs valeurs de tag séparées                       | Correspond aux services portant **l'un ou l'autre** des tags listés | Plusieurs indicateurs `--tag` dans la CLI ; une liste de chaînes de tags en Python |
+| **AND** -- plusieurs noms de tags dans une seule entrée de filtre | Correspond uniquement aux services portant **tous** les tags listés | Un seul `--tag "a, b"` dans la CLI ; une liste imbriquée en Python                 |
+
+Avec **OR**, chaque nom de tag forme une **chaîne d'escalade indépendante**.
+Toutes les chaînes doivent trouver un groupe de priorité entièrement réussi
+avant que `notify()` retourne `True`. Un suffixe `:N` sur un token ne
+s'applique qu'aux services correspondant à ce token ; les autres ne sont pas
+affectés.
+
+```python
+# OR -- les services devops obtiennent retry=3 ; management obtient retry=2.
+# Chaque chaîne d'escalade de tag s'exécute indépendamment.
+apobj.notify(body="Alerte équipe", tag=["devops:3", "management:2"])
+```
+
+```bash
+# OR -- plusieurs indicateurs --tag ; chacun est une chaîne indépendante.
+apprise --config=config.yml \
+        --tag="devops:3" \
+        --tag="management:2" \
+        --body="Alerte équipe"
+```
+
+Si tous les services `devops` réussissent dans leur groupe de priorité le plus
+bas, Apprise envoie quand même la chaîne `management` -- les deux chaînes sont
+indépendantes l'une de l'autre.
+
+Avec **AND**, les services doivent porter tous les tags du groupe pour être
+sélectionnés. Les services correspondant à un filtre AND partagent une seule
+chaîne d'escalade.
+
+```python
+# AND -- le service doit porter "devops" ET "management" pour correspondre.
+apobj.notify(body="Alerte combinée", tag=[["devops", "management"]])
+```
+
+```bash
+# AND -- valeurs séparées par des virgules dans un seul indicateur --tag.
+apprise --config=config.yml --tag="devops, management" --body="Alerte combinée"
+```
+
 ---
 
 ## Exemple Complet
@@ -369,14 +456,285 @@ apprise --config=config.yml --tag="5:alerts" \
 
 ---
 
+## Variantes
+
+Les exemples ci-dessous illustrent des schemas de notification courants.
+
+:::note
+Les numeros de priorite sont des **marqueurs d'ordre relatif**, pas des valeurs fixes.
+Un service a la priorite `2` sera toujours envoye avant un service a la priorite `500`
+pour le meme tag -- les valeurs exactes n'ont pas d'importance, seul leur ordre compte.
+:::
+
+<Tabs>
+<TabItem label="Exemple 1">
+
+**Tag unique avec deux niveaux d'escalade** -- les valeurs `2` et `50` montrent que les
+numeros sont arbitraires ; seul l'ordre importe.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Premier essai (numero inferieur = urgence superieure)
+2:alertes=slack://tokenA/tokenB/tokenC
+
+# Secours ; s'execute uniquement si la priorite 2 echoue
+50:alertes=mailto://user:pass@example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 2:alertes
+
+  - mailto://user:pass@example.com:
+      tag: 50:alertes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Chaine d'escalade : Slack d'abord, e-mail seulement en cas d'echec
+apobj.notify(body="Alerte", tag="alertes")
+```
+
+```bash
+apprise --config=config.yml --tag="alertes" --body="Alerte"
+```
+
+</TabItem>
+
+<TabItem label="Exemple 2">
+
+**Trois chaines OR avec plusieurs niveaux de priorite** -- `alpha`, `beta` et `gamma`
+sont des chaines independantes dispatchees simultanement. Au sein de chaque chaine,
+les groupes de priorite inferieure s'executent en premier ; les echecs escaladent au
+niveau suivant. Si une chaine epuise tous ses niveaux sans succes, Apprise s'arrete
+immediatement et retourne `False` sans lancer de nouveaux rounds pour les autres chaines.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# alpha : trois niveaux avec des valeurs de priorite arbitraires
+1:alpha=slack://tokenA/tokenB/tokenC
+1:alpha=mailto://user:pass@gmail.com
+5:alpha=telegram://bottoken/chatid
+700:alpha=discord://webhook_id/webhook_token
+
+# beta : un seul niveau a la priorite 500
+500:beta=discord://webhook_id2/webhook_token2
+
+# gamma : deux niveaux ; sans prefixe = priorite 0 (la plus haute)
+gamma=telegram://bottoken2/chatid2
+200:gamma=telegram://bottoken3/chatid3
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # alpha -- trois niveaux d'escalade
+  - slack://tokenA/tokenB/tokenC:
+      tag: 1:alpha
+  - mailto://user:pass@gmail.com:
+      tag: 1:alpha
+  - telegram://bottoken/chatid:
+      tag: 5:alpha
+  - discord://webhook_id/webhook_token:
+      tag: 700:alpha
+
+  # beta -- niveau unique
+  - discord://webhook_id2/webhook_token2:
+      tag: 500:beta
+
+  # gamma -- deux niveaux (sans prefixe = priorite 0)
+  - telegram://bottoken2/chatid2:
+      tag: gamma
+  - telegram://bottoken3/chatid3:
+      tag: 200:gamma
+```
+
+</TabItem>
+</Tabs>
+
+**Ordre de dispatch quand les trois chaines sont combinees en OR :**
+
+| Round                              | alpha                      | beta                   | gamma                     |
+| :--------------------------------- | :------------------------- | :--------------------- | :------------------------ |
+| 1                                  | Slack + Gmail (priorite 1) | Discord (priorite 500) | Telegram 2 (priorite 0)   |
+| 2 (si echec au round 1)            | Telegram (priorite 5)      | -- epuise --           | Telegram 3 (priorite 200) |
+| 3 (si echec au round 2 pour alpha) | Discord (priorite 700)     |                        |                           |
+
+```python
+apobj.notify(body="Diffusion", tag=["alpha", "beta", "gamma"])
+```
+
+```bash
+apprise --config=config.yml \
+        --tag="alpha" \
+        --tag="beta" \
+        --tag="gamma" \
+        --body="Diffusion"
+```
+
+</TabItem>
+
+<TabItem label="Exemple 3">
+
+**Deux chaines OR independantes avec surcharge de tentatives par appel** -- chaque
+token porte son propre suffixe `:N` : les services `devops` obtiennent trois tentatives
+et les services `direction` en obtiennent deux.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+10:devops=slack://tokenA/tokenB/tokenC
+10:direction=discord://webhook_id/webhook_token
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 10:devops
+
+  - discord://webhook_id/webhook_token:
+      tag: 10:direction
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# devops : retry=3 ; direction : retry=2
+apobj.notify(body="Alerte equipe", tag=["devops:3", "direction:2"])
+```
+
+```bash
+apprise --config=config.yml \
+        --tag="devops:3" \
+        --tag="direction:2" \
+        --body="Alerte equipe"
+```
+
+</TabItem>
+
+<TabItem label="Exemple 4">
+
+**Filtre AND** -- seuls les services portant **tous** les tags listes sont dispatches.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Les deux tags sur la meme URL ; seul ce service correspond au filtre AND
+devops direction=slack://tokenA/tokenB/tokenC
+
+# Un seul tag "devops" -- ne correspond PAS au filtre AND
+devops=discord://webhook_id/webhook_token
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Les deux tags sur la meme URL
+  - slack://tokenA/tokenB/tokenC:
+      tag:
+        - devops
+        - direction
+
+  # Un seul tag -- ne correspond pas au filtre AND
+  - discord://webhook_id/webhook_token:
+      tag: devops
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# AND -- le service doit porter "devops" ET "direction"
+apobj.notify(body="Alerte combinee", tag=[["devops", "direction"]])
+```
+
+```bash
+# AND -- valeurs separees par une virgule dans un seul flag --tag
+apprise --config=config.yml --tag="devops, direction" --body="Alerte combinee"
+```
+
+</TabItem>
+
+<TabItem label="Exemple 5">
+
+**Dispatch exclusif** -- un prefixe de priorite dans le filtre cible uniquement ce
+niveau exact. Aucune chaine d'escalade n'est construite ; les services correspon-
+dants sont dispatches en un seul lot plat.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+2:alertes=slack://tokenA/tokenB/tokenC
+50:alertes=mailto://user:pass@example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 2:alertes
+
+  - mailto://user:pass@example.com:
+      tag: 50:alertes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Exclusif : seules les entrees de priorite 50 s'executent ; Slack est ignore
+apobj.notify(body="Maintenance", tag="50:alertes")
+```
+
+```bash
+apprise --config=config.yml --tag="50:alertes" --body="Maintenance"
+```
+
+</TabItem>
+</Tabs>
+
+---
+
 ## Récapitulatif
 
-| Fonctionnalité                    | Où le configurer                                                        | Portée                          |
-| :-------------------------------- | :---------------------------------------------------------------------- | :------------------------------ |
-| Priorité de tag                   | `N:nomdetag` dans le fichier de configuration (TEXT ou YAML)            | Par définition de service       |
-| Nombre de tentatives par service  | Paramètre URL `?retry=N` ou clé YAML `retry:`                           | Par définition de service       |
-| Délai inter-tentative par service | Paramètre URL `?wait=S` ou clé YAML `wait:`                             | Par définition de service       |
-| Valeurs par défaut globales       | `AppriseAsset(default_service_retry=N, default_service_wait=S)`         | Tous les services de la session |
-| Envoi en escalade                 | `notify(tag="nomdetag")` ou `--tag nomdetag` (sans préfixe de priorité) | Un appel notify() / CLI         |
-| Envoi exclusif                    | `notify(tag="N:nomdetag")` ou `--tag N:nomdetag`                        | Un appel notify() / CLI         |
-| Remplacement des tentatives       | `notify(tag="nomdetag:N")` ou `--tag nomdetag:N`                        | Un appel notify() / CLI         |
+| Fonctionnalité                              | Où le configurer                                                        | Portée                          |
+| :------------------------------------------ | :---------------------------------------------------------------------- | :------------------------------ |
+| Priorité de tag                             | `N:nomdetag` dans le fichier de configuration (TEXT ou YAML)            | Par définition de service       |
+| Nombre de tentatives par service            | Paramètre URL `?retry=N` ou clé YAML `retry:`                           | Par définition de service       |
+| Délai inter-tentative par service           | Paramètre URL `?wait=S` ou clé YAML `wait:`                             | Par définition de service       |
+| Valeurs par défaut globales                 | `AppriseAsset(default_service_retry=N, default_service_wait=S)`         | Tous les services de la session |
+| Envoi en escalade                           | `notify(tag="nomdetag")` ou `--tag nomdetag` (sans préfixe de priorité) | Un appel notify() / CLI         |
+| Envoi exclusif                              | `notify(tag="N:nomdetag")` ou `--tag N:nomdetag`                        | Un appel notify() / CLI         |
+| Remplacement des tentatives                 | `notify(tag="nomdetag:N")` ou `--tag nomdetag:N`                        | Un appel notify() / CLI         |
+| Envoi OR multi-tags                         | `notify(tag=["tagA", "tagB"])` ou `--tag tagA --tag tagB`               | Un appel notify() / CLI         |
+| Envoi AND multi-tags                        | `notify(tag=[["tagA", "tagB"]])` ou `--tag "tagA, tagB"`                | Un appel notify() / CLI         |
+| Envoi OR multi-tags avec tentatives par tag | `notify(tag=["tagA:N", "tagB:M"])` ou `--tag tagA:N --tag tagB:M`       | Un appel notify() / CLI         |
+| Arret anticipe sur echec de chaine          | `AppriseAsset(abort_on_chain_failure=True)`                             | Tous les services de la session |

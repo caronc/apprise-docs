@@ -19,6 +19,14 @@ Every tag in a configuration file may carry a numeric priority prefix separated 
 
 Lower numbers mean **higher urgency** -- they are dispatched first.
 
+:::note
+The priority number is **only a grouping and sort-order marker**. Services that share
+the same tag name and the same priority number are dispatched together as one group.
+Groups fire in ascending numeric order (lowest number first). The actual values you
+choose are irrelevant -- `2`, `50`, and `9999` are just as valid as `1`, `2`, and `3`.
+Only their relative order matters.
+:::
+
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
@@ -135,6 +143,11 @@ When `notify(tag="abc")` is called against the above:
 2. If **both** succeed, `True` is returned -- Telegram is never contacted.
 3. If **either** fails, Apprise escalates to the priority-1 group (Telegram).
 
+Because tags without a prefix default to priority **0**, the service definitions `abc` and `0:abc`
+are fully equivalent. Both place the service in priority group 0, and a filter of either `"abc"`
+or `"0:abc"` will match services tagged with either form. If both forms appear in the same
+configuration file, those services will always be dispatched together as a single group.
+
 ### Exclusive Mode
 
 When you specify a priority **prefix** in the filter, Apprise skips the escalation chain and notifies only the services whose matching tag carries **exactly** that priority.
@@ -150,17 +163,41 @@ apobj.notify(body="Scheduled maintenance window", tag="2:alerts")
 apprise --config=config.yml --tag="2:alerts" --body="Scheduled maintenance window"
 ```
 
-| Filter value | Behaviour                                                  |
-| :----------- | :--------------------------------------------------------- |
-| `"alerts"`   | Escalation chain -- highest priority (lowest number) first |
-| `"2:alerts"` | Exclusive -- only priority-2 `alerts` entries              |
-| `"0:alerts"` | Exclusive -- only untagged (default priority) entries      |
+| Filter value | Behaviour                                                                               |
+| :----------- | :-------------------------------------------------------------------------------------- |
+| `"alerts"`   | Escalation chain -- highest priority (lowest number) first                              |
+| `"2:alerts"` | Exclusive -- only priority-2 `alerts` entries                                           |
+| `"0:alerts"` | Exclusive -- only priority-0 entries; `alerts` and `0:alerts` definitions are identical |
 
 :::note
 If no service matches the exact priority you specify, **nothing is sent**. `notify()` returns `None`
 and the CLI exits with code `3` (no matching services found). This is intentional -- an exclusive
 filter is a precise selection, not a fallback request.
 :::
+
+### Multi-Chain Failure Behaviour
+
+When `notify()` runs multiple independent OR chains simultaneously, the default is to let **every chain complete** before returning -- even if one chain has already failed. This ensures every configured service gets at least one attempt.
+
+To instead stop all remaining escalation rounds as soon as any chain exhausts its priority groups without success, set `abort_on_chain_failure=True` on your `AppriseAsset`:
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(abort_on_chain_failure=True)
+apobj = Apprise(asset=asset)
+
+# ...add services...
+
+# If the 'ops' chain fails entirely, Apprise stops immediately and does
+# not run any further escalation rounds for the 'security' chain.
+apobj.notify(body="Critical alert", tag=["ops", "security"])
+```
+
+| `abort_on_chain_failure` | Behaviour when a chain fails                                         |
+| :----------------------- | :------------------------------------------------------------------- |
+| `False` (default)        | All chains complete; every service gets a chance                     |
+| `True`                   | Remaining escalation rounds are skipped; `False` is returned at once |
 
 ---
 
@@ -275,6 +312,51 @@ apprise --config=config.yml --tag="2:alerts:3" --body="Priority 2 only"
 
 The `:N` suffix follows the same validation rules as the `retry` URL parameter. Specifying it does **not** affect `wait` -- each service still uses its own configured wait value between retries.
 
+### Multi-tag OR and AND filters
+
+Apprise supports two ways to combine tag names in a single notify call.
+
+| Pattern                                           | Meaning                                                   | Example                                                            |
+| :------------------------------------------------ | :-------------------------------------------------------- | :----------------------------------------------------------------- |
+| **OR** -- multiple separate tag values            | Match services that carry **any** of the listed tags      | Multiple `--tag` flags in the CLI; a list of tag strings in Python |
+| **AND** -- multiple tag names in one filter entry | Match only services that carry **all** of the listed tags | A single `--tag "a, b"` flag in the CLI; a nested list in Python   |
+
+When using **OR**, each tag name forms an **independent escalation chain**.
+Every chain must find a fully-successful priority group before `notify()`
+returns `True`. A `:N` retry suffix on any token applies only to services
+matched by that token; other tokens are unaffected.
+
+```python
+# OR -- devops services get retry=3; management services get retry=2.
+# Each tag's escalation chain runs independently.
+apobj.notify(body="Team alert", tag=["devops:3", "management:2"])
+```
+
+```bash
+# OR -- multiple --tag flags; each is an independent chain.
+apprise --config=config.yml \
+        --tag="devops:3" \
+        --tag="management:2" \
+        --body="Team alert"
+```
+
+If `devops`-tagged services all succeed at their lowest priority group,
+Apprise still dispatches the `management` chain -- the two chains are
+independent of each other.
+
+When using **AND**, services must carry every tag in the group to be selected.
+All AND-matched services share one escalation chain.
+
+```python
+# AND -- service must carry BOTH "devops" AND "management" to match.
+apobj.notify(body="Combined alert", tag=[["devops", "management"]])
+```
+
+```bash
+# AND -- comma-separated values inside a single --tag flag.
+apprise --config=config.yml --tag="devops, management" --body="Combined alert"
+```
+
 ---
 
 ## Putting It All Together
@@ -381,14 +463,290 @@ apprise --config=config.yml --tag="5:alerts" \
 
 ---
 
+## Variations
+
+The examples below show common notification patterns using the features described on this page.
+
+:::note
+Priority numbers are **relative ordering markers**, not fixed slots. A service at
+priority `2` always dispatches before a service at priority `500` for the same tag --
+the exact values don't matter, only their order. You are free to use any positive
+integers that are meaningful to you.
+:::
+
+<Tabs>
+<TabItem label="Example 1">
+
+**Single tag with two escalation levels** -- priority values `2` and `50` are used to
+show that the numbers are arbitrary; only the ordering matters.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# First to try (lower number = higher urgency)
+2:alerts=slack://tokenA/tokenB/tokenC
+
+# Fallback; only runs if priority 2 fails
+50:alerts=mailto://user:pass@example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 2:alerts
+
+  - mailto://user:pass@example.com:
+      tag: 50:alerts
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Escalation chain: Slack first, email only on failure
+apobj.notify(body="Alert", tag="alerts")
+```
+
+```bash
+apprise --config=config.yml --tag="alerts" --body="Alert"
+```
+
+</TabItem>
+
+<TabItem label="Example 2">
+
+**Three OR chains each with multiple priority levels** -- `alpha`, `beta`, and `gamma`
+are independent chains dispatched simultaneously. Within each chain, lower-numbered
+groups run first; failures escalate to the next level. Once any chain exhausts all its
+levels without success, Apprise stops and returns `False` without running further rounds
+for the other chains.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# alpha: three levels with arbitrary priority values
+1:alpha=slack://tokenA/tokenB/tokenC
+1:alpha=mailto://user:pass@gmail.com
+5:alpha=telegram://bottoken/chatid
+700:alpha=discord://webhook_id/webhook_token
+
+# beta: single level at priority 500
+500:beta=discord://webhook_id2/webhook_token2
+
+# gamma: two levels; no prefix means priority 0 (highest)
+gamma=telegram://bottoken2/chatid2
+200:gamma=telegram://bottoken3/chatid3
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # alpha -- three escalation levels
+  - slack://tokenA/tokenB/tokenC:
+      tag: 1:alpha
+  - mailto://user:pass@gmail.com:
+      tag: 1:alpha
+  - telegram://bottoken/chatid:
+      tag: 5:alpha
+  - discord://webhook_id/webhook_token:
+      tag: 700:alpha
+
+  # beta -- single level
+  - discord://webhook_id2/webhook_token2:
+      tag: 500:beta
+
+  # gamma -- two levels (no prefix = priority 0)
+  - telegram://bottoken2/chatid2:
+      tag: gamma
+  - telegram://bottoken3/chatid3:
+      tag: 200:gamma
+```
+
+</TabItem>
+</Tabs>
+
+**Dispatch order when all three chains are OR-ed together:**
+
+| Round                                | alpha                      | beta                   | gamma                     |
+| :----------------------------------- | :------------------------- | :--------------------- | :------------------------ |
+| 1                                    | Slack + Gmail (priority 1) | Discord (priority 500) | Telegram 2 (priority 0)   |
+| 2 (if round 1 failed for that chain) | Telegram (priority 5)      | -- exhausted --        | Telegram 3 (priority 200) |
+| 3 (if round 2 failed for alpha)      | Discord (priority 700)     |                        |                           |
+
+All three chains run their round-1 batches **simultaneously**. As soon as any chain
+exhausts all its priority levels without success, Apprise returns `False` without
+starting further rounds for the surviving chains.
+
+```python
+apobj.notify(body="Broadcast", tag=["alpha", "beta", "gamma"])
+```
+
+```bash
+apprise --config=config.yml \
+        --tag="alpha" \
+        --tag="beta" \
+        --tag="gamma" \
+        --body="Broadcast"
+```
+
+</TabItem>
+
+<TabItem label="Example 3">
+
+**Two independent OR chains with per-call retry overrides** -- each tag token in the
+filter carries its own `:N` retry suffix so `devops` services get three retries and
+`management` services get two, all in one `notify()` call.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+10:devops=slack://tokenA/tokenB/tokenC
+10:management=discord://webhook_id/webhook_token
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 10:devops
+
+  - discord://webhook_id/webhook_token:
+      tag: 10:management
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# devops services get retry=3; management services get retry=2
+apobj.notify(body="Team alert", tag=["devops:3", "management:2"])
+```
+
+```bash
+apprise --config=config.yml \
+        --tag="devops:3" \
+        --tag="management:2" \
+        --body="Team alert"
+```
+
+</TabItem>
+
+<TabItem label="Example 4">
+
+**AND filter** -- only services that carry **every** listed tag are dispatched.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Both tags on the same URL; only this service matches the AND filter
+devops management=slack://tokenA/tokenB/tokenC
+
+# Only "devops" -- will NOT match an AND filter requiring both
+devops=discord://webhook_id/webhook_token
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Both tags on the same URL; only this service matches the AND filter
+  - slack://tokenA/tokenB/tokenC:
+      tag:
+        - devops
+        - management
+
+  # Only "devops" -- will NOT match an AND filter requiring both
+  - discord://webhook_id/webhook_token:
+      tag: devops
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# AND -- service must carry BOTH "devops" AND "management"
+apobj.notify(body="Combined alert", tag=[["devops", "management"]])
+```
+
+```bash
+# AND -- comma-separated values inside a single --tag flag
+apprise --config=config.yml --tag="devops, management" --body="Combined alert"
+```
+
+</TabItem>
+
+<TabItem label="Example 5">
+
+**Exclusive dispatch** -- a priority prefix in the filter targets only that exact
+priority level. No escalation chain is built; the matched services are dispatched
+as a single flat batch.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+2:alerts=slack://tokenA/tokenB/tokenC
+50:alerts=mailto://user:pass@example.com
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - slack://tokenA/tokenB/tokenC:
+      tag: 2:alerts
+
+  - mailto://user:pass@example.com:
+      tag: 50:alerts
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Exclusive: only priority-50 entries run; Slack (priority 2) is skipped
+apobj.notify(body="Maintenance window", tag="50:alerts")
+```
+
+```bash
+apprise --config=config.yml --tag="50:alerts" --body="Maintenance window"
+```
+
+</TabItem>
+</Tabs>
+
+---
+
 ## Summary
 
-| Feature                    | Where it is set                                                 | Scope                       |
-| :------------------------- | :-------------------------------------------------------------- | :-------------------------- |
-| Tag priority               | `N:tagname` in config file (TEXT or YAML)                       | Per service definition      |
-| Per-service retry count    | `?retry=N` URL param or YAML `retry:` key                       | Per service definition      |
-| Per-service retry wait     | `?wait=S` URL param or YAML `wait:` key                         | Per service definition      |
-| Global retry/wait defaults | `AppriseAsset(default_service_retry=N, default_service_wait=S)` | All services in the session |
-| Escalation dispatch        | `notify(tag="tagname")` or `--tag tagname` (no priority prefix) | One notify() / CLI call     |
-| Exclusive dispatch         | `notify(tag="N:tagname")` or `--tag N:tagname`                  | One notify() / CLI call     |
-| Per-call retry override    | `notify(tag="tagname:N")` or `--tag tagname:N`                  | One notify() / CLI call     |
+| Feature                         | Where it is set                                                   | Scope                       |
+| :------------------------------ | :---------------------------------------------------------------- | :-------------------------- |
+| Tag priority                    | `N:tagname` in config file (TEXT or YAML)                         | Per service definition      |
+| Per-service retry count         | `?retry=N` URL param or YAML `retry:` key                         | Per service definition      |
+| Per-service retry wait          | `?wait=S` URL param or YAML `wait:` key                           | Per service definition      |
+| Global retry/wait defaults      | `AppriseAsset(default_service_retry=N, default_service_wait=S)`   | All services in the session |
+| Escalation dispatch             | `notify(tag="tagname")` or `--tag tagname` (no priority prefix)   | One notify() / CLI call     |
+| Exclusive dispatch              | `notify(tag="N:tagname")` or `--tag N:tagname`                    | One notify() / CLI call     |
+| Per-call retry override         | `notify(tag="tagname:N")` or `--tag tagname:N`                    | One notify() / CLI call     |
+| Multi-tag OR dispatch           | `notify(tag=["tagA", "tagB"])` or `--tag tagA --tag tagB`         | One notify() / CLI call     |
+| Multi-tag AND dispatch          | `notify(tag=[["tagA", "tagB"]])` or `--tag "tagA, tagB"`          | One notify() / CLI call     |
+| Multi-tag OR with per-tag retry | `notify(tag=["tagA:N", "tagB:M"])` or `--tag tagA:N --tag tagB:M` | One notify() / CLI call     |
+| Early-abort on chain failure    | `AppriseAsset(abort_on_chain_failure=True)`                       | All services in the session |
