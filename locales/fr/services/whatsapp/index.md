@@ -21,24 +21,24 @@ limits:
 
 ## Configuration du compte
 
-Pour envoyer des messages WhatsApp via Apprise, vous devez d'abord configurer votre compte Meta WhatsApp Cloud API. Suivez les etapes suivantes :
+La configuration de l'API Cloud WhatsApp de Meta est repartie entre deux portails distincts : [Meta Business Manager](https://business.facebook.com/) pour la gestion des utilisateurs systeme et des jetons permanents, et le [tableau de bord Meta Developer](https://developers.facebook.com/) pour la creation de l'application et la localisation de l'identifiant de numero de telephone.
 
-1. **Creer un compte Meta Developer**  
-   Rendez-vous sur [Meta for Developers](https://developers.facebook.com/) puis connectez-vous ou creez un compte.
-1. **Creer une application WhatsApp**  
-   Depuis le tableau de bord Meta Developer, creez une nouvelle application et ajoutez **WhatsApp** comme produit.
-1. **Generer un jeton d'acces permanent**
-   - Ouvrez la section **WhatsApp > API Setup** de votre application.
-   - Selectionnez ou creez un **System User**, attribuez-lui un role puis generez un **permanent access token** avec les permissions `whatsapp_business_messaging`.
-   - Ce jeton sera utilise dans le champ Apprise `token`.
-1. **Recuperer votre `From Phone Number ID`**  
-   Il ne s'agit pas de votre vrai numero de telephone, mais d'un identifiant numerique attribue par Meta au numero expediteur.  
-   Vous le trouverez dans votre application WhatsApp > **API Setup**, section **Phone Numbers**.
+1. **Creer un compte Meta Business Manager**
+   Rendez-vous sur [Meta Business Manager](https://business.facebook.com/) puis connectez-vous ou creez un compte. Vos comptes WhatsApp Business (WABA) et utilisateurs systeme sont geres ici.
+1. **Creer un compte Meta Developer et une application**
+   Rendez-vous sur [Meta for Developers](https://developers.facebook.com/) puis connectez-vous ou creez un compte. Creez une nouvelle application de type **Business**, puis ajoutez **WhatsApp** comme produit. Si vous y etes invite depuis la page d'accueil, cliquez sur **Customise Use Case** et selectionnez le cas d'usage **Connect to Customers (WhatsApp)** pour acceder a la configuration de l'API Cloud.
+1. **Generer un jeton d'acces permanent via Business Manager**
+   - Dans [Meta Business Manager](https://business.facebook.com/), allez dans **Parametres** > **Utilisateurs** > **Utilisateurs systeme**.
+   - Creez un utilisateur systeme (role Administrateur ou Employe).
+   - Cliquez sur **Ajouter des ressources**, selectionnez votre application WhatsApp et activez la permission `whatsapp_business_messaging` (et optionnellement `whatsapp_business_management`).
+   - Cliquez sur **Generer un jeton**, selectionnez votre application, confirmez les permissions et copiez le jeton obtenu. Ce jeton permanent n'expire pas sauf revocation et est utilise dans le champ Apprise `token`.
+1. **Recuperer votre `From Phone Number ID`**
+   Retournez sur le [tableau de bord Meta Developer](https://developers.facebook.com/), ouvrez votre application, puis naviguez vers **WhatsApp** > **API Setup** (ou **Premiers pas**). Votre numero expediteur et son **Phone Number ID** y sont affiches. Cet identifiant n'est pas votre vrai numero de telephone — il s'agit d'un ID numerique distinct (environ 14 chiffres) attribue par Meta.
 1. **Enregistrer les numeros destinataires**
    - Pendant les tests en sandbox, vous devez verifier chaque numero que vous souhaitez contacter via l'interface Meta.
    - En production, votre entreprise devra etre verifiee et disposer du niveau de messagerie approprie.
 1. **Facultatif : creer et faire approuver des modeles de message**
-   - Ouvrez **WhatsApp > Message Templates**.
+   - Ouvrez **WhatsApp** > **Message Templates** dans le tableau de bord Developer, ou utilisez le gestionnaire WhatsApp dans Business Manager.
    - Creez un modele, par exemple `hello_world`, puis attendez son approbation.
    - Les modeles permettent une messagerie structuree avec des variables comme `{{1}}`, `{{2}}`, et peuvent etre utilises via le prefixe Apprise `template:`. Cela est explique plus bas.
 
@@ -51,13 +51,24 @@ La syntaxe valide est la suivante :
 - `whatsapp://{token}@{from_phone_id}/{targets}`
 - `whatsapp://{template}:{token}@{from_phone_id}/{targets}`
 
+Les cibles peuvent etre des numeros de telephone, des identifiants de groupe, ou un melange des deux :
+
+- `+{phone}` — numero de telephone au format E.164 (le prefixe `+` est requis ; les chiffres seuls sont aussi acceptes)
+- `#{group_id}` — identifiant de groupe WhatsApp (numerique, prefixe `#` obligatoire)
+
+:::caution
+
+**La messagerie de groupe necessite un niveau de compte Meta qualifiant.** Au moment de la redaction, Meta restreint l'API WhatsApp Groups aux entreprises ayant au moins 100 000 conversations initiees par l'entreprise par mois. Consultez la [documentation Meta Groups API](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups) pour les conditions d'eligibilite actuelles. Les identifiants de groupe sont retournes par l'API Groups lors de la creation d'un groupe — ils ne sont pas generes manuellement.
+
+:::
+
 ## Détail des Paramètres
 
 | Variable | Obligatoire | Description                                                                                                                                                                                                |
 | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | token    | Oui         | **Jeton d'acces** associe a votre application Meta WhatsApp.                                                                                                                                               |
 | from     | Oui         | **From Phone ID** associe a votre application Meta WhatsApp ; il ne faut pas le confondre avec votre vrai numero de telephone. Il s'agit d'un identifiant distinct, d'environ 14 chiffres.                 |
-| targets  | Oui         | Destinataires WhatsApp que vous souhaitez notifier.                                                                                                                                                        |
+| targets  | Oui         | Un ou plusieurs destinataires — numeros de telephone (`+{phone}` ou `@{phone}`) et/ou identifiants de groupe (`#{group_id}`). Au moins une cible doit etre fournie.                                        |
 | template | Non         | Vous pouvez facultativement specifier ici un `template_name`, comme `hello_world`, le modele par defaut cree lors de la configuration de votre application Meta. Apprise utilisera alors le modele defini. |
 | lang     | Non         | Si vous utilisez un modele, vous pouvez facultativement surcharger la langue par defaut, `en_US`, afin de pointer vers une autre version du modele specifie.                                               |
 
@@ -80,10 +91,22 @@ Si vous souhaitez associer le `body` ou le `type` d'Apprise a un index, utilisez
 
 ## Exemples
 
-Envoyer une notification WhatsApp :
+Envoyer une notification WhatsApp a un groupe :
 
 ```bash
-# Testez avec la commande suivante :
+# Envoyer un message a un numero de telephone :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/+14155552671/"
+
+# Envoyer un message a un groupe WhatsApp (niveau Meta requis) :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/#120363043968066561"
+
+# Envoyer a un numero de telephone et a un groupe en un seul appel :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/+14155552671/#120363043968066561"
+
+# L'ancienne forme fonctionne toujours (chiffres seuls sans '+') :
 apprise -b "Message de Test" \
   "whatsapp://token@from_phone_id/to_phone_no/"
 
