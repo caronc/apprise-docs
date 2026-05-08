@@ -38,6 +38,18 @@ tox -e runserver -- "localhost:8080"
 tox -e runserver -- "0.0.0.0:8080"
 ```
 
+Pour lancer l'API Apprise avec une branche specifique du coeur Apprise :
+
+```bash
+tox -e runserver -- --branch=1341-retries-and-priorities
+```
+
+Lorsque `--branch` est fourni, l'environnement runserver reinstalle Apprise
+depuis cette branche GitHub avec le cache pip desactive, afin que relancer la
+commande recupere les changements de la branche. Lancer `tox -e runserver` sans
+`--branch` restaure le paquet Apprise de PyPI si l'environnement utilisait
+auparavant une branche.
+
 ### Docker Compose pour le Développement
 
 Un checkout fraîchement cloné peut être lancé avec Docker Compose, et le flux de développement monte votre arborescence source locale dans le conteneur afin que les changements soient visibles sans rebuild :

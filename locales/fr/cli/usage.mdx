@@ -213,6 +213,31 @@ Une autre manière de voir les choses :
 - **Logique OU :** pour notifier des services qui possèdent _soit_ Tag A **OU** Tag B, utilisez l'option `--tag` plusieurs fois.
 - **Logique ET :** pour notifier des services qui possèdent _à la fois_ Tag A **ET** Tag B, séparez les tags par une virgule dans une seule option.
 
+### Filtrage par Priorité
+
+Les tags définis dans votre configuration peuvent porter un préfixe numérique de priorité (par exemple `1:alerts` ou `5:alerts` dans un fichier YAML). Deux modes sont disponibles selon que vous incluez ou non une priorité dans votre valeur `--tag`.
+
+**Sans préfixe de priorité -- mode escalade (par défaut)**
+
+Lorsque vous passez un nom de tag simple, Apprise envoie les notifications en ordre de priorité croissante. Si tous les services du groupe de priorité la plus basse réussissent, Apprise retourne immédiatement et ignore tous les groupes de priorité supérieure. En cas d'échec d'un service de ce groupe, Apprise passe au groupe suivant.
+
+- `-g "alerts"` : envoie d'abord aux entrées de priorité 1. Si elles réussissent toutes, ignore la priorité 5 (et les suivantes). En cas d'échec, déclenche les entrées de priorité 5 en repli.
+
+**Avec un préfixe de priorité -- mode exclusif**
+
+Lorsque vous incluez un préfixe numérique, Apprise cible uniquement les services dont le tag `alerts` porte cette priorité exacte. Aucun autre niveau de priorité n'est déclenché.
+
+- `-g "2:alerts"` : déclenche **uniquement** les entrées `alerts` assignées à la priorité `2`.
+
+### Remplacement du Nombre de Tentatives par Appel
+
+Une valeur de tag peut également porter un nombre de tentatives en suffixe (`:N`) qui remplace le nombre de tentatives configuré pour chaque service correspondant, uniquement pour cet appel :
+
+- `-g "alerts:3"` : notifie tous les services `alerts` en réessayant chacun jusqu'à 3 fois en cas d'échec.
+- `-g "2:alerts:3"` : notifie uniquement les services `alerts` de priorité 2, avec jusqu'à 3 tentatives.
+
+Le nombre de tentatives ne modifie pas la configuration permanente du service ; il s'applique uniquement à l'invocation en cours.
+
 ### Exemples
 
 ```bash
@@ -223,6 +248,18 @@ apprise -t "Union Test" --config apprise.yml \
 # Notifier les services tagués à la fois 'devops' ET 'critical'
 apprise -t "Intersection Test" --config apprise.yml \
    --tag "devops,critical"
+
+# Notifier uniquement les services 'alerts' de priorité 2
+apprise -t "High Alert" --config apprise.yml \
+   --tag "2:alerts"
+
+# Notifier tous les services 'alerts' avec jusqu'à 3 tentatives en cas d'échec
+apprise -t "Critical Event" --config apprise.yml \
+   --tag "alerts:3"
+
+# Notifier uniquement les services 'alerts' de priorité 2 avec jusqu'à 3 tentatives
+apprise -t "Critical Event" --config apprise.yml \
+   --tag "2:alerts:3"
 
 # Déclencher une configuration stockée sous la clé 'my-alerts' sur un serveur
 # Apprise API local en utilisant la clé 'my-alerts'

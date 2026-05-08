@@ -85,9 +85,11 @@ Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurabl
 
 ### Concurrence et envoi
 
-| Champ        | Type   | Défaut | Utilisé par              | Notes                                      |
-| ------------ | ------ | -----: | ------------------------ | ------------------------------------------ |
-| `async_mode` | `bool` | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel. |
+| Champ                   | Type    | Défaut | Utilisé par              | Notes                                                                                                |
+| ----------------------- | ------- | -----: | ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `async_mode`            | `bool`  | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                           |
+| `default_service_retry` | `int`   |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.   |
+| `default_service_wait`  | `float` |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`. |
 
 ### Découverte de plugins
 
@@ -249,3 +251,7 @@ Les champs suivants **ne peuvent pas** être définis via des fichiers de config
 - les indicateurs internes préfixés par `_`
 
 Ils doivent être fournis par code afin d'empêcher l'exécution de code non fiable.
+
+## Voir aussi
+
+- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/délai par service et les remplacements par appel dans les fichiers de configuration.

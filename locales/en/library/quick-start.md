@@ -107,6 +107,44 @@ apobj.notify(title="Report", body="...", tag=["devops", "finance"])
 apobj.notify(title="Comment Created", body="...", tag=["comment,create", "admin"])
 ```
 
+#### Priority Filtering
+
+Tags in configuration files may carry a numeric priority prefix (for example `1:alerts` or `5:alerts` in YAML). There are two modes depending on whether you include a priority in the filter.
+
+**Without a priority prefix -- escalation (default)**
+
+Services are grouped by their tag priority and dispatched in ascending order. If every service in the lowest-numbered group succeeds, Apprise returns `True` immediately without running higher-numbered groups. If any fail, Apprise escalates to the next group.
+
+```python
+# All 'alerts' services dispatched in ascending priority order.
+# Priority-1 entries run first; if they all succeed, priority-5 entries
+# are never triggered.
+apobj.notify(body="...", tag="alerts")
+```
+
+**With a priority prefix -- exclusive filter**
+
+Only services whose matching tag has exactly that priority are notified. No escalation occurs.
+
+```python
+# Notify ONLY 'alerts' entries assigned priority 2
+apobj.notify(body="...", tag="2:alerts")
+```
+
+#### Per-Call Retry Override
+
+A trailing `:N` on a tag value overrides each matched service's configured retry count for this one call only:
+
+```python
+# Notify all 'alerts' services, retrying each up to 3 times on failure
+apobj.notify(body="...", tag="alerts:3")
+
+# Notify only priority-2 'alerts' services with up to 3 retries
+apobj.notify(body="...", tag="2:alerts:3")
+```
+
+The retry count does not permanently modify the service configuration.
+
 ### Loading Configuration Files
 
 You can use the `AppriseConfig` object to load URLs from external YAML or Text files instead of hardcoding them.

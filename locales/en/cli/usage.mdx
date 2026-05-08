@@ -213,6 +213,31 @@ Another way to look at it:
 - **OR Logic:** To notify services that have _either_ Tag A **OR** Tag B, use the `--tag` switch multiple times.
 - **AND Logic:** To notify services that have _both_ Tag A **AND** Tag B, separate tags with a comma within a single switch.
 
+### Priority Filtering
+
+Tags defined in your configuration may carry a numeric priority prefix (for example `1:alerts` or `5:alerts` in a YAML config). This enables two modes depending on whether you include a priority in your `--tag` value.
+
+**Without a priority prefix -- escalation mode (default)**
+
+When you pass a plain tag name, Apprise dispatches services in ascending priority order. If every service in the lowest-numbered group succeeds, Apprise returns immediately and skips all higher-numbered groups. If any service in that group fails, Apprise escalates to the next group.
+
+- `-g "alerts"`: Dispatch priority-1 entries first. If they all succeed, skip priority-5 (and any others). If any fail, run the priority-5 entries as a fallback.
+
+**With a priority prefix -- exclusive mode**
+
+When you include a numeric prefix in the tag value, Apprise targets only services whose `alerts` tag carries that exact priority. No other priority levels are triggered.
+
+- `-g "2:alerts"`: Trigger **only** `alerts` entries assigned priority `2`.
+
+### Per-Call Retry Override
+
+A tag value may also carry a trailing retry count (`:N`) that overrides each matched service's configured retry for this one call only:
+
+- `-g "alerts:3"`: Notify all `alerts` services, retrying each up to 3 times on failure.
+- `-g "2:alerts:3"`: Notify priority-2 `alerts` services only, with up to 3 retries each.
+
+The retry count does not change the service's permanent configuration; it applies only to the current invocation.
+
 ### Examples
 
 ```bash
@@ -223,6 +248,18 @@ apprise -t "Union Test" --config apprise.yml \
 # Notify services tagged with BOTH 'devops' AND 'critical'
 apprise -t "Intersection Test" --config apprise.yml \
    --tag "devops,critical"
+
+# Notify only priority-2 'alerts' services
+apprise -t "High Alert" --config apprise.yml \
+   --tag "2:alerts"
+
+# Notify all 'alerts' services with up to 3 retries on failure
+apprise -t "Critical Event" --config apprise.yml \
+   --tag "alerts:3"
+
+# Notify only priority-2 'alerts' services with up to 3 retries
+apprise -t "Critical Event" --config apprise.yml \
+   --tag "2:alerts:3"
 
 # Trigger a configuration stored under the key 'my-alerts' on a local
 # Apprise API server using the key 'my-alerts'

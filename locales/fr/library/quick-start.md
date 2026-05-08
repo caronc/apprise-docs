@@ -107,6 +107,44 @@ apobj.notify(title="Rapport", body="...", tag=["devops", "finance"])
 apobj.notify(title="Commentaire créé", body="...", tag=["comment,create", "admin"])
 ```
 
+#### Filtrage par Priorité
+
+Les tags dans les fichiers de configuration peuvent porter un préfixe numérique de priorité (par exemple `1:alerts` ou `5:alerts` en YAML). Deux modes sont disponibles selon que vous incluez ou non une priorité dans le filtre.
+
+**Sans préfixe de priorité -- escalade (par défaut)**
+
+Les services sont regroupés par priorité de tag et traités dans l'ordre croissant. Si tous les services du groupe de priorité la plus basse réussissent, Apprise retourne `True` immédiatement sans déclencher les groupes de priorité supérieure. En cas d'échec, Apprise passe au groupe suivant.
+
+```python
+# Tous les services 'alerts' sont traités par priorité croissante.
+# Les entrées de priorité 1 s'exécutent en premier ; si elles réussissent
+# toutes, les entrées de priorité 5 ne sont jamais déclenchées.
+apobj.notify(body="...", tag="alerts")
+```
+
+**Avec un préfixe de priorité -- filtre exclusif**
+
+Seuls les services dont le tag correspondant porte exactement cette priorité sont notifiés. Pas d'escalade.
+
+```python
+# Notifier UNIQUEMENT les entrées 'alerts' de priorité 2
+apobj.notify(body="...", tag="2:alerts")
+```
+
+#### Remplacement du Nombre de Tentatives par Appel
+
+Un suffixe `:N` sur une valeur de tag remplace le nombre de tentatives configuré pour chaque service correspondant, pour cet appel uniquement :
+
+```python
+# Notifier tous les services 'alerts' en réessayant chacun jusqu'à 3 fois
+apobj.notify(body="...", tag="alerts:3")
+
+# Notifier uniquement les services 'alerts' de priorité 2 avec jusqu'à 3 tentatives
+apobj.notify(body="...", tag="2:alerts:3")
+```
+
+Le nombre de tentatives ne modifie pas la configuration permanente du service.
+
 ### Charger des fichiers de configuration
 
 Vous pouvez utiliser l'objet `AppriseConfig` pour charger des URL depuis des fichiers YAML ou texte externes au lieu de les coder en dur.
