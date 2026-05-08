@@ -132,7 +132,10 @@ Valid syntax is as follows:
 
 ## See Also
 
-If you need to post to a WeCom Group Bot directly — without going through PushPlus — see the [WeCom Bot](../wecombot/) plugin (`wecombot://`). It uses the WeCom Group Bot webhook API and requires a bot key, not a PushPlus token.
+Apprise provides two related WeCom/WeChat integrations:
+
+- **[WeChat (WeCom)](../wechat/)** -- sends directly to WeCom users, departments, and tags using the WeCom Application Message API; requires a CorpID, App Secret, and AgentID from your WeCom admin console.
+- **[WeCom Bot](../wecombot/)** -- sends to a WeCom group chat via a webhook key; simpler to set up but delivers to a group rather than individual users or departments.
 
 ## Examples
 
