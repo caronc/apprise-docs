@@ -268,6 +268,213 @@ Les valeurs invalides (nombres négatifs, chaînes non numériques, `inf`, `nan`
 
 ---
 
+## Services Optionnels
+
+Le paramètre `optional` marque un service comme "souhaitable mais non indispensable". Lorsque `optional=yes` est activé sur un service, un échec de livraison pour ce service est **silencieusement absorbé** -- l'appel global à `notify()` retourne quand même `True`, tant que chaque service _requis_ (non optionnel) a réussi.
+
+Ce paramètre est utile pour tout service que vous souhaitez notifier _opportunistement_ : envoyer la notification si le point de terminaison est disponible, mais ne pas considérer son absence comme un échec aux yeux de l'application appelante.
+
+### Exemple concret -- écrans d'affichage domestiques
+
+Imaginons que votre système domotique possède quatre écrans Kodi avec le tag `media`. Vous souhaitez afficher une notification sur les écrans actuellement allumés, mais vous ne voulez pas qu'un écran éteint déclenche une alerte d'astreinte à trois heures du matin.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Les quatre écrans sont optionnels -- leur indisponibilité n'est jamais une erreur.
+media=kodi://192.168.1.10
+media=kodi://192.168.1.11
+media=kodi://192.168.1.12
+media=kodi://192.168.1.13
+```
+
+Pour les rendre optionnels, ajoutez `?optional=yes` à chaque URL :
+
+```apache
+media=kodi://192.168.1.10?optional=yes
+media=kodi://192.168.1.11?optional=yes
+media=kodi://192.168.1.12?optional=yes
+media=kodi://192.168.1.13?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - kodi://192.168.1.10:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.11:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.12:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.13:
+      tag: media
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Retourne True même si tous les écrans sont éteints ou inaccessibles.
+apobj.notify(body="Le dîner est prêt", tag="media")
+```
+
+```bash
+apprise --config=config.yml --tag="media" --body="Le dîner est prêt"
+```
+
+### Interaction entre `optional` et les services requis
+
+Le paramètre est par service. Vous pouvez librement mélanger des services optionnels et requis au sein du même groupe de tags. Le résultat global suit ces règles :
+
+| Services dans le lot                                    | Résultat |
+| :------------------------------------------------------ | :------- |
+| Tous requis, tous réussissent                           | `True`   |
+| Tous requis, un ou plusieurs échouent                   | `False`  |
+| Tous optionnels, tous échouent                          | `True`   |
+| Tous optionnels, tous réussissent                       | `True`   |
+| Mélange requis/optionnels ; tous les requis réussissent | `True`   |
+| Mélange requis/optionnels ; au moins un requis échoue   | `False`  |
+
+En résumé : les échecs optionnels sont invisibles pour l'appelant. Seul l'échec d'un service requis peut faire retourner `False` à `notify()`.
+
+### Interaction entre `optional` et les tentatives
+
+Activer `optional=yes` **ne saute pas** le service et ne contourne pas la logique de tentatives. La livraison est toujours tentée, et si `retry` est supérieur à zéro, Apprise retentera le nombre de fois configuré avant d'abandonner. Ce n'est qu'après l'épuisement de toutes les tentatives qu'Apprise vérifie le paramètre `optional` pour décider d'absorber ou non l'échec.
+
+```apache
+# Ce service est tenté jusqu'à 4 fois (tentative initiale + 3 nouvelles tentatives)
+# avec une pause de 2 secondes entre chacune. Si les quatre tentatives échouent,
+# l'échec est silencieusement absorbé grâce à optional=yes.
+media=kodi://192.168.1.10?optional=yes&retry=3&wait=2
+```
+
+```yaml
+- kodi://192.168.1.10:
+    tag: media
+    optional: yes
+    retry: 3
+    wait: 2
+```
+
+### Utilisation de `optional` depuis Python
+
+Vous pouvez définir ce paramètre directement sur n'importe quel objet service chargé, ou le passer en argument lors de la construction manuelle d'objets service :
+
+```python
+import apprise
+
+apobj = apprise.Apprise()
+
+# Option 1 -- paramètre de requête URL (fonctionne avec tous les chargeurs de config)
+apobj.add("kodi://192.168.1.10?optional=yes")
+
+# Option 2 -- définir l'attribut directement après chargement
+obj = apprise.Apprise.instantiate("kodi://192.168.1.10")
+obj.optional = True
+apobj.add(obj)
+
+# Option 3 -- argument mot-clé du constructeur
+from apprise.plugins.NotifyJSON import NotifyJSON
+svc = NotifyJSON(host="192.168.1.10", optional=True)
+apobj.add(svc)
+
+# Les trois options produisent le même comportement : les échecs sont silencieusement absorbés.
+result = apobj.notify(body="Le dîner est prêt")
+print(result)  # True même si chaque point de terminaison était inaccessible
+```
+
+### Exemples supplémentaires
+
+**Journal de débogage non critique associé à un canal d'alerte requis :**
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Requis : l'ingénieur d'astreinte doit toujours être averti.
+alerts=slack://tokenA/tokenB/tokenC
+
+# Optionnel : enregistrer dans le canal de diagnostic interne s'il est disponible,
+# mais ne jamais considérer son absence comme un échec.
+alerts=json://diagnostics.internal/api/events?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Requis : l'ingénieur d'astreinte doit toujours être averti.
+  - slack://tokenA/tokenB/tokenC:
+      tag: alerts
+
+  # Optionnel : enregistrer dans le canal de diagnostic interne si disponible.
+  - json://diagnostics.internal/api/events:
+      tag: alerts
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Retourne True si Slack a réussi, quel que soit l'état du journal JSON.
+apobj.notify(body="Base de données inaccessible", tag="alerts")
+```
+
+**Groupe de tags entièrement optionnel -- diffusion au mieux :**
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Notifier les trois écrans s'ils sont accessibles ; ne jamais échouer s'ils ne le sont pas.
+affichages=kodi://192.168.1.10?optional=yes
+affichages=kodi://192.168.1.11?optional=yes
+affichages=kodi://192.168.1.12?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - kodi://192.168.1.10:
+      tag: affichages
+      optional: yes
+
+  - kodi://192.168.1.11:
+      tag: affichages
+      optional: yes
+
+  - kodi://192.168.1.12:
+      tag: affichages
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Retourne toujours True quel que soit le nombre d'écrans ayant répondu.
+apobj.notify(body="Mouvement détecté", tag="affichages")
+```
+
+---
+
 ## Valeurs par Défaut Globales via AppriseAsset
 
 Si vous souhaitez que **chaque** service d'une session Apprise partage les mêmes valeurs par défaut de tentatives et d'attente sans modifier chaque URL, définissez-les sur `AppriseAsset` :
@@ -730,6 +937,7 @@ apprise --config=config.yml --tag="50:alertes" --body="Maintenance"
 | Priorité de tag                             | `N:nomdetag` dans le fichier de configuration (TEXT ou YAML)            | Par définition de service       |
 | Nombre de tentatives par service            | Paramètre URL `?retry=N` ou clé YAML `retry:`                           | Par définition de service       |
 | Délai inter-tentative par service           | Paramètre URL `?wait=S` ou clé YAML `wait:`                             | Par définition de service       |
+| Service optionnel                           | Paramètre URL `?optional=yes` ou clé YAML `optional: yes`               | Par définition de service       |
 | Valeurs par défaut globales                 | `AppriseAsset(default_service_retry=N, default_service_wait=S)`         | Tous les services de la session |
 | Envoi en escalade                           | `notify(tag="nomdetag")` ou `--tag nomdetag` (sans préfixe de priorité) | Un appel notify() / CLI         |
 | Envoi exclusif                              | `notify(tag="N:nomdetag")` ou `--tag N:nomdetag`                        | Un appel notify() / CLI         |

@@ -269,6 +269,224 @@ fall back to the asset default (see [Global Defaults](#global-defaults-via-appri
 
 ---
 
+## Optional Services
+
+The `optional` flag marks a service as a "nice to have" endpoint. When `optional=yes` is
+set on a service, a delivery failure for that service is **silently absorbed** -- the
+overall `notify()` call still returns `True` even if that endpoint was unreachable.
+
+This is useful any time you want to send a notification _opportunistically_: deliver it if
+the endpoint is up, but do not let its absence signal a problem to the calling application.
+
+### Motivating example -- home-screen displays
+
+Suppose your home automation system has four Kodi screens tagged `media`. You want to show
+a notification on whichever screens are currently on, but you do not want a delivery
+failure on a sleeping screen to wake you up at 3 am by paging your on-call channel.
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# All four screens are optional -- their unavailability is never an error.
+media=kodi://192.168.1.10
+media=kodi://192.168.1.11
+media=kodi://192.168.1.12
+media=kodi://192.168.1.13
+```
+
+To mark them optional, append `?optional=yes` to each URL:
+
+```apache
+media=kodi://192.168.1.10?optional=yes
+media=kodi://192.168.1.11?optional=yes
+media=kodi://192.168.1.12?optional=yes
+media=kodi://192.168.1.13?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - kodi://192.168.1.10:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.11:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.12:
+      tag: media
+      optional: yes
+
+  - kodi://192.168.1.13:
+      tag: media
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Even if every screen is off, this call returns True.
+apobj.notify(body="Dinner is ready", tag="media")
+```
+
+```bash
+apprise --config=config.yml --tag="media" --body="Dinner is ready"
+```
+
+### How `optional` interacts with required services
+
+The flag is per-service. You can freely mix optional and required endpoints within the
+same tag group. The aggregate result follows these rules:
+
+| Services in batch                                  | Result  |
+| :------------------------------------------------- | :------ |
+| All required, all succeed                          | `True`  |
+| All required, one or more fail                     | `False` |
+| All optional, all fail                             | `True`  |
+| All optional, all succeed                          | `True`  |
+| Mix of required and optional; required all succeed | `True`  |
+| Mix of required and optional; any required fails   | `False` |
+
+In short: optional failures are invisible to the caller. Only a required service failure
+can cause `notify()` to return `False`.
+
+### How `optional` interacts with retries
+
+Setting `optional=yes` does **not** skip the service or bypass its retry logic.
+Delivery is still attempted, and if `retry` is greater than zero, Apprise will retry
+the configured number of times before giving up. Only after all retry attempts have been
+exhausted does Apprise check the `optional` flag and decide whether to absorb the failure.
+
+```apache
+# This service is attempted up to 4 times (initial + 3 retries) with a
+# 2-second pause between attempts.  If all four attempts fail, the failure
+# is silently absorbed because optional=yes.
+media=kodi://192.168.1.10?optional=yes&retry=3&wait=2
+```
+
+```yaml
+- kodi://192.168.1.10:
+    tag: media
+    optional: yes
+    retry: 3
+    wait: 2
+```
+
+### Setting `optional` from Python
+
+You can set the flag directly on any loaded service object, or pass it as a constructor
+argument when building service objects manually:
+
+```python
+import apprise
+
+apobj = apprise.Apprise()
+
+# Option 1 -- URL query parameter (works with all config loaders)
+apobj.add("kodi://192.168.1.10?optional=yes")
+
+# Option 2 -- set the attribute directly after loading
+obj = apprise.Apprise.instantiate("kodi://192.168.1.10")
+obj.optional = True
+apobj.add(obj)
+
+# Option 3 -- constructor keyword argument
+from apprise.plugins.NotifyJSON import NotifyJSON
+svc = NotifyJSON(host="192.168.1.10", optional=True)
+apobj.add(svc)
+
+# All three result in the same behaviour: failures are silently absorbed.
+result = apobj.notify(body="Dinner is ready")
+print(result)  # True even if every endpoint was unreachable
+```
+
+### More examples
+
+**Non-critical debug logger alongside a required alert channel:**
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Required: the on-call engineer must always get paged.
+alerts=slack://tokenA/tokenB/tokenC
+
+# Optional: log to the internal diagnostics channel if it is up,
+# but never treat its absence as a failure.
+alerts=json://diagnostics.internal/api/events?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  # Required: the on-call engineer must always get paged.
+  - slack://tokenA/tokenB/tokenC:
+      tag: alerts
+
+  # Optional: log to the internal diagnostics channel if it is up.
+  - json://diagnostics.internal/api/events:
+      tag: alerts
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Returns True if Slack succeeded, regardless of the JSON logger state.
+apobj.notify(body="Database unreachable", tag="alerts")
+```
+
+**All-optional tag group -- "best effort" broadcast:**
+
+<Tabs syncKey="config-format">
+<TabItem label="TEXT">
+
+```apache
+# Notify all three displays if they are reachable; never fail if they are not.
+displays=kodi://192.168.1.10?optional=yes
+displays=kodi://192.168.1.11?optional=yes
+displays=kodi://192.168.1.12?optional=yes
+```
+
+</TabItem>
+<TabItem label="YAML">
+
+```yaml
+version: 1
+urls:
+  - kodi://192.168.1.10:
+      tag: displays
+      optional: yes
+
+  - kodi://192.168.1.11:
+      tag: displays
+      optional: yes
+
+  - kodi://192.168.1.12:
+      tag: displays
+      optional: yes
+```
+
+</TabItem>
+</Tabs>
+
+```python
+# Always returns True regardless of how many displays responded.
+apobj.notify(body="Motion detected", tag="displays")
+```
+
+---
+
 ## Global Defaults via AppriseAsset
 
 If you want **every** service in an Apprise session to share the same retry and wait defaults without editing each URL, set them on `AppriseAsset`:
@@ -742,6 +960,7 @@ apprise --config=config.yml --tag="50:alerts" --body="Maintenance window"
 | Tag priority                    | `N:tagname` in config file (TEXT or YAML)                         | Per service definition      |
 | Per-service retry count         | `?retry=N` URL param or YAML `retry:` key                         | Per service definition      |
 | Per-service retry wait          | `?wait=S` URL param or YAML `wait:` key                           | Per service definition      |
+| Optional service flag           | `?optional=yes` URL param or YAML `optional: yes` key             | Per service definition      |
 | Global retry/wait defaults      | `AppriseAsset(default_service_retry=N, default_service_wait=S)`   | All services in the session |
 | Escalation dispatch             | `notify(tag="tagname")` or `--tag tagname` (no priority prefix)   | One notify() / CLI call     |
 | Exclusive dispatch              | `notify(tag="N:tagname")` or `--tag N:tagname`                    | One notify() / CLI call     |
