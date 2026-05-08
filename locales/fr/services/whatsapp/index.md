@@ -51,13 +51,24 @@ La syntaxe valide est la suivante :
 - `whatsapp://{token}@{from_phone_id}/{targets}`
 - `whatsapp://{template}:{token}@{from_phone_id}/{targets}`
 
+Les cibles peuvent etre des numeros de telephone, des identifiants de groupe, ou un melange des deux :
+
+- `+{phone}` — numero de telephone au format E.164 (le prefixe `+` est requis ; les chiffres seuls sont aussi acceptes)
+- `#{group_id}` — identifiant de groupe WhatsApp (numerique, prefixe `#` obligatoire)
+
+:::caution
+
+**La messagerie de groupe necessite un niveau de compte Meta qualifiant.** Au moment de la redaction, Meta restreint l'API WhatsApp Groups aux entreprises ayant au moins 100 000 conversations initiees par l'entreprise par mois. Consultez la [documentation Meta Groups API](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups) pour les conditions d'eligibilite actuelles. Les identifiants de groupe sont retournes par l'API Groups lors de la creation d'un groupe — ils ne sont pas generes manuellement.
+
+:::
+
 ## Détail des Paramètres
 
 | Variable | Obligatoire | Description                                                                                                                                                                                                |
 | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | token    | Oui         | **Jeton d'acces** associe a votre application Meta WhatsApp.                                                                                                                                               |
 | from     | Oui         | **From Phone ID** associe a votre application Meta WhatsApp ; il ne faut pas le confondre avec votre vrai numero de telephone. Il s'agit d'un identifiant distinct, d'environ 14 chiffres.                 |
-| targets  | Oui         | Destinataires WhatsApp que vous souhaitez notifier.                                                                                                                                                        |
+| targets  | Oui         | Un ou plusieurs destinataires — numeros de telephone (`+{phone}` ou `@{phone}`) et/ou identifiants de groupe (`#{group_id}`). Au moins une cible doit etre fournie.                                        |
 | template | Non         | Vous pouvez facultativement specifier ici un `template_name`, comme `hello_world`, le modele par defaut cree lors de la configuration de votre application Meta. Apprise utilisera alors le modele defini. |
 | lang     | Non         | Si vous utilisez un modele, vous pouvez facultativement surcharger la langue par defaut, `en_US`, afin de pointer vers une autre version du modele specifie.                                               |
 
@@ -80,10 +91,22 @@ Si vous souhaitez associer le `body` ou le `type` d'Apprise a un index, utilisez
 
 ## Exemples
 
-Envoyer une notification WhatsApp :
+Envoyer une notification WhatsApp a un groupe :
 
 ```bash
-# Testez avec la commande suivante :
+# Envoyer un message a un numero de telephone :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/+14155552671/"
+
+# Envoyer un message a un groupe WhatsApp (niveau Meta requis) :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/#120363043968066561"
+
+# Envoyer a un numero de telephone et a un groupe en un seul appel :
+apprise -b "Message de Test" \
+  "whatsapp://token@from_phone_id/+14155552671/#120363043968066561"
+
+# L'ancienne forme fonctionne toujours (chiffres seuls sans '+') :
 apprise -b "Message de Test" \
   "whatsapp://token@from_phone_id/to_phone_no/"
 

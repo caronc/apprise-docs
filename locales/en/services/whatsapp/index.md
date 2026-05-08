@@ -51,13 +51,24 @@ Valid syntax is as follows:
 - `whatsapp://{token}@{from_phone_id}/{targets}`
 - `whatsapp://{template}:{token}@{from_phone_id}/{targets}`
 
+Targets may be phone numbers, group IDs, or a mix of both:
+
+- `+{phone}` — E.164 phone number (the `+` prefix is required; bare digits are also accepted)
+- `#{group_id}` — WhatsApp group ID (numeric, `#` prefix required)
+
+:::caution
+
+**Group messaging requires a qualifying Meta account tier.** At the time this was written, Meta restricts the WhatsApp Groups API to businesses with at least 100,000 monthly business-initiated conversations. Check the [Meta Groups API documentation](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups) for current eligibility requirements. Group IDs are returned by the Groups API when a group is created — they are not manually generated.
+
+:::
+
 ## Parameter Breakdown
 
 | Variable | Required | Description                                                                                                                                                                                                |
 | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | token    | Yes      | This is the **Access Token** associated with your Meta WhatsApp App                                                                                                                                        |
 | from     | Yes      | This is the **From Phone ID** associated with your Meta WhatsApp App; this isn't to be confused with your actual phone number. The ID is a separate assignment (about 14 digits long)                      |
-| targets  | Yes      | The target individuals on WhatsApp you wish to notify                                                                                                                                                      |
+| targets  | Yes      | One or more recipients — phone numbers (`+{phone}` or `@{phone}`) and/or group IDs (`#{group_id}`). At least one target must be provided.                                                                  |
 | template | No       | You can optionally specify a `template_name` here (such as `hello_world` which is the default one created once you set yourself up your Meta App). This causes Apprise to pull from your template defined. |
 | lang     | No       | If you've defined a template to reference, you can optionally over-ride the default language of `en_US` to reference a different version of the template specified.                                        |
 
@@ -80,10 +91,22 @@ If you wish to assign the `body` or `type` from Apprise, these special keywords 
 
 ## Examples
 
-Send a WhatsApp Notification:
+Send a WhatsApp Notification to a group:
 
 ```bash
-# Test out the changes with the following command:
+# Send a message to a phone number:
+apprise -b "Test Message" \
+  "whatsapp://token@from_phone_id/+14155552671/"
+
+# Send a message to a WhatsApp group (requires a qualifying Meta tier):
+apprise -b "Test Message" \
+  "whatsapp://token@from_phone_id/#120363043968066561"
+
+# Send to a phone number and a group in the same call:
+apprise -b "Test Message" \
+  "whatsapp://token@from_phone_id/+14155552671/#120363043968066561"
+
+# The original form still works (bare phone digits without a '+'):
 apprise -b "Test Message" \
   "whatsapp://token@from_phone_id/to_phone_no/"
 
