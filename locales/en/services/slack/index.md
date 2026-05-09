@@ -107,19 +107,21 @@ You can freely mix and match all of the combinations in any order as well:
 
 ## Parameter Breakdown
 
-| Variable   | Required | Description                                                                                                                                                                                                                                        |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| tokenA     | Yes      | The first part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                         |
-| tokenB     | Yes      | The second part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                        |
-| tokenC     | Yes      | The last part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                          |
-| OAuthToken | Yes      | The OAuth Token provided to you through the Slack App when using a a _Bot_ instead of a Webhook. Token A, B and C are not used when using Bots.                                                                                                    |
-| channel    | No       | Channels must be prefixed with a hash tag **#**! You can specify as many channels as you want by delimiting each of them by a forward slash (/) in the url.                                                                                        |
-| encoded_id | No       | Slack allows you to represent channels and private channels by an _encoded_id_. If you know what they are, you can use this instead of the channel to send your notifications to. All encoded_id's must be prefixed with a plus symbol **+**!      |
-| user_id    | No       | Users must be prefixed with an at symbol **@**! You can specify as many users as you want by delimiting each of them by a forward slash (/) in the url.                                                                                            |
-| botname    | No       | Identify the name of the bot that should issue the message. If one isn't specified then the default is to just use your account (associated with the _incoming-webhook_).                                                                          |
-| footer     | No       | Identify whether or not you want the Apprise Footer icon to show with each message. By default this is set to **yes**.                                                                                                                             |
-| image      | No       | Identify whether or not you want the Apprise image (showing status color) to display with every message or not. By default this is set to **yes**.                                                                                                 |
-| mode       | No       | Optionally enforce the mode the Slack plugin should operate in. This is detected by default, but possible options are `hook` (webhook mode) `gov-hook` (government webhook mode), and `bot` to have the service interact through the slack bot api |
+| Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| tokenA     | Yes      | The first part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                          |
+| tokenB     | Yes      | The second part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                         |
+| tokenC     | Yes      | The last part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                           |
+| OAuthToken | Yes      | The OAuth Token provided to you through the Slack App when using a a _Bot_ instead of a Webhook. Token A, B and C are not used when using Bots.                                                                                                                                                                                                                                                                                                                     |
+| channel    | No       | Channels must be prefixed with a hash tag **#**! You can specify as many channels as you want by delimiting each of them by a forward slash (/) in the url.                                                                                                                                                                                                                                                                                                         |
+| encoded_id | No       | Slack allows you to represent channels and private channels by an _encoded_id_. If you know what they are, you can use this instead of the channel to send your notifications to. All encoded_id's must be prefixed with a plus symbol **+**!                                                                                                                                                                                                                       |
+| user_id    | No       | Users must be prefixed with an at symbol **@**! You can specify as many users as you want by delimiting each of them by a forward slash (/) in the url.                                                                                                                                                                                                                                                                                                             |
+| botname    | No       | Identify the name of the bot that should issue the message. If one isn't specified then the default is to just use your account (associated with the _incoming-webhook_).                                                                                                                                                                                                                                                                                           |
+| footer     | No       | Identify whether or not you want the Apprise Footer icon to show with each message. By default this is set to **yes**.                                                                                                                                                                                                                                                                                                                                              |
+| image      | No       | Identify whether or not you want the Apprise image (showing status color) to display with every message or not. By default this is set to **yes**.                                                                                                                                                                                                                                                                                                                  |
+| mode       | No       | Optionally enforce the mode the Slack plugin should operate in. This is detected by default, but possible options are `hook` (webhook mode) `gov-hook` (government webhook mode), and `bot` to have the service interact through the slack bot api                                                                                                                                                                                                                  |
+| template   | No       | Path to a local template file. When set, the file's contents are used to build the Slack payload instead of the default layout (Block Kit mode is implied automatically). The template must be a JSON file whose top-level object contains a non-empty `"blocks"` list (Slack Block Kit format). Use `{{app_body}}`, `{{app_title}}`, `{{app_color}}`, `{{app_type}}`, `{{app_id}}`, `{{app_desc}}`, `{{app_image_url}}`, and `{{app_url}}` as substitution tokens. |
+| :token     | No       | Custom token(s) for template substitution. Prefix each token name with a colon in the URL (e.g. `?:mykey=myval`). Any token defined here is available as `{{mykey}}` inside the template file.                                                                                                                                                                                                                                                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -153,4 +155,34 @@ Perhaps you want to disable the footer, you can do so like so:
 # we set footer to no as well
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
+```
+
+Send a notification using a custom Slack Block Kit JSON template:
+
+```bash
+# First create your template file, e.g. /etc/apprise/slack-blocks.json:
+# {
+#   "blocks": [
+#     {
+#       "type": "header",
+#       "text": {"type": "plain_text", "text": "{{app_title}}"}
+#     },
+#     {
+#       "type": "section",
+#       "text": {"type": "mrkdwn", "text": "{{app_body}}"}
+#     }
+#   ],
+#   "color": "{{app_color}}"
+# }
+#
+# Then reference it with template= (blocks mode is implied automatically):
+apprise -vv -t "Alert" -b "Disk usage at 95%" \
+   "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/?template=/etc/apprise/slack-blocks.json"
+```
+
+Custom tokens can be injected into any template using the `:key=value` prefix:
+
+```bash
+apprise -vv -t "Deploy" -b "v2.3.1 deployed" \
+   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-tmpl.json&:env=production&:team=platform"
 ```

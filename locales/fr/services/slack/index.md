@@ -107,19 +107,21 @@ Vous pouvez également combiner librement toutes ces formes dans l’ordre de vo
 
 ## Détail des Paramètres
 
-| Variable   | Requis | Description                                                                                                                                                                                                           |
-| ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| tokenA     | Oui    | La première partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                   |
-| tokenB     | Oui    | La deuxième partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                   |
-| tokenC     | Oui    | La dernière partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                   |
-| OAuthToken | Oui    | Jeton OAuth fourni par la Slack App lorsque vous utilisez un robot au lieu d’un webhook. Les jetons A, B et C ne sont alors pas utilisés.                                                                             |
-| channel    | Non    | Les canaux doivent être préfixés par **#**. Vous pouvez en préciser autant que vous voulez en les séparant par des slashs (`/`) dans l’URL.                                                                           |
-| encoded_id | Non    | Slack permet aussi de désigner des canaux et canaux privés par un _encoded_id_. Si vous les connaissez, vous pouvez les utiliser à la place d’un nom de canal. Tous les `encoded_id` doivent être préfixés par **+**. |
-| user_id    | Non    | Les utilisateurs doivent être préfixés par **@**. Vous pouvez en préciser autant que nécessaire en les séparant par des slashs (`/`) dans l’URL.                                                                      |
-| botname    | Non    | Nom du bot qui doit publier le message. Si rien n’est précisé, la valeur par défaut correspond à votre propre compte associé à l’_incoming-webhook_.                                                                  |
-| footer     | Non    | Détermine si l’icône de pied de page Apprise doit être affichée à chaque message. La valeur par défaut est **yes**.                                                                                                   |
-| image      | Non    | Détermine si l’image Apprise, reflétant la couleur d’état, doit être affichée avec chaque message. La valeur par défaut est **yes**.                                                                                  |
-| mode       | Non    | Permet de forcer le mode de fonctionnement du plugin Slack. Il est détecté automatiquement par défaut, mais les valeurs possibles sont `hook`, `gov-hook` et `bot`, ce dernier utilisant l’API bot Slack.             |
+| Variable   | Requis | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| tokenA     | Oui    | La première partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                                                                                                                                                                                                                                                                                                                                |
+| tokenB     | Oui    | La deuxième partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                                                                                                                                                                                                                                                                                                                                |
+| tokenC     | Oui    | La dernière partie des 3 jetons fournis après la création d’un _incoming-webhook_. `OAuthToken` n’est pas requis si vous utilisez le webhook Slack.                                                                                                                                                                                                                                                                                                                                                                                |
+| OAuthToken | Oui    | Jeton OAuth fourni par la Slack App lorsque vous utilisez un robot au lieu d’un webhook. Les jetons A, B et C ne sont alors pas utilisés.                                                                                                                                                                                                                                                                                                                                                                                          |
+| channel    | Non    | Les canaux doivent être préfixés par **#**. Vous pouvez en préciser autant que vous voulez en les séparant par des slashs (`/`) dans l’URL.                                                                                                                                                                                                                                                                                                                                                                                        |
+| encoded_id | Non    | Slack permet aussi de désigner des canaux et canaux privés par un _encoded_id_. Si vous les connaissez, vous pouvez les utiliser à la place d’un nom de canal. Tous les `encoded_id` doivent être préfixés par **+**.                                                                                                                                                                                                                                                                                                              |
+| user_id    | Non    | Les utilisateurs doivent être préfixés par **@**. Vous pouvez en préciser autant que nécessaire en les séparant par des slashs (`/`) dans l’URL.                                                                                                                                                                                                                                                                                                                                                                                   |
+| botname    | Non    | Nom du bot qui doit publier le message. Si rien n’est précisé, la valeur par défaut correspond à votre propre compte associé à l’_incoming-webhook_.                                                                                                                                                                                                                                                                                                                                                                               |
+| footer     | Non    | Détermine si l’icône de pied de page Apprise doit être affichée à chaque message. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| image      | Non    | Détermine si l’image Apprise, reflétant la couleur d’état, doit être affichée avec chaque message. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                               |
+| mode       | Non    | Permet de forcer le mode de fonctionnement du plugin Slack. Il est détecté automatiquement par défaut, mais les valeurs possibles sont `hook`, `gov-hook` et `bot`, ce dernier utilisant l’API bot Slack.                                                                                                                                                                                                                                                                                                                          |
+| template   | Non    | Chemin vers un fichier gabarit local. Lorsqu’il est défini, le contenu du fichier est utilisé pour construire la charge utile Slack à la place de la mise en page par défaut (le mode Block Kit est activé automatiquement). Le gabarit doit être un fichier JSON dont l’objet racine contient une liste `"blocks"` non vide (format Slack Block Kit). Utilisez `{{app_body}}`, `{{app_title}}`, `{{app_color}}`, `{{app_type}}`, `{{app_id}}`, `{{app_desc}}`, `{{app_image_url}}` et `{{app_url}}` comme jetons de substitution. |
+| :jeton     | Non    | Jeton(s) personnalisé(s) pour la substitution dans le gabarit. Préfixez chaque nom de jeton par un deux-points dans l’URL (par exemple `?:maclé=mavaleur`). Tout jeton défini ici est accessible via `{{maclé}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -153,4 +155,34 @@ Vous pouvez aussi désactiver le pied de page, par exemple ainsi :
 # Nous definissons aussi footer sur no
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
+```
+
+Envoyer une notification à l'aide d'un gabarit JSON Slack Block Kit personnalisé :
+
+```bash
+# Créez d'abord votre fichier gabarit, par exemple /etc/apprise/slack-blocks.json :
+# {
+#   "blocks": [
+#     {
+#       "type": "header",
+#       "text": {"type": "plain_text", "text": "{{app_title}}"}
+#     },
+#     {
+#       "type": "section",
+#       "text": {"type": "mrkdwn", "text": "{{app_body}}"}
+#     }
+#   ],
+#   "color": "{{app_color}}"
+# }
+#
+# Puis référencez-le avec template= (le mode blocks est activé automatiquement) :
+apprise -vv -t "Alerte" -b "Utilisation disque à 95 %" \
+   "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/?template=/etc/apprise/slack-blocks.json"
+```
+
+Des jetons personnalisés peuvent être injectés dans n'importe quel gabarit avec le préfixe `:clé=valeur` :
+
+```bash
+apprise -vv -t "Déploiement" -b "v2.3.1 déployé" \
+   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-tmpl.json&:env=production&:team=platform"
 ```
