@@ -16,6 +16,10 @@ sample_urls:
   - https://hooks.slack.com/services/{tokenA}/{tokenB}/{tokenC}
   - slack://{tokenA}/{tokenB}/{tokenC}
   - slack://{OAuthToken}/
+  - https://hooks.slack.com/workflows/{seg1}/{seg2}/{seg3}/{seg4}
+  - slack://{seg1}/{seg2}/{seg3}/{seg4}/?mode=workflow
+  - https://hooks.slack.com/triggers/{seg1}/{seg2}/{seg3}
+  - slack://{seg1}/{seg2}/{seg3}/?mode=trigger
 
 limits:
   max_chars: 35000
@@ -105,6 +109,22 @@ Vous pouvez également combiner librement toutes ces formes dans l’ordre de vo
 - `slack://**{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
 - `slack://{botname}@{OAuthToken}/@{user_id}/#{channel}/+{encoded_id}`
 
+### Méthode 3 : Webhooks Slack Workflow Builder
+
+Les webhooks [Slack Workflow Builder](https://slack.com/help/articles/360041352714) utilisent un format d’URL différent et sont détectés automatiquement. Vous pouvez coller l’URL native directement, ou construire une URL Apprise avec `?mode=workflow` ou `?mode=trigger`.
+
+**Workflow Builder** (chemin à 4 segments sous `/workflows/`) :
+
+- `https://hooks.slack.com/workflows/{seg1}/{seg2}/{seg3}/{seg4}`
+- `slack://{seg1}/{seg2}/{seg3}/{seg4}/?mode=workflow`
+
+**Workflow Trigger** (chemin à 3 segments sous `/triggers/`) :
+
+- `https://hooks.slack.com/triggers/{seg1}/{seg2}/{seg3}`
+- `slack://{seg1}/{seg2}/{seg3}/?mode=trigger`
+
+Les deux formes envoient `{"text": "Titre : Corps"}` par défaut (le titre est omis s’il est vide). Vous pouvez aussi passer un fichier `template=` pour envoyer un payload Block Kit personnalisé.
+
 ## Détail des Paramètres
 
 | Variable   | Requis | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -119,7 +139,7 @@ Vous pouvez également combiner librement toutes ces formes dans l’ordre de vo
 | botname    | Non    | Nom du bot qui doit publier le message. Si rien n’est précisé, la valeur par défaut correspond à votre propre compte associé à l’_incoming-webhook_.                                                                                                                                                                                                                                                                                                                                                                               |
 | footer     | Non    | Détermine si l’icône de pied de page Apprise doit être affichée à chaque message. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                                                |
 | image      | Non    | Détermine si l’image Apprise, reflétant la couleur d’état, doit être affichée avec chaque message. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                               |
-| mode       | Non    | Permet de forcer le mode de fonctionnement du plugin Slack. Il est détecté automatiquement par défaut, mais les valeurs possibles sont `hook`, `gov-hook` et `bot`, ce dernier utilisant l’API bot Slack.                                                                                                                                                                                                                                                                                                                          |
+| mode       | Non    | Permet de forcer le mode de fonctionnement du plugin Slack. Il est détecté automatiquement par défaut, mais les valeurs possibles sont `hook` (webhook), `gov-hook` (webhook gouvernemental), `bot` (API bot Slack), `workflow` (webhook Workflow Builder) et `trigger` (webhook de déclenchement de workflow).                                                                                                                                                                                                                    |
 | template   | Non    | Chemin vers un fichier gabarit local. Lorsqu’il est défini, le contenu du fichier est utilisé pour construire la charge utile Slack à la place de la mise en page par défaut (le mode Block Kit est activé automatiquement). Le gabarit doit être un fichier JSON dont l’objet racine contient une liste `"blocks"` non vide (format Slack Block Kit). Utilisez `{{app_body}}`, `{{app_title}}`, `{{app_color}}`, `{{app_type}}`, `{{app_id}}`, `{{app_desc}}`, `{{app_image_url}}` et `{{app_url}}` comme jetons de substitution. |
 | :jeton     | Non    | Jeton(s) personnalisé(s) pour la substitution dans le gabarit. Préfixez chaque nom de jeton par un deux-points dans l’URL (par exemple `?:maclé=mavaleur`). Tout jeton défini ici est accessible via `{{maclé}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                          |
 

@@ -16,6 +16,10 @@ sample_urls:
   - https://hooks.slack.com/services/{tokenA}/{tokenB}/{tokenC}
   - slack://{tokenA}/{tokenB}/{tokenC}
   - slack://{OAuthToken}/
+  - https://hooks.slack.com/workflows/{seg1}/{seg2}/{seg3}/{seg4}
+  - slack://{seg1}/{seg2}/{seg3}/{seg4}/?mode=workflow
+  - https://hooks.slack.com/triggers/{seg1}/{seg2}/{seg3}
+  - slack://{seg1}/{seg2}/{seg3}/?mode=trigger
 
 limits:
   max_chars: 35000
@@ -105,6 +109,22 @@ You can freely mix and match all of the combinations in any order as well:
 - `slack://**{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
 - `slack://{botname}@{OAuthToken}/@{user_id}/#{channel}/+{encoded_id}`
 
+### Method 3: Slack Workflow Builder Webhooks
+
+[Slack Workflow Builder](https://slack.com/help/articles/360041352714) webhooks use a different URL format and are detected automatically. You can paste the native URL directly, or build an Apprise URL using `?mode=workflow` or `?mode=trigger`.
+
+**Workflow Builder** (4-segment path under `/workflows/`):
+
+- `https://hooks.slack.com/workflows/{seg1}/{seg2}/{seg3}/{seg4}`
+- `slack://{seg1}/{seg2}/{seg3}/{seg4}/?mode=workflow`
+
+**Workflow Trigger** (3-segment path under `/triggers/`):
+
+- `https://hooks.slack.com/triggers/{seg1}/{seg2}/{seg3}`
+- `slack://{seg1}/{seg2}/{seg3}/?mode=trigger`
+
+Both forms post `{"text": "Title: Body"}` by default (title omitted when blank). You can also pass a `template=` file to send a custom Block Kit payload instead.
+
 ## Parameter Breakdown
 
 | Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -119,7 +139,7 @@ You can freely mix and match all of the combinations in any order as well:
 | botname    | No       | Identify the name of the bot that should issue the message. If one isn't specified then the default is to just use your account (associated with the _incoming-webhook_).                                                                                                                                                                                                                                                                                           |
 | footer     | No       | Identify whether or not you want the Apprise Footer icon to show with each message. By default this is set to **yes**.                                                                                                                                                                                                                                                                                                                                              |
 | image      | No       | Identify whether or not you want the Apprise image (showing status color) to display with every message or not. By default this is set to **yes**.                                                                                                                                                                                                                                                                                                                  |
-| mode       | No       | Optionally enforce the mode the Slack plugin should operate in. This is detected by default, but possible options are `hook` (webhook mode) `gov-hook` (government webhook mode), and `bot` to have the service interact through the slack bot api                                                                                                                                                                                                                  |
+| mode       | No       | Optionally enforce the mode the Slack plugin should operate in. This is detected by default, but possible options are `hook` (webhook mode), `gov-hook` (government webhook mode), `bot` (Slack Bot API), `workflow` (Workflow Builder webhook), and `trigger` (Workflow trigger webhook).                                                                                                                                                                          |
 | template   | No       | Path to a local template file. When set, the file's contents are used to build the Slack payload instead of the default layout (Block Kit mode is implied automatically). The template must be a JSON file whose top-level object contains a non-empty `"blocks"` list (Slack Block Kit format). Use `{{app_body}}`, `{{app_title}}`, `{{app_color}}`, `{{app_type}}`, `{{app_id}}`, `{{app_desc}}`, `{{app_image_url}}`, and `{{app_url}}` as substitution tokens. |
 | :token     | No       | Custom token(s) for template substitution. Prefix each token name with a colon in the URL (e.g. `?:mykey=myval`). Any token defined here is available as `{{mykey}}` inside the template file.                                                                                                                                                                                                                                                                      |
 
