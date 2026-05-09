@@ -17,7 +17,9 @@ sample_urls:
   - slack://{tokenA}/{tokenB}/{tokenC}
   - slack://{OAuthToken}/
   - https://hooks.slack.com/workflows/{seg1}/{seg2}/{seg3}/{seg4}
+  - slack://{seg1}/{seg2}/{seg3}/{seg4}/?mode=workflow
   - https://hooks.slack.com/triggers/{seg1}/{seg2}/{seg3}
+  - slack://{seg1}/{seg2}/{seg3}/?mode=trigger
 
 limits:
   max_chars: 35000
