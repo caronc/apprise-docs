@@ -112,6 +112,12 @@
     "github_sponsors": "GitHub Sponsors",
     "paypal": "PayPal"
   },
+  "staging": {
+    "label": "Preview",
+    "summary": "You are viewing the development preview for upcoming Apprise documentation. Visit {live} for the current published docs.",
+    "details": "This site is used to review documentation before it is promoted to the live Apprise documentation site. Pages here may describe unreleased changes, draft updates, or content still under review.",
+    "expand": "Show preview details"
+  },
   "errors": {
     "return_home": "Return Home",
     "try_again": "Try Again",

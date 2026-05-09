@@ -112,6 +112,12 @@
     "github_sponsors": "GitHub Sponsors",
     "paypal": "PayPal"
   },
+  "staging": {
+    "label": "Aperçu",
+    "summary": "Vous consultez l’aperçu de développement de la prochaine documentation Apprise. Consultez {live} pour la documentation publiée actuelle.",
+    "details": "Ce site sert à relire la documentation avant sa promotion vers le site public d’Apprise. Certaines pages peuvent décrire des changements non publiés, des mises à jour provisoires ou du contenu encore en cours de révision.",
+    "expand": "Afficher les détails de l’aperçu"
+  },
   "errors": {
     "return_home": "Retour à l’accueil",
     "try_again": "Réessayer",
