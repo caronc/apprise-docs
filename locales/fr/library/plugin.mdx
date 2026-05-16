@@ -211,6 +211,7 @@ class NotifyDemoHTTP(NotifyBase):
                 headers=headers,
                 verify=self.verify_certificate,
                 timeout=self.request_timeout,
+                allow_redirects=self.redirects,
             )
             if r.status_code < 200 or r.status_code >= 300:
                 return False
@@ -508,14 +509,16 @@ Une règle importante, vérifiée par les tests unitaires, est que les métadonn
 de vos templates doivent correspondre proprement aux arguments de `__init__()`,
 soit directement (même nom), soit via `map_to`.
 
-### Limitation de Débit, Vérification et Timeouts
+### Limitation de Débit, Vérification, Redirections et Timeouts
 
-`URLBase` définit la vérification SSL et les timeouts socket communs en tant
-qu'arguments d'URL :
+`URLBase` définit la vérification SSL, le comportement des redirections et les
+timeouts socket communs en tant qu'arguments d'URL. Passez toujours les
+attributs correspondants dans chaque appel `requests.*` de votre plugin :
 
-- `verify` controls `verify_certificate`
-- `rto` controls the socket read timeout
-- `cto` controls the socket connect timeout
+- `verify` contrôle `verify_certificate` -- à passer via `verify=self.verify_certificate`
+- `redirect` contrôle `redirects` -- à passer via `allow_redirects=self.redirects`
+- `rto` contrôle le timeout de lecture socket
+- `cto` contrôle le timeout de connexion socket
 
 ## `url_identifier`
 
@@ -652,16 +655,17 @@ automatiquement dans votre plugin, sauf surcharge explicite.
 
 `NotifyBase` hérite de l'objet `URLBase`, qui définit les valeurs par défaut suivantes :
 
-| Attribut                 | Défaut                 | Rôle                                                                                                      | Quand le Surcharger                                                                                                         |
-| :----------------------- | :--------------------- | :-------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `request_rate_per_sec`   | `0`                    | Intervalle de limitation de débit de base (secondes). `0` désactive la limitation au niveau de `URLBase`. | À surcharger en général dans `NotifyBase` ou votre plugin, pas dans `URLBase`.                                              |
-| `socket_connect_timeout` | `4.0`                  | Timeout de connexion par défaut, utilisé quand `cto` n'est pas fourni.                                    | Si votre service nécessite régulièrement des handshakes TCP plus longs.                                                     |
-| `socket_read_timeout`    | `4.0`                  | Timeout de lecture par défaut, utilisé quand `rto` n'est pas fourni.                                      | Si votre service répond lentement ou diffuse des réponses en streaming.                                                     |
-| `verify_certificate`     | `True`                 | Vérification des certificats SSL, utilisée quand `verify` n'est pas fourni.                               | Seulement si votre service tourne dans des réseaux contrôlés avec certificats auto-signés et que `verify=no` vous convient. |
-| `templates`              | `()`                   | Templates de documentation.                                                                               | Presque toujours, afin que les outils et la documentation décrivent correctement le plugin.                                 |
-| `template_tokens`        | `{}`                   | Métadonnées décrivant les jetons du chemin URL.                                                           | Presque toujours, pour les schémas non triviaux.                                                                            |
-| `template_args`          | `{ verify, rto, cto }` | Arguments d'URL communs et leurs valeurs par défaut.                                                      | En général, on les étend plutôt que de les remplacer.                                                                       |
-| `template_kwargs`        | `{}`                   | Métadonnées pour les arguments clé/valeur préfixés.                                                       | Si vous prenez en charge `+headers`, `:payload`, `-params`, etc.                                                            |
+| Attribut                 | Défaut                           | Rôle                                                                                                         | Quand le Surcharger                                                                                                         |
+| :----------------------- | :------------------------------- | :----------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `request_rate_per_sec`   | `0`                              | Intervalle de limitation de débit de base (secondes). `0` désactive la limitation au niveau de `URLBase`.    | À surcharger en général dans `NotifyBase` ou votre plugin, pas dans `URLBase`.                                              |
+| `socket_connect_timeout` | `4.0`                            | Timeout de connexion par défaut, utilisé quand `cto` n'est pas fourni.                                       | Si votre service nécessite régulièrement des handshakes TCP plus longs.                                                     |
+| `socket_read_timeout`    | `4.0`                            | Timeout de lecture par défaut, utilisé quand `rto` n'est pas fourni.                                         | Si votre service répond lentement ou diffuse des réponses en streaming.                                                     |
+| `verify_certificate`     | `True`                           | Vérification des certificats SSL, utilisée quand `verify` n'est pas fourni.                                  | Seulement si votre service tourne dans des réseaux contrôlés avec certificats auto-signés et que `verify=no` vous convient. |
+| `redirects`              | `True`                           | Suivi des redirections HTTP, utilisé quand `redirect` n'est pas fourni. Se rabat sur `asset.http_redirects`. | Définir à `False` sur l'asset pour désactiver les redirections globalement si votre environnement l'exige.                  |
+| `templates`              | `()`                             | Templates de documentation.                                                                                  | Presque toujours, afin que les outils et la documentation décrivent correctement le plugin.                                 |
+| `template_tokens`        | `{}`                             | Métadonnées décrivant les jetons du chemin URL.                                                              | Presque toujours, pour les schémas non triviaux.                                                                            |
+| `template_args`          | `{ verify, redirect, rto, cto }` | Arguments d'URL communs et leurs valeurs par défaut.                                                         | En général, on les étend plutôt que de les remplacer.                                                                       |
+| `template_kwargs`        | `{}`                             | Métadonnées pour les arguments clé/valeur préfixés.                                                          | Si vous prenez en charge `+headers`, `:payload`, `-params`, etc.                                                            |
 
 ### Valeurs par Défaut de NotifyBase
 

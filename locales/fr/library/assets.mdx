@@ -115,12 +115,13 @@ Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurabl
 
 ### Limites de sécurité
 
-| Champ            | Type     |          Défaut | Utilisé par                | Notes                                                                                     |
-| ---------------- | -------- | --------------: | -------------------------- | ----------------------------------------------------------------------------------------- |
-| `secure_logging` | `bool`   |          `True` | Pipeline de journalisation | Ajoute un coût pour masquer les secrets dans les logs ; recommandé de le laisser activé.  |
-| `_recursion`     | `int`    |             `0` | Garde-fou de récursion API | Empêche les boucles lorsqu'une instance Apprise API en appelle une autre.                 |
-| `_uid`           | `str`    | UUID4 aléatoire | Corrélation / identité     | Identifiant interne destiné à la corrélation interne.                                     |
-| `_tzinfo`        | `tzinfo` |  fuseau système | Comportement temporel      | Objet fuseau horaire résolu utilisé par les plugins ayant besoin d'horodatages localisés. |
+| Champ            | Type     |          Défaut | Utilisé par                | Notes                                                                                                                                                                                                                                       |
+| ---------------- | -------- | --------------: | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_redirects` | `bool`   |          `True` | Tous les plugins HTTP      | Quand `True` (par défaut), les plugins suivent les redirections 3xx, conformément au comportement de la bibliothèque requests. Définir à `False` pour désactiver le suivi des redirections globalement sans toucher aux URLs individuelles. |
+| `secure_logging` | `bool`   |          `True` | Pipeline de journalisation | Ajoute un coût pour masquer les secrets dans les logs ; recommandé de le laisser activé.                                                                                                                                                    |
+| `_recursion`     | `int`    |             `0` | Garde-fou de récursion API | Empêche les boucles lorsqu'une instance Apprise API en appelle une autre.                                                                                                                                                                   |
+| `_uid`           | `str`    | UUID4 aléatoire | Corrélation / identité     | Identifiant interne destiné à la corrélation interne.                                                                                                                                                                                       |
+| `_tzinfo`        | `tzinfo` |  fuseau système | Comportement temporel      | Objet fuseau horaire résolu utilisé par les plugins ayant besoin d'horodatages localisés.                                                                                                                                                   |
 
 ## Schémas d'utilisation courants
 
@@ -227,6 +228,27 @@ asset = AppriseAsset(
 ---
 
 ## Contrôles de sécurité
+
+### Redirections HTTP
+
+Par défaut, Apprise suit les redirections HTTP 3xx, conformément au comportement
+de la bibliothèque requests sous-jacente. Si vous souhaitez empêcher la
+transmission des en-têtes personnalisés et des identifiants vers des destinations
+différentes de l'URL d'origine, vous pouvez désactiver globalement le suivi des
+redirections :
+
+```python
+asset = AppriseAsset(http_redirects=False)
+```
+
+Les URLs individuelles peuvent toujours remplacer la valeur par défaut de
+l'asset via le paramètre d'URL `redirect=` :
+
+```text
+# Remplacement par URL, indépendamment du réglage de l'asset
+schema://token/?redirect=yes
+schema://token/?redirect=no
+```
 
 ### Journalisation sécurisée
 

@@ -115,12 +115,13 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 ### Safety Boundaries
 
-| Field            | Type     |      Default | Used by                     | Notes                                                                        |
-| ---------------- | -------- | -----------: | --------------------------- | ---------------------------------------------------------------------------- |
-| `secure_logging` | `bool`   |       `True` | Logging pipeline            | Adds overhead to redact secrets from logs, recommended to keep enabled.      |
-| `_recursion`     | `int`    |          `0` | Apprise API recursion guard | Prevents loops when one Apprise API instance calls another.                  |
-| `_uid`           | `str`    | random UUID4 | Correlation / identity      | Internal identifier, intended for internal correlation.                      |
-| `_tzinfo`        | `tzinfo` |    system tz | Time-based behaviour        | The resolved timezone object used by plugins that need localised timestamps. |
+| Field            | Type     |      Default | Used by                     | Notes                                                                                                                                                                                                       |
+| ---------------- | -------- | -----------: | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_redirects` | `bool`   |       `True` | All HTTP plugins            | When `True` (the default), plugins follow 3xx redirects, matching the behaviour of the underlying requests library. Set to `False` to disable redirect following globally without touching individual URLs. |
+| `secure_logging` | `bool`   |       `True` | Logging pipeline            | Adds overhead to redact secrets from logs, recommended to keep enabled.                                                                                                                                     |
+| `_recursion`     | `int`    |          `0` | Apprise API recursion guard | Prevents loops when one Apprise API instance calls another.                                                                                                                                                 |
+| `_uid`           | `str`    | random UUID4 | Correlation / identity      | Internal identifier, intended for internal correlation.                                                                                                                                                     |
+| `_tzinfo`        | `tzinfo` |    system tz | Time-based behaviour        | The resolved timezone object used by plugins that need localised timestamps.                                                                                                                                |
 
 ## Common Usage Patterns
 
@@ -227,6 +228,26 @@ asset = AppriseAsset(
 ---
 
 ## Security and Safety Controls
+
+### HTTP Redirects
+
+By default, Apprise follows HTTP 3xx redirects, matching the behaviour of the
+underlying requests library. If you want to prevent custom headers and
+credentials from being forwarded to destinations that differ from the original
+URL, you can disable redirect following globally:
+
+```python
+asset = AppriseAsset(http_redirects=False)
+```
+
+Individual URLs can still override the asset default using the `redirect=`
+URL parameter:
+
+```text
+# Override per-URL regardless of the asset setting
+schema://token/?redirect=yes
+schema://token/?redirect=no
+```
 
 ### Secure Logging
 

@@ -207,6 +207,7 @@ class NotifyDemoHTTP(NotifyBase):
                 headers=headers,
                 verify=self.verify_certificate,
                 timeout=self.request_timeout,
+                allow_redirects=self.redirects,
             )
             if r.status_code < 200 or r.status_code >= 300:
                 return False
@@ -495,11 +496,14 @@ Usually the first call made in your `parse_url()` function is to call the parent
 
 A key rule that the unit tests enforce is that your template metadata must map cleanly to `__init__()` arguments, either directly (same name) or through `map_to`.
 
-### Throttling, Verification, and Timeouts
+### Throttling, Verification, Redirects, and Timeouts
 
-`URLBase` defines common SSL verification and socket timeouts as URL arguments:
+`URLBase` defines common SSL verification, redirect behaviour, and socket
+timeouts as URL arguments. Always pass the corresponding attributes into every
+`requests.*` call your plugin makes:
 
-- `verify` controls `verify_certificate`
+- `verify` controls `verify_certificate` -- pass as `verify=self.verify_certificate`
+- `redirect` controls `redirects` -- pass as `allow_redirects=self.redirects`
 - `rto` controls the socket read timeout
 - `cto` controls the socket connect timeout
 
@@ -611,16 +615,17 @@ The following identifies the default values of variables defined in your plugin 
 
 `NotifyBase` inherits from the `URLBase` object which sets these defaults:
 
-| Attribute                | Default                | Purpose                                                                         | When To Override                                                                                                      |
-| :----------------------- | :--------------------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------- |
-| `request_rate_per_sec`   | `0`                    | Base throttle interval (seconds). `0` disables throttling at the URLBase level. | Typically override at `NotifyBase` or your plugin, not at URLBase.                                                    |
-| `socket_connect_timeout` | `4.0`                  | Default connect timeout, used when `cto` is not provided.                       | If your service routinely needs longer TCP handshakes.                                                                |
-| `socket_read_timeout`    | `4.0`                  | Default read timeout, used when `rto` is not provided.                          | If your service returns slowly or streams responses.                                                                  |
-| `verify_certificate`     | `True`                 | SSL certificate verification, used when `verify` is not provided.               | Only if your service runs in controlled networks with self-signed certs and you are comfortable allowing `verify=no`. |
-| `templates`              | `()`                   | Documentation templates.                                                        | Almost always, so tooling and docs can describe the plugin accurately.                                                |
-| `template_tokens`        | `{}`                   | Metadata describing URL path tokens.                                            | Almost always, for non-trivial schemas.                                                                               |
-| `template_args`          | `{ verify, rto, cto }` | Common URL args and their defaults.                                             | Usually extend rather than replace.                                                                                   |
-| `template_kwargs`        | `{}`                   | Metadata for prefixed key/value arguments.                                      | If you support `+headers`, `:payload`, `-params`, etc.                                                                |
+| Attribute                | Default                          | Purpose                                                                                              | When To Override                                                                                                      |
+| :----------------------- | :------------------------------- | :--------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `request_rate_per_sec`   | `0`                              | Base throttle interval (seconds). `0` disables throttling at the URLBase level.                      | Typically override at `NotifyBase` or your plugin, not at URLBase.                                                    |
+| `socket_connect_timeout` | `4.0`                            | Default connect timeout, used when `cto` is not provided.                                            | If your service routinely needs longer TCP handshakes.                                                                |
+| `socket_read_timeout`    | `4.0`                            | Default read timeout, used when `rto` is not provided.                                               | If your service returns slowly or streams responses.                                                                  |
+| `verify_certificate`     | `True`                           | SSL certificate verification, used when `verify` is not provided.                                    | Only if your service runs in controlled networks with self-signed certs and you are comfortable allowing `verify=no`. |
+| `redirects`              | `True`                           | HTTP redirect following, used when `redirect` is not provided. Falls back to `asset.http_redirects`. | Set to `False` on the asset to disable redirects globally if your environment requires it.                            |
+| `templates`              | `()`                             | Documentation templates.                                                                             | Almost always, so tooling and docs can describe the plugin accurately.                                                |
+| `template_tokens`        | `{}`                             | Metadata describing URL path tokens.                                                                 | Almost always, for non-trivial schemas.                                                                               |
+| `template_args`          | `{ verify, redirect, rto, cto }` | Common URL args and their defaults.                                                                  | Usually extend rather than replace.                                                                                   |
+| `template_kwargs`        | `{}`                             | Metadata for prefixed key/value arguments.                                                           | If you support `+headers`, `:payload`, `-params`, etc.                                                                |
 
 ### NotifyBase Defaults
 
