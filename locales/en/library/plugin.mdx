@@ -207,6 +207,7 @@ class NotifyDemoHTTP(NotifyBase):
                 headers=headers,
                 verify=self.verify_certificate,
                 timeout=self.request_timeout,
+                allow_redirects=self.redirects,
             )
             if r.status_code < 200 or r.status_code >= 300:
                 return False
@@ -495,11 +496,14 @@ Usually the first call made in your `parse_url()` function is to call the parent
 
 A key rule that the unit tests enforce is that your template metadata must map cleanly to `__init__()` arguments, either directly (same name) or through `map_to`.
 
-### Throttling, Verification, and Timeouts
+### Throttling, Verification, Redirects, and Timeouts
 
-`URLBase` defines common SSL verification and socket timeouts as URL arguments:
+`URLBase` defines common SSL verification, redirect behaviour, and socket
+timeouts as URL arguments. Always pass the corresponding attributes into every
+`requests.*` call your plugin makes:
 
-- `verify` controls `verify_certificate`
+- `verify` controls `verify_certificate` -- pass as `verify=self.verify_certificate`
+- `redirect` controls `redirects` -- pass as `allow_redirects=self.redirects`
 - `rto` controls the socket read timeout
 - `cto` controls the socket connect timeout
 

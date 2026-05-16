@@ -211,6 +211,7 @@ class NotifyDemoHTTP(NotifyBase):
                 headers=headers,
                 verify=self.verify_certificate,
                 timeout=self.request_timeout,
+                allow_redirects=self.redirects,
             )
             if r.status_code < 200 or r.status_code >= 300:
                 return False
@@ -508,14 +509,16 @@ Une règle importante, vérifiée par les tests unitaires, est que les métadonn
 de vos templates doivent correspondre proprement aux arguments de `__init__()`,
 soit directement (même nom), soit via `map_to`.
 
-### Limitation de Débit, Vérification et Timeouts
+### Limitation de Débit, Vérification, Redirections et Timeouts
 
-`URLBase` définit la vérification SSL et les timeouts socket communs en tant
-qu'arguments d'URL :
+`URLBase` définit la vérification SSL, le comportement des redirections et les
+timeouts socket communs en tant qu'arguments d'URL. Passez toujours les
+attributs correspondants dans chaque appel `requests.*` de votre plugin :
 
-- `verify` controls `verify_certificate`
-- `rto` controls the socket read timeout
-- `cto` controls the socket connect timeout
+- `verify` contrôle `verify_certificate` -- à passer via `verify=self.verify_certificate`
+- `redirect` contrôle `redirects` -- à passer via `allow_redirects=self.redirects`
+- `rto` contrôle le timeout de lecture socket
+- `cto` contrôle le timeout de connexion socket
 
 ## `url_identifier`
 
