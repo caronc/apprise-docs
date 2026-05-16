@@ -47,6 +47,8 @@ La syntaxe valide est la suivante :
 - `pover://{user_key}@{token}/{device_id}/#{group_key}`
 - `pover://{user_key}@{token}?priority={priority}`
 - `pover://{user_key}@{token}?priority=emergency&expire={expire}&interval={interval}`
+- `pover://{user_key}@{token}?key={cle_chiffrement}`
+- `pover://{user_key}@{token}?key={cle_chiffrement}&e2ee=no`
 
 ## Détail des Paramètres
 
@@ -62,8 +64,38 @@ La syntaxe valide est la suivante :
 | sound     | Non         | Permet de preciser l'un des effets sonores facultatifs identifies [ici](https://pushover.net/api#sounds). Le son par defaut est **pushover**.                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | url       | Non         | Permet de fournir une URL supplementaire accompagnee de votre message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | url_title | Non         | Permet de fournir un titre pour l'URL supplementaire accompagnee de votre message.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| key       | Non         | Chaine hexadecimale de 64 caracteres representant une cle AES 256 bits utilisee pour le [chiffrement de bout en bout](https://pushover.net/api#e2ee). Lorsqu'elle est definie, les champs `message`, `title`, `url` et `url_title` sont chiffres cote client avant d'etre transmis a l'API Pushover. Necessite le paquet Python `cryptography` (`pip install cryptography`). Si le paquet est absent, Apprise envoie le message en texte clair avec un avertissement.                                                                                              |
+| e2ee      | Non         | Controle si le chiffrement de bout en bout est applique lorsqu'une `key` est configuree. La valeur par defaut est **yes**. Definir sur **no** pour envoyer temporairement en texte clair meme lorsqu'une cle est presente.                                                                                                                                                                                                                                                                                                                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Chiffrement de Bout en Bout (E2EE)
+
+Pushover prend en charge le [chiffrement de bout en bout cote client](https://pushover.net/api#e2ee). Lorsqu'il est active, les champs `message`, `title`, `url` et `url_title` sont chiffres du cote d'Apprise via **AES-256-CBC** avant d'etre transmis a l'API Pushover. Les serveurs Pushover ne voient jamais le contenu en clair.
+
+### Generer une Cle de Chiffrement
+
+La cle est une valeur de 256 bits que vous creez vous-meme, representee sous forme d'une **chaine de 64 caracteres hexadecimaux**. Vous devez egalement configurer la meme cle dans l'application Pushover sur chaque appareil devant pouvoir lire les notifications. Consultez la [documentation Pushover](https://pushover.net/api#e2ee) pour la configuration cote application.
+
+Pour generer rapidement une cle sous Linux/macOS :
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### Prerequis
+
+Le chiffrement E2EE requiert le paquet Python `cryptography`. Installez-le avec :
+
+```bash
+pip install cryptography
+```
+
+Si le paquet n'est pas installe et qu'une `key` est configuree, Apprise enregistre un avertissement et envoie le message **sans chiffrement** en repli gracieux. Definissez `e2ee=no` pour envoyer intentionnellement en texte clair tout en conservant la cle dans l'URL pour une utilisation future.
+
+:::caution
+Conservez votre cle de chiffrement en lieu sur. Toute personne disposant de cette cle peut dechiffrer les notifications. Traitez-la avec le meme soin que votre jeton API.
+:::
 
 ## Sons Personnalises
 
@@ -109,4 +141,15 @@ Envoyer une notification Pushover avec la priorite Emergency :
 # de renvoyer le message toutes les 10 minutes :
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?priority=emergency&interval=600&expire=3600
+```
+
+Envoyer une notification Pushover chiffree de bout en bout :
+
+```bash
+# Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
+# Supposons que notre {token} soit abcdefghijklmnop-abcdefg
+# Supposons que notre cle de chiffrement hexadecimale de 64 chars soit aabbcc...
+# (generez-en une avec : python3 -c "import secrets; print(secrets.token_hex(32))")
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?key=aabbccdd11223344aabbccdd11223344aabbccdd11223344aabbccdd11223344"
 ```

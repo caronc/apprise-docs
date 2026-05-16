@@ -47,6 +47,8 @@ Valid syntax is as follows:
 - `pover://{user_key}@{token}/{device_id}/#{group_key}`
 - `pover://{user_key}@{token}?priority={priority}`
 - `pover://{user_key}@{token}?priority=emergency&expire={expire}&interval={interval}`
+- `pover://{user_key}@{token}?key={encryption_key}`
+- `pover://{user_key}@{token}?key={encryption_key}&e2ee=no`
 
 ## Parameter Breakdown
 
@@ -62,8 +64,38 @@ Valid syntax is as follows:
 | sound     | No       | Can optionally identify one of the optional sound effects identified [here](https://pushover.net/api#sounds). The default sound is **pushover**.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | url       | No       | Can optionally provide a Supplementary URL to go with your message                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | url_title | No       | Can optionally provide a Supplementary URL Title to go with your message                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| key       | No       | A 64-character hexadecimal string representing a 256-bit AES key used for [end-to-end encryption](https://pushover.net/api#e2ee). When set, the `message`, `title`, `url`, and `url_title` fields are each encrypted client-side before being transmitted. Requires the `cryptography` Python package (`pip install cryptography`). If the package is absent, Apprise falls back to sending the message unencrypted with a warning.                                                                                                                                      |
+| e2ee      | No       | Controls whether end-to-end encryption is applied when a `key` is configured. Defaults to **yes**. Set to **no** to temporarily send plaintext even when a key is present.                                                                                                                                                                                                                                                                                                                                                                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## End-to-End Encryption (E2EE)
+
+Pushover supports [client-side end-to-end encryption](https://pushover.net/api#e2ee). When enabled, the `message`, `title`, `url`, and `url_title` fields are encrypted on the Apprise side using **AES-256-CBC** before being sent to the Pushover API. Pushover servers never see the plaintext content.
+
+### Generating an Encryption Key
+
+The key is a 256-bit value you create yourself, represented as a **64 hexadecimal character string**. You must also configure the same key in the Pushover app on every device that should be able to read the notifications. Refer to [Pushover's documentation](https://pushover.net/api#e2ee) for the app-side setup.
+
+A quick way to generate a key on Linux/macOS:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### Requirements
+
+E2EE requires the `cryptography` Python package. Install it with:
+
+```bash
+pip install cryptography
+```
+
+If the package is not installed and a `key` is configured, Apprise logs a warning and sends the message **unencrypted** as a graceful fallback. Set `e2ee=no` to intentionally send plaintext while keeping the key stored in the URL for future use.
+
+:::caution
+Store your encryption key securely. Anyone with the key can decrypt the notifications. Treat it with the same care as your API token.
+:::
 
 ## Custom Sounds
 
@@ -109,4 +141,15 @@ Send a Pushover notification with the Emergency Priority:
 # the message every 10 minutes:
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?priority=emergency&interval=600&expire=3600
+```
+
+Send an end-to-end encrypted Pushover notification:
+
+```bash
+# Assuming our {user_key} is 435jdj3k78435jdj3k78435jdj3k78
+# Assuming our {token} is abcdefghijklmnop-abcdefg
+# Assuming our 64-char hex encryption key is aabbcc...
+# (generate one with: python3 -c "import secrets; print(secrets.token_hex(32))")
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?key=aabbccdd11223344aabbccdd11223344aabbccdd11223344aabbccdd11223344"
 ```
