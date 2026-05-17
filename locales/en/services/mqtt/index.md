@@ -22,11 +22,15 @@ sample_urls:
 
 ## Account Setup
 
-MQTT Support requires **paho-mqtt** (a version less then v2) to work:
+MQTT Support requires **paho-mqtt** v2.1.0 or newer to work:
 
 ```bash
-pip install "paho-mqtt<2.0"
+pip install "paho-mqtt"
 ```
+
+:::note
+When connecting to a broker that uses a self-signed certificate, add `?verify=no` to the URL. For example: `mqtts://user:pass@host/topic?verify=no`. Certificate chain validation is fully disabled in this mode, allowing self-signed certificates to be accepted.
+:::
 
 ## Syntax
 
