@@ -1,6 +1,6 @@
 ---
 title: "Twilio Notifications"
-description: "Send Twilio notifications."
+description: "Send Twilio notifications via SMS, WhatsApp, or phone call."
 sidebar:
   label: "Twilio"
 
@@ -15,9 +15,13 @@ sample_urls:
   - twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo}
   - twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}
   - twilio://{AccountSID}:{AuthToken}@{ShortCode}/{PhoneNo}
+  - twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo}?method=call
 
 limits:
-  max_chars: 140
+  - name: "SMS"
+    max_chars: 160
+  - name: "Phone Call (TwiML)"
+    max_chars: 4000
 ---
 
 <!-- SERVICE:DETAILS -->
@@ -32,29 +36,44 @@ You'll need to have a number defined as an Active Number ([from your dashboard h
 
 Valid syntax is as follows:
 
+### SMS (default)
+
 - `twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo}`
 - `twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
 If no _ToPhoneNo_ is specified, then the _FromPhoneNo_ will be messaged instead; hence the following is a valid URL:
 
-- twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/`
+- `twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/`
 
-[Short Codes](https://www.twilio.com/docs/glossary/what-is-a-short-code) are also supported but require at least 1 Target PhoneNo
+[Short Codes](https://www.twilio.com/docs/glossary/what-is-a-short-code) are also supported but require at least 1 Target PhoneNo:
 
 - `twilio://{AccountSID}:{AuthToken}@{ShortCode}/{PhoneNo}`
 - `twilio://{AccountSID}:{AuthToken}@{ShortCode}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}`
 
+### Phone Call
+
+When `method=call` is specified, Twilio initiates an outbound phone call and reads the message body using [TwiML](https://www.twilio.com/docs/voice/twiml). The body should be a valid TwiML document:
+
+- `twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo}?method=call`
+- `twilio://{AccountSID}:{AuthToken}@{FromPhoneNo}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}?method=call`
+
+:::note
+Phone calls do not support Short Codes or WhatsApp-prefixed numbers (`w:`).
+:::
+
 ## Parameter Breakdown
 
-| Variable    | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| AccountSID  | Yes      | The _Account SID_ associated with your Twilio account. This is available to you via the Twilio Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| AuthToken   | Yes      | The _Auth Token_ associated with your Twilio account. This is available to you via the Twilio Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| FromPhoneNo | **\*No** | The [Active Phone Number](https://www.twilio.com/console/phone-numbers/incoming) associated with your Twilio account you wish the SMS message to come from. It must be a number registered with Twilio. As an alternative to the **FromPhoneNo**, you may provide a [ShortCode](https://www.twilio.com/docs/glossary/what-is-a-short-code) instead. The phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. |
-| ShortCode   | **\*No** | The ShortCode associated with your Twilio account you wish the SMS message to come from. It must be a number registered with Twilio. As an alternative to the **ShortCode**, you may provide a **FromPhoneNo** instead.                                                                                                                                                                                                                                                                                                                                                                    |
-| PhoneNo     | **\*No** | A phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion.<br/>**Note:** If you're using a _ShortCode_, then at least one _PhoneNo_ MUST be defined.                                                                                                                                                                                                                                                             |
+| Variable    | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AccountSID  | Yes      | The _Account SID_ associated with your Twilio account. This is available to you via the Twilio Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| AuthToken   | Yes      | The _Auth Token_ associated with your Twilio account. This is available to you via the Twilio Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| FromPhoneNo | **\*No** | The [Active Phone Number](https://www.twilio.com/console/phone-numbers/incoming) associated with your Twilio account you wish the SMS message or call to come from. It must be a number registered with Twilio. As an alternative to the **FromPhoneNo**, you may provide a [ShortCode](https://www.twilio.com/docs/glossary/what-is-a-short-code) instead (SMS only). The phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion. |
+| ShortCode   | **\*No** | The ShortCode associated with your Twilio account you wish the SMS message to come from. It must be a number registered with Twilio. As an alternative to the **ShortCode**, you may provide a **FromPhoneNo** instead. Short Codes are not supported for phone calls.                                                                                                                                                                                                                                                                                                                                        |
+| PhoneNo     | **\*No** | A phone number MUST include the country codes dialling prefix as well when placed. This field is also very friendly and supports brackets, spaces and hyphens in the event you want to format the number in an easy to read fashion.<br/>**Note:** If you're using a _ShortCode_, then at least one _PhoneNo_ MUST be defined.                                                                                                                                                                                                                                                                                |
+| method      | No       | The notification method to use. Set to `sms` (default) to send a text message, or `call` to initiate an outbound phone call. When using `call`, the message body must be a valid [TwiML](https://www.twilio.com/docs/voice/twiml) document (e.g. `<Response><Say>Hello</Say></Response>`). WhatsApp (`w:`) prefixes and Short Codes are not compatible with `method=call`.                                                                                                                                                                                                                                    |
+| apikey      | No       | An optional Twilio API Key (beginning with `SK`). When provided, it is used instead of the _Account SID_ for HTTP Basic authentication, which is the [recommended approach](https://www.twilio.com/docs/iam/api-keys) for production use.                                                                                                                                                                                                                                                                                                                                                                     |
 
-::note
+:::note
 This notification service does not use the title field; only the _body_ is passed along.
 :::
 
@@ -77,6 +96,19 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 # dashes are accepted in a phone no field):
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    twilio://AC735c307c62944b5a:e29dfbcebf390dee9@1-(900) 555-9999/1-(800) 555-1223
+
+```
+
+Send a Twilio Notification as a phone call using TwiML:
+
+```bash
+# Assuming our {AccountSID} is AC735c307c62944b5a
+# Assuming our {AuthToken} is e29dfbcebf390dee9
+# Assuming our {FromPhoneNo} is +1-900-555-9999
+# Assuming our {PhoneNo} is +1-800-555-1223
+apprise -vv -t "Test Message Title" \
+   -b "<Response><Say>Test Message Body</Say></Response>" \
+   "twilio://AC735c307c62944b5a:e29dfbcebf390dee9@19005559999/18005551223?method=call"
 
 ```
 
