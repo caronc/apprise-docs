@@ -22,11 +22,15 @@ sample_urls:
 
 ## Configuration du compte
 
-La prise en charge MQTT necessite **paho-mqtt**, dans une version inferieure a v2, pour fonctionner :
+La prise en charge MQTT necessite **paho-mqtt** v2.1.0 ou plus recent pour fonctionner :
 
 ```bash
-pip install "paho-mqtt<2.0"
+pip install "paho-mqtt"
 ```
+
+:::note
+Pour vous connecter a un serveur MQTT utilisant un certificat auto-signe, ajoutez `?verify=no` a l'URL. Par exemple : `mqtts://user:pass@host/topic?verify=no`. Dans ce mode, la validation complete de la chaine de certificats est desactivee, ce qui permet d'accepter les certificats auto-signes.
+:::
 
 ## Syntaxe
 
