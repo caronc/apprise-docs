@@ -10,6 +10,7 @@ schemas:
   - ringc
 
 has_sms: true
+has_attachments: true
 
 sample_urls:
   - ringc://{SourcePhoneNo}:{Password}@{ClientID}/{ClientSecret}
@@ -27,7 +28,7 @@ limits:
 1. Sign up at [https://ringcentral.com](https://ringcentral.com).
 2. Log in to the [RingCentral Developer Console](https://developers.ringcentral.com/).
 3. Click **Create App** and choose **REST API App** -> **Server/Bot (No UI)**.
-4. Under **Permissions**, enable **SMS** (and **MMS** if you also need multimedia messages).
+4. Under **Permissions**, enable **SMS** and **MMS** (MMS is required for attachment support).
 5. On the **Credentials** tab, copy the **Client ID** and **Client Secret**.
 
 Two authentication modes are supported:
@@ -39,6 +40,10 @@ Use the RingCentral user account password associated with your source phone numb
 ### JWT mode
 
 Generate a JWT token in the developer portal and use it in place of the password. JWT tokens are longer (> 60 characters) and Apprise auto-detects this mode when no explicit `?mode=` is provided.
+
+## Attachments
+
+When an attachment is included with a notification, Apprise automatically switches to the MMS endpoint. No extra configuration is needed -- SMS is used for plain messages and MMS is used when files are attached.
 
 ## Syntax
 
@@ -73,7 +78,6 @@ If no target phone number is provided, the notification is sent to the source ph
 | secret        | No        | Query-parameter alias for the Client Secret.                                               |
 | mode          | No        | Force authentication mode: `basic` or `jwt`. Auto-detected from token length when omitted. |
 | env           | No        | API environment: `prod` (default) or `sandbox` (RingCentral devtest).                      |
-| ext           | No        | Message type: `sms` (default) or `mms`.                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -98,11 +102,12 @@ apprise -vv -t "Test Title" -b "Test Message" \
     "ringc://15551230000:eyJhbGciOiJSUzI1NiJ9...@AbCdEf123/secret123/15559998881/15559998882"
 ```
 
-Send an MMS via the sandbox environment:
+Send an MMS with an attachment (MMS is selected automatically):
 
 ```bash
 apprise -vv -t "Test Title" -b "Test Message" \
-    "ringc://15551230000:MyPassword@AbCdEf123/secret123/15559998888?ext=mms&env=sandbox"
+    --attach /path/to/image.jpg \
+    "ringc://15551230000:MyPassword@AbCdEf123/secret123/15559998888"
 ```
 
 Send using query parameters (YAML-friendly form):

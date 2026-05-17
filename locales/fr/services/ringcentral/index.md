@@ -10,6 +10,7 @@ schemas:
   - ringc
 
 has_sms: true
+has_attachments: true
 
 sample_urls:
   - ringc://{NumeroSource}:{MotDePasse}@{ClientID}/{ClientSecret}
@@ -27,7 +28,7 @@ limits:
 1. Inscrivez-vous sur [https://ringcentral.com](https://ringcentral.com).
 2. Connectez-vous a la [Console Developpeur RingCentral](https://developers.ringcentral.com/).
 3. Cliquez sur **Create App** et choisissez **REST API App** -> **Server/Bot (No UI)**.
-4. Sous **Permissions**, activez **SMS** (et **MMS** si vous avez besoin de messages multimedia).
+4. Sous **Permissions**, activez **SMS** et **MMS** (MMS est requis pour la prise en charge des pieces jointes).
 5. Dans l'onglet **Credentials**, copiez le **Client ID** et le **Client Secret**.
 
 Deux modes d'authentification sont supportes :
@@ -39,6 +40,10 @@ Utilisez le mot de passe du compte utilisateur RingCentral associe a votre numer
 ### Mode JWT
 
 Generez un token JWT dans le portail developpeur et utilisez-le a la place du mot de passe. Les tokens JWT sont plus longs (> 60 caracteres) et Apprise detecte automatiquement ce mode si aucun parametre `?mode=` explicite n'est fourni.
+
+## Pieces Jointes
+
+Lorsqu'une piece jointe est incluse dans une notification, Apprise bascule automatiquement vers le point de terminaison MMS. Aucune configuration supplementaire n'est necessaire -- SMS est utilise pour les messages simples et MMS est utilise lorsque des fichiers sont joints.
 
 ## Syntaxe
 
@@ -73,7 +78,6 @@ Si aucun numero destinataire n'est fourni, la notification est envoyee au numero
 | secret             | Non         | Alias du Client Secret sous forme de parametre de requete.                                     |
 | mode               | Non         | Forcer le mode d'authentification : `basic` ou `jwt`. Detecte automatiquement si omis.         |
 | env                | Non         | Environnement API : `prod` (par defaut) ou `sandbox` (devtest RingCentral).                    |
-| ext                | Non         | Type de message : `sms` (par defaut) ou `mms`.                                                 |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -98,11 +102,12 @@ apprise -vv -t "Titre de Test" -b "Corps du Message" \
     "ringc://15551230000:eyJhbGciOiJSUzI1NiJ9...@AbCdEf123/secret123/15559998881/15559998882"
 ```
 
-Envoyer un MMS via l'environnement sandbox :
+Envoyer un MMS avec une piece jointe (MMS est selectionne automatiquement) :
 
 ```bash
 apprise -vv -t "Titre de Test" -b "Corps du Message" \
-    "ringc://15551230000:MonMotDePasse@AbCdEf123/secret123/15559998888?ext=mms&env=sandbox"
+    --attach /chemin/vers/image.jpg \
+    "ringc://15551230000:MonMotDePasse@AbCdEf123/secret123/15559998888"
 ```
 
 Envoyer via des parametres de requete (format adapte au YAML) :
