@@ -76,7 +76,9 @@ curl -X POST \
 
 ### File Attachments
 
-To send attachments, use `multipart/form-data`. The API accepts standard file uploads or remote URLs. You can use `attach` (recommended) or `attachment` as the field name.
+To send attachments, use `multipart/form-data`. The API accepts standard file uploads or remote URLs. Use `attach` as the recommended field name. The aliases `attachment` and `attachments` are also accepted.
+
+For JSON payloads that supply remote or encoded attachment values, use the same field names.
 
 ```bash
 # Upload a local file

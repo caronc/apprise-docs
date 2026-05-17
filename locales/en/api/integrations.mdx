@@ -146,10 +146,11 @@ The `tag` value follows these rules:
 
 To send attachments, use `multipart/form-data`.
 
-- Use `attach` (recommended) or `attachment` as the field name
+- Use `attach` as the recommended field name. The aliases `attachment` and `attachments` are also accepted.
 - The attachment value can be:
   - a local file upload
   - a remote URL that Apprise API downloads and forwards
+- JSON payloads that supply remote or encoded attachment values use the same field names.
 
 ## Payload Mapping Hooks
 
@@ -376,7 +377,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Field name can be attach or attachment
+    # Field name can be attach, attachment, or attachments
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -928,7 +929,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Field name can be attach or attachment
+    # Field name can be attach, attachment, or attachments
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -1014,7 +1015,7 @@ export async function appriseNotifyWithAttachment(
   if (payload.tag) form.append("tag", payload.tag);
   form.append("body", payload.body);
 
-  // Field name can be attach or attachment
+  // Field name can be attach, attachment, or attachments
   form.append("attach", file);
 
   const res = await fetch(url, {
@@ -1147,7 +1148,7 @@ function apprise_notify_with_attachment(string $url, string $body, string $file_
 
     $post = [
         'body' => $body,
-        // Field name can be attach or attachment
+        // Field name can be attach, attachment, or attachments
         'attach' => new CURLFile($file_path),
     ];
 
