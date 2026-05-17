@@ -17,12 +17,15 @@ sample_urls:
   - pover://{user_key}@{token}/{device_id1}/{device_id2}/{device_idN}
   - pover://{user_key}@{token}/#{group_key}
   - pover://{user_key}@{token}/{device_id}/#{group_key}
+  - pover://{user_key}@{token}?key={encryption_key}
 
 limits:
   max_chars: 512
 ---
 
-<!-- SERVICE:DETAILS -->
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/*SERVICE:DETAILS*/}
 
 ## Configuration du Compte
 
@@ -30,11 +33,11 @@ La configuration des notifications Pushover est assez simple. Le message est ess
 
 ### Recuperer votre User Key
 
-Une fois connecte au [site web](https://pushover.net/), votre tableau de bord affichera votre **{user_key}**.
+Une fois connecte au [site web](https://pushover.net/), votre tableau de bord affichera votre **\{user_key\}**.
 
 ### Recuperer votre Jeton API
 
-Sur le tableau de bord, apres connexion, faites defiler vers le bas pour trouver l'option permettant de generer une application. Une fois cette operation effectuee, un jeton API associe a cette application vous sera fourni. Il deviendra votre **{token}**.
+Sur le tableau de bord, apres connexion, faites defiler vers le bas pour trouver l'option permettant de generer une application. Une fois cette operation effectuee, un jeton API associe a cette application vous sera fourni. Il deviendra votre **\{token\}**.
 
 ## Syntaxe
 
@@ -58,7 +61,7 @@ La syntaxe valide est la suivante :
 | token     | Oui         | Jeton associe a votre compte Pushover.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | device_id | Non         | Identifiant de l'appareil auquel envoyer la notification. Si aucune valeur n'est precisee, tous les appareils associes a votre compte seront notifies.                                                                                                                                                                                                                                                                                                                                                                                                             |
 | group_key | Non         | Cle d'un [groupe de diffusion](https://pushover.net/api/groups) Pushover, prefixee par `#`. Les group_key ressemblent aux user_key et permettent de diffuser un message a tous les membres d'un groupe avec une seule cle. Plusieurs groupes peuvent etre specifies. Les groupes et les appareils peuvent etre melanges dans une meme URL.                                                                                                                                                                                                                         |
-| priority  | Non         | Peut etre **low**, **moderate**, **normal**, **high** ou **emergency** ; la valeur par defaut est **normal** si aucune priorite n'est precisee. <br/>Pour envoyer une notification en priorite d'urgence, les parametres `interval` et `expire` _devraient_ etre fournis. Vous pouvez aussi utiliser les priorites telles que documentees dans l'[API Pushover](https://pushover.net/api#priority), ou `-2` est **low**, `-1` est **moderate**, `0` est **normal**, `1` est **high** et `2` est **emergency**.                                                     |
+| priority  | Non         | Peut etre **low**, **moderate**, **normal**, **high** ou **emergency** ; la valeur par defaut est **normal** si aucune priorite n'est precisee. <br/>Pour envoyer une notification en priorite d'urgence, les parametres `interval` et `expire` devraient etre fournis. Vous pouvez aussi utiliser les priorites telles que documentees dans l'[API Pushover](https://pushover.net/api#priority), ou `-2` est **low**, `-1` est **moderate**, `0` est **normal**, `1` est **high** et `2` est **emergency**.                                                       |
 | expire    | Non         | Le parametre `expire` precise pendant combien de secondes votre notification continuera a etre retentee, toutes les `interval` secondes. Si la notification n'a pas ete acquittee avant `expire` secondes, elle sera marquee comme expiree et ne sera plus envoyee. Notez qu'elle reste visible pour l'utilisateur apres expiration, mais ne lui demandera plus d'acquittement. Cette valeur ne peut pas depasser 10800 secondes, soit 3 heures. La valeur par defaut est 3600 secondes, soit 1 heure, si rien n'est precise.                                      |
 | interval  | Non         | Precise a quelle frequence, en secondes, les serveurs Pushover renverront la meme notification d'urgence a l'utilisateur. Si l'utilisateur se trouve dans un environnement bruyant ou dort, retenter la notification, avec son et vibration, peut aider a attirer son attention. Cette valeur doit etre d'au moins 30 secondes entre deux tentatives. La valeur par defaut est 900 secondes, soit 15 minutes, si rien n'est precise. Note : ce parametre est distinct du mecanisme `retry` d'Apprise, qui controle le nombre de tentatives d'envoi en cas d'echec. |
 | sound     | Non         | Permet de preciser l'un des effets sonores facultatifs identifies [ici](https://pushover.net/api#sounds). Le son par defaut est **pushover**.                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -67,21 +70,66 @@ La syntaxe valide est la suivante :
 | key       | Non         | Chaine hexadecimale de 64 caracteres representant une cle AES 256 bits utilisee pour le [chiffrement de bout en bout](https://pushover.net/api#e2ee). Lorsqu'elle est definie, les champs `message`, `title`, `url` et `url_title` sont chiffres cote client avant d'etre transmis a l'API Pushover. Necessite le paquet Python `cryptography` (`pip install cryptography`). Si le paquet est absent, Apprise envoie le message en texte clair avec un avertissement.                                                                                              |
 | e2ee      | Non         | Controle si le chiffrement de bout en bout est applique lorsqu'une `key` est configuree. La valeur par defaut est **yes**. Definir sur **no** pour envoyer temporairement en texte clair meme lorsqu'une cle est presente.                                                                                                                                                                                                                                                                                                                                         |
 
-<!-- TEMPLATE:SERVICE-PARAMS -->
+{/*TEMPLATE:SERVICE-PARAMS*/}
 
 ## Chiffrement de Bout en Bout (E2EE)
 
-Pushover prend en charge le [chiffrement de bout en bout cote client](https://pushover.net/api#e2ee). Lorsqu'il est active, les champs `message`, `title`, `url` et `url_title` sont chiffres du cote d'Apprise via **AES-256-CBC** avant d'etre transmis a l'API Pushover. Les serveurs Pushover ne voient jamais le contenu en clair.
+Lorsque le chiffrement E2EE est active, le contenu du message est chiffre du cote d'Apprise avant d'etre envoye -- les serveurs Pushover ne voient jamais le texte en clair. Seuls les appareils configures avec la meme cle peuvent dechiffrer et afficher les notifications.
 
-### Generer une Cle de Chiffrement
+### Etape 1 -- Generer votre Cle
 
-La cle est une valeur de 256 bits que vous creez vous-meme, representee sous forme d'une **chaine de 64 caracteres hexadecimaux**. Vous devez egalement configurer la meme cle dans l'application Pushover sur chaque appareil devant pouvoir lire les notifications. Consultez la [documentation Pushover](https://pushover.net/api#e2ee) pour la configuration cote application.
+Vous creez vous-meme la cle de chiffrement. Il s'agit d'une valeur aleatoire de 256 bits representee sous forme d'une **chaine de 64 caracteres hexadecimaux**. Executez l'une des commandes ci-dessous pour en generer une :
 
-Pour generer rapidement une cle sous Linux/macOS :
+<Tabs>
+<TabItem label="Linux / macOS">
 
 ```bash
 python3 -c "import secrets; print(secrets.token_hex(32))"
 ```
+
+</TabItem>
+<TabItem label="Windows (PowerShell)">
+
+```powershell
+[System.BitConverter]::ToString(
+    [System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
+).Replace("-", "").ToLower()
+```
+
+Cette commande utilise le generateur de nombres aleatoires cryptographiquement sur de .NET, integre dans Windows PowerShell 5.1 et PowerShell 7+. Aucun module supplementaire n'est requis.
+
+</TabItem>
+</Tabs>
+
+Copiez la chaine de 64 caracteres affichee. Cette chaine **est** votre cle de chiffrement. Conservez-la en lieu sur -- vous en aurez besoin a l'etape suivante et chaque fois que vous configurerez un nouvel appareil.
+
+### Etape 2 -- Configurer la Cle sur Chaque Appareil Pushover
+
+:::caution[Mobile uniquement]
+Le dechiffrement E2EE est pris en charge uniquement par les **applications Pushover iOS et Android (v5.0+)**. Les clients de bureau (navigateur, macOS, Windows) ne prennent pas en charge le E2EE et ne disposeront pas de parametre de chiffrement. Si vous n'utilisez Pushover que sur ordinateur, ignorez cette fonctionnalite.
+:::
+
+Chaque appareil iOS ou Android devant afficher les notifications dechiffrees doit etre configure avec la meme cle. Ouvrez l'application Pushover, acceez a ses **Parametres**, et recherchez une option **Chiffrement** ou **Chiffrement de bout en bout**. Collez votre cle hexadecimale de 64 caracteres dans le champ et enregistrez.
+
+Repetez cette operation sur chaque telephone ou tablette ou vous recevez des notifications Pushover. Tout appareil sans la cle configuree affichera la notification comme du texte chiffre illisible.
+
+:::note
+La prise en charge E2EE sur Android a ete introduite dans Pushover **v5.0** (sortie en mai 2026). Si vous ne trouvez pas le parametre de chiffrement sur Android, mettez d'abord l'application a jour depuis le Play Store. Si l'option est toujours absente apres la mise a jour, contactez le [support Pushover](https://support.pushover.net).
+:::
+
+:::note
+Si vous generez une nouvelle cle par la suite, vous devez la mettre a jour **a la fois** dans l'application Pushover sur chaque appareil **et** dans votre URL Apprise.
+:::
+
+### Etape 3 -- Ajouter la Cle a votre URL Apprise
+
+Ajoutez `?key=` suivi de votre chaine hexadecimale de 64 caracteres a l'URL Pushover :
+
+```text
+pover://{user_key}@{token}?key={votre-cle-hexadecimale-64-chars}
+```
+
+Consultez la section **Exemples** ci-dessous pour une commande complete.
 
 ### Prerequis
 
@@ -103,7 +151,7 @@ L'integration Pushover limite normalement les sons de notification a une liste p
 
 1. Allez dans Settings -> Alert Settings -> Manage custom sounds -> Upload a sound
 1. Televersez un son et donnez-lui un nom, par exemple "mysound".
-1. Verifiez que le son est accessible et apparait dans la liste des sons de votre application via <https://api.pushover.net/1/sounds.json?token={app-token}>
+1. Verifiez que le son est accessible et apparait dans la liste des sons de votre application via `https://api.pushover.net/1/sounds.json?token={app-token}`
 1. Precisez ensuite ce son dans votre appel `pover`, par exemple `apprise -vv -t "title" -b "test message" pover://user@app?sound=mysound`
 
 Vous devriez entendre votre son personnalise sur la notification. Si le nom du son personnalise n'est pas trouve, le son de notification Pushover par defaut sera joue.
@@ -149,7 +197,7 @@ Envoyer une notification Pushover chiffree de bout en bout :
 # Supposons que notre {user_key} soit 435jdj3k78435jdj3k78435jdj3k78
 # Supposons que notre {token} soit abcdefghijklmnop-abcdefg
 # Supposons que notre cle de chiffrement hexadecimale de 64 chars soit aabbcc...
-# (generez-en une avec : python3 -c "import secrets; print(secrets.token_hex(32))")
+# (generez-en une avec les commandes de la section ci-dessus)
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pover://435jdj3k78435jdj3k78435jdj3k78@abcdefghijklmnop-abcdefg?key=aabbccdd11223344aabbccdd11223344aabbccdd11223344aabbccdd11223344"
 ```
