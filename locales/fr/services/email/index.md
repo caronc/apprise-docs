@@ -278,24 +278,24 @@ La génération automatique est activée par défaut lorsque le [stockage persis
 
 ## Détail des Paramètres
 
-| Variable | Requis | Description                                                                                                                                                        |
-| -------- | -----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`.                                            |
-| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                                                                          |
-| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                                                                 |
-| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                                                             |
-| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                                                                         |
-| from     |    Non | Adresse expéditeur. Prend en charge `Optional Name<email@example.com>`. Correspond à l'en-tête From.                                                               |
-| name     |    Non | Alias historique pour le nom d'expéditeur. Si `from=` et `name=` sont fournis, `from=` est prioritaire.                                                            |
-| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                                                                 |
-| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                        |
-| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                 |
-| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                        |
-| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                             |
-| pgp      |    Non | Mode de chiffrement PGP : `none` (par défaut) ou `encrypt`. Les valeurs `yes`/`no` sont acceptées pour compatibilité et mappées vers `encrypt`/`none`.             |
-| pgpkey   |    Non | Chemin ou URL vers la clé publique PGP blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Considéré comme sensible. |
-| wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.        |
-| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                 |
+| Variable | Requis | Description                                                                                                                                                                                   |
+| -------- | -----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`.                                                                       |
+| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                                                                                                     |
+| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                                                                                            |
+| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                                                                                        |
+| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                                                                                                    |
+| from     |    Non | Adresse expéditeur. Prend en charge `Optional Name<email@example.com>`. Correspond à l'en-tête From.                                                                                          |
+| name     |    Non | Alias historique pour le nom d'expéditeur. Si `from=` et `name=` sont fournis, `from=` est prioritaire.                                                                                       |
+| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                                                                                            |
+| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                   |
+| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                            |
+| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                   |
+| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                                                        |
+| pgp      |    Non | Mode de chiffrement PGP : `no` (par défaut) ou `encrypt`. Abréviations acceptées : `n`, `e`. Les valeurs `yes`/`true` impliquent `encrypt` (dépréciées). `none`/`false` correspondent à `no`. |
+| pgpkey   |    Non | Chemin ou URL vers la clé publique PGP blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Masqué dans les URL anonymisées.                     |
+| wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.                                   |
+| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                                            |
 
 **\*** Non requis pour les relais anonymes.
 

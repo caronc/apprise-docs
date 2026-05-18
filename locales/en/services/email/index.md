@@ -278,24 +278,24 @@ Auto-generation is enabled by default when [persistent storage](/library/persist
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                     |
-| -------- | -------: | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                                                     |
-| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                                                               |
-| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.                                              |
-| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                                                      |
-| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                                                                 |
-| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                                                       |
-| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.                                             |
-| to       |       No | Recipient override. Also supported via URL path targets.                                                                                        |
-| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                          |
-| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                    |
-| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                             |
-| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                   |
-| pgp      |       No | PGP encryption mode: `none` (default) or `encrypt`. Legacy `yes`/`no` values are accepted and mapped to `encrypt`/`none`.                       |
-| pgpkey   |       No | Path or URL to a recipient's ASCII-armoured PGP public key (`.asc`). When set, WKD and auto-generation are bypassed. Treated as sensitive.      |
-| wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified. |
-| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                   |
+| Variable | Required | Description                                                                                                                                                          |
+| -------- | -------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                                                                          |
+| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                                                                                    |
+| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.                                                                   |
+| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                                                                           |
+| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                                                                                      |
+| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                                                                            |
+| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.                                                                  |
+| to       |       No | Recipient override. Also supported via URL path targets.                                                                                                             |
+| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                               |
+| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                         |
+| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                                                  |
+| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                                        |
+| pgp      |       No | PGP encryption mode: `no` (default) or `encrypt`. Prefix shorthand accepted: `n`, `e`. Legacy `yes`/`true` imply `encrypt` (deprecated). `none`/`false` map to `no`. |
+| pgpkey   |       No | Path or URL to a recipient's ASCII-armoured PGP public key (`.asc`). When set, WKD and auto-generation are bypassed. Masked in privacy-safe URLs.                    |
+| wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                      |
+| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                        |
 
 **\*** Not required for anonymous relays.
 
