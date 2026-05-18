@@ -220,25 +220,82 @@ Les pièces jointes sont entièrement prises en charge.
 
 Les limites de votre fournisseur SMTP peuvent s'appliquer. Apprise n'impose pas lui-même de restriction de taille sur les pièces jointes.
 
+## Chiffrement PGP
+
+Lorsque `pgp=encrypt` est défini, Apprise chiffre le corps de l'e-mail avec la clé publique OpenPGP du destinataire avant de le remettre au serveur SMTP. Le serveur et les relais intermédiaires ne voient jamais le texte en clair.
+
+Le chiffrement nécessite le package Python [pgpy](https://pypi.org/project/pgpy/) :
+
+```bash
+pip install pgpy
+```
+
+Si le package n'est pas installé, Apprise enregistre un avertissement et envoie le message sans chiffrement.
+
+### Ordre de Découverte des Clés
+
+Apprise essaie les sources suivantes dans l'ordre et utilise la première clé trouvée :
+
+1. **Fichier de clé explicite** -- un fichier `.asc` fourni via `pgpkey=`
+2. **Web Key Directory (WKD)** -- récupération automatique via HTTPS, activée avec `wkd=yes`
+3. **Fichier de clé local** -- un fichier `.asc` précédemment écrit dans le répertoire de stockage persistant
+4. **Paire de clés générée automatiquement** -- créée lors de la première utilisation lorsque le stockage persistant est configuré et que `pgp_autogen` est activé dans l'asset
+
+### Utiliser un Fichier de Clé Explicite
+
+Fournissez un chemin (ou une URL distante) vers la clé publique blindée ASCII du destinataire :
+
+```text
+mailtos://user:pass@example.com?pgp=encrypt&pgpkey=/chemin/vers/destinataire-pub.asc
+```
+
+Lorsque `pgpkey=` est défini, la recherche WKD et la génération automatique sont toutes deux ignorées.
+
+### Web Key Directory (WKD)
+
+Le WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) est un standard qui permet aux clients de messagerie de récupérer automatiquement la clé publique d'un destinataire auprès de son fournisseur, sans échange manuel de clé. Si le fournisseur du destinataire publie sa clé via WKD, activer `wkd=yes` est tout ce qu'il faut -- aucun fichier de clé, aucune importation manuelle.
+
+Définir `wkd=yes` implique automatiquement `pgp=encrypt`, ainsi les deux URL suivantes sont équivalentes :
+
+```text
+mailtos://user:pass@example.com?wkd=yes
+mailtos://user:pass@example.com?pgp=encrypt&wkd=yes
+```
+
+Apprise essaie deux formes d'URL (méthode sous-domaine en premier, puis méthode directe) et met en cache les résultats en mémoire pour la durée de la session. Si aucune URL ne retourne de clé, Apprise passe à la méthode de découverte suivante.
+
+:::tip[Chiffrement sans configuration]
+
+Pour les destinataires chez des fournisseurs qui publient des clés WKD (Proton Mail, Fastmail et de nombreuses installations auto-hébergées), `pgp=encrypt&wkd=yes` est la façon la plus simple d'obtenir un e-mail chiffré de bout en bout -- aucun fichier de clé à gérer, aucune génération de clé requise.
+
+:::
+
+### Clés Générées Automatiquement
+
+Lorsqu'aucune clé n'est trouvée par une autre méthode, Apprise peut générer une nouvelle paire de clés RSA-2048 et l'écrire dans le répertoire de stockage persistant. La clé publique est stockée sous `{localpart}-pub.asc` et réutilisée lors des envois suivants.
+
+La génération automatique est activée par défaut lorsque le [stockage persistant](/library/persistent-storage/) est configuré. Elle peut être désactivée au niveau de l'asset en définissant `pgp_autogen = False`.
+
 ## Détail des Paramètres
 
-| Variable | Requis | Description                                                                                                             |
-| -------- | -----: | ----------------------------------------------------------------------------------------------------------------------- |
-| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`. |
-| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                               |
-| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                      |
-| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                  |
-| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                              |
-| from     |    Non | Adresse expéditeur. Prend en charge `Optional Name<email@example.com>`. Correspond à l'en-tête From.                    |
-| name     |    Non | Alias historique pour le nom d'expéditeur. Si `from=` et `name=` sont fournis, `from=` est prioritaire.                 |
-| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                      |
-| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                             |
-| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                      |
-| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                             |
-| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                  |
-| pgp      |    Non | Active le chiffrement PGP (`yes` ou `no`). La valeur par défaut est `no`.                                               |
-| pgpkey   |    Non | Chemin vers une clé publique PGP (clé d'entrée : `pgpkey`). Considéré comme sensible.                                   |
-| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                      |
+| Variable | Requis | Description                                                                                                                                                        |
+| -------- | -----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`.                                            |
+| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                                                                          |
+| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                                                                 |
+| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                                                             |
+| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                                                                         |
+| from     |    Non | Adresse expéditeur. Prend en charge `Optional Name<email@example.com>`. Correspond à l'en-tête From.                                                               |
+| name     |    Non | Alias historique pour le nom d'expéditeur. Si `from=` et `name=` sont fournis, `from=` est prioritaire.                                                            |
+| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                                                                 |
+| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                        |
+| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                 |
+| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                        |
+| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                             |
+| pgp      |    Non | Mode de chiffrement PGP : `none` (par défaut) ou `encrypt`. Les valeurs `yes`/`no` sont acceptées pour compatibilité et mappées vers `encrypt`/`none`.             |
+| pgpkey   |    Non | Chemin ou URL vers la clé publique PGP blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Considéré comme sensible. |
+| wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.        |
+| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                 |
 
 **\*** Non requis pour les relais anonymes.
 
@@ -332,3 +389,17 @@ Relais local :
 apprise -t "Titre de Test" -b "Corps de Test" \
    mailto://localhost?to=john@example.com
 ````
+
+Chiffrement via la découverte de clé WKD (aucun fichier de clé requis ; `pgp=encrypt` est implicite) :
+
+```bash
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "mailtos://user:pass@example.com?wkd=yes"
+```
+
+Chiffrement avec un fichier de clé local explicite :
+
+```bash
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "mailtos://user:pass@example.com?pgp=encrypt&pgpkey=/home/user/.gnupg/destinataire-pub.asc"
+```
