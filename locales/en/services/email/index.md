@@ -220,25 +220,82 @@ Attachments are fully supported.
 
 SMTP provider limits may apply. Apprise does not impose attachment size restrictions.
 
+## PGP Encryption
+
+When `pgp=encrypt` is set, Apprise encrypts the email body using the recipient's OpenPGP public key before handing it to the SMTP server. The server and any intermediate relays never see the plaintext.
+
+Encryption requires the [pgpy](https://pypi.org/project/pgpy/) Python package:
+
+```bash
+pip install pgpy
+```
+
+If the package is not installed, Apprise logs a warning and sends the message unencrypted.
+
+### Key Discovery Order
+
+Apprise tries the following sources in order and uses the first key it finds:
+
+1. **Explicit key file** -- a `.asc` file you supply via `pgpkey=`
+2. **Web Key Directory (WKD)** -- automatic HTTPS lookup, enabled with `wkd=yes`
+3. **Local key file** -- a `.asc` file previously written to the persistent storage path
+4. **Auto-generated key pair** -- created on first use when persistent storage is configured and `pgp_autogen` is enabled in the asset
+
+### Using an Explicit Key File
+
+Supply a path (or remote URL) to the recipient's ASCII-armoured public key:
+
+```text
+mailtos://user:pass@example.com?pgp=encrypt&pgpkey=/path/to/recipient-pub.asc
+```
+
+When `pgpkey=` is set, WKD lookup and auto-generation are both bypassed.
+
+### Web Key Directory (WKD)
+
+WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) is a standard that lets mail clients automatically fetch a recipient's public key from their mail provider without any manual key exchange. If the recipient's provider publishes their key via WKD, enabling `wkd=yes` is all that is needed -- no key file, no manual import.
+
+Setting `wkd=yes` automatically implies `pgp=encrypt`, so both of the following URLs are equivalent:
+
+```text
+mailtos://user:pass@example.com?wkd=yes
+mailtos://user:pass@example.com?pgp=encrypt&wkd=yes
+```
+
+Apprise tries two URL forms (subdomain method first, then direct method) and caches successful results in memory for the duration of the session. If neither URL returns a key, Apprise falls back to the next discovery method.
+
+:::tip[Zero-configuration encryption]
+
+For recipients at providers that publish WKD keys (Proton Mail, Fastmail, and many self-hosted setups), `pgp=encrypt&wkd=yes` is the easiest path to end-to-end encrypted email -- no key files to manage and no key generation required.
+
+:::
+
+### Auto-Generated Keys
+
+When no key is found by any other method, Apprise can generate a fresh RSA-2048 key pair and write it to the persistent storage directory. The public key is stored as `{localpart}-pub.asc` and reused on subsequent sends.
+
+Auto-generation is enabled by default when [persistent storage](/library/persistent-storage/) is configured. It can be disabled at the asset level by setting `pgp_autogen = False`.
+
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                   |
-| -------- | -------: | ------------------------------------------------------------------------------------------------------------- |
-| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                   |
-| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                             |
-| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.            |
-| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                    |
-| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                               |
-| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                     |
-| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.           |
-| to       |       No | Recipient override. Also supported via URL path targets.                                                      |
-| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                        |
-| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                  |
-| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                           |
-| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection. |
-| pgp      |       No | Enable PGP encryption (`yes` or `no`). Defaults to `no`.                                                      |
-| pgpkey   |       No | Path to a PGP public key (input key: `pgpkey`). Treated as sensitive.                                         |
-| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                 |
+| Variable | Required | Description                                                                                                                                                          |
+| -------- | -------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                                                                          |
+| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                                                                                    |
+| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.                                                                   |
+| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                                                                           |
+| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                                                                                      |
+| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                                                                            |
+| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.                                                                  |
+| to       |       No | Recipient override. Also supported via URL path targets.                                                                                                             |
+| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                               |
+| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                         |
+| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                                                  |
+| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                                        |
+| pgp      |       No | PGP encryption mode: `no` (default) or `encrypt`. Prefix shorthand accepted: `n`, `e`. Legacy `yes`/`true` imply `encrypt` (deprecated). `none`/`false` map to `no`. |
+| pgpkey   |       No | Path or URL to a recipient's ASCII-armoured PGP public key (`.asc`). When set, WKD and auto-generation are bypassed. Masked in privacy-safe URLs.                    |
+| wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                      |
+| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                        |
 
 **\*** Not required for anonymous relays.
 
@@ -332,3 +389,17 @@ Local relay:
 apprise -t "Test Title" -b "Test Body" \
    mailto://localhost?to=john@example.com
 ````
+
+Encrypt using WKD key discovery (no key file needed; `pgp=encrypt` is implied):
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "mailtos://user:pass@example.com?wkd=yes"
+```
+
+Encrypt using an explicit local key file:
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "mailtos://user:pass@example.com?pgp=encrypt&pgpkey=/home/user/.gnupg/recipient-pub.asc"
+```
