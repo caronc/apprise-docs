@@ -282,13 +282,13 @@ For **public keys** (used by `pgp=encrypt` and the opportunistic-encrypt step of
 
 1. **Explicit key file** -- a `.asc` file supplied via `pgppub=`
 1. **Web Key Directory (WKD)** -- automatic HTTPS lookup, enabled with `wkd=yes`
-1. **Local key file** -- a `.asc` file previously written to the persistent storage path
+1. **Local key file** -- Apprise scans the persistent storage namespace directory for the filenames listed in the [public key search table](#public-key-search-order) below
 1. **Auto-generated key pair** -- created on first use when persistent storage is configured and `pgp_autogen` is enabled in the asset (only for `pgp=encrypt`; the opportunistic step of `pgp=sign` never auto-generates)
 
 For **private keys** (used by `pgp=sign`), Apprise searches:
 
 1. **Explicit key file** -- a `.asc` file supplied via `pgpprv=`
-1. **Local key file** -- auto-discovers `{email}-prv.asc`, `pgp-prv.asc`, `prv.asc`, or `pgp-private.asc` in the persistent storage path
+1. **Local key file** -- Apprise scans the persistent storage namespace directory for the filenames listed in the [private key search table](#private-key-search-order) below
 
 ### Web Key Directory (WKD)
 
@@ -311,9 +311,62 @@ For recipients at providers that publish WKD keys (Proton Mail, Fastmail, and ma
 
 ### Auto-Generated Keys
 
-When no public key is found by any other method, Apprise can generate a fresh RSA-2048 key pair and write it to the persistent storage directory. The public key is stored as `{localpart}-pub.asc` and reused on subsequent sends.
+When no public key is found by any other method, Apprise generates a fresh RSA-2048 key pair and writes **both** files to the persistent storage namespace directory:
 
-Auto-generation is enabled by default when [persistent storage](/library/persistent-storage/) is configured. It can be disabled at the asset level by setting `pgp_autogen = False`.
+| File                  | Role                                             |
+| --------------------- | ------------------------------------------------ |
+| `{localpart}-pub.asc` | Public key — used to encrypt outbound messages   |
+| `{localpart}-prv.asc` | Private key — auto-discovered by `pgp=sign` mode |
+
+`{localpart}` is the part of the sender's From address before `@`, lowercased. For `user@example.com`, the files are `user-pub.asc` and `user-prv.asc`.
+
+Because `keygen()` writes the private key alongside the public key, a single `pgp=encrypt` send that triggers auto-generation also makes signing available automatically. Any subsequent `pgp=sign` URL pointing at the same storage discovers `user-prv.asc` without a `pgpprv=` parameter.
+
+Auto-generation is enabled by default when [persistent storage](/library/persistent-storage/) is configured. It can be disabled at the asset level by setting `pgp_autogen = False`. Note that `pgp_autogen` only affects `pgp=encrypt` — the opportunistic-encrypt step of `pgp=sign` never auto-generates keys.
+
+### Key File Placement
+
+Apprise stores key material inside a **hashed namespace directory** under `storage_path`. The directory name is an 8-character hash derived deterministically from the URL, so the same URL always maps to the same directory, but the path is not human-readable at a glance.
+
+To find the namespace directory for a given URL, run Apprise once with full debug logging:
+
+```bash
+apprise -vvvv -t "test" -b "test" "mailtos://user:pass@example.com?pgp=encrypt"
+```
+
+The storage path appears in the debug output. Once you know it, you can place or inspect key files there directly.
+
+For predictable, namespace-independent placement, use `pgppub=` and `pgpprv=` to point at absolute paths anywhere on the filesystem — no storage directory needed.
+
+#### Public Key Search Order {#public-key-search-order}
+
+Public keys are matched against **recipient** email addresses (first match wins):
+
+| Priority | Filename example                                            |
+| -------- | ----------------------------------------------------------- |
+| 1        | `{recipient@domain.com}-pub.asc` (full address, lowercased) |
+| 1        | `{recipient}-pub.asc` (local part only, lowercased)         |
+| 2        | `pgp-public.asc`                                            |
+| 2        | `pgp-pub.asc`                                               |
+| 2        | `public.asc`                                                |
+| 2        | `pub.asc`                                                   |
+
+Priority 1 entries are generated for each recipient in order; the baseline filenames (priority 2) are tried last.
+
+#### Private Key Search Order {#private-key-search-order}
+
+Private keys are matched against the **sender** (From) address (first match wins):
+
+| Priority | Filename example                                                      |
+| -------- | --------------------------------------------------------------------- |
+| 1        | `{sender@domain.com}-prv.asc` (full address, lowercased)              |
+| 1        | `{sender}-prv.asc` (local part only — this is what `keygen()` writes) |
+| 2        | `pgp-private.asc`                                                     |
+| 2        | `pgp-prv.asc`                                                         |
+| 2        | `private.asc`                                                         |
+| 2        | `prv.asc`                                                             |
+
+Passphrase-protected private keys are rejected regardless of how they are discovered.
 
 :::note[Deprecated parameter: `pgpkey=`]
 

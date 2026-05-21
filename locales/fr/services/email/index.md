@@ -282,13 +282,13 @@ Pour les **clés publiques** (utilisées par `pgp=encrypt` et l'étape de chiffr
 
 1. **Fichier de clé explicite** -- un fichier `.asc` fourni via `pgppub=`
 1. **Web Key Directory (WKD)** -- récupération automatique via HTTPS, activée avec `wkd=yes`
-1. **Fichier de clé local** -- un fichier `.asc` précédemment écrit dans le répertoire de stockage persistant
+1. **Fichier de clé local** -- Apprise parcourt le répertoire d'espace de noms du stockage persistant en cherchant les noms de fichiers listés dans le [tableau de recherche des clés publiques](#ordre-de-recherche-des-cles-publiques) ci-dessous
 1. **Paire de clés générée automatiquement** -- créée lors de la première utilisation lorsque le stockage persistant est configuré et que `pgp_autogen` est activé dans l'asset (uniquement pour `pgp=encrypt` ; l'étape opportuniste de `pgp=sign` ne génère jamais de clé automatiquement)
 
 Pour les **clés privées** (utilisées par `pgp=sign`), Apprise cherche :
 
 1. **Fichier de clé explicite** -- un fichier `.asc` fourni via `pgpprv=`
-1. **Fichier de clé local** -- découverte automatique de `{email}-prv.asc`, `pgp-prv.asc`, `prv.asc` ou `pgp-private.asc` dans le répertoire de stockage persistant
+1. **Fichier de clé local** -- Apprise parcourt le répertoire d'espace de noms du stockage persistant en cherchant les noms de fichiers listés dans le [tableau de recherche des clés privées](#ordre-de-recherche-des-cles-privees) ci-dessous
 
 ### Web Key Directory (WKD)
 
@@ -311,9 +311,62 @@ Pour les destinataires chez des fournisseurs qui publient des clés WKD (Proton 
 
 ### Clés Générées Automatiquement
 
-Lorsqu'aucune clé publique n'est trouvée par une autre méthode, Apprise peut générer une nouvelle paire de clés RSA-2048 et l'écrire dans le répertoire de stockage persistant. La clé publique est stockée sous `{localpart}-pub.asc` et réutilisée lors des envois suivants.
+Lorsqu'aucune clé publique n'est trouvée par une autre méthode, Apprise génère une nouvelle paire de clés RSA-2048 et écrit **les deux** fichiers dans le répertoire d'espace de noms du stockage persistant :
 
-La génération automatique est activée par défaut lorsque le [stockage persistant](/library/persistent-storage/) est configuré. Elle peut être désactivée au niveau de l'asset en définissant `pgp_autogen = False`.
+| Fichier               | Rôle                                                           |
+| --------------------- | -------------------------------------------------------------- |
+| `{localpart}-pub.asc` | Clé publique — utilisée pour chiffrer les messages sortants    |
+| `{localpart}-prv.asc` | Clé privée — découverte automatiquement par le mode `pgp=sign` |
+
+`{localpart}` est la partie de l'adresse From de l'expéditeur avant le `@`, en minuscules. Pour `user@example.com`, les fichiers sont `user-pub.asc` et `user-prv.asc`.
+
+Comme `keygen()` écrit la clé privée en même temps que la clé publique, un seul envoi `pgp=encrypt` qui déclenche la génération automatique rend aussi la signature disponible. Tout envoi `pgp=sign` ultérieur pointant vers le même stockage découvrira `user-prv.asc` sans paramètre `pgpprv=`.
+
+La génération automatique est activée par défaut lorsque le [stockage persistant](/library/persistent-storage/) est configuré. Elle peut être désactivée au niveau de l'asset en définissant `pgp_autogen = False`. Notez que `pgp_autogen` ne concerne que `pgp=encrypt` -- l'étape de chiffrement opportuniste de `pgp=sign` ne génère jamais de clé automatiquement.
+
+### Emplacement des Fichiers de Clé
+
+Apprise stocke le matériel de clé dans un **répertoire d'espace de noms haché** sous `storage_path`. Le nom du répertoire est un hachage de 8 caractères dérivé de manière déterministe à partir de l'URL, de sorte que la même URL pointe toujours vers le même répertoire, mais ce chemin n'est pas lisible directement.
+
+Pour trouver le répertoire d'espace de noms d'une URL donnée, exécutez Apprise une fois avec la journalisation de débogage complète :
+
+```bash
+apprise -vvvv -t "test" -b "test" "mailtos://user:pass@example.com?pgp=encrypt"
+```
+
+Le chemin de stockage apparaît dans la sortie de débogage. Une fois connu, vous pouvez y placer ou inspecter des fichiers de clé directement.
+
+Pour un placement prévisible, indépendant de l'espace de noms, utilisez `pgppub=` et `pgpprv=` pour pointer vers des chemins absolus n'importe où sur le système de fichiers -- aucun répertoire de stockage n'est nécessaire.
+
+#### Ordre de Recherche des Clés Publiques {#ordre-de-recherche-des-cles-publiques}
+
+Les clés publiques sont recherchées en fonction des adresses e-mail des **destinataires** (premier résultat trouvé est utilisé) :
+
+| Priorité | Exemple de nom de fichier                                              |
+| -------- | ---------------------------------------------------------------------- |
+| 1        | `{destinataire@domaine.com}-pub.asc` (adresse complète, en minuscules) |
+| 1        | `{destinataire}-pub.asc` (partie locale seulement, en minuscules)      |
+| 2        | `pgp-public.asc`                                                       |
+| 2        | `pgp-pub.asc`                                                          |
+| 2        | `public.asc`                                                           |
+| 2        | `pub.asc`                                                              |
+
+Les entrées de priorité 1 sont générées pour chaque destinataire dans l'ordre ; les noms de fichiers de base (priorité 2) sont essayés en dernier.
+
+#### Ordre de Recherche des Clés Privées {#ordre-de-recherche-des-cles-privees}
+
+Les clés privées sont recherchées en fonction de l'adresse **expéditeur** (From) (premier résultat trouvé est utilisé) :
+
+| Priorité | Exemple de nom de fichier                                                        |
+| -------- | -------------------------------------------------------------------------------- |
+| 1        | `{expediteur@domaine.com}-prv.asc` (adresse complète, en minuscules)             |
+| 1        | `{expediteur}-prv.asc` (partie locale seulement — c'est ce que `keygen()` écrit) |
+| 2        | `pgp-private.asc`                                                                |
+| 2        | `pgp-prv.asc`                                                                    |
+| 2        | `private.asc`                                                                    |
+| 2        | `prv.asc`                                                                        |
+
+Les clés privées protégées par une phrase de passe sont rejetées, quelle que soit leur méthode de découverte.
 
 :::note[Paramètre déprécié : `pgpkey=`]
 
