@@ -122,6 +122,35 @@ urls:
   - slack://tokenA/tokenB/tokenC
 ```
 
+### YAML vs TEXT pour les Paramètres Complexes
+
+L'un des avantages les plus pratiques de YAML par rapport au TEXT est que **les valeurs des paramètres n'ont jamais besoin d'être encodées en URL**. Dans une URL brute, toute valeur contenant des caractères spéciaux — espaces, `@`, `#`, chevrons — doit être encodée en pourcentage avant de pouvoir figurer dans une chaîne de requête. En YAML, ces valeurs sont des chaînes ordinaires sans encodage nécessaire.
+
+Prenons l'exemple d'une URL SMTP avec un mot de passe complexe, une adresse d'expéditeur incluant un nom d'affichage, et un chemin vers une clé PGP privée :
+
+**Sous forme d'URL unique (format TEXT ou argument CLI) :**
+
+```text
+mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User%3Cjoe%40example.com%3E&pgp=sign&pgpprv=%2Fhome%2Fjoe%2FMes+Cles%2Fprivate.asc
+```
+
+**En YAML — sans encodage, immédiatement lisible :**
+
+```yaml
+urls:
+  - mailtos://joe:myP%40ss%23w0rd%21@example.com:
+      smtp: smtp.example.com
+      from: "Joe User <joe@example.com>"
+      pgp: sign
+      pgpprv: /home/joe/Mes Clés/private.asc
+```
+
+:::note
+La partie `schema://user:pass@host` de l'URL reste une syntaxe URL standard, donc les identifiants qui y sont intégrés doivent toujours être encodés en URL lorsqu'ils contiennent des caractères réservés. Seules les **sous-clés** (paramètres extraits de la chaîne de requête) sont exemptées de cette contrainte.
+:::
+
+Tous les paramètres listés dans le tableau `## Détail des Paramètres` d'un service peuvent être utilisés comme sous-clés YAML. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
+
 ## Tags et Groupement en YAML
 
 Les tags vous permettent d'organiser vos services de notification en groupes logiques tels que `personal`, `ops` ou `critical`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.

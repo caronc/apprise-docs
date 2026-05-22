@@ -358,6 +358,25 @@ Private keys are matched against the **sender** (From) address (first match wins
 
 Passphrase-protected private keys are rejected regardless of how they are discovered.
 
+#### Specifying Keys via a Configuration File
+
+When you manage Apprise through a [YAML configuration file](/library/configuration/), the `pgppub=` and `pgpprv=` parameters can be written as clean YAML sub-keys instead of being embedded inside a long URL string. Because both parameters are handled by the Apprise Attachment system, you can supply either a local file path or an HTTP/HTTPS URL:
+
+```yaml
+urls:
+  - mailtos://user:pass@smtp.example.com/:
+      pgp: sign
+      pgpprv: /path/to/my-prv.asc
+      pgppub: http://internal.example.com/keys/recipient-pub.asc
+      wkd: "yes"
+```
+
+This is especially useful when key paths are long or contain characters that would need URL-encoding in a query string.
+
+:::caution[Keep private keys local]
+`pgpprv` supports HTTP URLs through the same Attachment system, but fetching a private key over the network exposes it to interception. Always use a local filesystem path for `pgpprv`.
+:::
+
 #### Placing a Key in the Cache
 
 The simplest way to supply a key without using `pgppub=` or `pgpprv=` is to copy it into the cache namespace directory using one of the filenames from the search order tables above. Apprise picks it up automatically on the next send — no URL change required.
@@ -369,6 +388,39 @@ apprise storage list "mailtos://user:pass@example.com"
 ```
 
 The uid column in the output (e.g. `2a3f8b1c`) is the 8-character namespace hash for that URL — the same identifier shown on the Apprise-API review tab. The full cache directory is `{storage-path}/2a3f8b1c/`. Copy your key file into that directory with a matching name — for example `user@example.com-pub.asc` for a public key, or `user-prv.asc` for a private key — and Apprise will find it without any `pgppub=` or `pgpprv=` parameter.
+
+#### Per-recipient Keys (Multiple Recipients)
+
+When you notify multiple recipients in one URL, Apprise sends a **separate email per recipient** and performs the key lookup independently for each one. This means every recipient can have their own public key pre-placed in the cache directory and will receive their own individually encrypted copy.
+
+For example, to send a signed+encrypted email to both `alice@example.com` and `bob@example.com`:
+
+```bash
+# First, find the namespace directory for your sending URL
+apprise storage list "mailtos://user:pass@smtp.example.com"
+# Output: uid 2a3f8b1c  → cache dir is {storage-path}/2a3f8b1c/
+```
+
+Copy each recipient's public key into that directory using the full-address filename format:
+
+```bash
+cp alice-key.asc {storage-path}/2a3f8b1c/alice@example.com-pub.asc
+cp bob-key.asc   {storage-path}/2a3f8b1c/bob@example.com-pub.asc
+```
+
+Then send to both at once:
+
+```bash
+apprise -t "Hello" -b "Secret message" \
+    "mailtos://user:pass@smtp.example.com/alice@example.com/bob@example.com?pgp=sign&pgpprv=/path/to/my-prv.asc"
+```
+
+Apprise sends two separate emails:
+
+- Alice receives a `multipart/signed+encrypted` message encrypted with `alice@example.com-pub.asc`.
+- Bob receives a `multipart/signed+encrypted` message encrypted with `bob@example.com-pub.asc`.
+
+If a key file is missing for a particular recipient, the opportunistic fallback applies: that recipient receives a signed-only (unencrypted) copy. No other recipients are affected — each send is independent.
 
 :::note[Deprecated parameter: `pgpkey=`]
 

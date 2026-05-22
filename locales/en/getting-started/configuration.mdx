@@ -122,6 +122,35 @@ urls:
   - slack://tokenA/tokenB/tokenC
 ```
 
+### YAML vs TEXT for Complex Parameters
+
+One of the most practical advantages of YAML over TEXT is that **parameter values never need to be URL-encoded**. In a plain URL, any value that contains special characters — spaces, `@`, `#`, angle brackets — must be percent-encoded before it can appear in a query string. In YAML, those values are plain strings with no encoding required.
+
+Consider an SMTP email URL with a complex password, a display-name sender address, and a private PGP key path:
+
+**As a single URL (TEXT format or inline CLI argument):**
+
+```text
+mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User%3Cjoe%40example.com%3E&pgp=sign&pgpprv=%2Fhome%2Fjoe%2FMy+Keys%2Fprivate.asc
+```
+
+**As YAML — no encoding, immediately readable:**
+
+```yaml
+urls:
+  - mailtos://joe:myP%40ss%23w0rd%21@example.com:
+      smtp: smtp.example.com
+      from: "Joe User <joe@example.com>"
+      pgp: sign
+      pgpprv: /home/joe/My Keys/private.asc
+```
+
+:::note
+The `schema://user:pass@host` portion of the URL is still standard URL syntax, so credentials embedded there still need URL-encoding when they contain reserved characters. Only the **sub-keys** (parameters moved out of the query string) are free of that requirement.
+:::
+
+All parameters listed in a service's `## Parameter Breakdown` table can be used as YAML sub-keys. The [email service](/services/email/) is shown above, but the same approach works for any Apprise service.
+
 ## YAML Tagging and Grouping
 
 Tags let you organize notification services into logical groups such as `personal`, `ops`, or `critical`. You can then target groups without changing your destination URLs.

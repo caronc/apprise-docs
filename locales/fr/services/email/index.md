@@ -358,6 +358,25 @@ Les clés privées sont recherchées en fonction de l'adresse **expéditeur** (F
 
 Les clés privées protégées par une phrase de passe sont rejetées, quelle que soit leur méthode de découverte.
 
+#### Spécifier les Clés via un Fichier de Configuration
+
+Lorsque vous gérez Apprise via un [fichier de configuration YAML](/library/configuration/), les paramètres `pgppub=` et `pgpprv=` peuvent être écrits comme des sous-clés YAML propres plutôt qu'être intégrés dans une longue chaîne d'URL. Ces deux paramètres étant gérés par le système Attachment d'Apprise, vous pouvez fournir aussi bien un chemin de fichier local qu'une URL HTTP/HTTPS :
+
+```yaml
+urls:
+  - mailtos://user:pass@smtp.example.com/:
+      pgp: sign
+      pgpprv: /chemin/vers/ma-clé-prv.asc
+      pgppub: http://interne.example.com/cles/destinataire-pub.asc
+      wkd: "yes"
+```
+
+C'est particulièrement utile lorsque les chemins de clé sont longs ou contiennent des caractères qui nécessiteraient un encodage URL dans une chaîne de requête.
+
+:::caution[Gardez les clés privées en local]
+`pgpprv` supporte les URL HTTP via le même système Attachment, mais récupérer une clé privée sur le réseau l'expose à une interception. Utilisez toujours un chemin sur le système de fichiers local pour `pgpprv`.
+:::
+
 #### Placer une Clé dans le Cache
 
 La façon la plus simple de fournir une clé sans utiliser `pgppub=` ou `pgpprv=` est de la copier dans le répertoire d'espace de noms du cache en utilisant l'un des noms de fichiers des tableaux de priorité ci-dessus. Apprise la détecte automatiquement au prochain envoi — aucune modification d'URL n'est nécessaire.
@@ -369,6 +388,39 @@ apprise storage list "mailtos://user:pass@example.com"
 ```
 
 La colonne uid dans la sortie (ex. `2a3f8b1c`) est le hash d'espace de noms à 8 caractères de cette URL — le même identifiant affiché dans l'onglet de révision d'Apprise-API. Le répertoire de cache complet est `{storage-path}/2a3f8b1c/`. Copiez votre fichier de clé dans ce répertoire avec un nom correspondant — par exemple `user@example.com-pub.asc` pour une clé publique, ou `user-prv.asc` pour une clé privée — et Apprise la trouvera sans paramètre `pgppub=` ni `pgpprv=`.
+
+#### Clés par destinataire (destinataires multiples)
+
+Lorsque vous notifiez plusieurs destinataires dans une seule URL, Apprise envoie un **e-mail séparé par destinataire** et effectue la recherche de clé indépendamment pour chacun. Chaque destinataire peut donc avoir sa propre clé publique pré-placée dans le répertoire de cache et recevoir sa propre copie chiffrée individuellement.
+
+Par exemple, pour envoyer un e-mail signé+chiffré à `alice@example.com` et `bob@example.com` :
+
+```bash
+# Trouvez d'abord le répertoire d'espace de noms pour votre URL d'envoi
+apprise storage list "mailtos://user:pass@smtp.example.com"
+# Sortie : uid 2a3f8b1c  → répertoire de cache : {storage-path}/2a3f8b1c/
+```
+
+Copiez la clé publique de chaque destinataire dans ce répertoire en utilisant le format de nom complet :
+
+```bash
+cp alice-key.asc {storage-path}/2a3f8b1c/alice@example.com-pub.asc
+cp bob-key.asc   {storage-path}/2a3f8b1c/bob@example.com-pub.asc
+```
+
+Puis envoyez aux deux à la fois :
+
+```bash
+apprise -t "Bonjour" -b "Message secret" \
+    "mailtos://user:pass@smtp.example.com/alice@example.com/bob@example.com?pgp=sign&pgpprv=/chemin/vers/ma-clé-prv.asc"
+```
+
+Apprise envoie deux e-mails séparés :
+
+- Alice reçoit un message `multipart/signed+encrypted` chiffré avec `alice@example.com-pub.asc`.
+- Bob reçoit un message `multipart/signed+encrypted` chiffré avec `bob@example.com-pub.asc`.
+
+Si un fichier de clé est manquant pour un destinataire particulier, le repli opportuniste s'applique : ce destinataire reçoit une copie signée uniquement (non chiffrée). Les autres destinataires ne sont pas affectés — chaque envoi est indépendant.
 
 :::note[Paramètre déprécié : `pgpkey=`]
 
