@@ -142,10 +142,11 @@ La valeur `tag` suit les règles suivantes :
 
 Pour envoyer des pièces jointes, utilisez `multipart/form-data`.
 
-- Utilisez `attach` (recommandé) ou `attachment` comme nom de champ
+- Utilisez `attach` comme nom de champ recommandé. Les alias `attachment` et `attachments` sont également acceptés.
 - La valeur de la pièce jointe peut être :
   - un upload de fichier local
   - une URL distante que l'API Apprise télécharge puis transmet
+- Les charges utiles JSON qui fournissent des pièces jointes distantes ou encodées utilisent les mêmes noms de champ.
 
 ## Hooks de Mapping du Payload
 
@@ -361,7 +362,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Le nom du champ peut être attach ou attachment
+    # Le nom du champ peut être attach, attachment ou attachments
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -913,7 +914,7 @@ async def apprise_notify_with_attachment(url: str, body: str, file_path: str) ->
     path = Path(file_path)
     form = aiohttp.FormData()
     form.add_field("body", body)
-    # Le nom du champ peut être attach ou attachment
+    # Le nom du champ peut être attach, attachment ou attachments
     form.add_field("attach", path.read_bytes(), filename=path.name)
 
     timeout = aiohttp.ClientTimeout(total=60)
@@ -999,7 +1000,7 @@ export async function appriseNotifyWithAttachment(
   if (payload.tag) form.append("tag", payload.tag);
   form.append("body", payload.body);
 
-  // Le nom du champ peut être attach ou attachment
+  // Le nom du champ peut être attach, attachment ou attachments
   form.append("attach", file);
 
   const res = await fetch(url, {
@@ -1132,7 +1133,7 @@ function apprise_notify_with_attachment(string $url, string $body, string $file_
 
     $post = [
         'body' => $body,
-        // Le nom du champ peut être attach ou attachment
+        // Le nom du champ peut être attach, attachment ou attachments
         'attach' => new CURLFile($file_path),
     ];
 

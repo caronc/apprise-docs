@@ -76,7 +76,9 @@ curl -X POST \
 
 ### Pièces Jointes
 
-Pour envoyer des pièces jointes, utilisez `multipart/form-data`. L'API accepte les uploads de fichiers classiques ainsi que les URL distantes. Vous pouvez utiliser `attach` (recommandé) ou `attachment` comme nom de champ.
+Pour envoyer des pièces jointes, utilisez `multipart/form-data`. L'API accepte les uploads de fichiers classiques ainsi que les URL distantes. Utilisez `attach` comme nom de champ recommandé. Les alias `attachment` et `attachments` sont également acceptés.
+
+Pour les charges utiles JSON qui fournissent des pièces jointes distantes ou encodées, utilisez les mêmes noms de champ.
 
 ```bash
 # Uploader un fichier local
