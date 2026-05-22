@@ -332,4 +332,6 @@ The following core plugins already leverage:
 
 - [**Telegram**](https://github.com/caronc/apprise/blob/master/apprise/plugins/telegram.py): Uses persistent storage to cache a detected bot owner user ID when automatic owner detection is enabled. Once discovered, the owner ID is reused for future notifications so detection does not need to be repeated on subsequent runs.
 
-Feel free to use these examples to help shape your own design or improve on a plugin that exists already that could really benifit from the Persistent Store.
+- [**Email (PGP)**](https://github.com/caronc/apprise/blob/master/apprise/plugins/email/base.py): Uses persistent storage to hold auto-generated PGP key pairs. When PGP encryption is enabled without explicit key files, the plugin generates a public/private key pair on first use and writes both to the persistent storage path (`pgp-public.asc` and `pgp-private.asc`). Subsequent runs load the same keys from disk so every encrypted message is signed and encrypted with a stable, consistent identity.
+
+Feel free to use these examples to help shape your own design or improve on a plugin that exists already that could really benefit from the Persistent Store.

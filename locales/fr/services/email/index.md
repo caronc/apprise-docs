@@ -326,17 +326,7 @@ La génération automatique est activée par défaut lorsque le [stockage persis
 
 ### Emplacement des Fichiers de Clé
 
-Apprise stocke le matériel de clé dans un **répertoire d'espace de noms haché** sous `storage_path`. Le nom du répertoire est un hachage de 8 caractères dérivé de manière déterministe à partir de l'URL, de sorte que la même URL pointe toujours vers le même répertoire, mais ce chemin n'est pas lisible directement.
-
-Pour trouver le répertoire d'espace de noms d'une URL donnée, exécutez Apprise une fois avec la journalisation de débogage complète :
-
-```bash
-apprise -vvvv -t "test" -b "test" "mailtos://user:pass@example.com?pgp=encrypt"
-```
-
-Le chemin de stockage apparaît dans la sortie de débogage. Une fois connu, vous pouvez y placer ou inspecter des fichiers de clé directement.
-
-Pour un placement prévisible, indépendant de l'espace de noms, utilisez `pgppub=` et `pgpprv=` pour pointer vers des chemins absolus n'importe où sur le système de fichiers -- aucun répertoire de stockage n'est nécessaire.
+Apprise stocke le matériel de clé dans un **répertoire d'espace de noms haché** sous `storage_path`. Le nom du répertoire est un hachage de 8 caractères dérivé de manière déterministe à partir de l'URL, de sorte que la même URL pointe toujours vers le même répertoire. Utilisez `pgppub=` et `pgpprv=` pour pointer vers des chemins absolus n'importe où sur le système de fichiers si vous préférez ne pas utiliser le cache.
 
 #### Ordre de Recherche des Clés Publiques {#ordre-de-recherche-des-cles-publiques}
 
@@ -367,6 +357,18 @@ Les clés privées sont recherchées en fonction de l'adresse **expéditeur** (F
 | 2        | `prv.asc`                                                                        |
 
 Les clés privées protégées par une phrase de passe sont rejetées, quelle que soit leur méthode de découverte.
+
+#### Placer une Clé dans le Cache
+
+La façon la plus simple de fournir une clé sans utiliser `pgppub=` ou `pgpprv=` est de la copier dans le répertoire d'espace de noms du cache en utilisant l'un des noms de fichiers des tableaux de priorité ci-dessus. Apprise la détecte automatiquement au prochain envoi — aucune modification d'URL n'est nécessaire.
+
+Pour trouver le répertoire d'espace de noms associé à une URL donnée, utilisez `apprise storage list` :
+
+```bash
+apprise storage list "mailtos://user:pass@example.com"
+```
+
+La colonne uid dans la sortie (ex. `2a3f8b1c`) est le hash d'espace de noms à 8 caractères de cette URL — le même identifiant affiché dans l'onglet de révision d'Apprise-API. Le répertoire de cache complet est `{storage-path}/2a3f8b1c/`. Copiez votre fichier de clé dans ce répertoire avec un nom correspondant — par exemple `user@example.com-pub.asc` pour une clé publique, ou `user-prv.asc` pour une clé privée — et Apprise la trouvera sans paramètre `pgppub=` ni `pgpprv=`.
 
 :::note[Paramètre déprécié : `pgpkey=`]
 

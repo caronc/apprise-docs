@@ -332,4 +332,6 @@ Les plugins principaux suivants l'utilisent déjà :
 
 - [**Telegram**](https://github.com/caronc/apprise/blob/master/apprise/plugins/telegram.py) : met en cache l'identifiant utilisateur du propriétaire du bot lorsqu'une détection automatique est activée. Une fois découvert, cet identifiant est réutilisé pour les notifications futures afin de ne pas répéter cette détection aux exécutions suivantes.
 
+- [**Email (PGP)**](https://github.com/caronc/apprise/blob/master/apprise/plugins/email/base.py) : utilise le stockage persistant pour conserver les paires de clés PGP générées automatiquement. Lorsque le chiffrement PGP est activé sans fichiers de clés explicites, le plugin génère une paire de clés publique/privée à la première utilisation et écrit les deux dans le chemin de stockage persistant (`pgp-public.asc` et `pgp-private.asc`). Les exécutions suivantes chargent les mêmes clés depuis le disque afin que chaque message chiffré soit signé et chiffré avec une identité stable et cohérente.
+
 N'hésitez pas à vous inspirer de ces exemples pour concevoir votre propre stratégie ou améliorer un plugin existant qui pourrait vraiment bénéficier du stockage persistant.

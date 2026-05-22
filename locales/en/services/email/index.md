@@ -326,17 +326,7 @@ Auto-generation is enabled by default when [persistent storage](/library/persist
 
 ### Key File Placement
 
-Apprise stores key material inside a **hashed namespace directory** under `storage_path`. The directory name is an 8-character hash derived deterministically from the URL, so the same URL always maps to the same directory, but the path is not human-readable at a glance.
-
-To find the namespace directory for a given URL, run Apprise once with full debug logging:
-
-```bash
-apprise -vvvv -t "test" -b "test" "mailtos://user:pass@example.com?pgp=encrypt"
-```
-
-The storage path appears in the debug output. Once you know it, you can place or inspect key files there directly.
-
-For predictable, namespace-independent placement, use `pgppub=` and `pgpprv=` to point at absolute paths anywhere on the filesystem — no storage directory needed.
+Apprise stores key material inside a **hashed namespace directory** under `storage_path`. The directory name is an 8-character hash derived deterministically from the URL, so the same URL always maps to the same directory. Use `pgppub=` and `pgpprv=` to point at absolute paths anywhere on the filesystem when you prefer not to use the cache at all.
 
 #### Public Key Search Order {#public-key-search-order}
 
@@ -367,6 +357,18 @@ Private keys are matched against the **sender** (From) address (first match wins
 | 2        | `prv.asc`                                                             |
 
 Passphrase-protected private keys are rejected regardless of how they are discovered.
+
+#### Placing a Key in the Cache
+
+The simplest way to supply a key without using `pgppub=` or `pgpprv=` is to copy it into the cache namespace directory using one of the filenames from the search order tables above. Apprise picks it up automatically on the next send — no URL change required.
+
+To find the namespace directory for a given URL, use `apprise storage list`:
+
+```bash
+apprise storage list "mailtos://user:pass@example.com"
+```
+
+The uid column in the output (e.g. `2a3f8b1c`) is the 8-character namespace hash for that URL — the same identifier shown on the Apprise-API review tab. The full cache directory is `{storage-path}/2a3f8b1c/`. Copy your key file into that directory with a matching name — for example `user@example.com-pub.asc` for a public key, or `user-prv.asc` for a private key — and Apprise will find it without any `pgppub=` or `pgpprv=` parameter.
 
 :::note[Deprecated parameter: `pgpkey=`]
 

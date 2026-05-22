@@ -13,6 +13,7 @@ Certains services nécessitent des échanges d'authentification complexes ou des
 
 - **Matrix :** les informations de connexion sont mises en cache localement pour éviter une réauthentification au homeserver à chaque requête.
 - **Telegram :** les détails du compte utilisateur sont mis en cache pour éviter des récupérations supplémentaires auprès du service.
+- **Email (PGP) :** lorsque le chiffrement PGP est activé sans fournir de fichiers de clés explicites, Apprise génère automatiquement une paire de clés PGP et la conserve de façon persistante afin que les mêmes clés soient réutilisées à chaque exécution.
 
 ## Emplacements de Stockage
 
@@ -30,7 +31,15 @@ Par défaut, les fichiers sont écrits dans :
 
 ### Afficher les IDs de Cache (UID)
 
-Chaque URL Apprise que vous définissez reçoit un identifiant d'URL unique (`uid`). Pour voir quels UID ont été attribués à votre configuration, utilisez le flag `--dry-run` combiné à `--tag=all` :
+Chaque URL Apprise que vous définissez reçoit un identifiant d'URL unique (`uid`). La façon la plus directe de trouver l'UID d'une URL spécifique est de la passer directement à `apprise storage list` :
+
+```bash
+apprise storage list "mailtos://user:pass@example.com"
+```
+
+Cela affiche le hash d'espace de noms de 8 caractères (`uid`) de cette URL ainsi que son état actuel, même si aucune donnée n'a encore été écrite (l'état affiche `unused`). Le répertoire de cache complet sur disque est `{storage-path}/{uid}/`.
+
+Pour voir les UID de toutes les URL chargées en une seule fois, utilisez le flag `--dry-run` combiné à `--tag=all` :
 
 ```bash
 apprise --dry-run --tag=all
@@ -61,22 +70,63 @@ La sortie affiche :
    - `unused` : le plugin n'occupe actuellement aucun espace ;
    - `stale` : un plugin avait précédemment écrit des données ici, mais n'est plus référencé par votre configuration actuelle.
 
-### Nettoyage
-
-Pour supprimer tout le stockage persistant accumulé via l'outil CLI :
+Vous pouvez filtrer la liste par préfixe d'UID ou en passant une URL Apprise complète :
 
 ```bash
-apprise storage clean
+# Filtrer par préfixe d'UID sur 8 caractères (correspondance la plus proche)
+apprise storage list abc1
+
+# Filtrer par URL complète — résolue automatiquement vers son espace de noms
+apprise storage list "mailtos://user:pass@example.com"
 ```
 
-Vous pouvez être plus précis en visant un UID ou un tag spécifique :
+### Purger le Stockage Obsolète
+
+Pour supprimer les données en cache qui ont expiré ou ne sont plus à jour, utilisez la commande `prune` :
 
 ```bash
-# Nettoyer un UID spécifique (par ex. trouvé via 'apprise storage')
-apprise storage clean abc123xy
+apprise storage prune
+```
 
-# Nettoyer toutes les URL associées au tag 'family'
-apprise storage clean --tag family
+Par défaut, Apprise supprime les données de plus de 30 jours. Vous pouvez ajuster ce seuil avec `--storage-prune-days` :
+
+```bash
+# Supprimer les données de plus de 7 jours
+apprise storage prune --storage-prune-days 7
+```
+
+Vous pouvez limiter la purge à une URL spécifique, un préfixe d'UID ou un tag — seul le stockage appartenant aux plugins correspondants est éligible à la suppression :
+
+```bash
+# Purger uniquement le stockage d'une URL spécifique
+apprise storage prune "mailtos://user:pass@example.com"
+
+# Purger un préfixe d'UID spécifique
+apprise storage prune abc1
+
+# Purger uniquement le stockage des URL associées au tag 'family'
+apprise storage prune --tag family
+```
+
+### Effacer le Stockage
+
+Pour effacer immédiatement toutes les données en cache (quelle que soit leur ancienneté), utilisez la commande `clear` :
+
+```bash
+apprise storage clear
+```
+
+Vous pouvez être plus précis en ciblant un UID spécifique, une URL complète ou un tag — seuls les espaces de noms des plugins correspondants sont effacés :
+
+```bash
+# Effacer un UID spécifique (par ex. trouvé via 'apprise storage list')
+apprise storage clear abc123xy
+
+# Effacer via une URL complète — résolue automatiquement vers son espace de noms
+apprise storage clear "mailtos://user:pass@example.com"
+
+# Effacer toutes les URL associées au tag 'family'
+apprise storage clear --tag family
 ```
 
 ## Modes de Stockage
