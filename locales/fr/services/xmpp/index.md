@@ -52,8 +52,7 @@ La syntaxe valide est la suivante :
 - `xmpps://{user}:{password}@{host}/{jid}?verify=no`
 - `xmpps://{user}:{password}@{host}/{jid}?xmpp={xmpp_server}`
 
-Les connexions sécurisées doivent utiliser **`xmpps://`**, tandis que
-les connexions non sécurisées doivent utiliser **`xmpp://`**.
+Les connexions sécurisées doivent utiliser **`xmpps://`**, tandis que les connexions non sécurisées doivent utiliser **`xmpp://`**.
 
 Si aucune cible n’est précisée, Apprise envoie la notification au compte authentifié lui-même, soit `{user}@{host}`.
 
@@ -88,6 +87,7 @@ Lorsque Apprise reconstruit une URL en interne, par exemple pour la journalisati
 | keepalive | Non     | Active le mode keepalive XMPP pour maintenir une connexion persistante entre les notifications. Cela n’est utile que si l’instance Apprise reste en mémoire, par exemple dans une application longue durée. Cela n’a aucun effet pratique avec la CLI ou l’API en mode one-shot, car l’instance est créée, envoie la notification, puis est détruite. Même avec `?keepalive=yes`, la connexion se ferme dès que l’instance Apprise sort de portée. La valeur par défaut est `no`. |
 | subject   | Non     | Les messages sont envoyés en `mtype=chat`, qui n’utilise généralement pas le champ XMPP intégré `subject=`. Définir `yes` redirige le titre fourni vers `subject=` au lieu de le concaténer au corps ; le comportement par défaut est `subject=no`.                                                                                                                                                                                                                               |
 | name      | Non     | Surnom utilisé lors de l’entrée dans des salons MUC, uniquement alphanumérique et underscore. Le nom d’utilisateur JID est détecté et utilisé par défaut, sauf surcharge explicite. Si aucun n’est disponible, la valeur par défaut du système est utilisée.                                                                                                                                                                                                                      |
+| scramplus | Non     | Mettre à `no` pour désactiver les mécanismes SASL SCRAM-PLUS avec liaison de canal. Utilisez ce paramètre si l’authentification échoue avec l’erreur "Invalid channel binding" (voir [SCRAM-PLUS et Liaison de Canal](#scram-plus-et-liaison-de-canal)). La valeur par défaut est `yes`.                                                                                                                                                                                          |
 | to        | Non     | Autre manière de préciser les JID cibles ou les salons MUC, séparés par des virgules ; préfixez les salons avec `#`.                                                                                                                                                                                                                                                                                                                                                              |
 | target    | Non     | JID destinataire, pour un utilisateur classique, ou JID de salon MUC lorsqu’il est préfixé par `#`.                                                                                                                                                                                                                                                                                                                                                                               |
 
@@ -208,6 +208,34 @@ Tous les JID, de connexion comme de cible, sont toujours assemblés à partir du
 Sans `xmpp=`, Apprise se connecte directement à `host`. Si le serveur se trouve à une autre adresse et qu’aucun enregistrement DNS SRV ne comble l’écart, vous verrez une erreur de flux `host-unknown`. Définir `xmpp=` permet de résoudre cela sans ruse particulière d’encodage d’URL.
 :::
 
+## SCRAM-PLUS et Liaison de Canal
+
+Par défaut, Apprise autorise slixmpp à tenter les mécanismes SASL SCRAM-PLUS (comme `SCRAM-SHA-256-PLUS`) lorsque le serveur les annonce. Ces mécanismes incluent des données de liaison TLS pour offrir une protection supplémentaire contre les attaques de type man-in-the-middle.
+
+Cependant, certaines configurations serveur ou certaines versions de Python SSL ne peuvent pas fournir des données de liaison de canal valides, ce qui provoque un échec d'authentification avec un message tel que :
+
+```text
+Invalid channel binding
+```
+
+Si vous rencontrez cette erreur, ajoutez `?scramplus=no` à votre URL Apprise pour désactiver la négociation SCRAM-PLUS. Apprise négociera alors un mécanisme SASL non-PLUS (par exemple `SCRAM-SHA-256` ou `SCRAM-SHA-1`). La connexion reste entièrement chiffrée par TLS ; seule l'étape de liaison de canal est ignorée.
+
+```bash
+apprise -vv -b "Test" \
+  "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
+```
+
+:::note
+Cette erreur est le plus souvent déclenchée dans les situations suivantes :
+
+- Le serveur XMPP ne supporte pas correctement la liaison de canal `tls-unique` ou `tls-exporter` avec votre version de Python.
+- Python 3.13+ inclut la prise en charge de `tls-exporter`, mais le serveur ne l'accepte pas.
+
+L'ajout de `?scramplus=no` résout les échecs d'authentification dans tous ces cas.
+
+Il s'agit d'un problème répandu dans l'écosystème Python. Pour le contexte et le suivi en amont, consultez la page [Problèmes SCRAM-SASL dans l'écosystème Python](https://github.com/scram-sasl/info/issues/1).
+:::
+
 ## Exemples
 
 Envoyer une notification XMPP en clair :
@@ -286,4 +314,11 @@ Se connecter à un serveur dont le nom d’hôte diffère du domaine JID :
 # JID domain is example.com; server is physically at xmpp.example.com
 apprise -vv -b "Hello" \
   "xmpps://user@example.com/joe?xmpp=xmpp.example.com"
+```
+
+Désactiver SCRAM-PLUS en cas d’échec avec "Invalid channel binding" :
+
+```bash
+apprise -vv -b "Hello" \
+  "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
 ```
