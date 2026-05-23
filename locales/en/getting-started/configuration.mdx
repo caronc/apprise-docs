@@ -124,7 +124,7 @@ urls:
 
 ### YAML vs TEXT for Complex Parameters
 
-One of the most practical advantages of YAML over TEXT is that **parameter values never need to be URL-encoded**. In a plain URL, any value that contains special characters — spaces, `@`, `#`, angle brackets — must be percent-encoded before it can appear in a query string. In YAML, those values are plain strings with no encoding required.
+One of the most practical advantages of YAML over TEXT is that **parameters can be moved out of the URL and written as normal YAML values**. In a plain URL, any value that contains special characters -- spaces, `@`, `#`, angle brackets -- must be percent-encoded before it can appear in the URL. In YAML, those same values can be written as plain strings with no URL encoding required.
 
 Consider an SMTP email URL with a complex password, a display-name sender address, and a private PGP key path:
 
@@ -138,18 +138,31 @@ mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User
 
 ```yaml
 urls:
-  - mailtos://joe:myP%40ss%23w0rd%21@example.com:
+  - mailtos://example.com:
+      password: "myP@ss#w0rd!"
       smtp: smtp.example.com
       from: "Joe User <joe@example.com>"
       pgp: sign
-      pgpprv: /home/joe/My Keys/private.asc
+      pgpprv: "/home/joe/My Keys/private.asc"
 ```
 
-:::note
-The `schema://user:pass@host` portion of the URL is still standard URL syntax, so credentials embedded there still need URL-encoding when they contain reserved characters. Only the **sub-keys** (parameters moved out of the query string) are free of that requirement.
-:::
+YAML sub-keys are merged with the values parsed from the URL before the service is created. This means common URL parts such as `user`, `password`, `host`, `port`, `verify`, and `tag` can be supplied as YAML keys, along with any service-specific parameter listed for that plugin.
 
 All parameters listed in a service's `## Parameter Breakdown` table can be used as YAML sub-keys. The [email service](/services/email/) is shown above, but the same approach works for any Apprise service.
+
+You can still keep values in the URL when that is more convenient. Query-string parameters in the URL, such as `?user=abc&password=123`, are parsed as URL overrides for the fields they represent.
+
+The same pattern is useful for other services too. For example, an XMPP configuration can keep the URL short while placing credentials and connection behavior in YAML:
+
+```yaml
+urls:
+  - xmpp://chat.example.com:
+      user: alerts@example.com
+      password: "correct horse battery staple"
+      host: xmpp.example.com
+      verify: yes
+      to: ops-room@example.com
+```
 
 ## YAML Tagging and Grouping
 
@@ -176,6 +189,24 @@ urls:
         - personal
         - after-hours
 ```
+
+### Reusing One URL with Multiple YAML Entries
+
+A YAML list under a URL creates one service definition for each list item. Apprise starts with the same parsed URL each time, then applies that item's YAML values as overrides.
+
+This is useful when several destinations share the same credentials but need different targets, tags, or options:
+
+```yaml
+version: 1
+urls:
+  - mailto://user:pass@gmail.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+```
+
+The example above loads two `mailto://` services. Both inherit `user:pass@gmail.com` from the URL, while each entry gets its own `to` and `tag` value.
 
 ### Grouping Tags with YAML Configuration
 
@@ -211,7 +242,6 @@ version: 1
 
 groups:
   critical: ops, after-hours
-  family: personal
 
 urls:
   - discord://webhook_id/webhook_token:

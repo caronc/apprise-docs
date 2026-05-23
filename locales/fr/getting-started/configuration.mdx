@@ -124,7 +124,7 @@ urls:
 
 ### YAML vs TEXT pour les Paramètres Complexes
 
-L'un des avantages les plus pratiques de YAML par rapport au TEXT est que **les valeurs des paramètres n'ont jamais besoin d'être encodées en URL**. Dans une URL brute, toute valeur contenant des caractères spéciaux — espaces, `@`, `#`, chevrons — doit être encodée en pourcentage avant de pouvoir figurer dans une chaîne de requête. En YAML, ces valeurs sont des chaînes ordinaires sans encodage nécessaire.
+L'un des avantages les plus pratiques de YAML par rapport au TEXT est que **les paramètres peuvent être sortis de l'URL et écrits comme des valeurs YAML normales**. Dans une URL brute, toute valeur contenant des caractères spéciaux -- espaces, `@`, `#`, chevrons -- doit être encodée en pourcentage avant de pouvoir figurer dans l'URL. En YAML, ces mêmes valeurs peuvent être écrites comme des chaînes ordinaires sans encodage URL.
 
 Prenons l'exemple d'une URL SMTP avec un mot de passe complexe, une adresse d'expéditeur incluant un nom d'affichage, et un chemin vers une clé PGP privée :
 
@@ -138,18 +138,31 @@ mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User
 
 ```yaml
 urls:
-  - mailtos://joe:myP%40ss%23w0rd%21@example.com:
+  - mailtos://example.com:
+      password: "myP@ss#w0rd!"
       smtp: smtp.example.com
       from: "Joe User <joe@example.com>"
       pgp: sign
-      pgpprv: /home/joe/Mes Clés/private.asc
+      pgpprv: "/home/joe/Mes Clés/private.asc"
 ```
 
-:::note
-La partie `schema://user:pass@host` de l'URL reste une syntaxe URL standard, donc les identifiants qui y sont intégrés doivent toujours être encodés en URL lorsqu'ils contiennent des caractères réservés. Seules les **sous-clés** (paramètres extraits de la chaîne de requête) sont exemptées de cette contrainte.
-:::
+Les sous-clés YAML sont fusionnées avec les valeurs extraites de l'URL avant la création du service. Cela signifie que des parties courantes de l'URL comme `user`, `password`, `host`, `port`, `verify` et `tag` peuvent être fournies comme clés YAML, tout comme les paramètres propres au service listés pour ce plugin.
 
 Tous les paramètres listés dans le tableau `## Détail des Paramètres` d'un service peuvent être utilisés comme sous-clés YAML. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
+
+Vous pouvez toujours conserver des valeurs dans l'URL lorsque c'est plus pratique. Les paramètres de requête présents dans l'URL, comme `?user=abc&password=123`, sont analysés comme des remplacements URL pour les champs qu'ils représentent.
+
+Le même modèle est utile pour d'autres services. Par exemple, une configuration XMPP peut garder une URL courte et placer les identifiants ainsi que le comportement de connexion dans YAML :
+
+```yaml
+urls:
+  - xmpp://chat.example.com:
+      user: alerts@example.com
+      password: "correct horse battery staple"
+      host: xmpp.example.com
+      verify: yes
+      to: ops-room@example.com
+```
 
 ## Tags et Groupement en YAML
 
@@ -176,6 +189,24 @@ urls:
         - personal
         - after-hours
 ```
+
+### Réutiliser une URL avec Plusieurs Entrées YAML
+
+Une liste YAML placée sous une URL crée une définition de service pour chaque élément de la liste. Apprise part de la même URL analysée à chaque fois, puis applique les valeurs YAML de cet élément comme remplacements.
+
+C'est utile lorsque plusieurs destinations partagent les mêmes identifiants mais ont besoin de cibles, tags ou options différents :
+
+```yaml
+version: 1
+urls:
+  - mailto://user:pass@gmail.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+```
+
+L'exemple ci-dessus charge deux services `mailto://`. Les deux héritent de `user:pass@gmail.com` depuis l'URL, tandis que chaque entrée reçoit ses propres valeurs `to` et `tag`.
 
 ### Regrouper des Tags avec une Configuration YAML
 
@@ -211,7 +242,6 @@ version: 1
 
 groups:
   critical: ops, after-hours
-  family: personal
 
 urls:
   - discord://webhook_id/webhook_token:
