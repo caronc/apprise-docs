@@ -108,10 +108,34 @@ Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurabl
 
 ### Gestion du matériel de clé
 
-| Champ         | Type   | Défaut | Utilisé par    | Notes                                                                                                 |
-| ------------- | ------ | -----: | -------------- | ----------------------------------------------------------------------------------------------------- |
-| `pgp_autogen` | `bool` | `True` | Contrôleur PGP | Active la génération automatique de clés PGP si le stockage le permet et qu'aucune clé n'est fournie. |
-| `pem_autogen` | `bool` | `True` | Contrôleur PEM | Active la génération automatique de clés PEM si le stockage le permet et qu'aucune clé n'est fournie. |
+| Champ         | Type   | Défaut | Utilisé par    | Notes                                                                                                                                                                                                                                                                                          |
+| ------------- | ------ | -----: | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pgp_autogen` | `bool` | `True` | Contrôleur PGP | Quand `True` et que le stockage persistant est configuré, génère une paire de clés RSA-2048 (`{localpart}-pub.asc` + `{localpart}-prv.asc`) la première fois qu'aucune clé n'est trouvée. S'applique uniquement à `pgp=encrypt` -- l'étape opportuniste de `pgp=sign` ne génère jamais de clé. |
+| `pem_autogen` | `bool` | `True` | Contrôleur PEM | Active la génération automatique de clés PEM si le stockage le permet et qu'aucune clé n'est fournie.                                                                                                                                                                                          |
+
+#### Détails de la génération automatique PGP
+
+Quand `pgp_autogen = True`, Apprise génère **les deux** clés (publique et privée) lors du premier envoi `pgp=encrypt` où aucune clé n'est trouvée :
+
+- `{localpart}-pub.asc` -- clé publique RSA-2048, utilisée pour chiffrer les messages sortants
+- `{localpart}-prv.asc` -- clé privée RSA-2048, découverte automatiquement par le mode `pgp=sign`
+
+`{localpart}` est dérivé de l'adresse From de l'expéditeur (tout ce qui précède le `@`, en minuscules).
+
+L'amorçage est donc automatique : configurez `pgp=encrypt` une fois avec le stockage persistant, laissez le premier envoi générer les deux clés, puis passez à `pgp=sign` -- la clé privée sera découverte depuis le même répertoire de stockage, sans paramètre `pgpprv=`.
+
+Pour désactiver la génération automatique globalement :
+
+```python
+from apprise import AppriseAsset
+
+asset = AppriseAsset(
+    storage_path="/var/lib/apprise",
+    pgp_autogen=False,
+)
+```
+
+Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement. Apprise passe à la méthode de découverte suivante (WKD ou un chemin `pgppub=` explicite) et échoue l'envoi si aucune clé n'est trouvée.
 
 ### Limites de sécurité
 

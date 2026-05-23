@@ -127,6 +127,34 @@ Apprise supports both text and YAML configuration files. The formats are functio
 
 For a side-by-side explanation and examples, see [Getting Started: Configuration](../../getting-started/configuration/).
 
+## YAML URL Parameters
+
+YAML configuration can describe an Apprise URL as either a plain string or as a mapping with additional keys:
+
+```yaml
+urls:
+  - mailto://gmail.com:
+      user: alerts
+      password: "myP@ss#w0rd!"
+      to: ops@example.com
+      tag: ops
+```
+
+The YAML keys are merged into the parsed URL before the plugin is created. Common URL fields such as `user`, `password`, `host`, `port`, `verify`, and `tag` can be supplied this way, along with service-specific parameters from the service's parameter table.
+
+When a list is placed under one URL, Apprise creates one service definition per list item. Each item starts with the same parsed URL and then applies that item's YAML values:
+
+```yaml
+urls:
+  - mailto://user:pass@gmail.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+```
+
+This loads two email services with shared credentials and different targets.
+
 ## Includes
 
 The `include` directive allows one configuration source to reference another.

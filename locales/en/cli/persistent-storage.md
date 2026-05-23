@@ -13,6 +13,7 @@ Some services require complex authentication handshakes or resource lookups that
 
 - **Matrix:** Login information is cached locally to avoid re-authenticating with the homeserver on every request.
 - **Telegram:** User account details are cached to save extra fetches to the service.
+- **Email (PGP):** When PGP encryption is enabled without supplying explicit key files, Apprise auto-generates a PGP key pair and stores it persistently so the same keys are reused across every run.
 
 ## Storage Locations
 
@@ -30,7 +31,15 @@ By default, files are written to:
 
 ### Viewing Cache IDs (UIDs)
 
-Every Apprise URL you define has a unique URL ID (`uid`) generated against it. To see which UIDs have been assigned to your configuration, use the `--dry-run` flag combined with `--tag=all`:
+Every Apprise URL you define has a unique URL ID (`uid`) generated against it. The fastest way to find the UID for a specific URL is to pass it directly to `apprise storage list`:
+
+```bash
+apprise storage list "mailtos://user:pass@example.com"
+```
+
+This shows the 8-character namespace hash (`uid`) for that URL along with its current state, even when no data has been written yet (state shows `unused`). The full cache directory on disk is `{storage-path}/{uid}/`.
+
+To see UIDs for all loaded URLs at once, use the `--dry-run` flag combined with `--tag=all`:
 
 ```bash
 apprise --dry-run --tag=all
@@ -61,22 +70,63 @@ The output shows:
    - `unused`: The plugin is not currently occupying space.
    - `stale`: A plugin previously wrote data here, but it is no longer referenced by your current configuration.
 
-### Cleaning Up
-
-To remove all accumulated persistent storage generated through the CLI tool:
+You can filter the listing by UID prefix or by passing a full Apprise URL:
 
 ```bash
-apprise storage clean
+# Filter by 8-char UID prefix (closest match)
+apprise storage list abc1
+
+# Filter by full URL — resolved to its namespace automatically
+apprise storage list "mailtos://user:pass@example.com"
 ```
 
-You can be more specific by targeting a specific UID or tag:
+### Pruning Stale Storage
+
+To remove cached data that has expired or is no longer fresh, use the `prune` command:
 
 ```bash
-# Clean a specific UID (e.g. found via 'apprise storage')
-apprise storage clean abc123xy
+apprise storage prune
+```
 
-# Clean all URLs associated with the 'family' tag
-apprise storage clean --tag family
+By default, Apprise removes data older than 30 days. You can adjust the threshold with `--storage-prune-days`:
+
+```bash
+# Remove data older than 7 days
+apprise storage prune --storage-prune-days 7
+```
+
+You can scope a prune to a specific URL, UID prefix, or tag — only storage belonging to the matched plugins is eligible for removal:
+
+```bash
+# Prune only storage belonging to a specific URL
+apprise storage prune "mailtos://user:pass@example.com"
+
+# Prune a specific UID prefix
+apprise storage prune abc1
+
+# Prune only storage for URLs associated with the 'family' tag
+apprise storage prune --tag family
+```
+
+### Clearing Storage
+
+To erase all cached data immediately (regardless of age), use the `clear` command:
+
+```bash
+apprise storage clear
+```
+
+You can be more specific by targeting a specific UID, a full URL, or a tag — only the matched plugins' namespaces are cleared:
+
+```bash
+# Clear a specific UID (e.g. found via 'apprise storage list')
+apprise storage clear abc123xy
+
+# Clear using a full URL — resolved to its namespace automatically
+apprise storage clear "mailtos://user:pass@example.com"
+
+# Clear all URLs associated with the 'family' tag
+apprise storage clear --tag family
 ```
 
 ## Storage Modes
