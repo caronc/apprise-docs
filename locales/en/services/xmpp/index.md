@@ -327,3 +327,7 @@ Disable SCRAM-PLUS when authentication fails with "Invalid channel binding":
 apprise -vv -b "Hello" \
   "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
 ```
+
+## Testing
+
+For a step-by-step guide to standing up a local Prosody server and verifying notifications end-to-end, see the [XMPP Testing guide](./testing/).

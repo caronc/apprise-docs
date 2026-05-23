@@ -322,3 +322,7 @@ Désactiver SCRAM-PLUS en cas d’échec avec "Invalid channel binding" :
 apprise -vv -b "Hello" \
   "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
 ```
+
+## Tests
+
+Pour un guide détaillé sur la mise en place d’un serveur Prosody local et la vérification des notifications de bout en bout, consultez le [Guide de Tests XMPP](./testing/).
