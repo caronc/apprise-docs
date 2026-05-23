@@ -146,13 +146,11 @@ urls:
       pgpprv: "/home/joe/Mes Clés/private.asc"
 ```
 
-Les sous-clés YAML sont fusionnées avec les valeurs extraites de l'URL avant la création du service. Cela signifie que des parties courantes de l'URL comme `user`, `password`, `host`, `port`, `verify` et `tag` peuvent être fournies comme clés YAML, tout comme les paramètres propres au service listés pour ce plugin.
+Les sous-clés YAML ont toujours la priorité sur les valeurs extraites de l'URL. Lorsque le même champ est défini à la fois dans l'URL et en tant que sous-clé YAML, c'est la sous-clé qui l'emporte — que ce soit face aux composantes structurelles de l'URL (`user:pass@host`) ou aux paramètres de requête déjà présents dans l'URL (`?user=abc&password=123`). Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
 
-Tous les paramètres listés dans le tableau `## Détail des Paramètres` d'un service peuvent être utilisés comme sous-clés YAML. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
+Cela signifie que l'URL elle-même peut se réduire au strict minimum — le schéma seul — avec tous les identifiants et options dans le bloc YAML, sans aucun encodage URL nulle part. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
 
-Vous pouvez toujours conserver des valeurs dans l'URL lorsque c'est plus pratique. Les paramètres de requête présents dans l'URL, comme `?user=abc&password=123`, sont analysés comme des remplacements URL pour les champs qu'ils représentent.
-
-Le même modèle est utile pour d'autres services. Par exemple, une configuration XMPP peut garder une URL courte et placer les identifiants ainsi que le comportement de connexion dans YAML :
+Le même modèle fonctionne pour n'importe quel service. L'exemple XMPP ci-dessous conserve une URL minimale — la sous-clé `host:` remplace le nom d'hôte extrait de l'URL, tandis que `user:` et `password:` fournissent des identifiants qui n'étaient pas dans l'URL :
 
 ```yaml
 urls:
