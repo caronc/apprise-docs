@@ -1,0 +1,185 @@
+---
+title: "Notifications Threema Gateway"
+description: "Envoyer des notifications Threema Gateway."
+sidebar:
+  label: "Threema Gateway"
+
+source: https://gateway.threema.ch/
+
+schemas:
+  - threema
+
+sample_urls:
+  - threema://{gateway_id}@{secret}/{user}
+  - threema://{gateway_id}@{secret}/{email}
+  - threema://{gateway_id}@{secret}/{phone}
+
+limits:
+  max_chars: 3500
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<!-- SERVICE:DETAILS -->
+
+## Configuration du Compte
+
+Vous devez d'abord configurer un compte [Threema Gateway](https://gateway.threema.ch/). Une fois inscrit, vous pouvez demander un ou plusieurs **identifiants Gateway** de 8 caractères (commençant chacun par un astérisque, par exemple `*MYGWYID`).
+
+Apprise prend en charge deux modes :
+
+### Mode de Base (par défaut)
+
+Il s'agit de l'option la plus simple. Threema gère tout le chiffrement côté serveur ; vous n'avez pas besoin de gérer des clés.
+
+1. Créez votre compte sur [gateway.threema.ch](https://gateway.threema.ch/) et confirmez votre adresse e-mail.
+2. Obtenez des crédits (contactez le support Threema à [support-gateway@threema.ch](mailto:support-gateway@threema.ch) pour un petit nombre de crédits de test, ou achetez-les depuis votre compte).
+3. [Demandez un identifiant Gateway de base](https://gateway.threema.ch/en/id-request?type=simple). Threema l'examinera (généralement en un ou deux jours ouvrables) et créera l'identifiant. Le **secret API** correspondant apparaît sur la page de présentation de l'identifiant.
+
+Vous pouvez ensuite envoyer des messages à n'importe quel destinataire via son identifiant Threema, son numéro de téléphone ou son adresse e-mail.
+
+### Mode Chiffrement de Bout en Bout (`?mode=e2e`)
+
+En mode E2E, vos messages sont chiffrés sur votre propre machine avant d'être envoyés ; les serveurs de Threema ne voient jamais le texte en clair.
+
+**Avant de commencer :** vous devez générer vous-même une paire de clés Curve25519. Le formulaire d'inscription E2E exige votre **clé publique** — Threema ne la génère pas pour vous. Vous conservez la **clé privée** sans jamais la partager ; c'est elle qui sera utilisée dans votre URL Apprise.
+
+**Étape 1 — Générer une Paire de Clés**
+
+<Tabs>
+<TabItem label="Python">
+
+Fonctionne sous Linux, macOS et Windows. Installez PyNaCl (également requis par Apprise à l'exécution pour le mode E2E) :
+
+```bash
+pip install pynacl
+```
+
+Générez votre paire de clés :
+
+```python
+from nacl.public import PrivateKey
+key = PrivateKey.generate()
+print("private:", key.encode().hex())
+print("public: ", key.public_key.encode().hex())
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+Windows PowerShell 5.1 ne prend pas en charge X25519. [PowerShell 7+](https://learn.microsoft.com/fr-fr/powershell/scripting/install/installing-powershell-on-windows) (livré avec .NET 6 ou version ultérieure) est requis :
+
+```powershell
+$ecdh    = [System.Security.Cryptography.ECDiffieHellman]::Create("X25519")
+$privDer = $ecdh.ExportPkcs8PrivateKey()
+$pubDer  = $ecdh.ExportSubjectPublicKeyInfo()
+"private: $(($privDer | Select-Object -Last 32 | ForEach-Object { '{0:x2}' -f $_ }) -join '')"
+"public:  $(($pubDer  | Select-Object -Last 32 | ForEach-Object { '{0:x2}' -f $_ }) -join '')"
+```
+
+Remarque : Apprise nécessite tout de même PyNaCl installé à l'exécution pour envoyer des messages E2E (`pip install pynacl`).
+
+</TabItem>
+</Tabs>
+
+Ces méthodes produisent deux chaînes hexadécimales de 64 caractères. La valeur `private:` est votre clé privée Apprise — gardez-la secrète. Copiez la valeur `public:` ; vous la collerez dans le formulaire d'inscription à l'étape 2.
+
+**Étape 2 — Enregistrer un Identifiant Gateway E2E**
+
+Ouvrez le [formulaire de demande E2E](https://gateway.threema.ch/en/id-request?type=e2e) et remplissez-le :
+
+- **Clé publique** — collez la valeur hexadécimale de 64 caractères de la ligne `public:` générée à l'étape 1.
+- **URL pour les messages entrants** — optionnelle ; utilisée uniquement pour les rappels de rapport de livraison. Laissez ce champ vide si vous n'avez pas besoin de la gestion des messages entrants.
+- Des **frais d'installation de 1 600 crédits** sont facturés lors de l'approbation de l'identifiant.
+
+Après examen par Threema (généralement en un ou deux jours ouvrables), l'identifiant est créé et le **secret API** apparaît sur la page de présentation de l'identifiant.
+
+Votre clé privée (la chaîne hexadécimale de 64 caractères de l'étape 1) est la valeur `privkey` dans votre URL Apprise. Apprise l'accepte dans l'un ou l'autre format :
+
+```text
+private:aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899
+```
+
+ou simplement la partie hexadécimale brute de 64 caractères sans le préfixe `private:` — les deux formes sont équivalentes. Gardez-la secrète — quiconque la possède peut envoyer des messages depuis votre identifiant Gateway.
+
+**Remarque :** le mode E2E ne prend en charge que les cibles de type **identifiant Threema** (identifiants de 8 caractères tels que `ABCD1234`). Les numéros de téléphone et les adresses e-mail ne sont pas pris en charge dans ce mode.
+
+## Syntaxe
+
+La syntaxe valide est la suivante :
+
+- `threema://{gateway_id}@{secret}/{user}`
+- `threema://{gateway_id}@{secret}/{user1}/{user2}/{user3}/{userN}`
+- `threema://{gateway_id}@{secret}/{email}`
+- `threema://{gateway_id}@{secret}/{email1}/{email2}/{email3}/{emailN}`
+- `threema://{gateway_id}@{secret}/{phone}`
+- `threema://{gateway_id}@{secret}/{phone1}/{phone2}/{phone3}/{phoneN}`
+
+Vous pouvez aussi mélanger librement les différentes cibles :
+
+- `threema://{gateway_id}@{secret}/{phone1}/{user1}/{email1}/...`
+
+Pour le mode chiffrement de bout en bout (identifiants Threema uniquement) :
+
+- `threema://{gateway_id}@{secret}/{user}?mode=e2e&privkey={privkey}`
+- `threema://{gateway_id}@{secret}/{user1}/{user2}?mode=e2e&privkey={privkey}`
+
+La valeur `{privkey}` est votre clé privée hexadécimale de 64 caractères. Vous pouvez la coller dans l'un ou l'autre de ces deux formats équivalents :
+
+- Hexadécimal brut (64 caractères uniquement) : `?privkey=aabbcc...`
+- Format SDK complet (avec le préfixe `private:`) : `?privkey=private:aabbcc...`
+
+## Détail des Paramètres
+
+| Variable   | Obligatoire | Description                                                                                                                                                                                                              |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| gateway_id | Oui         | Votre identifiant Gateway, par exemple `*MYGWYID`. L'astérisque initial (`*`) est facultatif — Apprise le préfixe automatiquement s'il est absent. Alias : `?from=` ou `?gwid=`.                                         |
+| secret     | Oui         | Le secret API associé à votre identifiant Gateway, affiché sur la page de présentation de l'identifiant. Alias : `?secret=`.                                                                                             |
+| target     | Non         | Identifiant Threema (8 caractères), adresse e-mail ou numéro de téléphone du destinataire. Vous pouvez fournir autant de cibles que nécessaire. Alias : `?to=`. Le mode E2E accepte uniquement les identifiants Threema. |
+| mode       | Non         | Définissez à `e2e` pour activer la messagerie chiffrée de bout en bout (nécessite PyNaCl et un identifiant Gateway E2E). Par défaut : `basic`.                                                                           |
+| privkey    | Non         | Votre clé privée Curve25519 sous forme de chaîne hexadécimale de 64 caractères. Obligatoire lorsque `mode=e2e`. Accepte le format hexadécimal brut (`aabbcc...`) ou le format SDK Threema (`private:aabbcc...`).         |
+
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Exemples
+
+Envoyer une notification de base à un destinataire via son identifiant Threema :
+
+```bash
+# Supposons que :
+#  - notre {gateway_id} soit *MYGWYID
+#  - notre {secret} soit abc123-2345
+#  - le {toThreemaID} soit FRIENDID
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   threema://*MYGWYID@abc123-2345/FRIENDID
+```
+
+Envoyer une notification de base à un destinataire via son numéro de téléphone :
+
+```bash
+# Supposons que :
+#  - notre {gateway_id} soit *MYGWYID
+#  - notre {secret} soit abc123-2345
+#  - le numéro de téléphone du destinataire soit +1 613 555 1234
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   threema://*MYGWYID@abc123-2345/16135551234
+```
+
+Envoyer une notification chiffrée de bout en bout (mode E2E) :
+
+```bash
+# Supposons que :
+#  - notre {gateway_id} soit *MYGWYID  (doit être un identifiant Gateway E2E)
+#  - notre {secret} soit abc123-2345
+#  - notre clé privée (générée à l'étape 1) soit :
+#      private:aabbccddeeff001122...  (64 caractères hexadécimaux après "private:")
+#  - le {toThreemaID} soit FRIENDID
+#
+# Option 1 : coller la clé exactement telle qu'affichée par l'outil de génération
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "threema://*MYGWYID@abc123-2345/FRIENDID?mode=e2e&privkey=private:aabbccddeeff001122334455667788990011223344556677889900112233445566"
+
+# Option 2 : coller uniquement les 64 caractères hexadécimaux (sans "private:")
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "threema://*MYGWYID@abc123-2345/FRIENDID?mode=e2e&privkey=aabbccddeeff001122334455667788990011223344556677889900112233445566"
+```
