@@ -52,8 +52,7 @@ Valid syntax is as follows:
 - `xmpps://{user}:{password}@{host}/{jid}?verify=no`
 - `xmpps://{user}:{password}@{host}/{jid}?xmpp={xmpp_server}`
 
-Secure connections should be referenced using **`xmpps://`**, whereas
-insecure connections should be referenced using **`xmpp://`**.
+Secure connections should be referenced using **`xmpps://`**, whereas insecure connections should be referenced using **`xmpp://`**.
 
 If no target is specified, Apprise sends the notification to the authenticated account itself (`{user}@{host}`).
 
@@ -88,6 +87,7 @@ When Apprise reconstructs a URL internally (e.g. for logging or storage), MUC ro
 | keepalive | No       | Enables XMPP keepalive mode to maintain a persistent connection between notifications. This is only effective when Apprise remains resident in memory (for example, in long-running applications). It has no practical effect when using the Apprise CLI or API in one-shot mode, as the instance is created, sends the notification, and is then destroyed. Even with `?keepalive=yes`, the connection closes once the Apprise instance goes out of scope. Default is `no`. |
 | subject   | No       | Messages are sent as `mtype=chat`, which do not typically use the built-in XMPP `subject=` field. Setting this to `yes` redirects any title provided into the `subject=` field instead of concatenating it to the body (default behavior which is `subject=no`).                                                                                                                                                                                                             |
 | name      | No       | Nickname used when joining MUC rooms (alphanumeric and underscores only). The JID username is detected and used by default unless explicitly overridden here. If neither is available, the system default is used.                                                                                                                                                                                                                                                           |
+| scramplus | No       | Set to `no` to disable SASL SCRAM-PLUS channel-binding mechanisms. Use this when authentication fails with an "Invalid channel binding" error (see [SCRAM-PLUS and Channel Binding](#scram-plus-and-channel-binding)). Default is `yes`.                                                                                                                                                                                                                                     |
 | to        | No       | Alternate way to specify target JIDs or MUC rooms (comma-separated); prefix rooms with `#`                                                                                                                                                                                                                                                                                                                                                                                   |
 | target    | No       | Recipient JID (plain user) or MUC room JID when prefixed with `#`                                                                                                                                                                                                                                                                                                                                                                                                            |
 
@@ -106,10 +106,8 @@ The **`mode`** parameter explicitly controls how the XMPP connection is establis
 :::note
 The XMPP plugin takes the most secure option when presented with an ambiguous situation:
 
-1. If you use a secure schema (`xmpps://`) while also setting
-   `mode=none`, the secure schema prevails and `starttls` is used.
-1. If you use an insecure schema (`xmpp://`) while setting
-   `mode=starttls` or `mode=tls`, the secure mode you specified prevails.
+1. If you use a secure schema (`xmpps://`) while also setting `mode=none`, the secure schema prevails and `starttls` is used.
+1. If you use an insecure schema (`xmpp://`) while setting `mode=starttls` or `mode=tls`, the secure mode you specified prevails.
 
    :::
 
@@ -215,6 +213,34 @@ All JIDs (login and targets) are always assembled from the URL `host` component 
 Without `xmpp=`, Apprise connects to `host` directly. If the server is at a different address and no DNS SRV record bridges the gap, you will see a `host-unknown` stream error from the server. Setting `xmpp=` resolves this without any URL encoding tricks.
 :::
 
+## SCRAM-PLUS and Channel Binding
+
+By default, Apprise allows slixmpp to attempt SASL SCRAM-PLUS mechanisms (such as `SCRAM-SHA-256-PLUS`) when the server advertises them. These mechanisms include TLS channel-binding data to provide an additional layer of protection against man-in-the-middle attacks.
+
+However, some server configurations or Python SSL versions cannot provide valid channel-binding data, which causes authentication to fail with a message such as:
+
+```text
+Invalid channel binding
+```
+
+If you encounter this error, add `?scramplus=no` to your Apprise URL to disable SCRAM-PLUS negotiation. Apprise will then negotiate a non-PLUS SASL mechanism (for example `SCRAM-SHA-256` or `SCRAM-SHA-1`) instead. The connection remains fully encrypted by TLS; only the extra channel-binding step is skipped.
+
+```bash
+apprise -vv -b "Test" \
+  "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
+```
+
+:::note
+This error is most commonly triggered when:
+
+- The XMPP server does not correctly support `tls-unique` or `tls-exporter` channel binding with your Python version.
+- Python 3.13+ includes `tls-exporter` support but the server does not accept it.
+
+Setting `?scramplus=no` resolves authentication failures in all of these cases.
+
+This is a widespread issue in the Python SASL/TLS ecosystem. For context and upstream tracking, see the [SCRAM-SASL Python ecosystem issues](https://github.com/scram-sasl/info/issues/1) page.
+:::
+
 ## Examples
 
 Send a plaintext XMPP notification:
@@ -294,3 +320,14 @@ Connect to a server at a different hostname than the JID domain:
 apprise -vv -b "Hello" \
   "xmpps://user@example.com/joe?xmpp=xmpp.example.com"
 ```
+
+Disable SCRAM-PLUS when authentication fails with "Invalid channel binding":
+
+```bash
+apprise -vv -b "Hello" \
+  "xmpps://user@example.com/joe?xmpp=xmpp.example.com&scramplus=no"
+```
+
+## Testing
+
+For a step-by-step guide to standing up a local Prosody server and verifying notifications end-to-end, see the [XMPP Testing guide](./testing/).
