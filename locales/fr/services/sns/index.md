@@ -48,8 +48,12 @@ Les roles d'execution AWS Lambda, les roles IAM assumes via STS (`aws sts assume
 
 Apprise prend en charge les jetons de session de deux facons :
 
-- **Prefixe dans l'URL** : placez le jeton avant le _Access Key ID_ en les separant par `@` : `sns://{SessionToken}@{AccessKeyID}/...`
-- **Parametre de requete** : ajoutez `?token={SessionToken}` a n'importe quelle URL SNS
+- **Parametre de requete** (recommande) : ajoutez `?token={SessionToken}` a n'importe quelle URL SNS -- le jeton est accepte exactement tel qu'AWS le fournit, sans echappement necessaire.
+- **Prefixe dans l'URL** : placez le jeton avant le _Access Key ID_ en les separant par `@` : `sns://{SessionToken}@{AccessKeyID}/...` -- tout caractere `/` dans le jeton doit etre encode en `%2F`.
+
+:::tip
+Les jetons de session AWS sont encodes en base64 et contiennent frequemment des caracteres `/`. L'utilisation de `?token=` evite d'avoir a les echapper.
+:::
 
 ## Syntaxe
 
@@ -85,19 +89,19 @@ En mode `topic`, le titre devient le champ SNS **Subject**. Les abonnes par e-ma
 
 ## Detail des Parametres
 
-| Variable        | Obligatoire | Description                                                                                                                                                                   |
-| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AccessKeyID     | \*Oui       | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                      |
-| AccessKeySecret | \*Oui       | _Access Key Secret_ genere depuis la AWS Management Console.                                                                                                                  |
-| Region          | \*Oui       | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                        |
-| PhoneNo         | Non         | Le numero de telephone doit inclure le prefixe d'appel du pays. Vous pouvez facultativement le prefixer par `+`. Les parentheses, espaces et tirets sont acceptes.            |
-| Topic           | Non         | Nom d'un topic SNS. Vous pouvez facultativement le prefixer par `#`.                                                                                                          |
-| SessionToken    | Non         | Jeton de session AWS pour les identifiants temporaires/IAM (`AWS_SESSION_TOKEN`). Placez-le avant le _Access Key ID_ en les separant par `@`, ou fournissez-le via `?token=`. |
-| mode            | Non         | Definissez `sms` ou `topic` pour remplacer la detection automatique. Par defaut `sms` si des numeros de telephone sont presents ; `topic` si seuls des topics sont listes.    |
-| key             | Non         | Alias pour **AccessKeyID** (`?key=`). Utile dans les configurations YAML.                                                                                                     |
-| access          | Non         | Alias legacy pour **AccessKeyID** (`?access=`).                                                                                                                               |
-| secret          | Non         | Alias pour **AccessKeySecret** (`?secret=`).                                                                                                                                  |
-| token           | Non         | Alias pour **SessionToken** (`?token=`). Utile dans les configurations YAML.                                                                                                  |
+| Variable        | Obligatoire | Description                                                                                                                                                                                                     |
+| --------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AccessKeyID     | \*Oui       | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                                                        |
+| AccessKeySecret | \*Oui       | _Access Key Secret_ genere depuis la AWS Management Console.                                                                                                                                                    |
+| Region          | \*Oui       | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                                                          |
+| PhoneNo         | Non         | Le numero de telephone doit inclure le prefixe d'appel du pays. Vous pouvez facultativement le prefixer par `+`. Les parentheses, espaces et tirets sont acceptes.                                              |
+| Topic           | Non         | Nom d'un topic SNS. Vous pouvez facultativement le prefixer par `#`.                                                                                                                                            |
+| SessionToken    | Non         | Jeton de session AWS pour les identifiants temporaires/IAM (`AWS_SESSION_TOKEN`). Privilegiez `?token=` -- les jetons contiennent souvent des `/` qui doivent etre echappes en `%2F` dans la forme prefixe `@`. |
+| mode            | Non         | Definissez `sms` ou `topic` pour remplacer la detection automatique. Par defaut `sms` si des numeros de telephone sont presents ; `topic` si seuls des topics sont listes.                                      |
+| key             | Non         | Alias pour **AccessKeyID** (`?key=`). Utile dans les configurations YAML.                                                                                                                                       |
+| access          | Non         | Alias legacy pour **AccessKeyID** (`?access=`).                                                                                                                                                                 |
+| secret          | Non         | Alias pour **AccessKeySecret** (`?secret=`).                                                                                                                                                                    |
+| token           | Non         | Alias pour **SessionToken** (`?token=`). Utile dans les configurations YAML.                                                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -136,13 +140,15 @@ apprise -vv -t "Sujet de l'Alerte" -b "Corps de l'Alerte" \
 Envoyer avec des identifiants temporaires depuis un role IAM ou Lambda :
 
 ```bash
-# Jeton de session en position de prefixe dans l'URL
-apprise -vv -b "Alerte Lambda declenchee" \
-   "sns://MonJetonDeSession@AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223"
-
-# Jeton de session en parametre de requete (utile dans les configs YAML)
+# Recommande : ?token= accepte le jeton exactement tel qu'AWS le fournit,
+# sans echappement meme si le jeton contient des caracteres /
 apprise -vv -b "Alerte Lambda declenchee" \
    "sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223?token=MonJetonDeSession"
+
+# Alternatif : jeton en position de prefixe dans l'URL -- tout / dans le jeton
+# doit etre encode en %2F
+apprise -vv -b "Alerte Lambda declenchee" \
+   "sns://MonJetonDeSession@AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223"
 ```
 
 Exemple de configuration YAML avec des parametres nommes :

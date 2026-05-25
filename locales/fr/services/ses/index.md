@@ -40,8 +40,12 @@ Les roles d'execution AWS Lambda, les roles IAM assumes via STS (`aws sts assume
 
 Apprise prend en charge les jetons de session de deux facons :
 
-- **Champ mot de passe de l'URL** : placez le jeton dans la position mot de passe de l'URL : `ses://{user}:{SessionToken}@{host}/...`
-- **Parametre de requete** : ajoutez `?token={SessionToken}` a n'importe quelle URL SES
+- **Parametre de requete** (recommande) : ajoutez `?token={SessionToken}` a n'importe quelle URL SES -- le jeton est accepte exactement tel qu'AWS le fournit, sans echappement necessaire.
+- **Champ mot de passe de l'URL** : placez le jeton dans la position mot de passe de l'URL : `ses://{user}:{SessionToken}@{host}/...` -- tout caractere `/` dans le jeton doit etre encode en `%2F`.
+
+:::tip
+Les jetons de session AWS sont encodes en base64 et contiennent frequemment des caracteres `/`. L'utilisation de `?token=` evite d'avoir a les echapper.
+:::
 
 ## Syntaxe
 
@@ -56,23 +60,23 @@ Si aucune adresse e-mail cible n'est precisee, Apprise envoie le message a l'adr
 
 ## Detail des Parametres
 
-| Variable     | Obligatoire | Description                                                                                                                                                                                       |
-| ------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FromEmail    | \*Oui       | Adresse e-mail de l'expediteur depuis laquelle AWS envoie le message. AWS la validera par rapport a vos identites verifiees.                                                                      |
-| AccessKeyID  | \*Oui       | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                                          |
-| SecretKey    | \*Oui       | _Secret Access Key_ genere depuis la AWS Management Console.                                                                                                                                      |
-| Region       | \*Oui       | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                                            |
-| ToEmail      | Non         | Une ou plusieurs adresses e-mail destinataires separees par des slashs. Si omises, l'adresse `FromEmail` est notifiee.                                                                            |
-| SessionToken | Non         | Jeton de session AWS pour les identifiants temporaires/IAM (`AWS_SESSION_TOKEN`). Placez-le dans le champ mot de passe de l'URL (`{user}:{SessionToken}@{host}`), ou fournissez-le via `?token=`. |
-| reply        | Non         | Definit une adresse _Reply-To_ differente de l'adresse de l'expediteur.                                                                                                                           |
-| to           | Non         | Force ou remplace l'adresse To. Generalement deduite automatiquement.                                                                                                                             |
-| name         | Non         | Nom d'affichage associe a l'adresse de l'expediteur.                                                                                                                                              |
-| cc           | Non         | Adresse(s) e-mail en Carbon Copy. Plusieurs valeurs peuvent etre separees par des virgules.                                                                                                       |
-| bcc          | Non         | Adresse(s) e-mail en Blind Carbon Copy. Plusieurs valeurs peuvent etre separees par des virgules.                                                                                                 |
-| key          | Non         | Alias pour **AccessKeyID** (`?key=`). Utile dans les configurations YAML.                                                                                                                         |
-| access       | Non         | Alias legacy pour **AccessKeyID** (`?access=`).                                                                                                                                                   |
-| secret       | Non         | Alias pour **SecretKey** (`?secret=`).                                                                                                                                                            |
-| token        | Non         | Alias pour **SessionToken** (`?token=`). Utile dans les configurations YAML.                                                                                                                      |
+| Variable     | Obligatoire | Description                                                                                                                                                                                                                     |
+| ------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FromEmail    | \*Oui       | Adresse e-mail de l'expediteur depuis laquelle AWS envoie le message. AWS la validera par rapport a vos identites verifiees.                                                                                                    |
+| AccessKeyID  | \*Oui       | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                                                                        |
+| SecretKey    | \*Oui       | _Secret Access Key_ genere depuis la AWS Management Console.                                                                                                                                                                    |
+| Region       | \*Oui       | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                                                                          |
+| ToEmail      | Non         | Une ou plusieurs adresses e-mail destinataires separees par des slashs. Si omises, l'adresse `FromEmail` est notifiee.                                                                                                          |
+| SessionToken | Non         | Jeton de session AWS pour les identifiants temporaires/IAM (`AWS_SESSION_TOKEN`). Privilegiez `?token=` -- les jetons contiennent souvent des `/` qui doivent etre echappes en `%2F` dans la forme champ mot de passe de l'URL. |
+| reply        | Non         | Definit une adresse _Reply-To_ differente de l'adresse de l'expediteur.                                                                                                                                                         |
+| to           | Non         | Force ou remplace l'adresse To. Generalement deduite automatiquement.                                                                                                                                                           |
+| name         | Non         | Nom d'affichage associe a l'adresse de l'expediteur.                                                                                                                                                                            |
+| cc           | Non         | Adresse(s) e-mail en Carbon Copy. Plusieurs valeurs peuvent etre separees par des virgules.                                                                                                                                     |
+| bcc          | Non         | Adresse(s) e-mail en Blind Carbon Copy. Plusieurs valeurs peuvent etre separees par des virgules.                                                                                                                               |
+| key          | Non         | Alias pour **AccessKeyID** (`?key=`). Utile dans les configurations YAML.                                                                                                                                                       |
+| access       | Non         | Alias legacy pour **AccessKeyID** (`?access=`).                                                                                                                                                                                 |
+| secret       | Non         | Alias pour **SecretKey** (`?secret=`).                                                                                                                                                                                          |
+| token        | Non         | Alias pour **SessionToken** (`?token=`). Utile dans les configurations YAML.                                                                                                                                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -96,13 +100,15 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 Envoyer avec des identifiants temporaires depuis un role IAM ou Lambda :
 
 ```bash
-# Jeton de session dans le champ mot de passe de l'URL
-apprise -vv -b "Alerte Lambda declenchee" \
-   "ses://sender:MonJetonDeSession@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com"
-
-# Jeton de session en parametre de requete (utile dans les configs YAML)
+# Recommande : ?token= accepte le jeton exactement tel qu'AWS le fournit,
+# sans echappement meme si le jeton contient des caracteres /
 apprise -vv -b "Alerte Lambda declenchee" \
    "ses://sender@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com?token=MonJetonDeSession"
+
+# Alternatif : jeton dans le champ mot de passe de l'URL -- tout / dans le jeton
+# doit etre encode en %2F
+apprise -vv -b "Alerte Lambda declenchee" \
+   "ses://sender:MonJetonDeSession@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com"
 ```
 
 Exemple de configuration YAML avec des parametres nommes :

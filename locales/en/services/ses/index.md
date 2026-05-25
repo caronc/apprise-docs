@@ -40,8 +40,12 @@ AWS Lambda execution roles, IAM roles assumed via STS (`aws sts assume-role`), a
 
 Apprise supports session tokens in two ways:
 
-- **URL password field**: place the token in the password position of the URL: `ses://{user}:{SessionToken}@{host}/...`
-- **Query parameter**: append `?token={SessionToken}` to any SES URL
+- **Query parameter** (recommended): append `?token={SessionToken}` to any SES URL -- the token is accepted exactly as AWS provides it, with no escaping required.
+- **URL password field**: place the token in the password position of the URL: `ses://{user}:{SessionToken}@{host}/...` -- any `/` characters in the token must be percent-encoded as `%2F`.
+
+:::tip
+AWS session tokens are base64-encoded and frequently contain `/` characters. Using `?token=` avoids the need to escape them.
+:::
 
 ## Syntax
 
@@ -56,23 +60,23 @@ If no target email is specified, Apprise sends to the `{FromEmail}` address itse
 
 ## Parameter Breakdown
 
-| Variable     | Required | Description                                                                                                                                                                |
-| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FromEmail    | \*Yes    | The sender email address AWS sends on behalf of. AWS validates this against your verified identities.                                                                      |
-| AccessKeyID  | \*Yes    | The generated _Access Key ID_ from the AWS Management Console.                                                                                                             |
-| SecretKey    | \*Yes    | The generated _Secret Access Key_ from the AWS Management Console.                                                                                                         |
-| Region       | \*Yes    | The region code, e.g. **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                        |
-| ToEmail      | No       | One or more recipient email addresses separated by a slash. If omitted, the `FromEmail` address is notified.                                                               |
-| SessionToken | No       | An AWS session token for temporary/IAM credentials (`AWS_SESSION_TOKEN`). Place it in the URL password field (`{user}:{SessionToken}@{host}`), or supply it via `?token=`. |
-| reply        | No       | Set a _Reply-To_ address different from the sender address.                                                                                                                |
-| to           | No       | Force or override the To address. Usually inferred automatically.                                                                                                          |
-| name         | No       | A display name associated with the sender address.                                                                                                                         |
-| cc           | No       | Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                                 |
-| bcc          | No       | Blind Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                           |
-| key          | No       | An alias for **AccessKeyID** (`?key=`). Useful in YAML configuration.                                                                                                      |
-| access       | No       | A legacy alias for **AccessKeyID** (`?access=`).                                                                                                                           |
-| secret       | No       | An alias for **SecretKey** (`?secret=`).                                                                                                                                   |
-| token        | No       | An alias for **SessionToken** (`?token=`). Useful in YAML configuration.                                                                                                   |
+| Variable     | Required | Description                                                                                                                                                                       |
+| ------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FromEmail    | \*Yes    | The sender email address AWS sends on behalf of. AWS validates this against your verified identities.                                                                             |
+| AccessKeyID  | \*Yes    | The generated _Access Key ID_ from the AWS Management Console.                                                                                                                    |
+| SecretKey    | \*Yes    | The generated _Secret Access Key_ from the AWS Management Console.                                                                                                                |
+| Region       | \*Yes    | The region code, e.g. **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                               |
+| ToEmail      | No       | One or more recipient email addresses separated by a slash. If omitted, the `FromEmail` address is notified.                                                                      |
+| SessionToken | No       | An AWS session token for temporary/IAM credentials (`AWS_SESSION_TOKEN`). Prefer `?token=` -- tokens often contain `/` which must be escaped as `%2F` in the password-field form. |
+| reply        | No       | Set a _Reply-To_ address different from the sender address.                                                                                                                       |
+| to           | No       | Force or override the To address. Usually inferred automatically.                                                                                                                 |
+| name         | No       | A display name associated with the sender address.                                                                                                                                |
+| cc           | No       | Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                                        |
+| bcc          | No       | Blind Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                                  |
+| key          | No       | An alias for **AccessKeyID** (`?key=`). Useful in YAML configuration.                                                                                                             |
+| access       | No       | A legacy alias for **AccessKeyID** (`?access=`).                                                                                                                                  |
+| secret       | No       | An alias for **SecretKey** (`?secret=`).                                                                                                                                          |
+| token        | No       | An alias for **SessionToken** (`?token=`). Useful in YAML configuration.                                                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -96,13 +100,15 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
 Send using temporary credentials from an IAM role or Lambda:
 
 ```bash
-# Session token in the URL password field
-apprise -vv -b "Lambda alert fired" \
-   "ses://sender:MySessionToken@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com"
-
-# Session token as a query parameter (useful in YAML configs)
+# Recommended: ?token= accepts the token exactly as AWS provides it,
+# no escaping needed even when the token contains / characters
 apprise -vv -b "Lambda alert fired" \
    "ses://sender@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com?token=MySessionToken"
+
+# Alternate: token in the URL password field -- any / in the token
+# must be percent-encoded as %2F
+apprise -vv -b "Lambda alert fired" \
+   "ses://sender:MySessionToken@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com"
 ```
 
 Example YAML configuration using named parameters:

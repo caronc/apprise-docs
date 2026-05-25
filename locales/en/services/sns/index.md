@@ -48,8 +48,12 @@ AWS Lambda execution roles, IAM roles assumed via STS (`aws sts assume-role`), a
 
 Apprise supports session tokens in two ways:
 
-- **URL prefix**: place the token before the Access Key ID separated by `@`: `sns://{SessionToken}@{AccessKeyID}/...`
-- **Query parameter**: append `?token={SessionToken}` to any SNS URL
+- **Query parameter** (recommended): append `?token={SessionToken}` to any SNS URL -- the token is accepted exactly as AWS provides it, with no escaping required.
+- **URL prefix**: place the token before the Access Key ID separated by `@`: `sns://{SessionToken}@{AccessKeyID}/...` -- any `/` characters in the token must be percent-encoded as `%2F`.
+
+:::tip
+AWS session tokens are base64-encoded and frequently contain `/` characters. Using `?token=` avoids the need to escape them.
+:::
 
 ## Syntax
 
@@ -85,19 +89,19 @@ In `topic` mode, the title becomes the SNS **Subject** field. Email subscribers 
 
 ## Parameter Breakdown
 
-| Variable        | Required | Description                                                                                                                                               |
-| --------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AccessKeyID     | \*Yes    | The generated _Access Key ID_ from the AWS Management Console                                                                                             |
-| AccessKeySecret | \*Yes    | The generated _Access Key Secret_ from the AWS Management Console                                                                                         |
-| Region          | \*Yes    | The region code, e.g. **us-east-1**, **us-west-2**, **cn-north-1**                                                                                        |
-| PhoneNo         | No       | The phone number including the country dialling prefix. You can optionally prefix the number with `+`. Brackets, spaces, and hyphens are accepted.        |
-| Topic           | No       | An SNS topic name. You can optionally prefix it with `#`.                                                                                                 |
-| SessionToken    | No       | An AWS session token for temporary/IAM credentials (`AWS_SESSION_TOKEN`). Place it before the Access Key ID separated by `@`, or supply it via `?token=`. |
-| mode            | No       | Set to `sms` or `topic` to override auto-detection. Defaults to `sms` when phones are present; `topic` when only topics are listed.                       |
-| key             | No       | An alias for **AccessKeyID** (`?key=`). Useful in YAML configuration.                                                                                     |
-| access          | No       | A legacy alias for **AccessKeyID** (`?access=`).                                                                                                          |
-| secret          | No       | An alias for **AccessKeySecret** (`?secret=`).                                                                                                            |
-| token           | No       | An alias for **SessionToken** (`?token=`). Useful in YAML configuration.                                                                                  |
+| Variable        | Required | Description                                                                                                                                                                   |
+| --------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AccessKeyID     | \*Yes    | The generated _Access Key ID_ from the AWS Management Console                                                                                                                 |
+| AccessKeySecret | \*Yes    | The generated _Access Key Secret_ from the AWS Management Console                                                                                                             |
+| Region          | \*Yes    | The region code, e.g. **us-east-1**, **us-west-2**, **cn-north-1**                                                                                                            |
+| PhoneNo         | No       | The phone number including the country dialling prefix. You can optionally prefix the number with `+`. Brackets, spaces, and hyphens are accepted.                            |
+| Topic           | No       | An SNS topic name. You can optionally prefix it with `#`.                                                                                                                     |
+| SessionToken    | No       | An AWS session token for temporary/IAM credentials (`AWS_SESSION_TOKEN`). Prefer `?token=` -- tokens often contain `/` which must be escaped as `%2F` in the `@`-prefix form. |
+| mode            | No       | Set to `sms` or `topic` to override auto-detection. Defaults to `sms` when phones are present; `topic` when only topics are listed.                                           |
+| key             | No       | An alias for **AccessKeyID** (`?key=`). Useful in YAML configuration.                                                                                                         |
+| access          | No       | A legacy alias for **AccessKeyID** (`?access=`).                                                                                                                              |
+| secret          | No       | An alias for **AccessKeySecret** (`?secret=`).                                                                                                                                |
+| token           | No       | An alias for **SessionToken** (`?token=`). Useful in YAML configuration.                                                                                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -135,13 +139,15 @@ apprise -vv -t "Alert Subject" -b "Alert Body" \
 Send using temporary credentials from an IAM role or Lambda:
 
 ```bash
-# Session token in the URL prefix position
-apprise -vv -b "Lambda alert fired" \
-   "sns://MySessionToken@AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223"
-
-# Session token as a query parameter (useful in YAML configs)
+# Recommended: ?token= accepts the token exactly as AWS provides it,
+# no escaping needed even when the token contains / characters
 apprise -vv -b "Lambda alert fired" \
    "sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223?token=MySessionToken"
+
+# Alternate: token in the URL prefix position -- any / in the token
+# must be percent-encoded as %2F
+apprise -vv -b "Lambda alert fired" \
+   "sns://MySessionToken@AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223"
 ```
 
 Example YAML configuration using named parameters:
