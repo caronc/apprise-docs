@@ -14,9 +14,13 @@ has_sms: true
 sample_urls:
   - sns://{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo}
   - sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic}
+  - sns://{SessionToken}@{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo}
 
 limits:
-  max_chars: 160
+  - name: "SMS"
+    max_chars: 160
+  - name: "Topic"
+    max_chars: 256000
 ---
 
 <!-- SERVICE:DETAILS -->
@@ -38,6 +42,15 @@ Vous avez maintenant tout ce qu'il faut pour envoyer des SMS.
 
 Si vous souhaitez envoyer vos notifications vers des _topics_, recherchez **Simple Notification Service** dans la [AWS Management Console](https://console.aws.amazon.com), section _AWS services_, puis configurez autant de topics que necessaire. Vous pourrez ensuite les referencer avec ce service de notification.
 
+### Identifiants temporaires (Session Token)
+
+Les roles d'execution AWS Lambda, les roles IAM assumes via STS (`aws sts assume-role`) et d'autres sources d'identifiants de courte duree fournissent un troisieme composant en plus du _Access Key ID_ et du _Secret Access Key_ : le **Session Token** (`AWS_SESSION_TOKEN`). Ce jeton doit etre inclus lors de la signature des requetes, sans quoi AWS les rejettera avec une erreur d'autorisation.
+
+Apprise prend en charge les jetons de session de deux facons :
+
+- **Prefixe dans l'URL** : placez le jeton avant le _Access Key ID_ en les separant par `@` : `sns://{SessionToken}@{AccessKeyID}/...`
+- **Parametre de requete** : ajoutez `?token={SessionToken}` a n'importe quelle URL SNS
+
 ## Syntaxe
 
 La syntaxe valide est la suivante :
@@ -46,26 +59,45 @@ La syntaxe valide est la suivante :
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo1}/+{PhoneNo2}/+{PhoneNoN}`
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic}`
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic1}/#{Topic2}/#{TopicN}`
+- `sns://{SessionToken}@{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo}`
+- `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/#{Topic}?token={SessionToken}`
 
-Vous pouvez aussi melanger ces entrees :
+Vous pouvez aussi melanger numeros de telephone et topics :
 
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo1}/#{Topic1}`
 
-Le fait de prefixer les _topics_ par un hashtag, `#`, et les numeros de telephone par un plus, `+`, permet d'eviter les ambiguities, par exemple lorsqu'un _topic_ ne contient que des chiffres. Ces caracteres restent purement facultatifs.
+Le fait de prefixer les _topics_ par un hashtag, `#`, et les numeros de telephone par un plus, `+`, permet d'eviter les ambiguites, par exemple lorsqu'un _topic_ ne contient que des chiffres. Ces caracteres restent purement facultatifs.
 
-## Détail des Paramètres
+### Modes de fonctionnement
 
-| Variable        | Obligatoire | Description                                                                                                                                                                                                                                                                                                                         |
-| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AccessKeyID     | Oui         | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                                                                                                                                                                            |
-| AccessKeySecret | Oui         | _Access Key Secret_ genere depuis la AWS Management Console.                                                                                                                                                                                                                                                                        |
-| Region          | Oui         | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**, etc.                                                                                                                                                                                                                                                         |
-| PhoneNo         | Non         | Le numero de telephone doit inclure le prefixe d'appel du pays. Vous pouvez facultativement prefixer tout le numero avec un plus, `+`, pour forcer son interpretation comme numero de telephone si la detection automatique ne suffit pas. Ce champ accepte aussi les parentheses, espaces et tirets pour une meilleure lisibilite. |
-| Topic           | Non         | Topic vers lequel publier votre message.                                                                                                                                                                                                                                                                                            |
+Le comportement de SNS varie selon le type de cibles :
+
+| Mode           | Quand il s'applique                                                 | Gestion du titre                                | Limite du corps |
+| -------------- | ------------------------------------------------------------------- | ----------------------------------------------- | --------------- |
+| `sms` (defaut) | Cibles avec numeros de telephone, ou melange                        | Le titre est prepend au corps                   | 160 caracteres  |
+| `topic`        | Cibles uniquement des topics (auto-detecte), ou `?mode=topic` force | Le titre est envoye comme champ SNS **Subject** | 256 Ko          |
+
+Le mode est **auto-detecte** a partir de votre URL : si toutes les cibles sont des topics, le mode `topic` est utilise ; si des numeros de telephone sont presents, le mode `sms` est utilise. Vous pouvez forcer le mode avec `?mode=sms` ou `?mode=topic`.
 
 :::note
-Ce service de notification n'utilise pas le champ `title` ; seul le _body_ est transmis.
+En mode `topic`, le titre devient le champ SNS **Subject**. Les abonnes par e-mail au topic recevront une ligne d'objet appropriee. Les points de terminaison SMS abonnes au topic ne recoivent pas de champ Subject -- il s'agit d'une contrainte de l'API AWS.
 :::
+
+## Detail des Parametres
+
+| Variable        | Obligatoire | Description                                                                                                                                                                   |
+| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AccessKeyID     | \*Oui       | _Access Key ID_ genere depuis la AWS Management Console.                                                                                                                      |
+| AccessKeySecret | \*Oui       | _Access Key Secret_ genere depuis la AWS Management Console.                                                                                                                  |
+| Region          | \*Oui       | Code region, par exemple **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                        |
+| PhoneNo         | Non         | Le numero de telephone doit inclure le prefixe d'appel du pays. Vous pouvez facultativement le prefixer par `+`. Les parentheses, espaces et tirets sont acceptes.            |
+| Topic           | Non         | Nom d'un topic SNS. Vous pouvez facultativement le prefixer par `#`.                                                                                                          |
+| SessionToken    | Non         | Jeton de session AWS pour les identifiants temporaires/IAM (`AWS_SESSION_TOKEN`). Placez-le avant le _Access Key ID_ en les separant par `@`, ou fournissez-le via `?token=`. |
+| mode            | Non         | Definissez `sms` ou `topic` pour remplacer la detection automatique. Par defaut `sms` si des numeros de telephone sont presents ; `topic` si seuls des topics sont listes.    |
+| key             | Non         | Alias pour **AccessKeyID** (`?key=`). Utile dans les configurations YAML.                                                                                                     |
+| access          | Non         | Alias legacy pour **AccessKeyID** (`?access=`).                                                                                                                               |
+| secret          | Non         | Alias pour **AccessKeySecret** (`?secret=`).                                                                                                                                  |
+| token           | Non         | Alias pour **SessionToken** (`?token=`). Utile dans les configurations YAML.                                                                                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -87,5 +119,41 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 # les espaces, parentheses et tirets sont acceptes dans un numero :
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+1(800)555-1223
+```
 
+Envoyer vers un topic SNS (le titre devient le champ Subject pour les abonnes par e-mail) :
+
+```bash
+# Le mode topic est auto-detecte quand seuls des topics sont listes
+apprise -vv -t "Sujet de l'Alerte" -b "Corps de l'Alerte" \
+   sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/#MonTopicAlertes
+
+# Forcer explicitement le mode topic
+apprise -vv -t "Sujet de l'Alerte" -b "Corps de l'Alerte" \
+   "sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/#MonTopicAlertes?mode=topic"
+```
+
+Envoyer avec des identifiants temporaires depuis un role IAM ou Lambda :
+
+```bash
+# Jeton de session en position de prefixe dans l'URL
+apprise -vv -b "Alerte Lambda declenchee" \
+   "sns://MonJetonDeSession@AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223"
+
+# Jeton de session en parametre de requete (utile dans les configs YAML)
+apprise -vv -b "Alerte Lambda declenchee" \
+   "sns://AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/+18005551223?token=MonJetonDeSession"
+```
+
+Exemple de configuration YAML avec des parametres nommes :
+
+```yaml
+urls:
+  - sns://:
+      - access_key_id: AHIAJGNT76XIMXDBIJYA
+        secret_access_key: bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
+        region: us-east-2
+        to: "+18005551223,#MonTopicAlertes"
+        token: MonJetonDeSession
+        mode: topic
 ```
