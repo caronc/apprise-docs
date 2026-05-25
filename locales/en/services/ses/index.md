@@ -12,8 +12,9 @@ schemas:
 has_attachments: true
 
 sample_urls:
-  - ses://{from}/{aws_access_key}/{aws_secret_key}/{region}/
-  - ses://{from}/{aws_access_key}/{aws_secret_key}/{region}/{ToEmail1}/{ToEmail2}/{ToEmailN}/
+  - ses://{FromEmail}/{AccessKeyID}/{SecretKey}/{Region}/
+  - ses://{FromEmail}/{AccessKeyID}/{SecretKey}/{Region}/{ToEmail1}/{ToEmail2}/
+  - ses://{FromUser}:{SessionToken}@{FromDomain}/{AccessKeyID}/{SecretKey}/{Region}/
 ---
 
 <!-- SERVICE:DETAILS -->
@@ -22,7 +23,7 @@ sample_urls:
 
 You'll need to create an account with Amazon Web Service (AWS) first to use this. If you don't have one, you'll need your credit card (even though the first 12 months are free). Alternatively, if you already have one (or are using it through your company), you're good to go to the next step.
 
-The next thing you'll need to do is generate an _Access Key ID_ and _Secret Access Key_.:
+The next thing you'll need to do is generate an _Access Key ID_ and _Secret Access Key_:
 
 1. From the [AWS Management Console](https://console.aws.amazon.com) search for **IAM** under the _AWS services_ section or simply click [here](https://console.aws.amazon.com/iam/home?#/security_credentials).
 1. Expand the section reading **Access keys (access key ID and secret access key)**
@@ -31,43 +32,88 @@ The next thing you'll need to do is generate an _Access Key ID_ and _Secret Acce
 
 So at this point, it is presumed you're set up, and you got your _Access Key ID_ and _Secret Access Key_ on hand.
 
-You now have all the tools you need to send SES (Email) messages.
+You also need a verified sender identity in SES. From the [AWS Management Console](https://console.aws.amazon.com) search for **Simple Email Service** under the _AWS services_ section, then go to **Verified identities** and verify the email address or domain you want to send from.
 
-If you want to take advantage of sending your notifications to _topics_: from the [AWS Management Console](https://console.aws.amazon.com) search for **Simple Notification Service** under the _AWS services_ section and configure as many topics as you want. You'll be able to reference them as well using this notification service.
+### Temporary Credentials (Session Token)
+
+AWS Lambda execution roles, IAM roles assumed via STS (`aws sts assume-role`), and other sources of short-lived credentials provide a third component alongside the Access Key ID and Secret Access Key: the **Session Token** (`AWS_SESSION_TOKEN`). This token must be included when signing requests, otherwise AWS will reject them with an authorization error.
+
+Apprise supports session tokens in two ways:
+
+- **URL password field**: place the token in the password position of the URL: `ses://{user}:{SessionToken}@{host}/...`
+- **Query parameter**: append `?token={SessionToken}` to any SES URL
 
 ## Syntax
 
 Valid syntax is as follows:
 
-- `ses://{from}/{aws_access_key}/{aws_secret_key}/{region}/`
-- `ses://{from}/{aws_access_key}/{aws_secret_key}/{region}/{ToEmail1}/{ToEmail2}/{ToEmailN}/`
+- `ses://{FromEmail}/{AccessKeyID}/{SecretKey}/{Region}/`
+- `ses://{FromEmail}/{AccessKeyID}/{SecretKey}/{Region}/{ToEmail1}/{ToEmail2}/{ToEmailN}/`
+- `ses://{FromUser}:{SessionToken}@{FromDomain}/{AccessKeyID}/{SecretKey}/{Region}/`
+- `ses://{FromEmail}/{AccessKeyID}/{SecretKey}/{Region}/?token={SessionToken}`
+
+If no target email is specified, Apprise sends to the `{FromEmail}` address itself.
 
 ## Parameter Breakdown
 
-| Variable      | Required | Description                                                                                                                                                                               |
-| ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| from          | Yes      | The originating source of the Email Address AWS is sending on behalf. AWS will validate this against your account (when paired with your aws_access_key and aws_secret_key)               |
-| access        | Yes      | The generated _Access Key ID_ from the AWS Management Console                                                                                                                             |
-| secret        | Yes      | The generated _Access Key Secret_ from the AWS Management Console                                                                                                                         |
-| region        | Yes      | The region code might look like **us-east-1**, **us-west-2**, **cn-north-1**, etc                                                                                                         |
-| target_emails | Yes      | On ore more emails separated by a slash to deliver your notification to. If no email is specified then the `from` email is notified.                                                      |
-| reply         | No       | If you want the email address _ReplyTo_ address to be something other then your own email address, then you can specify it here.                                                          |
-| to            | No       | This will enforce (or set the address the email is sent To). This is only required in special circumstances. The notification script is usually clever enough to figure this out for you. |
-| name          | No       | With respect to {from*email}, this allows you to provide a name with your \_ReplyTo* address.                                                                                             |
-| cc            | No       | Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                                  |
-| bcc           | No       | Blind Carbon Copy email address(es). More than one can be separated with a space and/or comma.                                                                                            |
+| Variable     | Required | Description                                                                                                                                                                |
+| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FromEmail    | \*Yes    | The sender email address AWS sends on behalf of. AWS validates this against your verified identities.                                                                      |
+| AccessKeyID  | \*Yes    | The generated _Access Key ID_ from the AWS Management Console.                                                                                                             |
+| SecretKey    | \*Yes    | The generated _Secret Access Key_ from the AWS Management Console.                                                                                                         |
+| Region       | \*Yes    | The region code, e.g. **us-east-1**, **us-west-2**, **cn-north-1**.                                                                                                        |
+| ToEmail      | No       | One or more recipient email addresses separated by a slash. If omitted, the `FromEmail` address is notified.                                                               |
+| SessionToken | No       | An AWS session token for temporary/IAM credentials (`AWS_SESSION_TOKEN`). Place it in the URL password field (`{user}:{SessionToken}@{host}`), or supply it via `?token=`. |
+| reply        | No       | Set a _Reply-To_ address different from the sender address.                                                                                                                |
+| to           | No       | Force or override the To address. Usually inferred automatically.                                                                                                          |
+| name         | No       | A display name associated with the sender address.                                                                                                                         |
+| cc           | No       | Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                                 |
+| bcc          | No       | Blind Carbon Copy email address(es). Multiple values can be separated by commas.                                                                                           |
+| key          | No       | An alias for **AccessKeyID** (`?key=`). Useful in YAML configuration.                                                                                                      |
+| access       | No       | A legacy alias for **AccessKeyID** (`?access=`).                                                                                                                           |
+| secret       | No       | An alias for **SecretKey** (`?secret=`).                                                                                                                                   |
+| token        | No       | An alias for **SessionToken** (`?token=`). Useful in YAML configuration.                                                                                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Examples
 
-Send a SES (Email):
+Send a basic SES email:
 
 ```bash
 # Assuming our {AccessKeyID} is AHIAJGNT76XIMXDBIJYA
-# Assuming our {AccessKeySecret} is bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
+# Assuming our {SecretKey} is bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
 # Assuming our {Region} is us-east-2
-# Assuming our {Email} - test@test.com
+# Assuming our sender is sender@example.com
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   ses://test@test.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/
+   ses://sender@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/
+
+# Send to a different recipient
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   ses://sender@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com
+```
+
+Send using temporary credentials from an IAM role or Lambda:
+
+```bash
+# Session token in the URL password field
+apprise -vv -b "Lambda alert fired" \
+   "ses://sender:MySessionToken@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com"
+
+# Session token as a query parameter (useful in YAML configs)
+apprise -vv -b "Lambda alert fired" \
+   "ses://sender@example.com/AHIAJGNT76XIMXDBIJYA/bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9/us-east-2/recipient@example.com?token=MySessionToken"
+```
+
+Example YAML configuration using named parameters:
+
+```yaml
+urls:
+  - ses://:
+      - key: AHIAJGNT76XIMXDBIJYA
+        secret: bu1dHSdO22pfaaVy/wmNsdljF4C07D3bndi9PQJ9
+        region: us-east-2
+        from: sender@example.com
+        to: recipient@example.com
+        token: MySessionToken
 ```
