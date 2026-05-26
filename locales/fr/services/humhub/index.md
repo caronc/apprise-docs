@@ -11,6 +11,7 @@ schemas:
   - humhubs
 
 has_selfhosted: true
+has_attachments: true
 
 limits:
   max_chars: 4000
