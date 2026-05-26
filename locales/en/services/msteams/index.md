@@ -9,6 +9,8 @@ source: https://teams.microsoft.com
 schemas:
   - msteams
 
+ended: 2026-05-22
+
 has_image: true
 
 sample_urls:
@@ -18,6 +20,11 @@ sample_urls:
 limits:
   max_chars: 1000
 ---
+
+:::caution
+
+This service has been retired upstream. All information below pertains to its legacy configuration.
+:::
 
 <!-- SERVICE:DETAILS -->
 
