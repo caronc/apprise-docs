@@ -17,6 +17,7 @@ sidebar:
 - [Mealie](https://github.com/hay-kot/mealie) : gestionnaire de recettes et planificateur de repas auto-hébergé.
 - [Ouroboros](https://github.com/pyouroboros/ouroboros) : met automatiquement à jour les conteneurs Docker en cours d'exécution avec la dernière image disponible.
 - [Mailrise](https://github.com/YoRyan/mailrise) : écoute les emails et les relaie via Apprise.
+- [Apprise-Go](https://github.com/unraid/apprise-go) : un portage Go d'Apprise maintenu par l'[équipe Unraid](https://unraid.net/). Il s'agit d'une implémentation distincte ; le comportement peut donc différer de celui d'Apprise Python.
 - [Apprise-Skill](https://github.com/domcross/apprise-skill) : composant de la plateforme d'assistant vocal [Mycroft](https://mycroft.ai/) lui permettant de fonctionner avec la bibliothèque Apprise.
 - [Traktarr](https://github.com/l3uddz/traktarr) : script permettant d'ajouter de nouvelles séries et de nouveaux films à [Sonarr](https://sonarr.tv)/[Radarr](https://radarr.video) à partir de listes [Trakt](https://trakt.tv).
 - [Healthchecks](https://healthchecks.io) : outil de surveillance de tâches cron écrit en Python et Django.
