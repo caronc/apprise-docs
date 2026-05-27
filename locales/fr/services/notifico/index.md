@@ -10,6 +10,8 @@ schemas:
   - notifico: insecure
   - notificos
 
+has_selfhosted: true
+
 sample_urls:
   - notifico://{ProjectID}/{MessageHook}
   - notifico://{host}/{ProjectID}/{MessageHook}
