@@ -15,6 +15,8 @@ sample_urls:
   - keybase://_/{teamname}%23{channel}
   - keybase://localhost:{port}/@{username}
 
+has_attachments: true
+
 limits:
   max_chars: 10000
 ---
@@ -25,38 +27,32 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 ## Configuration du compte
 
-Apprise communique directement avec le service Keybase en cours d'execution
-localement -- aucun outil en ligne de commande n'est necessaire. L'application
-Keybase doit etre installee, vous devez etre connecte et le service doit
-tourner en arriere-plan au moment de l'envoi des notifications.
+Il vous suffit que le service Keybase tourne en arriere-plan -- Apprise communique directement avec lui via un socket ou un point de terminaison HTTP local. Aucune invocation d'outil en ligne de commande n'est necessaire.
 
-1. Telechargez et installez Keybase depuis <https://keybase.io/download>.
+1. Telechargez et installez Keybase depuis [https://keybase.io/download](https://keybase.io/download). Sous Linux, consultez le [guide Keybase Linux](https://book.keybase.io/guides/linux).
 2. Connectez-vous une fois avec `keybase login` ou via l'application de bureau.
-3. Laissez l'application Keybase en cours d'execution lors de l'envoi des
-   notifications.
+3. Demarrez le service en arriere-plan avec `run_keybase`. Sous Linux, cette commande doit etre executee apres chaque connexion sauf si l'application de bureau est active.
+4. Verifiez que le service est pret : `keybase status` doit indiquer `Logged in: yes`.
 
 :::note
-Apprise se connecte directement au processus du service Keybase, et non a un
-outil en ligne de commande. Le service doit etre actif (l'application de bureau
-ou le demon d'arriere-plan le maintient automatiquement apres la connexion).
+Apprise communique avec le **service** Keybase (le demon local) -- non pas directement avec `keybase.io`. Il n'existe pas d'API REST publique sur `keybase.io` pour l'envoi de messages ; le demon local est toujours requis. Faites pointer votre URL Apprise vers le socket ou le port TCP sur lequel ce service est en ecoute.
 :::
+
+Consultez [Deploiement avec Docker ou Nginx](./deployment/) pour de l'aide sur le montage du socket Keybase dans un conteneur ou son exposition via un port TCP local.
 
 ## Modes de connexion
 
-Deux modes de connexion sont disponibles, selectionnes via le parametre
-`?mode=`.
+Deux modes de connexion sont disponibles, selectionnes via le parametre `?mode=`.
 
 ### Mode socket (defaut)
 
-Apprise se connecte via un socket de domaine Unix dont le chemin est detecte
-automatiquement selon la plateforme. C'est le mode par defaut et ne necessite
-aucune configuration supplementaire.
+Apprise se connecte via un socket de domaine Unix dont le chemin est detecte automatiquement selon la plateforme. C'est le mode par defaut et ne necessite aucune configuration supplementaire.
 
-| Plateforme | Chemin du socket par defaut |
-| ---------- | --------------------------- |
+| Plateforme | Chemin du socket par defaut                                                           |
+| ---------- | ------------------------------------------------------------------------------------- |
 | Linux      | `$XDG_RUNTIME_DIR/keybase/keybased.sock` (ex. `/run/user/1000/keybase/keybased.sock`) |
-| macOS      | `~/Library/Group Containers/keybase/Library/keybased.sock` |
-| Windows    | `\\.\pipe\keybase.service` |
+| macOS      | `~/Library/Group Containers/keybase/Library/keybased.sock`                            |
+| Windows    | `\\.\pipe\keybase.service`                                                            |
 
 Vous pouvez remplacer le chemin avec le parametre `?socket=` :
 
@@ -64,22 +60,27 @@ Vous pouvez remplacer le chemin avec le parametre `?socket=` :
 keybase://_/@alice?socket=/run/user/1000/keybase/keybased.sock
 ```
 
+:::caution
+Le chemin du socket personnalise doit contenir le mot `keybase` (insensible a la casse). Apprise rejette les chemins qui ne satisfont pas cette exigence au demarrage, ce qui empeche toute redirection accidentelle ou malveillante vers des sockets systeme sans rapport, comme `/var/run/docker.sock`. Tous les chemins par defaut des plateformes satisfont automatiquement cette exigence.
+:::
+
 ### Mode TCP
 
-Apprise se connecte via HTTP a un point de terminaison du service Keybase
-local. Fournissez l'hote et le port dans l'autorite de l'URL -- l'hote
-prend par defaut la valeur `localhost` si omis.
+Apprise se connecte via HTTP a un point de terminaison du service Keybase local. Fournissez l'hote et le port dans l'autorite de l'URL -- l'hote prend par defaut la valeur `localhost` si omis.
 
 ```text
 keybase://localhost:3000/@alice
 ```
 
-Vous pouvez egalement specifier le mode TCP explicitement avec le port via
-les parametres de requete :
+Vous pouvez egalement specifier le mode TCP explicitement avec le port via les parametres de requete :
 
 ```text
 keybase://_/@alice?mode=tcp&port=3000
 ```
+
+:::tip
+Lorsque l'hote est `localhost` ou une adresse IPv4 brute (ex. `192.168.1.5`), Apprise selectionne automatiquement le mode TCP meme sans port et applique le port par defaut (`3000`). Ces valeurs ne peuvent pas etre des noms d'equipe Keybase, donc aucune ambiguite n'existe. Pour tout autre nom d'hote (y compris les FQDN comme `keybase.home.lan`), indiquez un port explicite ou ajoutez `?mode=tcp`.
+:::
 
 ## Syntaxe
 
@@ -87,44 +88,32 @@ Les syntaxes valides sont les suivantes :
 
 - `keybase://_/@{username}` -- message direct a un utilisateur (mode socket)
 - `keybase://_/{teamname}` -- message a une equipe (canal par defaut : `general`)
-- `keybase://_/{teamname}%23{channel}` -- message a un canal d'equipe specifique
-- `keybase://_/@{user1}/@{user2}/{teamname}%23{channel}` -- plusieurs cibles
+- `keybase://_/{teamname}#{channel}` -- message a un canal d'equipe specifique
+- `keybase://_/@{user1}/@{user2}/{teamname}#{channel}` -- plusieurs cibles
 - `keybase://localhost:{port}/@{username}` -- mode TCP
 
 Les cibles peuvent egalement etre fournies via le parametre `?to=` :
 
 - `keybase://_/?to=@{username}`
-- `keybase://_/?to={teamname}%23{channel}`
-
-:::tip
-Les formes courtes (sans le caractere de substitution `_`) sont egalement
-acceptees en mode socket :
-
-- `keybase://@{username}` -- message direct
-- `keybase://{teamname}` -- message d'equipe
-- `keybase://{teamname}%23{channel}` -- canal d'equipe
-:::
+- `keybase://_/?to={teamname}#{channel}`
 
 ## Detail des parametres
 
-| Variable | Requis | Description |
-| -------- | ------ | ----------- |
-| `@username` | \*Oui (au moins une cible) | Nom d'utilisateur Keybase pour un message direct. Prefixer avec `@`. |
-| `teamname` | \*Oui (au moins une cible) | Nom de l'equipe Keybase. Ajouter `%23channel` pour un canal specifique. |
-| `channel` | Non | Canal d'equipe (topic). Valeur par defaut : `general`. Separer du nom d'equipe avec `%23` dans l'URL. |
-| `mode` | Non | Mode de connexion : `socket` (defaut) ou `tcp`. |
-| `socket` | Non | Remplacer le chemin du socket Unix (mode socket uniquement). |
-| `port` | Non | Numero de port pour le service HTTP Keybase local (mode TCP). |
-| `sigkey` | Non | Graine de cle de signature Ed25519 en hexadecimal (64 caracteres) pour la signature Saltpack. Voir ci-dessous. |
+| Variable    | Requis                     | Description                                                                                                                                                                                            |
+| ----------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@username` | \*Oui (au moins une cible) | Nom d'utilisateur Keybase pour un message direct. Prefixer avec `@`.                                                                                                                                   |
+| `teamname`  | \*Oui (au moins une cible) | Nom de l'equipe Keybase. Ajouter `#channel` pour un canal specifique.                                                                                                                                  |
+| `channel`   | Non                        | Canal d'equipe (topic). Valeur par defaut : `general`. Separer du nom d'equipe avec `#` dans l'URL.                                                                                                    |
+| `mode`      | Non                        | Mode de connexion : `socket` (defaut) ou `tcp`.                                                                                                                                                        |
+| `socket`    | Non                        | Remplacer le chemin du socket Unix (mode socket uniquement). Le chemin doit contenir le mot `keybase` -- les chemins qui ne le contiennent pas (ex. `/var/run/docker.sock`) sont rejetes au demarrage. |
+| `port`      | Non                        | Numero de port pour le service HTTP Keybase local (mode TCP).                                                                                                                                          |
+| `sigkey`    | Non                        | Graine de cle de signature Ed25519 en hexadecimal (64 caracteres) pour la signature Saltpack. Voir ci-dessous.                                                                                         |
 
 {/*TEMPLATE:SERVICE-PARAMS*/}
 
 ## Signature Saltpack des messages
 
-Lorsqu'un `sigkey` est configure, Apprise enveloppe chaque message sortant
-dans une **enveloppe de message signe Saltpack v2.0** avant l'envoi. Les
-destinataires peuvent verifier la signature avec `keybase verify` ou tout
-client Saltpack.
+Lorsqu'un `sigkey` est configure, Apprise enveloppe chaque message sortant dans une **enveloppe de message signe Saltpack v2.0** avant l'envoi. Les destinataires peuvent verifier la signature avec `keybase verify` ou tout client Saltpack.
 
 Cette fonctionnalite necessite le paquet Python **PyNaCl** :
 
@@ -134,9 +123,7 @@ pip install PyNaCl
 
 ### Etape 1 -- Generer une paire de cles de signature
 
-La cle de signature est une graine Ed25519 aleatoire de 32 octets
-representee sous forme d'une **chaine hexadecimale de 64 caracteres**.
-Generez-en une avec l'une des methodes ci-dessous.
+La cle de signature est une graine Ed25519 aleatoire de 32 octets representee sous forme d'une **chaine hexadecimale de 64 caracteres**. Generez-en une avec l'une des methodes ci-dessous.
 
 <Tabs>
 <TabItem label="Python">
@@ -185,8 +172,7 @@ En utilisant Python (si installe) :
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-En utilisant le generateur de nombres aleatoires cryptographique de .NET
-(aucun Python requis) :
+En utilisant le generateur de nombres aleatoires cryptographique de .NET (aucun Python requis) :
 
 ```powershell
 [System.BitConverter]::ToString(
@@ -194,16 +180,12 @@ En utilisant le generateur de nombres aleatoires cryptographique de .NET
 ).Replace("-", "").ToLower()
 ```
 
-Cette commande utilise le GNA cryptographiquement sur de .NET, disponible
-dans Windows PowerShell 5.1 et PowerShell 7+. Aucun module supplementaire
-n'est necessaire.
+Cette commande utilise le GNA cryptographiquement sur de .NET, disponible dans Windows PowerShell 5.1 et PowerShell 7+. Aucun module supplementaire n'est necessaire.
 
 </TabItem>
 </Tabs>
 
-Copiez la sortie de 64 caracteres. Cette chaine **est** votre graine de cle
-de signature. Conservez-la en securite -- quiconque la possede peut produire
-des signatures apparaissant comme venant de vous.
+Copiez la sortie de 64 caracteres. Cette chaine **est** votre graine de cle de signature. Conservez-la en securite -- quiconque la possede peut produire des signatures apparaissant comme venant de vous.
 
 ### Etape 2 -- Ajouter la cle a votre URL Apprise
 
@@ -215,16 +197,33 @@ keybase://_/@alice?sigkey=aabbccdd...64hexchars
 
 ### Etape 3 -- Partager votre cle de verification avec les destinataires
 
-La graine de cle de signature et la cle de verification correspondante
-forment une paire prive/publique. Pour permettre aux destinataires de
-confirmer l'authenticite de vos messages, partagez la **cle de verification**
-(`vk_hex` de l'etape 1).
+La graine de cle de signature et la cle de verification correspondante forment une paire prive/publique. Pour permettre aux destinataires de confirmer l'authenticite de vos messages, partagez la **cle de verification** (`vk_hex` de l'etape 1).
 
 :::caution
-Conservez votre cle de signature en securite. Traitez-la avec le meme soin
-qu'un mot de passe. Si elle est compromise, generez une nouvelle paire de cles
-et mettez a jour votre URL Apprise ainsi que tous les destinataires possedant
-l'ancienne cle de verification.
+Conservez votre cle de signature en securite. Traitez-la avec le meme soin qu'un mot de passe. Si elle est compromise, generez une nouvelle paire de cles et mettez a jour votre URL Apprise ainsi que tous les destinataires possedant l'ancienne cle de verification.
+:::
+
+## Pieces jointes
+
+Keybase prend en charge les pieces jointes. Chaque piece jointe est envoyee via un appel API `attach` separe vers le meme canal, immediatement apres le message texte. Utilisez `--attach=` en ligne de commande ou la classe `AppriseAttachment` dans l'API Python :
+
+```bash
+apprise -vv -t "Titre" -b "Message" \
+    --attach=/chemin/vers/fichier.png \
+    keybase://_/@alice
+```
+
+Plusieurs pieces jointes sont prises en charge :
+
+```bash
+apprise -vv -t "Titre" -b "Message" \
+    --attach=/chemin/vers/photo.jpg \
+    --attach=/chemin/vers/rapport.pdf \
+    "keybase://_/myteam#dev"
+```
+
+:::note
+Le service Keybase doit pouvoir lire la piece jointe depuis son chemin local. Les pieces jointes sont referencees par chemin et non chargees en tant qu'octets bruts.
 :::
 
 ## Exemples
@@ -247,14 +246,14 @@ Envoyer un message a un canal d'equipe specifique :
 
 ```bash
 apprise -vv -t "Titre" -b "Message" \
-    "keybase://_/myteam%23dev"
+    "keybase://_/myteam#dev"
 ```
 
 Envoyer a plusieurs cibles a la fois :
 
 ```bash
 apprise -vv -t "Titre" -b "Message" \
-    "keybase://_/@alice/@bob/myteam%23general"
+    "keybase://_/@alice/@bob/myteam#general"
 ```
 
 Envoyer en mode TCP (hote et port explicites) :
