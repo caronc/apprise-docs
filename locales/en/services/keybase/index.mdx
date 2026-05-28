@@ -1,0 +1,278 @@
+---
+title: "Keybase Notifications"
+description: "Send notifications via the Keybase chat service."
+sidebar:
+  label: "Keybase"
+
+source: https://keybase.io/
+
+schemas:
+  - keybase: insecure
+
+sample_urls:
+  - keybase://_/@{username}
+  - keybase://_/{teamname}
+  - keybase://_/{teamname}%23{channel}
+  - keybase://localhost:{port}/@{username}
+
+limits:
+  max_chars: 10000
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/*SERVICE:DETAILS*/}
+
+## Account Setup
+
+Apprise communicates directly with the locally running Keybase service -- no
+binary wrapper is required. The Keybase application must be installed, you
+must be logged in, and the service must be running in the background at the
+time notifications are sent.
+
+1. Download and install Keybase from <https://keybase.io/download>.
+2. Log in once with `keybase login` or through the desktop application.
+3. Keep the Keybase application running when you want to send notifications.
+
+:::note
+Apprise connects to the Keybase service process directly, not to any command-line
+tool. The service must be running (the Keybase desktop app or background daemon
+keeps it alive automatically after login).
+:::
+
+## Connection Modes
+
+Two connection modes are available, selected via the `?mode=` parameter.
+
+### Socket mode (default)
+
+Apprise connects via a Unix domain socket whose path is detected automatically
+for the current platform. This is the default and requires no extra
+configuration.
+
+| Platform | Default socket path |
+| -------- | ------------------- |
+| Linux    | `$XDG_RUNTIME_DIR/keybase/keybased.sock` (e.g. `/run/user/1000/keybase/keybased.sock`) |
+| macOS    | `~/Library/Group Containers/keybase/Library/keybased.sock` |
+| Windows  | `\\.\pipe\keybase.service` |
+
+You can override the path with the `?socket=` parameter:
+
+```text
+keybase://_/@alice?socket=/run/user/1000/keybase/keybased.sock
+```
+
+### TCP mode
+
+Apprise connects over HTTP to a locally running Keybase service endpoint.
+Supply the host and port in the URL authority -- the host defaults to
+`localhost` when omitted.
+
+```text
+keybase://localhost:3000/@alice
+```
+
+You can also specify TCP mode explicitly with port via query parameters:
+
+```text
+keybase://_/@alice?mode=tcp&port=3000
+```
+
+## Syntax
+
+Valid syntax is as follows:
+
+- `keybase://_/@{username}` -- direct message to a user (socket mode)
+- `keybase://_/{teamname}` -- message to a team (default channel: `general`)
+- `keybase://_/{teamname}%23{channel}` -- message to a specific team channel
+- `keybase://_/@{user1}/@{user2}/{teamname}%23{channel}` -- multiple targets
+- `keybase://localhost:{port}/@{username}` -- TCP mode
+
+Targets can also be supplied via the `?to=` query parameter:
+
+- `keybase://_/?to=@{username}`
+- `keybase://_/?to={teamname}%23{channel}`
+
+:::tip
+Shorthand forms (without the `_` placeholder) are also accepted in socket mode:
+
+- `keybase://@{username}` -- direct message
+- `keybase://{teamname}` -- team message
+- `keybase://{teamname}%23{channel}` -- team channel
+:::
+
+## Parameter Breakdown
+
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `@username` | \*Yes (at least one target) | Keybase username for a direct message. Prefix with `@`. |
+| `teamname` | \*Yes (at least one target) | Keybase team name. Append `%23channel` for a specific channel. |
+| `channel` | No | Team channel (topic). Defaults to `general`. Separate from the team name with `%23` in the URL. |
+| `mode` | No | Connection mode: `socket` (default) or `tcp`. |
+| `socket` | No | Override the Unix domain socket path (socket mode only). |
+| `port` | No | Port number for the local Keybase HTTP service (TCP mode). |
+| `sigkey` | No | 64-character hex Ed25519 signing-key seed for Saltpack message signing. See below. |
+
+{/*TEMPLATE:SERVICE-PARAMS*/}
+
+## Saltpack Message Signing
+
+When a `sigkey` is configured, Apprise wraps each outgoing message in a
+**Saltpack v2.0 signed-message envelope** before delivery. Recipients can
+verify the signature with `keybase verify` or any Saltpack client.
+
+This feature requires the **PyNaCl** Python package:
+
+```bash
+pip install PyNaCl
+```
+
+### Step 1 -- Generate a signing keypair
+
+The signing key is a random 32-byte Ed25519 seed represented as a
+**64-character hexadecimal string**. Generate one with any of the
+methods below.
+
+<Tabs>
+<TabItem label="Python">
+
+```python
+from apprise.utils.saltpack import AppriseSaltpackController
+
+sk_hex, vk_hex = AppriseSaltpackController.keygen_signing()
+print("Signing key (keep secret -- use as sigkey=):", sk_hex)
+print("Verify key (share with recipients):", vk_hex)
+```
+
+If you only need a raw seed without the Apprise library:
+
+```python
+import secrets
+print(secrets.token_hex(32))
+```
+
+</TabItem>
+<TabItem label="Linux / macOS (bash)">
+
+Using the Apprise utility directly:
+
+```bash
+python3 -c "
+from apprise.utils.saltpack import AppriseSaltpackController
+sk, vk = AppriseSaltpackController.keygen_signing()
+print('sigkey :', sk)
+print('vk     :', vk)
+"
+```
+
+Or a minimal one-liner that generates just the seed:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+</TabItem>
+<TabItem label="Windows (PowerShell)">
+
+Using Python (if installed):
+
+```powershell
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Using .NET's built-in cryptographic RNG (no Python required):
+
+```powershell
+[System.BitConverter]::ToString(
+    [System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
+).Replace("-", "").ToLower()
+```
+
+This uses .NET's cryptographically secure RNG, available in both Windows
+PowerShell 5.1 and PowerShell 7+. No extra modules are required.
+
+</TabItem>
+</Tabs>
+
+Copy the 64-character output. That string **is** your signing key seed.
+Store it securely -- anyone who holds it can produce signatures that
+appear to come from you.
+
+### Step 2 -- Add the key to your Apprise URL
+
+Append `?sigkey=` followed by your 64-character hex string:
+
+```text
+keybase://_/@alice?sigkey=aabbccdd...64hexchars
+```
+
+### Step 3 -- Share your verify key with recipients
+
+The signing key seed and its matching verify key are a public/private pair.
+To let recipients confirm your messages are authentic, share the **verify
+key** (`vk_hex` from Step 1). Recipients can import it with:
+
+```bash
+keybase pgp import --stdin <<< "$(echo {vk_hex})"
+```
+
+Or they can simply inspect the Saltpack header embedded in each message --
+it contains the verify key automatically.
+
+:::caution
+Store your signing key securely. Treat it with the same care as a password.
+If it is compromised, generate a new keypair and update both your Apprise URL
+and any recipients who have the old verify key.
+:::
+
+## Examples
+
+Send a direct message to a user (socket mode):
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    keybase://_/@alice
+```
+
+Send a message to a team (default channel `general`):
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    keybase://_/myteam
+```
+
+Send a message to a specific team channel:
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    "keybase://_/myteam%23dev"
+```
+
+Send to multiple targets at once:
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    "keybase://_/@alice/@bob/myteam%23general"
+```
+
+Send via TCP mode (explicit host and port):
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    keybase://localhost:3000/@alice
+```
+
+Send with a custom socket path:
+
+```bash
+apprise -vv -t "Title" -b "Message" \
+    "keybase://_/@alice?socket=/run/user/1000/keybase/keybased.sock"
+```
+
+Send a Saltpack-signed message:
+
+```bash
+# Assuming sigkey is aabbccdd...64hexchars
+apprise -vv -t "Title" -b "Message" \
+    "keybase://_/@alice?sigkey=aabbccdd11223344aabbccdd11223344aabbccdd11223344aabbccdd11223344"
+```
