@@ -3,6 +3,28 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseDocument } from "yaml";
 
+// ---------------------------------------------------------------------------
+// MDX safety helpers
+// ---------------------------------------------------------------------------
+
+// Angle-bracket autolinks (<https://...>) are valid in plain .md but are
+// illegal in .mdx
+// Every such link must be written as [url](url) in .mdx prose.
+const AUTOLINK_RE = /<https?:\/\//;
+
+/**
+ * Strip fenced code blocks and inline code spans from MDX/Markdown text so
+ * that only prose is checked for pattern violations.  Angle brackets inside
+ * code examples are intentional and must not be flagged.
+ */
+function stripCode(text) {
+  // Remove fenced code blocks (``` or ~~~, optional info string)
+  text = text.replace(/^(`{3,}|~{3,})[^\n]*\n[\s\S]*?\n\1[ \t]*$/gm, "");
+  // Remove inline code spans
+  text = text.replace(/`+[^`]*`+/g, "");
+  return text;
+}
+
 const ALLOWED_KEYS = new Set([
   // Common Starlight keys used
   "title",
@@ -86,6 +108,23 @@ for (const [dir, byBase] of byDir.entries()) {
 
 for (const file of files) {
   const text = fs.readFileSync(file, "utf8");
+
+  // MDX-specific check: angle-bracket URLs (<https://...>) are illegal in
+  // .mdx. Produce error to prevent linter from passing so this doesn't
+  // make it upstream
+  if (file.endsWith(".mdx")) {
+    const prose = stripCode(text);
+    const lines = prose.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (AUTOLINK_RE.test(lines[i])) {
+        failed = true;
+        console.error(
+          `[mdx] ${path.relative(ROOT, file)}:${i + 1}: angle-bracket URL in MDX prose -- replace <url> with [url](url)`
+        );
+      }
+    }
+  }
+
   const fm = extractFrontmatter(text);
   if (!fm) continue;
 
