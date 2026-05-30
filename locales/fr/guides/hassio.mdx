@@ -37,20 +37,35 @@ Choisissez la méthode de configuration qui correspond le mieux à votre usage.
 
 <Tabs>
 <TabItem label="Méthode 1 : Inline (Démarrage Rapide)">
-Cette méthode est idéale si vous n'avez qu'un **seul** service de notification ou si vous souhaitez démarrer rapidement sans créer de fichiers supplémentaires.
+Cette méthode convient bien pour une configuration rapide ou lorsque vous n'avez pas besoin de cibler différents services individuellement. Le paramètre `url` accepte une seule URL ou une liste d'URL — toutes sont notifiées ensemble à chaque appel.
 
 **Modifiez `configuration.yaml`**
 
-Ajoutez l'entrée suivante à votre fichier de configuration. Remplacez l'URL par celle de votre service.
+Ajoutez une ou plusieurs URL directement dans votre fichier de configuration.
 
 ```yaml
 # /config/configuration.yaml
 notify:
   - name: apprise_quick
     platform: apprise
-    # Définissez directement ici l'URL Apprise
     url: tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
 ```
+
+Pour notifier plusieurs services, fournissez-les sous forme de liste :
+
+```yaml
+# /config/configuration.yaml
+notify:
+  - name: apprise_quick
+    platform: apprise
+    url:
+      - tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
+      - mailtos://user:pass@smtp.gmail.com
+```
+
+:::note[Pas de ciblage sélectif avec `url`]
+Chaque service listé sous `url` est déclenché ensemble à chaque appel de notification. Si vous devez envoyer des alertes différentes à des services différents, utilisez plutôt la Méthode 2 ou 3 — elles prennent en charge le ciblage par tags via le champ `target`.
+:::
 
 </TabItem>
 

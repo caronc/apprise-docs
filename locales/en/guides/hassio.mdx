@@ -41,20 +41,35 @@ Choose the configuration method that best fits your needs.
 
 <Tabs>
 <TabItem label="Method 1: Inline (Quick Start)">
-This method is best if you only have a **single** notification service or want to get up and running quickly without creating extra files.
+This method works well for a quick setup or when you don't need to target different services individually. The `url` parameter accepts a single URL or a list of URLs — all of them are notified together on every call.
 
 **Edit `configuration.yaml`**
 
-Add the following entry to your configuration file. Replace the URL with your specific service URL.
+Add one or more URLs directly to your configuration file.
 
 ```yaml
 # /config/configuration.yaml
 notify:
   - name: apprise_quick
     platform: apprise
-    # Define the Apprise URL directly here
     url: tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
 ```
+
+To notify multiple services, pass them as a list:
+
+```yaml
+# /config/configuration.yaml
+notify:
+  - name: apprise_quick
+    platform: apprise
+    url:
+      - tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz
+      - mailtos://user:pass@smtp.gmail.com
+```
+
+:::note[No selective targeting with `url`]
+Every service listed under `url` fires together on every notification call. If you need to send different alerts to different services, use Method 2 or 3 instead — those support tag-based targeting via the `target` field.
+:::
 
 </TabItem>
 
