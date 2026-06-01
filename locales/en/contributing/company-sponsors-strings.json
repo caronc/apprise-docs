@@ -1,0 +1,11 @@
+{
+  "emptyTitle": "No featured providers yet",
+  "emptyBody": "If Apprise supports your notification service or your company uses Apprise in production, consider becoming a sponsor.",
+  "learnMore": "Learn how to sponsor Apprise →",
+  "belowCta": "Want your service or company featured here?",
+  "belowCtaLink": "Learn how to sponsor Apprise →",
+  "sinceLabel": "Since",
+  "closeLabel": "Close sponsor banner",
+  "sponsoredBy": "Sponsored by",
+  "defaultSponsorMessage": "Proudly supporting Apprise open source development."
+}

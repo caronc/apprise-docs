@@ -43,7 +43,8 @@
     "attachment_support": "Attachment Support",
     "message_character_limits": "Message Character Limits",
     "default_limit_name": "Body",
-    "build_url": "Build Your Apprise URL"
+    "build_url": "Build Your Apprise URL",
+    "sponsor_badge": "This provider proudly supports Apprise open source development."
   },
   "tables": {
     "service": "Service",

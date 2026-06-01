@@ -32,11 +32,16 @@ locales/
     services/
       <service>/
         index.md
+        images/       # logos optionnels — logo.svg, logo-dark.svg, etc.
     config/
     qa/
     dev/
     contributing/
     assets/
+sponsorships/
+  <id>/               # entrées de sponsors d'entreprise (gérées par les mainteneurs)
+    meta.json
+    logo.svg
 ```
 
 ### Guide des Répertoires
@@ -61,6 +66,12 @@ locales/
 
 - **Services** (`services/`)
   Documentation spécifique à un service de notification, y compris la syntaxe d'URL, les options de configuration et des exemples
+
+- **Sponsorships** (`sponsorships/`)
+  Entrées de sponsors d'entreprise, chacune contenant un fichier `meta.json` et des logos optionnels.
+  Ce répertoire est **géré par les mainteneurs** — n'y ajoutez ou modifiez rien sans en avoir été
+  expressément chargé. Consultez `sponsorships/README.md` pour le schéma complet et les conventions
+  de nommage des logos.
 
 ## Bien Débuter comme Contributeur
 
@@ -188,7 +199,45 @@ apprise -vv -t "Mon Titre" -b "Corps du Message" \
 > Les marqueurs comme `<!-- SERVICE:DETAILS -->` sont intentionnels et doivent rester en place.
 > Ils sont remplacés automatiquement lors du rendu de la documentation.
 
-Si vous avez créé un fichier `mdx` à la place, vous pouvez utiliser `{/* SERVICE:DETAILS *}` ou `{/_ SERVICE:DETAILS _/}`, par exemple : `{/*- SERVICE:DETAILS */}`
+Si vous avez créé un fichier `mdx` à la place, vous pouvez utiliser `{/* SERVICE:DETAILS */}` à la place.
+
+### Référence Complète du Frontmatter
+
+L'exemple ci-dessus présente les champs courants. Une page de service peut également comporter les champs optionnels suivants :
+
+```md
+---
+# Indicateurs de capacité — mettre à true si le service prend en charge la fonctionnalité
+has_attachments: false
+has_image: false
+has_sms: false
+has_selfhosted: false
+
+# Limites de longueur de message (supprimer le bloc entier si le service n'a pas de limites connues)
+limits:
+  - name: "Titre"
+    max_chars: 250
+  - name: "Corps"
+    max_chars: 2000
+
+# Services retirés — indiquer la date à laquelle le service a cessé d'être disponible
+# ended: YYYY-MM-DD
+
+# -----------------------------------------------------------------------
+# Champs de parrainage — RÉSERVÉ AUX MAINTENEURS. Ne pas ajouter ni modifier.
+# -----------------------------------------------------------------------
+# sponsorship_level: 50   # Entier 1–100 ; contrôle le niveau de visibilité sur le site
+# sponsorship_weight: 1   # Optionnel 1–5 ; poids de rotation de la bannière pour le niveau 75+
+# sponsor_since: "2026-06"
+# sponsor_message: ""     # Une chaîne vide désactive intentionnellement le message de bannière
+---
+```
+
+> **N'ajoutez ni ne modifiez les champs de parrainage** sauf si vous êtes mainteneur du projet
+> ou si vous en avez été explicitement chargé. Ces champs ont une portée commerciale.
+> Un `sponsor_message: ""` vide est intentionnel — il supprime le message de bannière sans retirer
+> le créneau de bannière du sponsor. Consultez [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+> pour le tableau complet des niveaux de parrainage et les règles de validation.
 
 ## Localisation et Traductions
 

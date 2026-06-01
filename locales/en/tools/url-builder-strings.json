@@ -4,6 +4,9 @@
   "clearSelection": "Clear selection",
   "noServicesMatch": "No services match",
   "allServices": "All services",
+  "featuredServices": "Featured",
+  "sponsoredSection": "Sponsored",
+  "sponsorCtaText": "Sponsor Apprise to have your service listed here",
   "moreServicesSuffix": "more \u2014 refine your search",
 
   "setupGuide": "Setup guide",

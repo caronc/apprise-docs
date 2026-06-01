@@ -115,6 +115,22 @@ instead of falling back to the default English route.
   Copy `templates/new_service.md` as the starting point for a new service
   page and fill in the placeholders.
 
+- **`sponsorships/`**
+  Company-level sponsorship entries for organizations that sponsor Apprise as a whole (independent of any specific notification service). Each subdirectory represents one sponsor:
+
+  ```text
+  sponsorships/
+    <company-id>/
+      meta.json        # level (1–100), optional weight (1–5), name, website, since date
+      logo.svg         # primary/default logo
+      logo-light.svg   # optional explicit light-mode variant
+      logo-dark.svg    # optional dark-mode variant
+  ```
+
+  The sync pipeline reads this directory and generates localized `apps/docs/public/company-sponsors*.json` files, which power the sponsors page widget. `level` controls visibility features; optional `weight` only tunes rotating banner frequency for level 75+ sponsors. Company logos follow the same light/default/dark naming convention as service logos, including `.svg`, `.png`, `.jpg`, and `.jpeg` variants. See [`sponsorships/README.md`](sponsorships/README.md) for the full field reference and level definitions.
+
+  For **service-specific** sponsorships (a company sponsoring a notification plugin that Apprise already supports), use `sponsorship_level:` in that service's own `locales/<locale>/services/<slug>/index.md` frontmatter instead. Both types of sponsorship appear on the [Sponsors page](locales/en/contributing/sponsors.mdx) and are documented for contributors in [CONTRIBUTING.md](CONTRIBUTING.md#sponsorship-system).
+
 ## Getting Started as a Contributor
 
 ### Prerequisites

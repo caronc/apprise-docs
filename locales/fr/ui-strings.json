@@ -43,7 +43,8 @@
     "attachment_support": "Prise en charge des pièces jointes",
     "message_character_limits": "Limites de caractères des messages",
     "default_limit_name": "Corps",
-    "build_url": "Créer votre URL Apprise"
+    "build_url": "Créer votre URL Apprise",
+    "sponsor_badge": "Ce prestataire soutient fièrement le développement open source d'Apprise."
   },
   "tables": {
     "service": "Service",

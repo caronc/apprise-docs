@@ -33,36 +33,47 @@ locales/
     services/
       <service>/
         index.md
+        images/       # optional logos — logo.svg, logo-dark.svg, etc.
     config/
     qa/
     dev/
     contributing/
     assets/
+sponsorships/
+  <id>/               # company-level sponsor entries (maintainer-managed)
+    meta.json
+    logo.svg
 ```
 
 ### Directory Guide
 
-- **Getting Started** (`getting-started/`)  
+- **Getting Started** (`getting-started/`)
   Introductory material for new users
 
-- **Guides** (`guides/`)  
+- **Guides** (`guides/`)
   How-to articles, workflows, best practices, and troubleshooting patterns
 
-- **Config** (`config/`)  
+- **Config** (`config/`)
   Configuration syntax and reference material
 
-- **QA** (`qa/`)  
+- **QA** (`qa/`)
   Troubleshooting, diagnostics, and FAQs
 
-- **Dev** (`dev/`)  
+- **Dev** (`dev/`)
   Developer-focused documentation and internals
 
-- **Contributing** (`contributing/`)  
+- **Contributing** (`contributing/`)
   How to help improve Apprise and its ecosystem
 
-- **Services** (`services/`)  
+- **Services** (`services/`)
   Documentation specific to a notification service, including URL syntax,
   configuration options, and examples
+
+- **Sponsorships** (`sponsorships/`)
+  Company-level sponsor entries, each containing a `meta.json` and optional logo
+  files. This directory is **maintainer-managed** — do not add or modify entries
+  unless you have been asked to do so. See `sponsorships/README.md` for the full
+  schema and logo naming conventions.
 
 ## Getting Started as a Contributor
 
@@ -80,7 +91,7 @@ locales/
    pnpm install
    ```
 
-2. Make your documentation changes  
+2. Make your documentation changes
    Add, edit, or improve any Markdown file.
 
 3. Run validation:
@@ -187,10 +198,49 @@ apprise -vv -t "My Title" -b "Message Body" \
 ```
 ````
 
-> The markers such as `<!-- SERVICE:DETAILS -->` are intentional and must be left in place.  
+> The markers such as `<!-- SERVICE:DETAILS -->` are intentional and must be left in place.
 > They are replaced automatically when the documentation is rendered.
 
-If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS *}` or `{/_ SERVICE:DETAILS _/}` insead, e.g.: `{/*- SERVICE:DETAILS */}`
+If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS */}` instead.
+
+### Full Frontmatter Reference
+
+The example above shows the common fields. A service page may also carry the following
+optional fields:
+
+```md
+---
+# Capability flags — set to true when the service supports the feature
+has_attachments: false
+has_image: false
+has_sms: false
+has_selfhosted: false
+
+# Message length limits (remove the block entirely if the service has no known limits)
+limits:
+  - name: "Title"
+    max_chars: 250
+  - name: "Body"
+    max_chars: 2000
+
+# Retired services — set to the date the service stopped being available
+# ended: YYYY-MM-DD
+
+# -----------------------------------------------------------------------
+# Sponsorship fields — MAINTAINER USE ONLY. Do not add or change these.
+# -----------------------------------------------------------------------
+# sponsorship_level: 50   # Integer 1–100; controls site visibility tier
+# sponsorship_weight: 1   # Optional 1–5; banner rotation weight for level 75+
+# sponsor_since: "2026-06"
+# sponsor_message: ""     # Empty string intentionally suppresses the banner message
+---
+```
+
+> **Do not add or modify sponsorship fields** unless you are the project maintainer
+> or have been explicitly asked to do so. These fields have commercial significance.
+> An empty `sponsor_message: ""` is intentional — it suppresses the banner message
+> without removing the sponsor's banner slot. See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+> for the full sponsorship level table and validation rules.
 
 ## Localization and Translations
 
