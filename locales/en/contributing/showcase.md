@@ -17,8 +17,7 @@ sidebar:
 - [Mealie](https://github.com/hay-kot/mealie): Mealie is a self hosted recipe manager and meal planner.
 - [Ouroboros](https://github.com/pyouroboros/ouroboros): Automatically update running docker containers with newest available image.
 - [Mailrise](https://github.com/YoRyan/mailrise): Listens for emails and relays them through Apprise.
-- [Apprise-Go](https://github.com/unraid/apprise-go): A Go port of Apprise maintained by the [Unraid team](https://unraid.net/). It is a separate implementation, so behavior may differ from
-  Python Apprise.
+- [Apprise-Go](https://github.com/unraid/apprise-go): A Go port of Apprise maintained by the [Unraid team](https://unraid.net/). It is a separate implementation, so behavior may differ from Python Apprise.
 - [Apprise-Skill](https://github.com/domcross/apprise-skill): A component of [Mycroft](https://mycroft.ai/) voice assistant platform allowing it to work with the Apprise library.
 - [Traktarr](https://github.com/l3uddz/traktarr): Script to add new series & movies to [Sonarr](https://sonarr.tv)/[Radarr](https://radarr.video) based on [Trakt](https://trakt.tv) lists.
 - [Healthchecks](https://healthchecks.io): A Cron Monitoring Tool written in Python & Django.
@@ -30,8 +29,26 @@ sidebar:
 - [Robusta](https://home.robusta.dev/): Keep your Kubernetes microservices up and running. Robusta is both an automations engine for Kubernetes, and a [multi-cluster observability platform](https://home.robusta.dev/).
 - [Borgmatic](https://torsion.org/borgmatic/): A is simple, configuration-driven backup software for servers and workstations. Protect your files with client-side encryption. Backup your databases too. Monitor it all with integrated third-party services.
 - [Superagent](https://github.com/homanp/superagent): An open-source agent framework that enables any developer to integrate production-ready AI Assistants into any application in a matter of minutes.
-- [Tube Archivist](https://tubearchivist.com/): A self hosted YouTube media server
-- [Robusta](https://github.com/robusta-dev/robusta): Keep your Kubernetes microservices up and running
+- [Tube Archivist](https://tubearchivist.com/): A self hosted YouTube media server.
+- [Fairgame](https://github.com/Hari-Nagarajan/fairgame): Tool to help buy hard to find items.
+- [mqttwarn](https://github.com/mqtt-tools/mqttwarn): A configurable MQTT message router with notification plugins.
+- [DumbAssets](https://github.com/DumbWareio/DumbAssets): A simple self-hosted asset tracker.
+- [free-games-claimer](https://github.com/vogler/free-games-claimer): Automatically claims free games and DLCs.
+- [LoggiFly](https://github.com/clemcer/LoggiFly): Sends alerts from Docker container logs.
+- [DumbDrop](https://github.com/DumbWareio/DumbDrop): A simple self-hosted file dropper.
+- [HarborGuard](https://github.com/HarborGuard/HarborGuard): A container image vulnerability scanning and patching platform.
+- [Dockcheck](https://github.com/mag37/dockcheck): Automates Docker image updates with optional notifications.
+- [GitHub Release Monitor](https://github.com/iamspido/github-release-monitor): Monitors repository releases and sends notifications.
+- [PriceBuddy](https://github.com/jez500/pricebuddy): Tracks prices and sends notifications when prices match your preferences.
+- [Pulsarr](https://github.com/jamcalli/Pulsarr): Monitors Plex watchlists and syncs content requests with Sonarr and Radarr.
+- [NetAlertX](https://github.com/netalertx/NetAlertX): Monitors network devices and alerts when changes are detected.
+- [Miniflux](https://github.com/miniflux/v2): A minimalist and opinionated feed reader.
+- [qbit_manage](https://github.com/StuffAnThings/qbit_manage): Manages qBittorrent categories, tags, torrents, and cleanup tasks.
+- [Pinchflat](https://github.com/kieraneglin/pinchflat): A self-hosted YouTube media manager.
+- [Warracker](https://github.com/sassanix/Warracker): A self-hosted warranty tracker with expiration notifications.
+- [Ryot](https://github.com/IgnisDa/ryot): A self-hosted tracker for media, fitness, and other personal data.
+- [Endurain](https://github.com/endurain-project/endurain): A self-hosted fitness tracking service.
+- [UptimeFlare](https://github.com/lyc8503/UptimeFlare): A serverless uptime monitoring and status page on Cloudflare Workers.
 
 ## Coverage
 

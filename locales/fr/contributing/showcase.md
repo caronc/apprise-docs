@@ -30,7 +30,25 @@ sidebar:
 - [Borgmatic](https://torsion.org/borgmatic/) : logiciel de sauvegarde simple et piloté par configuration pour serveurs et postes de travail. Protégez vos fichiers avec un chiffrement côté client, sauvegardez aussi vos bases de données et surveillez le tout avec des services tiers intégrés.
 - [Superagent](https://github.com/homanp/superagent) : framework open source qui permet à n'importe quel développeur d'intégrer des assistants IA prêts pour la production dans une application en quelques minutes.
 - [Tube Archivist](https://tubearchivist.com/) : serveur multimédia YouTube auto-hébergé.
-- [Robusta](https://github.com/robusta-dev/robusta) : garde vos microservices Kubernetes opérationnels.
+- [Fairgame](https://github.com/Hari-Nagarajan/fairgame) : outil pour aider à acheter des articles difficiles à trouver.
+- [mqttwarn](https://github.com/mqtt-tools/mqttwarn) : routeur de messages MQTT configurable avec des plugins de notification.
+- [DumbAssets](https://github.com/DumbWareio/DumbAssets) : gestionnaire d'actifs auto-hébergé simple.
+- [free-games-claimer](https://github.com/vogler/free-games-claimer) : réclame automatiquement des jeux et DLC gratuits.
+- [LoggiFly](https://github.com/clemcer/LoggiFly) : envoie des alertes à partir des journaux de conteneurs Docker.
+- [DumbDrop](https://github.com/DumbWareio/DumbDrop) : dépôt de fichiers auto-hébergé simple.
+- [HarborGuard](https://github.com/HarborGuard/HarborGuard) : plateforme d'analyse et de correction des vulnérabilités d'images de conteneurs.
+- [Dockcheck](https://github.com/mag37/dockcheck) : automatise les mises à jour d'images Docker avec notifications facultatives.
+- [GitHub Release Monitor](https://github.com/iamspido/github-release-monitor) : surveille les publications de dépôts et envoie des notifications.
+- [PriceBuddy](https://github.com/jez500/pricebuddy) : suit les prix et envoie des notifications lorsqu'ils correspondent à vos préférences.
+- [Pulsarr](https://github.com/jamcalli/Pulsarr) : surveille les watchlists Plex et synchronise les demandes avec Sonarr et Radarr.
+- [NetAlertX](https://github.com/netalertx/NetAlertX) : surveille les appareils réseau et alerte lors des changements détectés.
+- [Miniflux](https://github.com/miniflux/v2) : lecteur de flux minimaliste et opiniâtre.
+- [qbit_manage](https://github.com/StuffAnThings/qbit_manage) : gère les catégories, tags, torrents et tâches de nettoyage qBittorrent.
+- [Pinchflat](https://github.com/kieraneglin/pinchflat) : gestionnaire multimédia YouTube auto-hébergé.
+- [Warracker](https://github.com/sassanix/Warracker) : gestionnaire de garanties auto-hébergé avec notifications d'expiration.
+- [Ryot](https://github.com/IgnisDa/ryot) : tracker auto-hébergé pour médias, fitness et autres données personnelles.
+- [Endurain](https://github.com/endurain-project/endurain) : service de suivi fitness auto-hébergé.
+- [UptimeFlare](https://github.com/lyc8503/UptimeFlare) : supervision d'uptime et page de statut serverless sur Cloudflare Workers.
 
 ## Couverture
 
