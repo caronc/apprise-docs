@@ -173,6 +173,8 @@ Service logos live in `locales/<locale>/services/<slug>/images/` and use a consi
 
 **Recommended:** provide `logo.svg` for most services. Only add `logo-dark.svg` if the default logo is not legible on a dark background (e.g. white logos). Bitmap fallbacks are checked in the order `.png` → `.jpg` → `.jpeg`.
 
+For simple SVG wordmarks, you may embed a small `@media (prefers-color-scheme: dark)` rule inside `logo.svg` to swap fills between light and dark browser/OS themes. Use explicit `logo-light.*` and `logo-dark.*` files when the logo must track the documentation site's manual theme toggle exactly.
+
 Translated service pages do not need to copy logo files. If a locale-specific
 service directory has no light/default logo, the site falls back to the
 canonical English service logo. Missing `logo-dark.*` files also fall back to
@@ -328,6 +330,8 @@ The `meta.json` schema:
 ```
 
 Company sponsor logos follow the same naming pattern as service logos. The sync pipeline checks `logo-light.*`, then `logo.*`, then `logo-512px.*` for light/default display, and checks `logo-dark.*` for dark mode. Supported extensions are `.svg`, `.png`, `.jpg`, and `.jpeg`.
+
+As with service logos, a single SVG may self-theme with `@media (prefers-color-scheme: dark)` for simple fill changes. Prefer paired `logo-light.*` / `logo-dark.*` assets when exact site-toggle behavior is required.
 
 The sync pipeline automatically reads this directory and generates localized `company-sponsors*.json` files for the sponsors page widget. Company sponsor `description` and `sponsor_message` fields may be localized objects. Company sponsor `weight` is optional and only changes rotating banner frequency for level 75+ sponsors. See [`sponsorships/README.md`](sponsorships/README.md) for the full schema.
 

@@ -21,6 +21,8 @@ sponsorships/
 
 Logo resolution mirrors service-page logos. Light/default mode uses `logo-light.*` first, then `logo.*`, then `logo-512px.*`. Dark mode uses `logo-dark.*` only when it exists; otherwise the light/default asset remains visible. Formats are checked in the order `.svg` → `.png` → `.jpg` → `.jpeg` for themed logos, with `logo-512px.png` → `.jpg` → `.jpeg` as the final default fallback.
 
+SVG logos may also self-theme with an embedded `@media (prefers-color-scheme: dark)` rule, which is useful for simple wordmarks that only need a different text fill. This follows the browser/OS color scheme. If the logo must match the site theme toggle exactly, provide explicit `logo-light.*` and `logo-dark.*` files instead.
+
 The `<id>` is a stable slug you choose. It never changes after creation.
 
 The docs linter validates this directory. It fails on missing `meta.json`,
