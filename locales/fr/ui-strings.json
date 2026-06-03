@@ -87,6 +87,12 @@
       "features_intro": "La colonne Fonctionnalités met en évidence quelques informations utiles en un coup d’œil pour vous aider à comparer les URL des services listés sur cette page.",
       "protocols_intro": "Les protocoles définis sont également accompagnés d’une icône pour indiquer rapidement s’ils utilisent ou non le chiffrement SSL/TLS :"
     },
+    "filter_badge": {
+      "sponsored_label": "Parrainé",
+      "sponsored_description": "Ce service bénéficie d’un parrainage actif soutenant le développement open source d’Apprise.",
+      "popular_label": "Populaire",
+      "popular_description": "Un service de notification populaire sélectionné par la communauté."
+    },
     "secure": "Sécurisé",
     "insecure": "Non sécurisé"
   },

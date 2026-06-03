@@ -350,6 +350,39 @@ This repository uses automated checks to ensure:
 Linting exists to **help contributors**, not to block them. Most failures are
 formatting or unsupported metadata issues and are easy to fix.
 
+### URL Builder Popular Services
+
+The URL Builder can show a small curated list of commonly used, non-sponsored
+services before a visitor starts typing. That list is maintained per locale in:
+
+- `locales/en/popular-services.json`
+- `locales/<locale>/popular-services.json` for localized popularity lists
+
+The file is optional. If it is missing, the site treats it as an empty popular
+list and shows only sponsored entries, if any. Sponsored services always appear
+first; if a service appears in both the sponsored data and the popular list, the
+sponsored entry wins and is not duplicated.
+
+Schema:
+
+```json
+{
+  "services": ["telegram", "discord"],
+  "max_items": 12
+}
+```
+
+- `services` is required and must be an array of service directory IDs from
+  `locales/en/services/<id>/`. Use stable IDs such as `telegram`, `discord`, or
+  `msteams`, not translated display titles.
+- `max_items` is optional. When provided, it limits how many popular entries
+  are used after invalid or unavailable services are skipped.
+- Invalid JSON, unsupported keys, duplicate entries, and invalid optional fields
+  are checked by `pnpm lint:docs`.
+- Unknown service IDs are warned about by `pnpm lint:docs` and ignored during
+  site sync instead of failing the build. This keeps the public site resilient
+  while still making stale entries easy to fix.
+
 ## How You Can Help
 
 - Improve documentation for a service you use

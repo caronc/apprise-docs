@@ -87,6 +87,12 @@
       "features_intro": "The Features column identifies some useful 'at-a-glance' details about the URL should you be researching services from this page.",
       "protocols_intro": "The protocols defined are additionally flagged with an icon for quick reference identifying if it is SSL/TLS encrypted or not:"
     },
+    "filter_badge": {
+      "sponsored_label": "Sponsored",
+      "sponsored_description": "This service has an active sponsorship supporting Apprise open source development.",
+      "popular_label": "Popular",
+      "popular_description": "A community-selected popular notification service."
+    },
     "secure": "Secure",
     "insecure": "Insecure"
   },
