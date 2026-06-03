@@ -164,6 +164,7 @@ sample_urls:
   - example://{token}/{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
@@ -196,10 +197,63 @@ apprise -vv -t "Mon Titre" -b "Corps du Message" \
 ```
 ````
 
-> Les marqueurs comme `<!-- SERVICE:DETAILS -->` sont intentionnels et doivent rester en place.
-> Ils sont remplacés automatiquement lors du rendu de la documentation.
+> Les marqueurs de page de service ci-dessus — `<!-- SPONSORS:BANNER -->`,
+> `<!-- SERVICE:DETAILS -->` et `<!-- TEMPLATE:SERVICE-PARAMS -->` — sont
+> intentionnels et doivent rester en place. Ils sont remplacés automatiquement
+> lors du rendu de la documentation.
 
 Si vous avez créé un fichier `mdx` à la place, vous pouvez utiliser `{/* SERVICE:DETAILS */}` à la place.
+
+### Marqueurs de Build
+
+La plupart des pages de service devraient conserver ces trois marqueurs dans cet ordre :
+
+```md
+<!-- SPONSORS:BANNER -->
+<!-- SERVICE:DETAILS -->
+
+...
+
+<!-- TEMPLATE:SERVICE-PARAMS -->
+```
+
+Le pipeline de synchronisation prend aussi en charge plusieurs autres marqueurs de build.
+Les fichiers Markdown utilisent normalement la forme en commentaire HTML, tandis que les
+fichiers MDX peuvent utiliser la forme en commentaire JSX.
+
+| Forme                                      | Exemple                    |
+| ------------------------------------------ | -------------------------- |
+| Commentaire HTML compatible Markdown / MDX | `<!-- SERVICE:DETAILS -->` |
+| Commentaire JSX MDX                        | `{/* SERVICE:DETAILS */}`  |
+| Placeholder MDX tolérant aux formateurs    | `{/_ SERVICE:DETAILS _/}`  |
+
+Les marqueurs suivants sont actuellement pris en charge :
+
+| Marqueur                                                            | Effet                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<!-- SERVICE:DETAILS -->`                                          | Pages de service uniquement. Génère le bloc Aperçu (URL source, capacités, logo).                                                                                                                                                                                             |
+| `<!-- TEMPLATE:SERVICE-PARAMS -->`                                  | Injecte le tableau localisé réutilisable des paramètres de service depuis `locales/<locale>/_templates/service-params.md`.                                                                                                                                                    |
+| `<!-- SPONSORS:BANNER -->`                                          | Pages de service uniquement. Injecte la bannière rotative des sponsors. Le fichier est automatiquement converti en `.mdx` lorsque ce marqueur est présent. La bannière n'affiche rien si aucun sponsor éligible n'existe, il est donc possible de l'ajouter par anticipation. |
+| `<!-- SERVICES:FILTER -->`                                          | Index des services uniquement. Injecte le composant interactif de filtrage/liste des services.                                                                                                                                                                                |
+| `<!-- SERVICES:COUNT -->`                                           | Toute page. Remplacé par le nombre de services actifs pris en charge.                                                                                                                                                                                                         |
+| `<!-- SERVICES:<GROUP>:COUNT -->`                                   | Toute page. Remplacé par le nombre de services actifs d'un groupe, par exemple `<!-- SERVICES:GENERAL:COUNT -->`.                                                                                                                                                             |
+| `<!-- SERVICES:BEGIN -->` / `<!-- SERVICES:END -->`                 | Région de secours de l'index des services pour la liste statique générée lorsque le filtre interactif n'est pas utilisé.                                                                                                                                                      |
+| `<!-- SERVICES:<GROUP>:BEGIN -->` / `<!-- SERVICES:<GROUP>:END -->` | Région de secours de l'index des services pour un groupe de services généré.                                                                                                                                                                                                  |
+| `<!-- GRAVEYARD:COUNT -->`                                          | Page du cimetière. Remplacé par le nombre de services retirés.                                                                                                                                                                                                                |
+| `<!-- GRAVEYARD:BEGIN -->` / `<!-- GRAVEYARD:END -->`               | Page du cimetière. Région remplacée par la liste générée des services retirés.                                                                                                                                                                                                |
+| `<!-- URL_BUILDER:COMPONENT -->`                                    | Page du générateur d'URL uniquement. Injecte l'application de génération d'URL.                                                                                                                                                                                               |
+| `<!-- COMPANY_SPONSORS -->`                                         | Page des sponsors uniquement. Injecte les cartes des sponsors mis en avant.                                                                                                                                                                                                   |
+| `<!-- TEMPLATE:EVICTION-TABLE -->`                                  | Injecte le tableau localisé réutilisable d'éviction des dépendances optionnelles depuis `locales/<locale>/_templates/eviction-table.md`. Ce marqueur est utilisé par des pages comme la référence Environment et le guide d'utilisation des ressources.                       |
+
+Les marqueurs `TEMPLATE:*` sont découverts automatiquement depuis :
+
+- `shared_templates/*.md` ou `shared_templates/*.mdx`
+- `locales/<locale>/_templates/*.md` ou `locales/<locale>/_templates/*.mdx`
+
+Par exemple, `locales/fr/_templates/service-params.md` devient
+`<!-- TEMPLATE:SERVICE-PARAMS -->`, et `locales/fr/_templates/eviction-table.md`
+devient `<!-- TEMPLATE:EVICTION-TABLE -->`. Les templates d'une locale remplacent
+les templates partagés du même nom.
 
 ### Référence Complète du Frontmatter
 
@@ -232,6 +286,39 @@ limits:
 # sponsor_message: ""     # Une chaîne vide désactive intentionnellement le message de bannière
 ---
 ```
+
+#### Champs Frontmatter d'un Service
+
+| Champ           | Type               | Obligatoire | Rôle                                                                                                                                     |
+| --------------- | ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`         | chaîne             | Oui         | Titre de la page et nom d'affichage par défaut du service.                                                                               |
+| `description`   | chaîne             | Recommandé  | Court résumé du service utilisé par les listes générées et les métadonnées.                                                              |
+| `sidebar.label` | chaîne             | Recommandé  | Libellé court utilisé dans la navigation et les listes de services.                                                                      |
+| `source`        | chaîne URL         | Recommandé  | Site officiel du service/projet. Seules les URL `http://` et `https://` sont acceptées par la synchronisation du site.                   |
+| `group`         | chaîne             | Recommandé  | Identifiant de groupe utilisé par l'index des services. Les groupes inconnus reviennent au groupe par défaut pendant la synchronisation. |
+| `schemas`       | tableau de chaînes | Oui         | Schémas d'URL Apprise pris en charge, comme `discord://` ou `tgram://`.                                                                  |
+| `sample_urls`   | tableau de chaînes | Recommandé  | Exemples d'URL Apprise utilisés dans les métadonnées générées et les aides du générateur d'URL.                                          |
+| `limits`        | tableau d'objets   | Non         | Limites optionnelles de longueur de message. Chaque entrée doit inclure un `name` affichable et `max_chars`.                             |
+| `ended`         | chaîne de date     | Non         | Marque un service retiré. Utilisez `YYYY`, `YYYY-MM` ou `YYYY-MM-DD`.                                                                    |
+
+#### Indicateurs de Capacité
+
+Les indicateurs de capacité sont des booléens frontmatter nommés `has_<feature>`.
+Définissez-les à `true` uniquement lorsque le service prend en charge la fonctionnalité.
+Ces indicateurs alimentent l'aperçu du service, les badges de fonctionnalités et les
+paramètres de filtre d'URL ; par exemple, `has_attachments: true` devient le jeton de
+filtre `attachments` dans `?f=attachments`.
+
+| Clé frontmatter   | Jeton de filtre URL | Signification                                               |
+| ----------------- | ------------------- | ----------------------------------------------------------- |
+| `has_sms`         | `sms`               | Service axé sur la livraison SMS/MMS.                       |
+| `has_selfhosted`  | `selfhosted`        | Service prenant en charge un déploiement auto-hébergé.      |
+| `has_attachments` | `attachments`       | Service prenant en charge les pièces jointes.               |
+| `has_image`       | `image`             | Service prenant en charge la livraison graphique/par image. |
+
+`has_sponsorship` est un raccourci spécial réservé aux mainteneurs pour
+`sponsorship_level: 1` ; il est documenté séparément ci-dessous parce qu'il contrôle
+la visibilité des sponsors plutôt qu'une capacité générale du service.
 
 > **N'ajoutez ni ne modifiez les champs de parrainage** sauf si vous êtes mainteneur du projet
 > ou si vous en avez été explicitement chargé. Ces champs ont une portée commerciale.

@@ -52,6 +52,7 @@
     "feature_icon": "Icône de fonctionnalité",
     "features": "Fonctionnalités",
     "switch": "Option",
+    "url_filter": "Filtre URL",
     "description": "Description",
     "protocol_icon": "Icône du protocole",
     "encrypted_secure": "Chiffré/Sécurisé",
@@ -95,6 +96,16 @@
     },
     "secure": "Sécurisé",
     "insecure": "Non sécurisé"
+  },
+  "pages": {
+    "services": {
+      "title": "Services Pris en Charge",
+      "description": "Parcourez et recherchez tous les services de notification Apprise pris en charge."
+    },
+    "graveyard": {
+      "title": "Services Retirés",
+      "description": "Archive historique des intégrations Apprise retirées."
+    }
   },
   "help": {
     "summary": "Questions ou commentaires ?"

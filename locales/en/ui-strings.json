@@ -52,6 +52,7 @@
     "feature_icon": "Feature Icon",
     "features": "Features",
     "switch": "Switch",
+    "url_filter": "URL Filter",
     "description": "Description",
     "protocol_icon": "Protocol Icon",
     "encrypted_secure": "Encrypted/Secure",
@@ -95,6 +96,16 @@
     },
     "secure": "Secure",
     "insecure": "Insecure"
+  },
+  "pages": {
+    "services": {
+      "title": "Supported Services",
+      "description": "Browse and search all supported Apprise notification services."
+    },
+    "graveyard": {
+      "title": "Retired Services",
+      "description": "Historical archive of retired Apprise notification integrations."
+    }
   },
   "help": {
     "summary": "Questions or Feedback?"

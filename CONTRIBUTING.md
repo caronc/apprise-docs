@@ -87,6 +87,7 @@ sample_urls:
   - example://{token}/{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -107,7 +108,7 @@ Valid syntax is as follows:
 | token    | yes      | Token to access the example server                                                             |
 | target   | no       | The target you wish to notify. If no target is specified, we send a notification to ourselves. |
 
-<!-- GLOBAL:SERVICE:PARAMS -->
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Example
 
@@ -130,9 +131,11 @@ pipeline (for example service listings, counts, or generated sections).
 Examples include:
 
 - `<!-- SERVICE:DETAILS -->`
+- `<!-- SPONSORS:BANNER -->`
+- `<!-- TEMPLATE:SERVICE-PARAMS -->`
 - `<!-- SERVICES:COUNT -->`
 - `{/* SERVICES:COUNT */}`
-- `{/_ TEMPLATE:NEW_SERVICE _/}`
+- `{/_ TEMPLATE:SERVICE-PARAMS _/}`
 
 These markers are **not comments for humans** and must not be modified, reformatted, or removed.
 

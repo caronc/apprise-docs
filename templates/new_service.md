@@ -64,6 +64,9 @@ has_image: false
 # sponsor_message: ""     # Optional level 75+ banner text; empty string disables it
 ---
 
+<!-- Leave the below as is as it will place the sponsor banner when eligible -->
+<!-- SPONSORS:BANNER -->
+
 <!-- Leave the below as is as it will place our ## Overview section -->
 <!-- SERVICE:DETAILS -->
 
@@ -95,7 +98,7 @@ Valid syntax is as follows:
 | -------- | -------- | ----------- |
 
 <!-- Leave the below as is as it will place our ## Global Parameters section -->
-<!-- GLOBAL:SERVICE:PARAMS -->
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## 📖 Examples
 

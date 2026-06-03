@@ -106,9 +106,10 @@ instead of falling back to the default English route.
   (e.g. `lint-docs.mjs` validates frontmatter and service metadata).
 
 - **`shared_templates/`**
-  Shared Markdown partials that are injected into service pages via markers
-  such as `<!-- GLOBAL:SERVICE:PARAMS -->`. For example,
-  `service-params.md` documents the parameters that apply to every service.
+  Shared Markdown partials that are injected into pages via `TEMPLATE:*`
+  markers. For example, `service-params.md` is injected with
+  `<!-- TEMPLATE:SERVICE-PARAMS -->` and documents the parameters that apply
+  to every service.
 
 - **`templates/`**
   Starter templates for contributors creating new content.
@@ -277,6 +278,7 @@ sample_urls:
   - example://{token}/{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -297,7 +299,7 @@ Valid syntax is as follows:
 | token    | yes      | Token to access the example server                                                             |
 | target   | no       | The target you wish to notify. If no target is specified, we send a notification to ourselves. |
 
-<!-- GLOBAL:SERVICE:PARAMS -->
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Example
 
@@ -317,6 +319,8 @@ apprise -vv -t "My Title" -b "Message Body" \
 Some pages contain special comment markers such as:
 
 - `<!-- SERVICE:DETAILS -->`
+- `<!-- SPONSORS:BANNER -->`
+- `<!-- TEMPLATE:SERVICE-PARAMS -->`
 - `<!-- SERVICES:COUNT -->`
 - `<!-- SERVICES:BEGIN -->` / `<!-- SERVICES:END -->`
 
