@@ -17,6 +17,7 @@ sample_urls:
   - flock://{botname}@{token}/g:{channel}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
@@ -37,7 +38,7 @@ Dans cet exemple, le token est `134b8gh0-eba0-4fa9-ab9c-257ced0e8221`
 
 ### Robot
 
-Les bots sont un peu plus complexes et supposent que vous avez suivi leurs instructions pour configurer [votre propre application](https://docs.flock.com/display/flockos/Creating+an+App#CreatinganApp-HowdoIcreateaFlockOSapp?). Comme pour un webhook, vous obtiendrez votre propre **{token}** qui vous permettra d'envoyer des messages directement à des personnes et des canaux.
+Les bots sont un peu plus complexes et supposent que vous avez suivi leurs instructions pour configurer [votre propre application](https://docs.flock.com/display/flockos/Creating+an+App#CreatinganApp-HowdoIcreateaFlockOSapp?). Comme pour un webhook, vous obtiendrez votre propre **`{token}`** qui vous permettra d'envoyer des messages directement à des personnes et des canaux.
 
 ## Syntaxe
 

@@ -16,6 +16,7 @@ sample_urls:
   - ifttt://{WebhookID}@{Event}/?-value3
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -44,9 +45,9 @@ Valid syntax is as follows:
 
 By default these are the the assign default template entries:
 
-- **{value1}** : The **title** will go here
-- **{value2}** : The **body** will go here
-- **{value3}** : The **message type** will go here (it will read either _info_, _warning_, _critical_, or _success_)
+- **`{value1}`** : The **title** will go here
+- **`{value2}`** : The **body** will go here
+- **`{value3}`** : The **message type** will go here (it will read either _info_, _warning_, _critical_, or _success_)
 
 ## Parameter Breakdown
 
@@ -54,7 +55,7 @@ By default these are the the assign default template entries:
 | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | WebhookID | Yes      | Your webhooks API Key you got from [the settings area of the webhooks service itself](https://ifttt.com/services/maker_webhooks)                                                                                                                                                                                                                                                                                               |
 | Event     | Yes      | This is the **Event Name** you assigned to the Applet you created. You must at least pass in one of these. This is the event plan on triggering through the webhook.                                                                                                                                                                                                                                                           |
-| +Arg=Val  | No       | Add an additional **{Arg}** into the payload and assign it the value of **{Val}**. It's very important that your argument starts with a plus (**+**) symbol in order to use this option.                                                                                                                                                                                                                                       |
+| +Arg=Val  | No       | Add an additional **`{Arg}`** into the payload and assign it the value of **`{Val}`**. It's very important that your argument starts with a plus (**+**) symbol in order to use this option.                                                                                                                                                                                                                                   |
 | -Arg      | No       | This is useful if you want to eliminate one of the pre-defined arguments discussed below. You might want to include **?-value1&-value2** to just pass **value3** in the payload. It's very important that your argument starts with a hyphen/minus (**-**) symbol in order to use this option. As mentioned above, your payload will ALWAYS include **value1**, **value2**, and **value3** in it unless you specify otherwise. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
@@ -73,7 +74,7 @@ apprise -vv -t "My Title" -b "My Value" \
    ifttt:///b1lUk7b9LpGakJARKBwRIZ@sms_message
 ```
 
-Now I realize not everyone will want to use the default **{valueX}** entries defined. In fact, you may want to just use apprise to turn on a light switch and set some complete different value like **{switch}** to '_on_'. Here is how you could accomplish this:
+Now I realize not everyone will want to use the default **`{valueX}`** entries defined. In fact, you may want to just use apprise to turn on a light switch and set some complete different value like **`{switch}`** to '_on_'. Here is how you could accomplish this:
 
 ```bash
 # Send {switch} a value of 'on'

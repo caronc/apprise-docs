@@ -81,6 +81,6 @@ Apprise automatically logs a targeted warning when it detects this error and sug
 
 This is not an Apprise-specific problem. The SASL SCRAM-PLUS breakage affects a large number of Python libraries and projects. The community member who first reported this issue to Apprise has been tracking every affected library at:
 
-> **<https://github.com/scram-sasl/info/issues/1>**
+> **[https://github.com/scram-sasl/info/issues/1](https://github.com/scram-sasl/info/issues/1)**
 
 That page documents the full scope of the problem across the Python ecosystem and has been used to file upstream issues in Python and in many libraries. If this problem is affecting you, consider adding a comment or a thumbs-up there to help raise visibility and accelerate an upstream fix.

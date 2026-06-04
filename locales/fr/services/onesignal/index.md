@@ -17,11 +17,12 @@ sample_urls:
   - onesignal://{app_id}@{apikey}/{email}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
-1. Visitez <https://onesignal.com> pour créer votre compte.
+1. Visitez [https://onesignal.com](https://onesignal.com) pour créer votre compte.
 2. Pour obtenir votre `{appid}` et votre `{apikey}`, cliquez sur **Keys and IDs**.<br/>![OneSignalAppKeys](./images/103224241-65616080-48f5-11eb-97c0-fa32a28524b4.png)
 
 ## Syntaxe

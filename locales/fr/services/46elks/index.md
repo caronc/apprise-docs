@@ -21,13 +21,14 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
 46elks est un fournisseur SMS simple. Vous vous authentifiez avec votre nom d'utilisateur et votre mot de passe API 46elks, puis vous envoyez `to`, `message` et optionnellement `from`. Le plugin itère sur chaque destinataire cible et publie des charges utiles encodées en formulaire vers le point de terminaison API fixe.
 
-1. Connectez-vous sur <https://46elks.com> et obtenez votre **nom d'utilisateur API** et votre **mot de passe**.
+1. Connectez-vous sur [https://46elks.com](https://46elks.com) et obtenez votre **nom d'utilisateur API** et votre **mot de passe**.
 2. Choisissez facultativement un identifiant d'expéditeur **From**, soit un numéro E.164 soit un expéditeur alphanumérique approuvé.
 3. Utilisez la forme URL `46elks://` dans Apprise pour envoyer des messages.
 

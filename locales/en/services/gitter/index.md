@@ -24,6 +24,7 @@ sample_urls:
 Gitter uses Matrix and does not have its own custom service anymore. All information below pertains to its legacy configuration for those still hosting it.
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

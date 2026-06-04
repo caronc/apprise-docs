@@ -24,6 +24,7 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntax
@@ -52,9 +53,9 @@ Valid syntax is as follows:
 
 You can also form any combination of the above and perform updates from one url:
 
-- **rocket**://**{user}**:**{password}**@**{hostname}**/#**{channel_id}**/**{room_id}**
+- **rocket**://**`{user}`**:**`{password}`**@**`{hostname}`**/#**`{channel_id}`**/**`{room_id}`**
 
-For the Basic Mode Only: if neither a **{room_id}** or **#{channel}** is specified then this notification will fail.
+For the Basic Mode Only: if neither a **`{room_id}`** or **#`{channel}`** is specified then this notification will fail.
 
 ### Webhook Mode
 
@@ -70,11 +71,11 @@ Valid syntax is as follows:
 
 You can also form any combination of the above and perform updates from one url:
 
-- **rocket**://**{webhook}**@**{hostname}**:**{port}**/#**{channel_id}**/**{room_id}**/**@{user}**
+- **rocket**://**`{webhook}`**@**`{hostname}`**:**`{port}`**/#**`{channel_id}`**/**`{room_id}`**/**@`{user}`**
 
 By default a webhook is set up to be associated with a channel. Thus the following syntax is also valid:
 
-- **rocket**://**{webhook}**@**{hostname}**/
+- **rocket**://**`{webhook}`**@**`{hostname}`**/
 
 **Note:** Some webhooks have slashes in them. For these you need to make sure you escape the slash (`/`) with `%2F`. So your URL may look like:
 

@@ -13,6 +13,7 @@ sample_urls:
   - signl4://{secret}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

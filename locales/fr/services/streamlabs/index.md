@@ -15,6 +15,7 @@ sample_urls:
   - strmlabs://{access_token}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

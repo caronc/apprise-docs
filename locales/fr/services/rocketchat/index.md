@@ -24,6 +24,7 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntaxe
@@ -52,9 +53,9 @@ La syntaxe valide est la suivante :
 
 Vous pouvez également combiner les formes ci-dessus et effectuer des mises à jour depuis une seule URL :
 
-- **rocket**://**{user}**:**{password}**@**{hostname}**/#**{channel_id}**/**{room_id}**
+- **rocket**://**`{user}`**:**`{password}`**@**`{hostname}`**/#**`{channel_id}`**/**`{room_id}`**
 
-Pour le Mode Basique uniquement : si ni **{room_id}** ni **#{channel}** n'est spécifié, cette notification échouera.
+Pour le Mode Basique uniquement : si ni **`{room_id}`** ni **#`{channel}`** n'est spécifié, cette notification échouera.
 
 ### Mode Webhook
 
@@ -70,11 +71,11 @@ La syntaxe valide est la suivante :
 
 Vous pouvez également combiner les formes ci-dessus et effectuer des mises à jour depuis une seule URL :
 
-- **rocket**://**{webhook}**@**{hostname}**:**{port}**/#**{channel_id}**/**{room_id}**/**@{user}**
+- **rocket**://**`{webhook}`**@**`{hostname}`**:**`{port}`**/#**`{channel_id}`**/**`{room_id}`**/**@`{user}`**
 
 Par défaut, un webhook est configuré pour être associé à un canal. La syntaxe suivante est donc également valide :
 
-- **rocket**://**{webhook}**@**{hostname}**/
+- **rocket**://**`{webhook}`**@**`{hostname}`**/
 
 **Remarque :** Certains webhooks contiennent des barres obliques. Dans ce cas, vous devez vous assurer d'échapper la barre oblique (`/`) avec `%2F`. Votre URL peut donc ressembler à :
 

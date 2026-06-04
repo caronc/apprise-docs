@@ -18,6 +18,7 @@ limits:
   max_chars: 3500
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -26,7 +27,7 @@ You need to set up a [Threema Gateway](https://gateway.threema.ch/) account firs
 
 **Important**: Please make sure to request a "Basic" ID for now, as end-to-end encrypted Threema Gateway messages are not yet supported by Apprise. End-to-end Gateway IDs cannot be used for sending Simple Messages (encrypted on Threema Servers).
 
-- Create your Threema Gateway account at <https://gateway.threema.ch/>, and confirm your e-mail address
+- Create your Threema Gateway account at [https://gateway.threema.ch/](https://gateway.threema.ch/), and confirm your e-mail address
 - For credits:
   - Ask Threema Gateway support via e-mail (support-gateway at threema.ch) for test credits, and they will get you covered for some testing
   - OR acquire them after logging into your Gateway account.

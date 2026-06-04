@@ -18,6 +18,7 @@ limits:
   max_chars: 10000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -30,7 +31,7 @@ Pour utiliser Zulip, vous devez disposer d'un robot Zulip Chat ; [consultez cett
 4. Cliquez sur **Add a new bot**.
 5. Remplissez les champs puis cliquez sur **Create bot**.
 
-Si vous connaissez l'**{ID}** de votre organisation, puisqu'il fait partie de votre URL `zulipchat.com`, vous pouvez aussi acceder aux informations de votre robot en visitant : `https://ID.zulipchat.com/#settings/your-bots`
+Si vous connaissez l'**`{ID}`** de votre organisation, puisqu'il fait partie de votre URL `zulipchat.com`, vous pouvez aussi acceder aux informations de votre robot en visitant : `https://ID.zulipchat.com/#settings/your-bots`
 
 Une fois le robot cree avec succes, vous pourrez recuperer son jeton API.
 
@@ -44,7 +45,7 @@ La syntaxe valide est la suivante :
 - `zulip://{botname}@{organization}/{token}/{email}`
 - `zulip://{botname}@{organization}/{token}/{email1}/{email2}/{emailN}`
 
-**Remarque :** si ni **{stream}** ni **{email}** ne sont precises, le flux **general** est notifie par defaut.
+**Remarque :** si ni **`{stream}`** ni **`{email}`** ne sont precises, le flux **general** est notifie par defaut.
 
 Vous pouvez aussi melanger les entrees ci-dessus :
 

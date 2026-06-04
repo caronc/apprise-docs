@@ -17,6 +17,7 @@ sample_urls:
   - sendgrid://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

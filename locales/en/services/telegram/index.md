@@ -21,6 +21,7 @@ limits:
   max_chars: 4096
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -51,23 +52,23 @@ The good news is this process only has to be done once. Once you get your **bot_
 **2021.12.23 Update**: Recently the developers of Telegram have made it easier to acquire this ID using their own built in tool [explained here](https://www.alphr.com/find-chat-id-telegram/). Thank you `@mattpackwood` for this tip!
 :::
 
-Behind the scenes, Telegram notifies users by their **{chat_id}** and not their _easy-to-remember_ user name.
-Unfortunately (at this time) Telegram doesn't make it intuitive to get this **{chat_id}** without simple tricks and workarounds that can be found through Googling or just simply talking to their support team.
+Behind the scenes, Telegram notifies users by their **`{chat_id}`** and not their _easy-to-remember_ user name.
+Unfortunately (at this time) Telegram doesn't make it intuitive to get this **`{chat_id}`** without simple tricks and workarounds that can be found through Googling or just simply talking to their support team.
 
 However, Apprise can make this task a bit easier if the intention is to just private message yourself. If this is the case, simply send a private message to this new bot you just created (above). That's it!
 
-By doing this, Apprise is able to automatically to detect _your_ **{chat_id}** from the message sent to the bot.
+By doing this, Apprise is able to automatically to detect _your_ **`{chat_id}`** from the message sent to the bot.
 
-- **tgram**://**{bot_token}**/
+- **tgram**://**`{bot_token}`**/
 
-When using the short form of the Telegram/Apprise URL and the bot owner (probably you) is successfully detected, the **{chat_id}** it detected will appear in the logs after the notification is sent. Note that the **Telegram API keeps incoming messages for 24 hours only**. Thus, you should update your Apprise URL to explicitly reference this in the future.
+When using the short form of the Telegram/Apprise URL and the bot owner (probably you) is successfully detected, the **`{chat_id}`** it detected will appear in the logs after the notification is sent. Note that the **Telegram API keeps incoming messages for 24 hours only**. Thus, you should update your Apprise URL to explicitly reference this in the future.
 
-- **tgram**://**{bot_token}**/**{chat_id}**
+- **tgram**://**`{bot_token}`**/**`{chat_id}`**
 
-**Note**: you can also just go ahead and acquire the **{chat_id}** yourself after first messaging yourself as per the instructions above. Afterwards, you just need to visit `https://api.telegram.org/bot{bot_token}/getUpdates`.
+**Note**: you can also just go ahead and acquire the **`{chat_id}`** yourself after first messaging yourself as per the instructions above. Afterwards, you just need to visit `https://api.telegram.org/bot{bot_token}/getUpdates`.
 
-- _Note:_ the keyword `bot` must sit in-front of the actual **{bot_token}** that you were given by the BotFather.
-- The result will contain the message you sent; in addition to this there is a section entitled `chat` with the `id` identified here. This is the **{chat_id}** you can use to directly message using Apprise.
+- _Note:_ the keyword `bot` must sit in-front of the actual **`{bot_token}`** that you were given by the BotFather.
+- The result will contain the message you sent; in addition to this there is a section entitled `chat` with the `id` identified here. This is the **`{chat_id}`** you can use to directly message using Apprise.
 
 ## Syntax
 

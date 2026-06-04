@@ -13,6 +13,7 @@ sample_urls:
   - pushme://{token}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

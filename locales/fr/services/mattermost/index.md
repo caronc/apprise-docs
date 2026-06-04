@@ -24,12 +24,13 @@ limits:
   max_chars: 4000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
 Pour utiliser ce plugin, vous devez d'abord disposer d'une instance
-<http://mattermost.com>. Téléchargez leur logiciel et configurez-le.
+[http://mattermost.com](http://mattermost.com). Téléchargez leur logiciel et configurez-le.
 
 Ce plugin prend en charge 2 styles d'intégration distincts :
 
@@ -41,11 +42,11 @@ Ce plugin prend en charge 2 styles d'intégration distincts :
 Vous aurez besoin d'un \*_webhook entrant_. Vous pouvez le configurer comme suit :
 
 1. Cliquez sur l'option **Integrations** dans le menu déroulant du canal, puis sélectionnez **Incoming Webhook** :<br/>
-   <img alt="Webhook entrant Mattermost" src="./images/107084396-ff55dc00-67c4-11eb-899c-a65b2f639158.png" height="300">
+   <img alt="Webhook entrant Mattermost" src="./images/107084396-ff55dc00-67c4-11eb-899c-a65b2f639158.png" height="300"/>
 2. À partir de là, sélectionnez **Add Incoming Webhook** :<br/>
-   <img alt="Ajouter un webhook entrant" src="./images/107083851-3d9ecb80-67c4-11eb-8bf7-820a3554eadb.png" height="300">
+   <img alt="Ajouter un webhook entrant" src="./images/107083851-3d9ecb80-67c4-11eb-8bf7-820a3554eadb.png" height="300"/>
 3. Enfin, vous pourrez personnaliser le comportement du webhook, puis cliquer sur **Save** en bas de la page une fois terminé.<br/>
-   <img alt="Generer une URL Apprise a partir de celui-ci" src="./images/107083865-442d4300-67c4-11eb-8228-7d7afb5974e3.png" height="300">
+   <img alt="Generer une URL Apprise a partir de celui-ci" src="./images/107083865-442d4300-67c4-11eb-8228-7d7afb5974e3.png" height="300"/>
 
 L'URL fournie peut ressembler à ceci :
 

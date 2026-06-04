@@ -29,6 +29,7 @@ Le service n'a vraisemblablement jamais été rétabli et ils ont simplement fer
 💡Le service a été retiré d'Apprise dans [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

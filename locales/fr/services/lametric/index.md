@@ -17,6 +17,7 @@ sample_urls:
   - lametric://{app_access_token}@{app_id}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

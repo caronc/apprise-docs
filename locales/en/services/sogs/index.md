@@ -21,6 +21,7 @@ sample_urls:
 
 ## Session Open Group Server
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

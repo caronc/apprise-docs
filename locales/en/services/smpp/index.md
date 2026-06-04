@@ -19,6 +19,7 @@ sample_urls:
   - smpp://{user}:{password}@{host}:{port}/{fromPhoneNo}/{toPhoneNo}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

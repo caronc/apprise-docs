@@ -30,6 +30,7 @@ Taken from their website:
 💡The Service was removed from Apprise in [apprise/1318](https://github.com/caronc/apprise/issues/1318)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntax
@@ -75,11 +76,11 @@ Use `lunaseas://` for a Secure (`https://`) connection and `lunasea://` for Inse
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| to       | **\*No** | One or more Firebase User IDs or Device IDs you wish to send your notification to. You can use comma's to separate multiple entries if you wish.                                                                                                                                                                                                                                                                               |
-| image    | No       | Map the image associated with the notification type to the payload. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                            |
-| mode     | No       | The default mode to treat the URL provided as. Possible values are `cloud` and `private`. This is detected if no otherwise specified. When set to `private`, a hostname must be provided as part of the URL. When set to `cloud`, all elements are presumed to be notification end points and <https://lunasea.app> is used. In cloud mode, all transactions are secure (regardless if you specify `lunasea://` or `lsea://`). |
+| Variable | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| to       | **\*No** | One or more Firebase User IDs or Device IDs you wish to send your notification to. You can use comma's to separate multiple entries if you wish.                                                                                                                                                                                                                                                                                                    |
+| image    | No       | Map the image associated with the notification type to the payload. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                                                 |
+| mode     | No       | The default mode to treat the URL provided as. Possible values are `cloud` and `private`. This is detected if no otherwise specified. When set to `private`, a hostname must be provided as part of the URL. When set to `cloud`, all elements are presumed to be notification end points and [https://lunasea.app](https://lunasea.app) is used. In cloud mode, all transactions are secure (regardless if you specify `lunasea://` or `lsea://`). |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

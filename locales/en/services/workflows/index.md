@@ -18,6 +18,7 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -167,5 +168,5 @@ Would post to MSTeams (with respect to our template above):
 - Tokens can have white space around them for readability if you like. Hence `{{ token }}` is no different then `{{token}}`.
 - All tokens are escaped properly, so don't worry if your defined token has a double quote in it (`"`); it would be correctly escaped before it is sent upstream.
 - Tokens ARE case sensitive, so `{{Token}}` NEEDS to be populated with a `:Token=` value on your URL.
-- Tokens that are not matched correctly simply are not swapped and the {{keyword}} will remain as is in the message.
+- Tokens that are not matched correctly simply are not swapped and the {`{keyword}`} will remain as is in the message.
 - Apprise always requires you to specify a `--body` (`-b`) at a very minimum which can be optionally referenced as `{{app_body}}` in your template. Even if you choose not to use this token, you must still pass in something (anything) just to satisfy this requirement and make use of the template calls.

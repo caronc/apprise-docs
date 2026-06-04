@@ -26,6 +26,7 @@ The creators of Stride ([Atlassian](https://www.atlassian.com)) performed partne
 💡The Service was removed from Apprise in [apprise/56](https://github.com/caronc/apprise/issues/56)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -38,8 +39,8 @@ Let's start from the beginning:
 2. Once you get set up, you'll have the option of creating a channel (or if you joined your companies group, you might already see channels you can join in front of you). Either way, you need to be in a channel before you get to the next step.
 3. Once you're in a channel you'll want to connect _apprise_ (this notification service) up. To do this, you need to go to the App Manager (on right hand side in your browser) an choose to '_Connect your own app_'.
    - It will ask you to provide a '_token name_' which can be whatever you want. This will be used for reference later. Click the _Create_ button when you're done.
-   - When it completes it will generate a token that looks something like:<br/>`HQFtq4pF8rKFOlKTm9Th`<br/>This is important and we'll referenced it as your **{auth_token}**.
-   - If you scroll down it will also generate you a conversation URL that might look like:<br/>`https://api.atlassian.com/site/ce171c45-09ae-4fac-a73d-5a4b7a322872/conversation/a54a80b3-eaad-4524-9a3a-f6653bcfb100/message`<br/>Think of this URL like this:<br/>`https://api.atlassian.com/site/{cloud_id}/conversation/{convo_id}/message`. Specifically pay close attention to the **{cloud_id}** and **{convo_id}** because you will need this to build your custom URL with.
+   - When it completes it will generate a token that looks something like:<br/>`HQFtq4pF8rKFOlKTm9Th`<br/>This is important and we'll referenced it as your **`{auth_token}`**.
+   - If you scroll down it will also generate you a conversation URL that might look like:<br/>`https://api.atlassian.com/site/ce171c45-09ae-4fac-a73d-5a4b7a322872/conversation/a54a80b3-eaad-4524-9a3a-f6653bcfb100/message`<br/>Think of this URL like this:<br/>`https://api.atlassian.com/site/{cloud_id}/conversation/{convo_id}/message`. Specifically pay close attention to the **`{cloud_id}`** and **`{convo_id}`** because you will need this to build your custom URL with.
 
 ## Syntax
 
@@ -49,11 +50,11 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable   | Required | Description                                                                                                                                                                                                                                                                         |
-| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| auth_token | Yes      | The Authorization token that is created for you once you create your Custom App (that you associate with your channel).                                                                                                                                                             |
-| cloud_id   | Yes      | This is extracted from the URL that is created for you when you create your Custom App (the same one that is identified above).<br/>**Note**: This is the first part of the conversation URL:<br/>https\:\/\/api.atlassian.com/site/**{cloud_id}**/conversation/{convo_id}/message  |
-| convo_id   | Yes      | This is extracted from the URL that is created for you when you create your Custom App (the same one that is identified above).<br/>**Note**: This is the second part of the conversation URL:<br/>https\:\/\/api.atlassian.com/site/{cloud_id}/conversation/**{convo_id}**/message |
+| Variable   | Required | Description                                                                                                                                                                                                                                                                             |
+| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| auth_token | Yes      | The Authorization token that is created for you once you create your Custom App (that you associate with your channel).                                                                                                                                                                 |
+| cloud_id   | Yes      | This is extracted from the URL that is created for you when you create your Custom App (the same one that is identified above).<br/>**Note**: This is the first part of the conversation URL:<br/>https\:\/\/api.atlassian.com/site/**`{cloud_id}`**/conversation/`{convo_id}`/message  |
+| convo_id   | Yes      | This is extracted from the URL that is created for you when you create your Custom App (the same one that is identified above).<br/>**Note**: This is the second part of the conversation URL:<br/>https\:\/\/api.atlassian.com/site/`{cloud_id}`/conversation/**`{convo_id}`**/message |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

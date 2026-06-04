@@ -16,6 +16,7 @@ sample_urls:
   - ifttt://{WebhookID}@{Event}/?-value3
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
@@ -44,9 +45,9 @@ La syntaxe valide est la suivante :
 
 Par défaut, les entrées de modèle suivantes sont affectées :
 
-- **{value1}** : Le **titre** sera placé ici
-- **{value2}** : Le **corps** sera placé ici
-- **{value3}** : Le **type de message** sera placé ici (il indiquera _info_, _warning_, _critical_ ou _success_)
+- **`{value1}`** : Le **titre** sera placé ici
+- **`{value2}`** : Le **corps** sera placé ici
+- **`{value3}`** : Le **type de message** sera placé ici (il indiquera _info_, _warning_, _critical_ ou _success_)
 
 ## Détail des Paramètres
 
@@ -54,7 +55,7 @@ Par défaut, les entrées de modèle suivantes sont affectées :
 | --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | WebhookID | Oui    | Clé API Webhooks que vous avez obtenue depuis [la zone de paramètres du service Webhooks lui-même](https://ifttt.com/services/maker_webhooks).                                                                                                                                                                                                                                                                                                                   |
 | Event     | Oui    | Il s'agit du **Event Name** que vous avez attribué à l'Applet créé. Vous devez en fournir au moins un. C'est cet événement qui sera déclenché via le webhook.                                                                                                                                                                                                                                                                                                    |
-| +Arg=Val  | Non    | Ajoute un argument supplémentaire **{Arg}** dans la charge utile et lui attribue la valeur **{Val}**. Il est très important que votre argument commence par un symbole plus, **+**, pour utiliser cette option.                                                                                                                                                                                                                                                  |
+| +Arg=Val  | Non    | Ajoute un argument supplémentaire **`{Arg}`** dans la charge utile et lui attribue la valeur **`{Val}`**. Il est très important que votre argument commence par un symbole plus, **+**, pour utiliser cette option.                                                                                                                                                                                                                                              |
 | -Arg      | Non    | Cette option est utile si vous souhaitez supprimer l'un des arguments prédéfinis présentés ci-dessous. Vous pouvez par exemple utiliser **?-value1&-value2** afin de ne transmettre que **value3** dans la charge utile. Il est très important que votre argument commence par un symbole moins, **-**, pour utiliser cette option. Comme indiqué plus haut, votre charge utile inclura toujours **value1**, **value2** et **value3** sauf indication contraire. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
@@ -73,7 +74,7 @@ apprise -vv -t "Mon Titre" -b "Ma Valeur" \
    ifttt:///b1lUk7b9LpGakJARKBwRIZ@sms_message
 ```
 
-Tout le monde ne voudra pas nécessairement utiliser les entrées par défaut **{valueX}**. Vous pouvez par exemple utiliser Apprise pour allumer un interrupteur et définir une valeur complètement différente comme **{switch}** sur `_on_`. Voici comment procéder :
+Tout le monde ne voudra pas nécessairement utiliser les entrées par défaut **`{valueX}`**. Vous pouvez par exemple utiliser Apprise pour allumer un interrupteur et définir une valeur complètement différente comme **`{switch}`** sur `_on_`. Voici comment procéder :
 
 ```bash
 # Envoyer la valeur 'on' à {switch}

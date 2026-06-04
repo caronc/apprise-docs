@@ -17,6 +17,7 @@ sample_urls:
   - sparkpost://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

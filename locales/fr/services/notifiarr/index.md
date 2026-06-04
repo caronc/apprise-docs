@@ -5,7 +5,7 @@ description: "Envoyer des notifications Notifiarr."
 
 ## Notifications Notifiarr
 
-- **Source** : <https://notifiarr.com>
+- **Source** : [https://notifiarr.com](https://notifiarr.com)
 - **Prise en Charge des Icônes** : Non
 - **Prise en Charge des Pièces Jointes** : Non
 - **Format des Messages** : Texte

@@ -17,6 +17,7 @@ sample_urls:
   - victorops://{routing_key}@{apikey}/{entity_id}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

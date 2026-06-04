@@ -21,6 +21,7 @@ sample_urls:
 
 ## Signal API
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -44,7 +45,7 @@ docker run -d --name signal-api --restart=always -p 9922:8080 \
 
 If all goes well, you should be able to point your browser to: `http://localhost:9922/v1/qrcodelink?device_name=signal-api` and from your phone app, follow the instructions to add a **Linked Device**.
 
-The **{FromPhoneNo}** must be the number associated with your account.
+The **`{FromPhoneNo}`** must be the number associated with your account.
 
 ## Syntax
 

@@ -20,6 +20,7 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -30,8 +31,8 @@ Once this is done you will have access to the [apps](https://account.pushed.co/a
 
 Once this is done, you'll get access to an:
 
-- Application Key: **{app_key}**
-- Application Secret: **{app_secret}**
+- Application Key: **`{app_key}`**
+- Application Secret: **`{app_secret}`**
 
 You'll also need something to notify; so once you've created an account and an app, you'll also need to retrieve their mobile app (for either [Android](https://play.google.com/store/apps/details?id=co.pushed.GetPushed) or [iOS](https://itunes.apple.com/us/app/get-pushed/id804777699?mt=8&uo=6&at=&ct=)) and log in.
 
@@ -51,7 +52,7 @@ You can also form any combination of the above and perform updates from one url:
 
 - `pushed://{app_key}/{app_secret}/@{user_pushed_id}/#{channel_alias}/`
 
-neither a **@{user_pushed_id}** or **#{channel}** is specified, then the default configuration is to send to just the _App_ you provided keys for.
+neither a **@`{user_pushed_id}`** or **#`{channel}`** is specified, then the default configuration is to send to just the _App_ you provided keys for.
 
 ## Parameter Breakdown
 

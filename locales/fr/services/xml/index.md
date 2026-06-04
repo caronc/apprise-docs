@@ -20,6 +20,7 @@ sample_urls:
   - xmls://{user}:{password}@{hostname}:{port}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Introduction

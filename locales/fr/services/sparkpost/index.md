@@ -17,6 +17,7 @@ sample_urls:
   - sparkpost://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -50,18 +51,18 @@ Les champs Carbon Copy, `cc=`, et Blind Carbon Copy, `bcc=`, sont en revanche ap
 
 ## Détail des Paramètres
 
-| Variable | Obligatoire | Description                                                                                                                                                                                                                                       |
-| -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey   | Oui         | Cle API associee au domaine depuis lequel vous souhaitez envoyer vos e-mails. Elle est disponible apres connexion a leur site et acces au [tableau de bord](https://app.sparkpost.com/app/domains).                                               |
-| domain   | Oui         | Domaine depuis lequel vous souhaitez envoyer vos e-mails. Ce domaine doit etre enregistre et configure avec votre compte SparkPost.                                                                                                               |
-| user     | Oui         | L'utilisateur est combine au domaine indique dans l'URL pour former l'adresse **From** visible par vos destinataires.                                                                                                                             |
-| batch    | Non         | Si le mode `batch` est defini sur `yes`, toutes les adresses e-mail sont envoyees dans un seul lot que SparkPost traitera.                                                                                                                        |
-| email    | Non         | Vous pouvez specifier autant d'adresses e-mail que vous le souhaitez. Chaque adresse indiquee representera le champ **To**.<br>**Remarque :** selon la configuration de votre compte, SparkPost peut restreindre l'envoi vers certaines adresses. |
-| region   | Non         | Identifie la region du serveur a utiliser. Les options prises en charge sont **eu** et **us**. Par defaut, la valeur **us** est utilisee si rien n'est precise. Cela affecte le serveur API contacte pour l'envoi des e-mails.                    |
-| from     | Non         | Permet de definir le nom associe a l'adresse e-mail **From** lors de l'envoi.                                                                                                                                                                     |
-| to       | Non         | Alias de la variable `email`. Vous pouvez y chaîner autant d'adresses **To** que souhaite, separees par des virgules et/ou des espaces.                                                                                                           |
-| cc       | Non         | Adresse(s) e-mail en Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                                     |
-| bcc      | Non         | Adresse(s) e-mail en Blind Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                               |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                        |
+| -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey   | Oui         | Cle API associee au domaine depuis lequel vous souhaitez envoyer vos e-mails. Elle est disponible apres connexion a leur site et acces au [tableau de bord](https://app.sparkpost.com/app/domains).                                                |
+| domain   | Oui         | Domaine depuis lequel vous souhaitez envoyer vos e-mails. Ce domaine doit etre enregistre et configure avec votre compte SparkPost.                                                                                                                |
+| user     | Oui         | L'utilisateur est combine au domaine indique dans l'URL pour former l'adresse **From** visible par vos destinataires.                                                                                                                              |
+| batch    | Non         | Si le mode `batch` est defini sur `yes`, toutes les adresses e-mail sont envoyees dans un seul lot que SparkPost traitera.                                                                                                                         |
+| email    | Non         | Vous pouvez specifier autant d'adresses e-mail que vous le souhaitez. Chaque adresse indiquee representera le champ **To**.<br/>**Remarque :** selon la configuration de votre compte, SparkPost peut restreindre l'envoi vers certaines adresses. |
+| region   | Non         | Identifie la region du serveur a utiliser. Les options prises en charge sont **eu** et **us**. Par defaut, la valeur **us** est utilisee si rien n'est precise. Cela affecte le serveur API contacte pour l'envoi des e-mails.                     |
+| from     | Non         | Permet de definir le nom associe a l'adresse e-mail **From** lors de l'envoi.                                                                                                                                                                      |
+| to       | Non         | Alias de la variable `email`. Vous pouvez y chaîner autant d'adresses **To** que souhaite, separees par des virgules et/ou des espaces.                                                                                                            |
+| cc       | Non         | Adresse(s) e-mail en Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                                      |
+| bcc      | Non         | Adresse(s) e-mail en Blind Carbon Copy. Plusieurs valeurs peuvent etre separees par des espaces et/ou des virgules.                                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

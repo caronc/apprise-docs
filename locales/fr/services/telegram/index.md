@@ -21,6 +21,7 @@ limits:
   max_chars: 4096
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
@@ -51,23 +52,23 @@ La bonne nouvelle, c'est que cette procedure ne doit etre effectuee qu'une seule
 **Mise a jour du 2021.12.23** : les developpeurs de Telegram ont recemment facilite l'obtention de cet identifiant grace a leur propre outil integre, [explique ici](https://www.alphr.com/find-chat-id-telegram/). Merci a `@mattpackwood` pour cette astuce !
 :::
 
-En coulisses, Telegram notifie les utilisateurs a l'aide de leur **{chat_id}** et non de leur nom d'utilisateur, plus facile a retenir.
-Malheureusement, a l'heure actuelle, Telegram ne facilite pas vraiment la recuperation de ce **{chat_id}** sans quelques astuces ou contournements que l'on peut trouver en cherchant en ligne ou en contactant leur equipe de support.
+En coulisses, Telegram notifie les utilisateurs a l'aide de leur **`{chat_id}`** et non de leur nom d'utilisateur, plus facile a retenir.
+Malheureusement, a l'heure actuelle, Telegram ne facilite pas vraiment la recuperation de ce **`{chat_id}`** sans quelques astuces ou contournements que l'on peut trouver en cherchant en ligne ou en contactant leur equipe de support.
 
 Cependant, Apprise peut simplifier cette tache si votre objectif est simplement de vous envoyer un message prive. Dans ce cas, il suffit d'envoyer un message prive au nouveau robot que vous venez de creer. C'est tout !
 
-En procedant ainsi, Apprise pourra detecter automatiquement _votre_ **{chat_id}** a partir du message envoye au robot.
+En procedant ainsi, Apprise pourra detecter automatiquement _votre_ **`{chat_id}`** a partir du message envoye au robot.
 
-- **tgram**://**{bot_token}**/
+- **tgram**://**`{bot_token}`**/
 
-Lorsque vous utilisez la forme courte de l'URL Telegram/Apprise et que le proprietaire du robot, probablement vous, est detecte correctement, le **{chat_id}** trouve apparaitra dans les journaux apres l'envoi de la notification. Notez que l'**API Telegram ne conserve les messages entrants que pendant 24 heures**. Il est donc recommande de mettre a jour ensuite votre URL Apprise pour y faire explicitement reference.
+Lorsque vous utilisez la forme courte de l'URL Telegram/Apprise et que le proprietaire du robot, probablement vous, est detecte correctement, le **`{chat_id}`** trouve apparaitra dans les journaux apres l'envoi de la notification. Notez que l'**API Telegram ne conserve les messages entrants que pendant 24 heures**. Il est donc recommande de mettre a jour ensuite votre URL Apprise pour y faire explicitement reference.
 
-- **tgram**://**{bot_token}**/**{chat_id}**
+- **tgram**://**`{bot_token}`**/**`{chat_id}`**
 
-**Remarque** : vous pouvez aussi recuperer vous-meme le **{chat_id}** apres vous etre d'abord envoye un message, comme explique ci-dessus. Ensuite, il vous suffit de visiter `https://api.telegram.org/bot{bot_token}/getUpdates`.
+**Remarque** : vous pouvez aussi recuperer vous-meme le **`{chat_id}`** apres vous etre d'abord envoye un message, comme explique ci-dessus. Ensuite, il vous suffit de visiter `https://api.telegram.org/bot{bot_token}/getUpdates`.
 
-- _Remarque :_ le mot-cle `bot` doit figurer devant le **{bot_token}** reel qui vous a ete fourni par BotFather.
-- Le resultat contiendra le message que vous avez envoye. Vous y trouverez egalement une section intitulee `chat`, avec l'`id` indique. Il s'agit du **{chat_id}** que vous pouvez utiliser pour envoyer directement des messages via Apprise.
+- _Remarque :_ le mot-cle `bot` doit figurer devant le **`{bot_token}`** reel qui vous a ete fourni par BotFather.
+- Le resultat contiendra le message que vous avez envoye. Vous y trouverez egalement une section intitulee `chat`, avec l'`id` indique. Il s'agit du **`{chat_id}`** que vous pouvez utiliser pour envoyer directement des messages via Apprise.
 
 ## Syntaxe
 

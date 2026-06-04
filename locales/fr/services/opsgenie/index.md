@@ -20,11 +20,12 @@ limits:
   max_chars: 15000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
-1. Rendez-vous sur <https://www.opsgenie.com> pour creer votre compte.
+1. Rendez-vous sur [https://www.opsgenie.com](https://www.opsgenie.com) pour creer votre compte.
 2. [Generez votre cle API d'integration](https://app.opsgenie.com/settings/integration/add/API/)
 
 :::note
@@ -62,9 +63,9 @@ Vous pouvez aussi melanger les cibles :
 | ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | apikey     | Oui         | Cle API associee a votre compte Opsgenie.                                                                                                                                                                                                       |
 | user       | Non         | Utilisateur a notifier ; il peut s'agir d'un `username`, d'un `email` ou d'un `uuid4`. C'est le type de cible suppose par defaut, mais il est recommande de prefixer tous les utilisateurs avec le symbole `@` afin d'eliminer toute ambiguite. |
-| team       | Non         | Equipe a notifier ; il peut s'agir du nom de l'equipe elle-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les equipes doivent etre prefixees par un symbole `#`.                                                                  |
-| schedule   | Non         | Planning a notifier ; il peut s'agir du nom du planning lui-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les plannings doivent etre prefixes par un symbole `*`.                                                                |
-| escalation | Non         | Escalade a notifier ; il peut s'agir du nom de l'escalade elle-meme ou d'un `uuid4` qui lui est associe. <br>**Remarque :** les escalades doivent etre prefixees par un symbole `^`.                                                            |
+| team       | Non         | Equipe a notifier ; il peut s'agir du nom de l'equipe elle-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les equipes doivent etre prefixees par un symbole `#`.                                                                 |
+| schedule   | Non         | Planning a notifier ; il peut s'agir du nom du planning lui-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les plannings doivent etre prefixes par un symbole `*`.                                                               |
+| escalation | Non         | Escalade a notifier ; il peut s'agir du nom de l'escalade elle-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les escalades doivent etre prefixees par un symbole `^`.                                                           |
 | region     | Non         | Code region a 2 caracteres. Par defaut, cette valeur est `us` si rien n'est precise. Les utilisateurs europeens doivent definir cette valeur sur `eu` pour que cela fonctionne correctement.                                                    |
 | batch      | Non         | Definissez cette valeur sur **Yes** si vous souhaitez notifier toutes les cibles identifiees en lot, au lieu de maniere individuelle. Par defaut, cette option est definie sur **No**.                                                          |
 | tags       | Non         | Liste de tags separes par des virgules que vous pouvez associer a votre message Opsgenie.                                                                                                                                                       |

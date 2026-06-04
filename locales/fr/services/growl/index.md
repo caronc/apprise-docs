@@ -17,6 +17,7 @@ sample_urls:
   - growl://{hostname}/?priority={priority}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

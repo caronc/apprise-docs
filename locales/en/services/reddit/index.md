@@ -17,11 +17,12 @@ limits:
   max_chars: 6000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
-1. Visit <https://old.reddit.com/prefs/apps> and scroll to the bottom
+1. Visit [https://old.reddit.com/prefs/apps](https://old.reddit.com/prefs/apps) and scroll to the bottom
 1. Click on the button that reads '**are you a developer? create an app...**'
 1. Set the mode to `script`,
 1. Provide a `name`, `description`, and `redirect uri` (it can be anything).

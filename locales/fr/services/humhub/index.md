@@ -22,6 +22,7 @@ sample_urls:
   - humhubs://{token}@{hostname}/{id1}/{id2}/{id3}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

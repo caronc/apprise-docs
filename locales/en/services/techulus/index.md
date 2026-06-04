@@ -16,6 +16,7 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -26,7 +27,7 @@ To use this plugin, you need to first download the mobile app and sign up throug
 - [Android](https://play.google.com/store/apps/details?id=com.techulus.push)
 
 Once you've got your account, you can get your API key from [here](https://push.techulus.com/login.html).
-You can also just get the **{apikey}** right out of the phone app that is installed. The **{apikey}** will look something like:
+You can also just get the **`{apikey}`** right out of the phone app that is installed. The **`{apikey}`** will look something like:
 
 - `b444a40f-3db9-4224-b489-9a514c41c009`
 

@@ -13,6 +13,7 @@ sample_urls:
   - schan://{sendkey}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

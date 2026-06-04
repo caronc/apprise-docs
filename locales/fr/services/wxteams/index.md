@@ -26,6 +26,7 @@ limits:
     max_chars: 7439
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -37,12 +38,12 @@ partir du format du jeton, ou vous pouvez le forcer avec le paramètre d'URL `mo
 
 ### Mode 1 — Webhook (par défaut)
 
-Pour utiliser le mode webhook, accédez d'abord à <https://teams.webex.com>
+Pour utiliser le mode webhook, accédez d'abord à [https://teams.webex.com](https://teams.webex.com)
 et créez un compte si vous n'en avez pas encore. Vous devrez créer au moins
 un "space" avant de récupérer le "incoming webhook".
 
 Ensuite, installez l'intégration "Incoming webhook" disponible dans la
-catégorie "other" sur <https://apphub.webex.com/integrations/>. Au moment
+catégorie "other" sur [https://apphub.webex.com/integrations/](https://apphub.webex.com/integrations/). Au moment
 de la rédaction, [ce lien direct](https://apphub.webex.com/applications/incoming-webhooks-cisco-systems-38054-23307-75252)
 y menait.
 
@@ -69,7 +70,7 @@ La dernière partie de l'URL est votre `{token}` :
 
 ### Mode 2 — Robot (Jeton API + Identifiant de Salon, avec pièces jointes)
 
-1. Rendez-vous sur <https://developer.webex.com/my-apps> et créez un nouveau **robot**.
+1. Rendez-vous sur [https://developer.webex.com/my-apps](https://developer.webex.com/my-apps) et créez un nouveau **robot**.
 2. Après création du robot, copiez le **jeton d'accès du robot** affiché sur la page
    de confirmation (il n'est visible qu'une seule fois).
 3. Invitez le robot dans l'espace/salon où il devra publier.

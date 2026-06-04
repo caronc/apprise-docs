@@ -20,6 +20,7 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -30,8 +31,8 @@ Une fois cela fait, vous aurez acces a la section [apps](https://account.pushed.
 
 Vous aurez alors acces aux informations suivantes :
 
-- Application Key: **{app_key}**
-- Application Secret: **{app_secret}**
+- Application Key: **`{app_key}`**
+- Application Secret: **`{app_secret}`**
 
 Vous devrez aussi disposer d'une cible a notifier. Une fois votre compte et votre application crees, telechargez egalement leur application mobile, sur [Android](https://play.google.com/store/apps/details?id=co.pushed.GetPushed) ou [iOS](https://itunes.apple.com/us/app/get-pushed/id804777699?mt=8&uo=6&at=&ct=), puis connectez-vous.
 
@@ -51,7 +52,7 @@ Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jou
 
 - `pushed://{app_key}/{app_secret}/@{user_pushed_id}/#{channel_alias}/`
 
-Si ni **@{user_pushed_id}** ni **#{channel}** ne sont precises, la configuration par defaut consiste a envoyer simplement vers l'_App_ pour laquelle vous avez fourni les cles.
+Si ni **@`{user_pushed_id}`** ni **#`{channel}`** ne sont precises, la configuration par defaut consiste a envoyer simplement vers l'_App_ pour laquelle vous avez fourni les cles.
 
 ## Détail des Paramètres
 

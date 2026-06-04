@@ -16,6 +16,7 @@ sample_urls:
   - rsyslog://{host}:{port}/{facility}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

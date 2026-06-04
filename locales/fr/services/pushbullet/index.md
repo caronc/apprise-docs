@@ -18,11 +18,12 @@ sample_urls:
   - pbul://{accesstoken}/{email}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
-Les comptes Pushbullet sont gratuits ; l'extension Pro est facultative et vous donne une limite de message plus elevee ainsi que quelques fonctionnalites supplementaires. Une fois inscrit sur <https://www.pushbullet.com/>, vous pouvez generer votre cle API en accedant a vos [parametres de compte](https://www.pushbullet.com/#settings) puis en cliquant sur **Create Access Token**.
+Les comptes Pushbullet sont gratuits ; l'extension Pro est facultative et vous donne une limite de message plus elevee ainsi que quelques fonctionnalites supplementaires. Une fois inscrit sur [https://www.pushbullet.com/](https://www.pushbullet.com/), vous pouvez generer votre cle API en accedant a vos [parametres de compte](https://www.pushbullet.com/#settings) puis en cliquant sur **Create Access Token**.
 
 ## Syntaxe
 
@@ -37,7 +38,7 @@ Vous pouvez egalement combiner les formes ci-dessus et effectuer les mises a jou
 
 - `pbul://{accesstoken}/{device_id}/#{channel}/{email}`
 
-Si aucun **{device_id}**, **#{channel}** ou **{email}** n'est precise, alors la configuration par defaut enverra la notification a tous vos appareils configures.
+Si aucun **`{device_id}`**, **#`{channel}`** ou **`{email}`** n'est precise, alors la configuration par defaut enverra la notification a tous vos appareils configures.
 
 ## Détail des Paramètres
 

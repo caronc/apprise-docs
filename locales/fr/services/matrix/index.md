@@ -23,6 +23,7 @@ limits:
   max_chars: 65000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -92,7 +93,7 @@ Les alias de salon (`#`), les room IDs (`!`) et les utilisateurs DM (`@`) peuven
 - `matrixs://{token}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
 
 :::note
-Si aucun utilisateur et/ou mot de passe n’est précisé, le processus d’enregistrement Matrix peut être déclenché. Certains serveurs Matrix autorisent l’enregistrement automatique d’utilisateurs temporaires, selon leur configuration. Dans la plupart des environnements de production, vous devriez toujours fournir **{user}** et **{password}**, ou bien un **{token}** pré-généré.
+Si aucun utilisateur et/ou mot de passe n’est précisé, le processus d’enregistrement Matrix peut être déclenché. Certains serveurs Matrix autorisent l’enregistrement automatique d’utilisateurs temporaires, selon leur configuration. Dans la plupart des environnements de production, vous devriez toujours fournir **`{user}`** et **`{password}`**, ou bien un **`{token}`** pré-généré.
 :::
 
 ## Identifiants de Salon et Comportement du Homeserver
@@ -205,10 +206,10 @@ Ou directement :
 | discovery           | Non    | Lorsqu’elle est activée, ce qui est le cas par défaut, Apprise effectue une recherche `.well-known/matrix/client` au premier usage pour résoudre l’URL de base réelle du homeserver. Définissez `no` pour désactiver cette découverte et vous connecter directement au nom d’hôte fourni. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                             |
 
 :::note
-Si ni **{room_alias}**, ni **{room_id}**, ni **{target_user}** n’est précisé, Apprise interrogera le serveur pour récupérer les salons actuellement rejoints et les notifiera tous.
+Si ni **`{room_alias}`**, ni **`{room_id}`**, ni **`{target_user}`** n’est précisé, Apprise interrogera le serveur pour récupérer les salons actuellement rejoints et les notifiera tous.
 :::
 :::note
-Lors d’un envoi vers un **{target_user}**, Apprise recherche un salon DM existant via les données de compte `m.direct`, ou en crée un si nécessaire. Si l’utilisateur cible quitte ensuite ce salon, Apprise continuera à y envoyer les messages, qui seront acceptés par le serveur mais ne seront plus visibles pour l’utilisateur. Il n’existe pas de réinvitation automatique. Pour corriger cela, l’utilisateur doit rejoindre à nouveau le salon, ou vous devez effacer le stockage persistant Apprise afin qu’un nouveau salon DM soit créé lors du prochain envoi.
+Lors d’un envoi vers un **`{target_user}`**, Apprise recherche un salon DM existant via les données de compte `m.direct`, ou en crée un si nécessaire. Si l’utilisateur cible quitte ensuite ce salon, Apprise continuera à y envoyer les messages, qui seront acceptés par le serveur mais ne seront plus visibles pour l’utilisateur. Il n’existe pas de réinvitation automatique. Pour corriger cela, l’utilisateur doit rejoindre à nouveau le salon, ou vous devez effacer le stockage persistant Apprise afin qu’un nouveau salon DM soit créé lors du prochain envoi.
 :::
 :::note
 E2EE exige à la fois une URL **matrixs://**, donc HTTPS, et le paquet Python `cryptography`, installé par exemple via `pip install cryptography`. Avec une connexion **matrix://** en HTTP simple, E2EE est silencieusement ignoré et les messages sont envoyés en clair, quelle que soit la valeur de `e2ee`.

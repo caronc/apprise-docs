@@ -21,6 +21,7 @@ limits:
   max_chars: 2000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -29,7 +30,7 @@ To use Exotel, you will need your _Account SID_, _API Key_, and _API Token_. The
 
 Exotel uses the _Account SID_ in the API endpoint and the _API Key_ with _API Token_ for HTTP Basic authentication. For backwards compatibility, Apprise uses the _Account SID_ as the API key when `apikey=` is not provided.
 
-You will also need a valid source value for **{FromPhoneNo}**. Exotel accepts an ExoPhone, an approved alphanumeric Sender ID, or an approved numeric sender ID associated with your account.
+You will also need a valid source value for **`{FromPhoneNo}`**. Exotel accepts an ExoPhone, an approved alphanumeric Sender ID, or an approved numeric sender ID associated with your account.
 
 ## Syntax
 

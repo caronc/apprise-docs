@@ -18,6 +18,7 @@ sample_urls:
   - mqtts://{user}@{host}:{port}/{topic}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

@@ -16,6 +16,7 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -26,7 +27,7 @@ Pour utiliser ce plugin, vous devez d'abord telecharger l'application mobile pui
 - [Android](https://play.google.com/store/apps/details?id=com.techulus.push)
 
 Une fois votre compte cree, vous pouvez recuperer votre cle API [ici](https://push.techulus.com/login.html).
-Vous pouvez aussi recuperer directement la **{apikey}** depuis l'application mobile installee. Elle ressemblera a quelque chose comme :
+Vous pouvez aussi recuperer directement la **`{apikey}`** depuis l'application mobile installee. Elle ressemblera a quelque chose comme :
 
 - `b444a40f-3db9-4224-b489-9a514c41c009`
 

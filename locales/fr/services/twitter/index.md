@@ -25,6 +25,7 @@ limits:
     max_chars: 280
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 :::note

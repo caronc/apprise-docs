@@ -18,6 +18,7 @@ limits:
   max_chars: 3500
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -26,7 +27,7 @@ Vous devez d'abord configurer un compte [Threema Gateway](https://gateway.threem
 
 **Important :** veillez pour le moment a demander un identifiant "Basic", car les messages Threema Gateway chiffres de bout en bout ne sont pas encore pris en charge par Apprise. Les identifiants Gateway de type end-to-end ne peuvent pas etre utilises pour envoyer des messages simples, qui sont eux chiffres sur les serveurs Threema.
 
-- Creez votre compte Threema Gateway sur <https://gateway.threema.ch/> puis confirmez votre adresse e-mail.
+- Creez votre compte Threema Gateway sur [https://gateway.threema.ch/](https://gateway.threema.ch/) puis confirmez votre adresse e-mail.
 - Pour les credits :
 - contactez l'assistance Threema Gateway par e-mail (`support-gateway` chez `threema.ch`) pour obtenir des credits de test ;
 - ou achetez-les apres vous etre connecte a votre compte Gateway.

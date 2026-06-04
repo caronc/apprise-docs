@@ -5,7 +5,7 @@ description: "Send notifiarr notifications."
 
 ## Notifiarr Notifications
 
-- **Source**: <https://notifiarr.com>
+- **Source**: [https://notifiarr.com](https://notifiarr.com)
 - **Icon Support**: No
 - **Attachment Support**: No
 - **Message Format**: Text

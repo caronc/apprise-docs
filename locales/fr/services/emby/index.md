@@ -19,6 +19,7 @@ sample_urls:
   - embys://{userid}:{password}@{hostname}:{port}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntaxe

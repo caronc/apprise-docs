@@ -17,6 +17,7 @@ sample_urls:
   - smtp2go://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -54,7 +55,7 @@ You can adjust what the Name associated with the From email is set to as well:
 
 ## Examples
 
-Send a SMTP2Go notification to the email address <bill.gates@microsoft.com>
+Send a SMTP2Go notification to the email address `bill.gates@microsoft.com`
 
 ```bash
 # Assuming the {domain} we set up with our SMTP2Go account is example.com

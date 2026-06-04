@@ -28,13 +28,14 @@ Inconnue
 💡Le service a ete retire d'Apprise dans [apprise/1226](https://github.com/caronc/apprise/issues/1226)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
-1. Visitez <https://spontit.com> pour creer votre compte.
-2. Pour recuperer votre `{user}` : rendez-vous sur votre profil a <https://spontit.com/profile> et notez votre User ID. Il ressemblera a quelque chose comme `user12345678901`.
-3. Pour recuperer votre `{apikey}` : generez une cle API sur <https://spontit.com/secret_keys>, si ce n'est pas deja fait.
+1. Visitez [https://spontit.com](https://spontit.com) pour creer votre compte.
+2. Pour recuperer votre `{user}` : rendez-vous sur votre profil a [https://spontit.com/profile](https://spontit.com/profile) et notez votre User ID. Il ressemblera a quelque chose comme `user12345678901`.
+3. Pour recuperer votre `{apikey}` : generez une cle API sur [https://spontit.com/secret_keys](https://spontit.com/secret_keys), si ce n'est pas deja fait.
 
 ## Syntaxe
 

@@ -16,6 +16,7 @@ sample_urls:
   - synologys://{user}:{password}@{hostname}/{token}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntaxe

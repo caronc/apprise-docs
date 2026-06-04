@@ -24,13 +24,14 @@ limits:
     max_chars: 4000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 To use Twilio, you will need to acquire your _Account SID_ and _Auth Token_. Both of these are accessible via the [Twilio Dashboard](https://www.twilio.com/console).
 
-You'll need to have a number defined as an Active Number ([from your dashboard here](https://www.twilio.com/console/phone-numbers/incoming)). This will become your **{FromPhoneNo}** when identifying the details below.
+You'll need to have a number defined as an Active Number ([from your dashboard here](https://www.twilio.com/console/phone-numbers/incoming)). This will become your **`{FromPhoneNo}`** when identifying the details below.
 
 ## Syntax
 

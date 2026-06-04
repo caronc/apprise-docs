@@ -17,6 +17,7 @@ sample_urls:
   - smtp2go://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

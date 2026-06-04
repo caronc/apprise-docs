@@ -19,13 +19,14 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 [Sign in](https://twist.com/login) or [create an account](https://twist.com/signup) with the [Twist service](https://twist.com) if you don't already have one.
 
-The main thing with the Twist service is you always authenticate with an **{email}** and a **{password}**. Apprise can work with twist just knowing these two values as well.
+The main thing with the Twist service is you always authenticate with an **`{email}`** and a **`{password}`**. Apprise can work with twist just knowing these two values as well.
 
 ## Syntax
 

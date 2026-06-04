@@ -17,6 +17,7 @@ sample_urls:
   - notica://{user}:{password}@{host}:{port}/{token}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

@@ -17,6 +17,7 @@ sample_urls:
 has_selfhosted: true
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

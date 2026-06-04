@@ -16,6 +16,7 @@ sample_urls:
   - brevo://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

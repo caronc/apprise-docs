@@ -19,6 +19,7 @@ sample_urls:
   - postmark://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

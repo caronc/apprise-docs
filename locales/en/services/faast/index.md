@@ -24,6 +24,7 @@ Unknown
 💡The Service was removed from Apprise in [apprise/1022](https://github.com/caronc/apprise/issues/1222)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

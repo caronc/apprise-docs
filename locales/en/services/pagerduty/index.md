@@ -17,6 +17,7 @@ sample_urls:
   - pagerduty://{integration_key}@{api_key}/{source}/{component}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

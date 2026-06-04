@@ -14,6 +14,7 @@ sample_urls:
   - pagertree://{integration}?action=resolve&thirdparty_id=abc123
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

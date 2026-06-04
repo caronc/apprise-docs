@@ -24,6 +24,7 @@ sample_urls:
 Gitter utilise Matrix et ne dispose plus de son propre service personnalisé. Toutes les informations ci-dessous concernent sa configuration héritée pour ceux qui l'hébergent encore.
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

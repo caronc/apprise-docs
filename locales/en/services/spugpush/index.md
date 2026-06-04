@@ -17,6 +17,7 @@ limits:
   max_chars: 10000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

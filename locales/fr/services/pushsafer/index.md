@@ -18,6 +18,7 @@ sample_urls:
   - psafers://{private_key}/{device_id1}/{device_id2}/{device_idN}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
@@ -26,7 +27,7 @@ La configuration des notifications PushSafer est assez simple. Le message est es
 
 ### Recuperer votre Private Key
 
-Une fois connecte a leur [site officiel](https://www.pushsafer.com/), vous pouvez trouver votre **{private_key}** sur votre [tableau de bord](https://www.pushsafer.com/dashboard/).
+Une fois connecte a leur [site officiel](https://www.pushsafer.com/), vous pouvez trouver votre **`{private_key}`** sur votre [tableau de bord](https://www.pushsafer.com/dashboard/).
 
 ## Syntaxe
 

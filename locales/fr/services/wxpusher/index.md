@@ -16,12 +16,13 @@ sample_urls:
   - wxpusher://{app_token}@{topic1}/{topic2}/{topicN}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
 1. [Creez un compte WxPusher](https://wxpusher.zjiecode.com/).
-1. Recuperez votre `App Token` depuis votre profil.<br/><img width="1428" alt="appToken" src="./images/1cfd1232081adc73.png"><br/>_Remarque : l'image ci-dessus provient de la [page d'aide de WxPusher](https://wxpusher.zjiecode.com/docs/#/?id=%e8%8e%b7%e5%8f%96apptoken)_
+1. Recuperez votre `App Token` depuis votre profil.<br/><img width="1428" alt="appToken" src="./images/1cfd1232081adc73.png"/><br/>_Remarque : l'image ci-dessus provient de la [page d'aide de WxPusher](https://wxpusher.zjiecode.com/docs/#/?id=%e8%8e%b7%e5%8f%96apptoken)_
 
 Les cibles peuvent etre soit un utilisateur, `UID_DATA`, soit un topic, `<integer>`, par exemple :
 

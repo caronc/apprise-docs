@@ -20,6 +20,7 @@ has_attachments: true
 has_selfhosted: true
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

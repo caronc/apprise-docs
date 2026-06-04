@@ -24,11 +24,12 @@ limits:
   max_chars: 4000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
-To use this plugin, you need to first set yourself up with <http://mattermost.com>. Download their software and set it up.
+To use this plugin, you need to first set yourself up with [http://mattermost.com](http://mattermost.com). Download their software and set it up.
 
 This plugin supports 2 different integration styles:
 
@@ -40,11 +41,11 @@ This plugin supports 2 different integration styles:
 From here you'll need an \*_Incoming Webhook_. This can be done as follows:
 
 1. Click on the **Integrations** option under the channel dropdown and select **Incoming Webhook**:<br/>
-   <img alt="Incoming Webhook" src="./images/107084396-ff55dc00-67c4-11eb-899c-a65b2f639158.png" height="300">
+   <img alt="Incoming Webhook" src="./images/107084396-ff55dc00-67c4-11eb-899c-a65b2f639158.png" height="300"/>
 2. From here you can select **Add Incoming Webhook**:<br/>
-   <img alt="Add Incoming Webhook" src="./images/107083851-3d9ecb80-67c4-11eb-8bf7-820a3554eadb.png" height="300">
+   <img alt="Add Incoming Webhook" src="./images/107083851-3d9ecb80-67c4-11eb-8bf7-820a3554eadb.png" height="300"/>
 3. Finally you'll be able to customize how you want the webhook to act and you can press **Save** at the bottom when you're complete.<br/>
-   <img alt="Generate An Apprise URL from it" src="./images/107083865-442d4300-67c4-11eb-8228-7d7afb5974e3.png" height="300">
+   <img alt="Generate An Apprise URL from it" src="./images/107083865-442d4300-67c4-11eb-8228-7d7afb5974e3.png" height="300"/>
 
 An example URL you may be provided could look like this:
 

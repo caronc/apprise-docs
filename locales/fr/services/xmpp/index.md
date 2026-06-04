@@ -20,6 +20,7 @@ sample_urls:
   - xmpps://{user}:{password}@{hostname}/{jid}?xmpp={xmpp_server}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

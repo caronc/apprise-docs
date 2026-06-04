@@ -18,6 +18,7 @@ sample_urls:
   - pjets://{user}:{password}@{host}/{secret_key}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 :::note

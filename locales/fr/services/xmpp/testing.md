@@ -81,6 +81,6 @@ Apprise consigne automatiquement un avertissement ciblé lorsqu'il détecte cett
 
 Il ne s'agit pas d'un problème propre à Apprise. La rupture de SCRAM-PLUS affecte un grand nombre de bibliothèques et de projets Python. Le membre de la communauté qui a signalé ce problème en premier à Apprise en suit chaque occurrence à l'adresse :
 
-> **<https://github.com/scram-sasl/info/issues/1>**
+> **[https://github.com/scram-sasl/info/issues/1](https://github.com/scram-sasl/info/issues/1)**
 
 Cette page documente l'ampleur du problème dans tout l'écosystème Python et a servi à déposer des tickets en amont dans Python et dans de nombreuses bibliothèques. Si ce problème vous touche, pensez à y ajouter un commentaire ou un pouce levé pour aider à augmenter la visibilité et accélérer un correctif en amont.

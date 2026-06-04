@@ -21,6 +21,7 @@ limits:
   max_chars: 512
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
@@ -29,7 +30,7 @@ Notifico vous permet d'envoyer un message vers un ou plusieurs salons IRC. Le se
 
 ### Configuration officielle / legacy (n.tkte.ch)
 
-1. Rendez-vous sur <https://n.tkte.ch> et creez un compte.
+1. Rendez-vous sur [https://n.tkte.ch](https://n.tkte.ch) et creez un compte.
 1. Creez un projet, manuellement ou en le synchronisant avec GitHub.
 1. Depuis le projet, creez ensuite un **Plain Text Message Hook**.
    ![notifico plain text hook](./images/66708086-3f17cb00-ed19-11e9-8e37-bc7e6ba5a3cd.png)
@@ -53,7 +54,7 @@ Dans l'exemple ci-dessus :
 
 ### Configuration auto-hebergee
 
-Deployez une instance Notifico en suivant les instructions disponibles sur <https://notifico.tech/>. Une fois l'instance en fonctionnement, creez un projet et un Plain Text Message Hook comme decrit ci-dessus. Utilisez le nom d'hote (et le port si necessaire) de votre instance dans l'URL Apprise.
+Deployez une instance Notifico en suivant les instructions disponibles sur [https://notifico.tech/](https://notifico.tech/). Une fois l'instance en fonctionnement, creez un projet et un Plain Text Message Hook comme decrit ci-dessus. Utilisez le nom d'hote (et le port si necessaire) de votre instance dans l'URL Apprise.
 
 ## Syntaxe
 

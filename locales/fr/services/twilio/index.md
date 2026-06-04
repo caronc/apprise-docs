@@ -24,13 +24,14 @@ limits:
     max_chars: 4000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
 Pour utiliser Twilio, vous devez recuperer votre _Account SID_ et votre _Auth Token_. Tous deux sont disponibles via le [Tableau de Bord Twilio](https://www.twilio.com/console).
 
-Vous devez aussi disposer d'un numero defini comme Active Number, [accessible depuis votre tableau de bord ici](https://www.twilio.com/console/phone-numbers/incoming). Il deviendra votre **{FromPhoneNo}** dans les exemples ci-dessous.
+Vous devez aussi disposer d'un numero defini comme Active Number, [accessible depuis votre tableau de bord ici](https://www.twilio.com/console/phone-numbers/incoming). Il deviendra votre **`{FromPhoneNo}`** dans les exemples ci-dessous.
 
 ## Syntaxe
 

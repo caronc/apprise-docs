@@ -17,6 +17,7 @@ sample_urls:
   - sendgrid://{apikey}:{from_email}/{to_email1}/{to_email2}/{to_email3}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -58,7 +59,7 @@ If you want to take advantage of the `dynamic_template_data` variables, just cre
 
 ### Dynamic Template Data
 
-Templates allow you to define {{variables}} within them that can be substituted on the fly once the email is sent. You can identify and set these variables using Apprise by simply sticking a plus (+) in front of any parameter you specify on your URL string.
+Templates allow you to define {`{variables}`} within them that can be substituted on the fly once the email is sent. You can identify and set these variables using Apprise by simply sticking a plus (+) in front of any parameter you specify on your URL string.
 
 Consider the following template: `d-e624763c71314ea2a1fae38d7fa64a4a`
 

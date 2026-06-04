@@ -21,13 +21,14 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 46elks is a straightforward SMS provider. You authenticate with your 46elks API user and password, then send `to`, `message`, and optionally `from`. The plugin loops per target recipient and posts form-encoded payloads to the fixed API endpoint.
 
-1. Log in at <https://46elks.com> and obtain your **API username** and **password**.
+1. Log in at [https://46elks.com](https://46elks.com) and obtain your **API username** and **password**.
 2. Optionally choose a **From** sender ID, either an E.164 number or an approved alphanumeric sender.
 3. Use the `46elks://` URL form in Apprise to send messages.
 

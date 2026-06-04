@@ -18,6 +18,7 @@ sample_urls:
   - mailto://userid:password@example.com?smtp=mail.example.com&from=noreply@example.com&name=no%20reply
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntax
@@ -50,18 +51,18 @@ When a provider is recognized, Apprise automatically configures:
 
 In most cases, you only need to provide your email and password.
 
-| Provider                                     | Example URL                                                         | Notes                                                                                                                     |
-| -------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Google (Gmail)**                           | `mailto://user:app-password@gmail.com`                              | If 2-Step Verification is enabled, generate an App Password: <https://security.google.com/settings/security/apppasswords> |
-| **Yahoo**                                    | `mailto://user:app-password@yahoo.com`                              | Requires an App Password: <https://help.yahoo.com/kb/SLN15241.html>                                                       |
-| **Fastmail**                                 | `mailto://user:app-password@fastmail.com`                           | App Password must permit SMTP. See supported domains [here](./fastmail/).                                                 |
-| **GMX**                                      | `mailto://user:password@gmx.net`                                    | Also supports `gmx.com`, `gmx.de`, `gmx.at`, `gmx.ch`, `gmx.fr`.                                                          |
-| **Zoho**                                     | `mailto://user:password@zoho.com`                                   | Provider defaults are applied automatically.                                                                              |
-| **Yandex**                                   | `mailto://user:password@yandex.com`                                 | Login may be user-id based depending on domain rules.                                                                     |
-| **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` must use a validated sender identity.                                                                             |
-| **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Provider defaults are applied automatically.                                                                              |
-| **163.com**                                  | `mailto://user:password@163.com`                                    | Provider defaults are applied automatically.                                                                              |
-| **Microsoft (Outlook, Hotmail, Office 365)** | _Use `azure://` instead_                                            | Microsoft disabled SMTP basic authentication. Use the [`azure://` plugin](/services/office365/).                          |
+| Provider                                     | Example URL                                                         | Notes                                                                                                                                                                                 |
+| -------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Google (Gmail)**                           | `mailto://user:app-password@gmail.com`                              | If 2-Step Verification is enabled, generate an App Password: [https://security.google.com/settings/security/apppasswords](https://security.google.com/settings/security/apppasswords) |
+| **Yahoo**                                    | `mailto://user:app-password@yahoo.com`                              | Requires an App Password: [https://help.yahoo.com/kb/SLN15241.html](https://help.yahoo.com/kb/SLN15241.html)                                                                          |
+| **Fastmail**                                 | `mailto://user:app-password@fastmail.com`                           | App Password must permit SMTP. See supported domains [here](./fastmail/).                                                                                                             |
+| **GMX**                                      | `mailto://user:password@gmx.net`                                    | Also supports `gmx.com`, `gmx.de`, `gmx.at`, `gmx.ch`, `gmx.fr`.                                                                                                                      |
+| **Zoho**                                     | `mailto://user:password@zoho.com`                                   | Provider defaults are applied automatically.                                                                                                                                          |
+| **Yandex**                                   | `mailto://user:password@yandex.com`                                 | Login may be user-id based depending on domain rules.                                                                                                                                 |
+| **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` must use a validated sender identity.                                                                                                                                         |
+| **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Provider defaults are applied automatically.                                                                                                                                          |
+| **163.com**                                  | `mailto://user:password@163.com`                                    | Provider defaults are applied automatically.                                                                                                                                          |
+| **Microsoft (Outlook, Hotmail, Office 365)** | _Use `azure://` instead_                                            | Microsoft disabled SMTP basic authentication. Use the [`azure://` plugin](/services/office365/).                                                                                      |
 
 > This is not an exhaustive list. Additional domains are automatically detected when supported.
 
@@ -328,7 +329,7 @@ Auto-generation is enabled by default when [persistent storage](/library/persist
 
 Apprise stores key material inside a **hashed namespace directory** under `storage_path`. The directory name is an 8-character hash derived deterministically from the URL, so the same URL always maps to the same directory. Use `pgppub=` and `pgpprv=` to point at absolute paths anywhere on the filesystem when you prefer not to use the cache at all.
 
-#### Public Key Search Order {#public-key-search-order}
+#### Public Key Search Order
 
 Public keys are matched against **recipient** email addresses (first match wins):
 
@@ -343,7 +344,7 @@ Public keys are matched against **recipient** email addresses (first match wins)
 
 Priority 1 entries are generated for each recipient in order; the baseline filenames (priority 2) are tried last.
 
-#### Private Key Search Order {#private-key-search-order}
+#### Private Key Search Order
 
 Private keys are matched against the **sender** (From) address (first match wins):
 

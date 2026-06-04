@@ -20,13 +20,14 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 To use Vonage, you will need to acquire your _API Key_ and _API Secret_. Both of these are accessible via the [Vonage Dashboard](https://dashboard.nexmo.com/getting-started-guide).
 
-The **{FromPhoneNo}** must be a number provided to you through Nexmo
+The **`{FromPhoneNo}`** must be a number provided to you through Nexmo
 
 ## Syntax
 

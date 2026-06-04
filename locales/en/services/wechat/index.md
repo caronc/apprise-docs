@@ -17,6 +17,7 @@ sample_urls:
   - wechat://{corpid}:{corpsecret}@{agentid}/{userid}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

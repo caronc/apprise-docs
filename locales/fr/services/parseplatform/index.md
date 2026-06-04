@@ -17,6 +17,7 @@ sample_urls:
   - parseps://{app_id}:{master_key}@{hostname}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

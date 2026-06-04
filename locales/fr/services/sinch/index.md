@@ -19,13 +19,14 @@ limits:
   max_chars: 160
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
 Pour utiliser Sinch, vous devez obtenir votre _Service Plan ID_ et votre _API Token_. Ces deux éléments sont accessibles via le [tableau de bord Sinch](https://dashboard.sinch.com/sms/overview) ou depuis [la section API](https://dashboard.sinch.com/sms/api/rest).
 
-Vous devez avoir un numéro défini comme numéro actif ([depuis votre tableau de bord ici](https://dashboard.sinch.com/numbers/your-numbers/number)). Ce numéro deviendra votre **{FromPhoneNo}** lors de l'identification des détails ci-dessous.
+Vous devez avoir un numéro défini comme numéro actif ([depuis votre tableau de bord ici](https://dashboard.sinch.com/numbers/your-numbers/number)). Ce numéro deviendra votre **`{FromPhoneNo}`** lors de l'identification des détails ci-dessous.
 
 ## Syntaxe
 

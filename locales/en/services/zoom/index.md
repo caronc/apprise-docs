@@ -18,13 +18,14 @@ limits:
   max_chars: 4000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 Zoom Team Chat notifications are delivered through the **Incoming Webhook** app available on the Zoom Marketplace. The app posts messages into a channel of your choice.
 
-1. Sign in to <https://marketplace.zoom.us> and search for **Incoming Webhook**.
+1. Sign in to [https://marketplace.zoom.us](https://marketplace.zoom.us) and search for **Incoming Webhook**.
 2. Click **Add** to install the app to your Zoom account.
 3. Open Zoom Team Chat and navigate to the channel you want to receive notifications.
 4. In the message input box, type the slash command:

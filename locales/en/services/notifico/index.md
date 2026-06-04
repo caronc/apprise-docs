@@ -21,6 +21,7 @@ limits:
   max_chars: 512
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -29,7 +30,7 @@ Notifico allows you to send a message to one or more IRC Channel(s). The origina
 
 ### Official / Legacy Setup (n.tkte.ch)
 
-1. Visit <https://n.tkte.ch> and sign up for an account.
+1. Visit [https://n.tkte.ch](https://n.tkte.ch) and sign up for an account.
 1. Create a project; either manually or sync with GitHub.
 1. From within the project, create a **Plain Text Message Hook**.
    ![notifico plain text hook](./images/66708086-3f17cb00-ed19-11e9-8e37-bc7e6ba5a3cd.png)
@@ -53,7 +54,7 @@ From the example above:
 
 ### Self-Hosted Setup
 
-Deploy a Notifico instance by following the instructions at <https://notifico.tech/>. Once running, create a project and a Plain Text Message Hook exactly as described above. Use the hostname (and optional port) of your instance in the Apprise URL.
+Deploy a Notifico instance by following the instructions at [https://notifico.tech/](https://notifico.tech/). Once running, create a project and a Plain Text Message Hook exactly as described above. Use the hostname (and optional port) of your instance in the Apprise URL.
 
 ## Syntax
 

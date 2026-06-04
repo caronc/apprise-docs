@@ -19,13 +19,14 @@ limits:
   max_chars: 1000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
 [Connectez-vous](https://twist.com/login) ou [créez un compte](https://twist.com/signup) auprès du [service Twist](https://twist.com) si vous n'en avez pas encore un.
 
-L'essentiel avec le service Twist est que vous vous authentifiez toujours avec un **{email}** et un **{password}**. Apprise peut fonctionner avec Twist en connaissant simplement ces deux valeurs.
+L'essentiel avec le service Twist est que vous vous authentifiez toujours avec un **`{email}`** et un **`{password}`**. Apprise peut fonctionner avec Twist en connaissant simplement ces deux valeurs.
 
 ## Syntaxe
 

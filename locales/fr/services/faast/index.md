@@ -24,6 +24,7 @@ Inconnue
 💡 Ce service a ete retire d'Apprise dans [apprise/1022](https://github.com/caronc/apprise/issues/1222)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

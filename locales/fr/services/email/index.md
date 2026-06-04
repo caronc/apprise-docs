@@ -18,6 +18,7 @@ sample_urls:
   - mailto://userid:password@example.com?smtp=mail.example.com&from=noreply@example.com&name=no%20reply
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntaxe
@@ -50,18 +51,18 @@ Lorsqu'un fournisseur est reconnu, Apprise configure automatiquement :
 
 Dans la plupart des cas, il vous suffit de fournir votre adresse e-mail et votre mot de passe.
 
-| Fournisseur                                  | Exemple d'URL                                                       | Remarques                                                                                                                                      |
-| -------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Google (Gmail)**                           | `mailto://user:app-password@gmail.com`                              | Si la validation en 2 étapes est activée, générez un mot de passe d'application : <https://security.google.com/settings/security/apppasswords> |
-| **Yahoo**                                    | `mailto://user:app-password@yahoo.com`                              | Nécessite un mot de passe d'application : <https://help.yahoo.com/kb/SLN15241.html>                                                            |
-| **Fastmail**                                 | `mailto://user:app-password@fastmail.com`                           | Le mot de passe d'application doit autoriser SMTP. Voir les domaines pris en charge [ici](./fastmail/).                                        |
-| **GMX**                                      | `mailto://user:password@gmx.net`                                    | Prend aussi en charge `gmx.com`, `gmx.de`, `gmx.at`, `gmx.ch`, `gmx.fr`.                                                                       |
-| **Zoho**                                     | `mailto://user:password@zoho.com`                                   | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                         |
-| **Yandex**                                   | `mailto://user:password@yandex.com`                                 | La connexion peut reposer sur l'identifiant utilisateur selon les règles du domaine.                                                           |
-| **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` doit utiliser une identité d'expéditeur validée.                                                                                       |
-| **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                         |
-| **163.com**                                  | `mailto://user:password@163.com`                                    | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                         |
-| **Microsoft (Outlook, Hotmail, Office 365)** | _Utilisez `azure://` à la place_                                    | Microsoft a désactivé l'authentification SMTP basique. Utilisez le plugin [`azure://`](../office365/).                                         |
+| Fournisseur                                  | Exemple d'URL                                                       | Remarques                                                                                                                                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Google (Gmail)**                           | `mailto://user:app-password@gmail.com`                              | Si la validation en 2 étapes est activée, générez un mot de passe d'application : [https://security.google.com/settings/security/apppasswords](https://security.google.com/settings/security/apppasswords) |
+| **Yahoo**                                    | `mailto://user:app-password@yahoo.com`                              | Nécessite un mot de passe d'application : [https://help.yahoo.com/kb/SLN15241.html](https://help.yahoo.com/kb/SLN15241.html)                                                                               |
+| **Fastmail**                                 | `mailto://user:app-password@fastmail.com`                           | Le mot de passe d'application doit autoriser SMTP. Voir les domaines pris en charge [ici](./fastmail/).                                                                                                    |
+| **GMX**                                      | `mailto://user:password@gmx.net`                                    | Prend aussi en charge `gmx.com`, `gmx.de`, `gmx.at`, `gmx.ch`, `gmx.fr`.                                                                                                                                   |
+| **Zoho**                                     | `mailto://user:password@zoho.com`                                   | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                                                                                     |
+| **Yandex**                                   | `mailto://user:password@yandex.com`                                 | La connexion peut reposer sur l'identifiant utilisateur selon les règles du domaine.                                                                                                                       |
+| **SendGrid (SMTP)**                          | `mailto://apikey:password@sendgrid.com?from=noreply@yourdomain.com` | `from=` doit utiliser une identité d'expéditeur validée.                                                                                                                                                   |
+| **QQ / Foxmail**                             | `mailto://user:password@qq.com`                                     | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                                                                                     |
+| **163.com**                                  | `mailto://user:password@163.com`                                    | Les valeurs par défaut du fournisseur sont appliquées automatiquement.                                                                                                                                     |
+| **Microsoft (Outlook, Hotmail, Office 365)** | _Utilisez `azure://` à la place_                                    | Microsoft a désactivé l'authentification SMTP basique. Utilisez le plugin [`azure://`](../office365/).                                                                                                     |
 
 > Cette liste n'est pas exhaustive. Des domaines supplémentaires sont détectés automatiquement lorsqu'ils sont pris en charge.
 
@@ -328,7 +329,7 @@ La génération automatique est activée par défaut lorsque le [stockage persis
 
 Apprise stocke le matériel de clé dans un **répertoire d'espace de noms haché** sous `storage_path`. Le nom du répertoire est un hachage de 8 caractères dérivé de manière déterministe à partir de l'URL, de sorte que la même URL pointe toujours vers le même répertoire. Utilisez `pgppub=` et `pgpprv=` pour pointer vers des chemins absolus n'importe où sur le système de fichiers si vous préférez ne pas utiliser le cache.
 
-#### Ordre de Recherche des Clés Publiques {#ordre-de-recherche-des-cles-publiques}
+#### Ordre de Recherche des Clés Publiques
 
 Les clés publiques sont recherchées en fonction des adresses e-mail des **destinataires** (premier résultat trouvé est utilisé) :
 
@@ -343,7 +344,7 @@ Les clés publiques sont recherchées en fonction des adresses e-mail des **dest
 
 Les entrées de priorité 1 sont générées pour chaque destinataire dans l'ordre ; les noms de fichiers de base (priorité 2) sont essayés en dernier.
 
-#### Ordre de Recherche des Clés Privées {#ordre-de-recherche-des-cles-privees}
+#### Ordre de Recherche des Clés Privées
 
 Les clés privées sont recherchées en fonction de l'adresse **expéditeur** (From) (premier résultat trouvé est utilisé) :
 

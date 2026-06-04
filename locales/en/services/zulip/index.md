@@ -18,6 +18,7 @@ limits:
   max_chars: 10000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -30,7 +31,7 @@ To use this Zulip, you must have a Zulip Chat bot defined; See [here for more de
 4. Click Add a new bot.
 5. Fill out the fields, and click Create bot.
 
-If you know your organization **{ID}** (as it's part of your zulipchat.com url), then you can also access your bot information by visiting: `https://ID.zulipchat.com/#settings/your-bots`
+If you know your organization **`{ID}`** (as it's part of your zulipchat.com url), then you can also access your bot information by visiting: `https://ID.zulipchat.com/#settings/your-bots`
 
 Upon creating a bot successfully, you'll now be able to access its API Token.
 
@@ -44,7 +45,7 @@ Valid syntax is as follows:
 - `zulip://{botname}@{organization}/{token}/{email}`
 - `zulip://{botname}@{organization}/{token}/{email1}/{email2}/{emailN}`
 
-**Note**: If neither a **{stream}** or **{email}** is specified then by default the stream **general** is notified.
+**Note**: If neither a **`{stream}`** or **`{email}`** is specified then by default the stream **general** is notified.
 
 You can also mix and match the entries above too:
 

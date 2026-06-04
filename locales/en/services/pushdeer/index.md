@@ -18,6 +18,7 @@ sample_urls:
   - pushdeer://{hostname}:{port}/{push_key}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

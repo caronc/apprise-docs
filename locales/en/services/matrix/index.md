@@ -23,6 +23,7 @@ limits:
   max_chars: 65000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -92,7 +93,7 @@ Room aliases (`#`), room IDs (`!`), and DM users (`@`) can be freely mixed and m
 - `matrixs://{token}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
 
 :::note
-If no user and/or password is specified, the Matrix registration process may be invoked. Some Matrix servers allow automatic registration of temporary users, depending on server configuration. In most production environments you should always provide both **{user}** and **{password}**, or a pre-generated **{token}**.
+If no user and/or password is specified, the Matrix registration process may be invoked. Some Matrix servers allow automatic registration of temporary users, depending on server configuration. In most production environments you should always provide both **`{user}`** and **`{password}`**, or a pre-generated **`{token}`**.
 :::
 
 ## Room Identifiers and Homeserver Behaviour
@@ -205,11 +206,11 @@ Or directly:
 | discovery           | No       | When enabled (the default), Apprise performs a `.well-known/matrix/client` server-discovery lookup on first use to resolve the actual homeserver base URL. Set to **no** to skip discovery and connect directly to the specified hostname. Automatically disabled in webhook mode. Default is **yes**.                                                                                                                                                                                                                                                                                                                                           |
 
 :::note
-If neither a **{room_alias}**, **{room_id}**, nor a **{target_user}** is specified, Apprise will query the server for currently joined rooms and notify all of them.
+If neither a **`{room_alias}`**, **`{room_id}`**, nor a **`{target_user}`** is specified, Apprise will query the server for currently joined rooms and notify all of them.
 :::
 
 :::note
-When sending to a **{target_user}**, Apprise looks up an existing DM room via `m.direct` account data, or creates one if none exists. If the target user later leaves that room, Apprise will continue sending to it (the messages are accepted by the server but the user will not see them). There is no automatic re-invite. To recover, the target user should rejoin, or you should clear Apprise persistent storage so that a new DM room is created on the next send.
+When sending to a **`{target_user}`**, Apprise looks up an existing DM room via `m.direct` account data, or creates one if none exists. If the target user later leaves that room, Apprise will continue sending to it (the messages are accepted by the server but the user will not see them). There is no automatic re-invite. To recover, the target user should rejoin, or you should clear Apprise persistent storage so that a new DM room is created on the next send.
 :::
 
 :::note

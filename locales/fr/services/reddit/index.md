@@ -17,11 +17,12 @@ limits:
   max_chars: 6000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
-1. Rendez-vous sur <https://old.reddit.com/prefs/apps> et faites defiler jusqu'en bas.
+1. Rendez-vous sur [https://old.reddit.com/prefs/apps](https://old.reddit.com/prefs/apps) et faites defiler jusqu'en bas.
 1. Cliquez sur le bouton indiquant '**are you a developer? create an app...**'.
 1. Definissez le mode sur `script`.
 1. Fournissez un `name`, une `description` et une `redirect uri`, les valeurs peuvent etre quelconques.

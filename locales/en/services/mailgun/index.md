@@ -17,6 +17,7 @@ sample_urls:
   - mailgun://{user}@{domain}/{apikey}/{email1}/{email2}/{emailN}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -64,7 +65,7 @@ If you wish to utilize extensions, you'll need to escape the addition/plus (+) c
 
 ## Examples
 
-Send a Mailgun notification to the email address <bill.gates@microsoft.com>
+Send a Mailgun notification to the email address `bill.gates@microsoft.com`
 
 ```bash
 # Assuming the {domain} we set up with our mailgun account is example.com

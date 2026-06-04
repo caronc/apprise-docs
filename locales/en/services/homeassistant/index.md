@@ -21,6 +21,7 @@ sample_urls:
   - hassio://{host}/{access_token}/{domain}.{service}:{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 :::tip[Using Apprise from within Home Assistant?]

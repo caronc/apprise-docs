@@ -22,11 +22,12 @@ ended: 2016
 
 It is hard to find much details on this project and whether or not it still exists in some form or another.
 
-Here is the open source project that extended on this: <https://github.com/JohnPersano/SuperToasts>.
+Here is the open source project that extended on this: [https://github.com/JohnPersano/SuperToasts](https://github.com/JohnPersano/SuperToasts).
 
 💡The Service was removed from Apprise in [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

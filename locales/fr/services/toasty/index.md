@@ -22,11 +22,12 @@ ended: 2016
 
 Il est difficile de trouver des informations detaillees sur ce projet, ou meme de savoir s'il existe encore sous une forme ou une autre.
 
-Voici le projet open source qui s'appuyait dessus : <https://github.com/JohnPersano/SuperToasts>.
+Voici le projet open source qui s'appuyait dessus : [https://github.com/JohnPersano/SuperToasts](https://github.com/JohnPersano/SuperToasts).
 
 💡 Ce service a ete retire d'Apprise dans [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

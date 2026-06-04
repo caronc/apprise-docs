@@ -17,13 +17,14 @@ limits:
   max_chars: 10000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
 SimplePush est un systeme de messagerie plutot simple que vous pouvez utiliser sur votre appareil Android via leur application disponible [ici](https://play.google.com/store/apps/details?id=io.tymm.simplepush).
 
-Vous pouvez facultativement ajouter un chiffrement supplementaire aux notifications dans les parametres. Le service vous fournit alors une valeur **{salt}** et vous permet de definir votre propre **{password}** de chiffrement.
+Vous pouvez facultativement ajouter un chiffrement supplementaire aux notifications dans les parametres. Le service vous fournit alors une valeur **`{salt}`** et vous permet de definir votre propre **`{password}`** de chiffrement.
 
 ### 🔒 Faiblesse du Chiffrement AES-CBC-128
 
@@ -36,7 +37,7 @@ Si ce niveau de chiffrement ne vous convient pas, plusieurs options s'offrent a 
 
 Il est important de noter que ce chiffrement plus faible n'est utilise par Apprise que pour rester compatible avec SimplePush. Cela n'a aucun effet de bord et n'impacte aucun autre service de notification securise pris en charge par Apprise.
 
-Vous trouverez ci-dessous une capture d'ecran de <https://simplepush.io/features> presentant le reglage de chiffrement tel qu'il est defini par le service d'origine :<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
+Vous trouverez ci-dessous une capture d'ecran de [https://simplepush.io/features](https://simplepush.io/features) presentant le reglage de chiffrement tel qu'il est defini par le service d'origine :<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
 
 ## Syntaxe
 

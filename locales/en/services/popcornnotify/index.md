@@ -16,6 +16,7 @@ sample_urls:
   - popcorn://{ApiKey}/{Email1}/{Email2}/{EmailN}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

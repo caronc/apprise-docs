@@ -29,6 +29,7 @@ Presumably service was never restored and they just closed up shop.
 💡The Service was removed from Apprise in [apprise/46](https://github.com/caronc/apprise/issues/46)
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

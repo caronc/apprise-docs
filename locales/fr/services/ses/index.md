@@ -17,6 +17,7 @@ sample_urls:
   - ses://{FromUser}:{SessionToken}@{FromDomain}/{AccessKeyID}/{SecretKey}/{Region}/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

@@ -17,13 +17,14 @@ limits:
   max_chars: 10000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
 SimplePush is a pretty straight forward messaging system you can get for your Android Device through their App [here](https://play.google.com/store/apps/details?id=io.tymm.simplepush).
 
-You can optionally add additional notification encryption in the settings where it provides you with a **{salt}** value and allows you to configure/set your own encryption **{password}**.
+You can optionally add additional notification encryption in the settings where it provides you with a **`{salt}`** value and allows you to configure/set your own encryption **`{password}`**.
 
 ### 🔒 AES-CBC-128 Encryption Weakness
 
@@ -36,7 +37,7 @@ If the level of encryption is not satisfactory to you, your options are:
 
 What is important to identify is this weak encryption used by Apprise to access SimplePush is in place for compliance only. This will never have any cascading effect or impact any other secure notification service also supported by Apprise.
 
-Below is a screenshot from <https://simplepush.io/features> explaining the defined encryption setting from the upstream source:<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
+Below is a screenshot from [https://simplepush.io/features](https://simplepush.io/features) explaining the defined encryption setting from the upstream source:<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
 
 ## Syntax
 

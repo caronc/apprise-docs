@@ -20,6 +20,7 @@ sample_urls:
   - ntfy://{token}@{hostname}/{topics}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -35,8 +36,8 @@ Apprise supports both insecure (`ntfy://`) and secure (`ntfys://`) schemas.
 
 Ntfy can send notifications through the following **modes**:
 
-- **private**: A locally hosted private server <https://github.com/binwiederhier/ntfy>
-- **cloud**: A setup pointing to <https://ntfy.sh>
+- **private**: A locally hosted private server [https://github.com/binwiederhier/ntfy](https://github.com/binwiederhier/ntfy)
+- **cloud**: A setup pointing to [https://ntfy.sh](https://ntfy.sh)
 
 Valid syntax is as follows:
 

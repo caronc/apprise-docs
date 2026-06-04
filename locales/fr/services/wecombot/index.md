@@ -14,6 +14,7 @@ sample_urls:
   - https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte

@@ -20,11 +20,12 @@ limits:
   max_chars: 15000
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
-1. Visit <https://www.opsgenie.com> to create your account.
+1. Visit [https://www.opsgenie.com](https://www.opsgenie.com) to create your account.
 2. [Generate your Integration API Key](https://app.opsgenie.com/settings/integration/add/API/)
 
 :::note
@@ -63,9 +64,9 @@ You can also mix/match the targets:
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | apikey     | Yes      | This is the API Key associated with your Opsgenie account.                                                                                                                                                          |
 | user       | No       | The user you wish to notify; this can be a `username`, `email`, or `uuid4`. This is the assumed default target type to notify, but it is advised you prefix all users with a `@` symbol to eliminate any ambiguity. |
-| team       | No       | The team you wish to notify; this can be the team name itself, or a `uuid4` associated with it. <br>**Note:** Teams must be prefixed with a `#` symbol.                                                             |
-| schedule   | No       | The schedule you wish to notify; this can be the schedule name itself, or a `uuid4` associated with it. <br>**Note:** Schedules must be prefixed with a `*` symbol.                                                 |
-| escalation | No       | The escalation you wish to notify; this can be the escalation name itself, or a `uuid4` associated with it. <br>**Note:** Escalations must be prefixed with a `^` symbol.                                           |
+| team       | No       | The team you wish to notify; this can be the team name itself, or a `uuid4` associated with it. <br/>**Note:** Teams must be prefixed with a `#` symbol.                                                            |
+| schedule   | No       | The schedule you wish to notify; this can be the schedule name itself, or a `uuid4` associated with it. <br/>**Note:** Schedules must be prefixed with a `*` symbol.                                                |
+| escalation | No       | The escalation you wish to notify; this can be the escalation name itself, or a `uuid4` associated with it. <br/>**Note:** Escalations must be prefixed with a `^` symbol.                                          |
 | region     | No       | The 2 character region code. By default this is set to `us` if not specified. Europeans must set this to `eu` to work correctly.                                                                                    |
 | batch      | No       | Set it to **Yes** if you want all identified targets to be notified in batches (instead of individually). By default this is set to **No**.                                                                         |
 | tags       | No       | A comma separated list of tags you can associate with your Opsgenie message                                                                                                                                         |

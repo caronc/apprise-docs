@@ -18,6 +18,7 @@ sample_urls:
   - psafers://{private_key}/{device_id1}/{device_id2}/{device_idN}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -26,7 +27,7 @@ There isn't too much effort requires to use PushSafer notifications. The message
 
 ### Getting Your Private Key
 
-Once you log into their official [website](https://www.pushsafer.com/), you can find the **{private_key}** on your [dashboard](https://www.pushsafer.com/dashboard/).
+Once you log into their official [website](https://www.pushsafer.com/), you can find the **`{private_key}`** on your [dashboard](https://www.pushsafer.com/dashboard/).
 
 ## Syntax
 

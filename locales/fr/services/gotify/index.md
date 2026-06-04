@@ -19,6 +19,7 @@ sample_urls:
   - gotifys://{hostname}/{token}/?priority=high
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Syntaxe

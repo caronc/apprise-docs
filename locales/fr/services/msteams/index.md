@@ -26,11 +26,12 @@ limits:
 Ce service a été retiré en amont. Toutes les informations ci-dessous concernent sa configuration héritée.
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte
 
-Créez un compte gratuit sur <https://teams.microsoft.com>.
+Créez un compte gratuit sur [https://teams.microsoft.com](https://teams.microsoft.com).
 
 Vous devrez créer un **Incoming Webhook** pour relier Apprise. Cela peut se faire via le **magasin d'applications** en bas à gauche de l'interface de type Slack ; ne vous inquiétez pas, c'est gratuit. Depuis ce magasin, recherchez **Incoming Webhook**. Une fois sélectionné, vous pourrez l'associer à votre équipe, lui attribuer un nom et un avatar, puis le rattacher à un canal.
 

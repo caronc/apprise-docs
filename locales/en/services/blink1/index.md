@@ -19,6 +19,7 @@ sample_urls:
   - blink1://ABCD1234/
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup

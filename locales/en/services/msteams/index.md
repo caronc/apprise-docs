@@ -26,11 +26,12 @@ limits:
 This service has been retired upstream. All information below pertains to its legacy configuration.
 :::
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
-Create a free account at <https://teams.microsoft.com>.
+Create a free account at [https://teams.microsoft.com](https://teams.microsoft.com).
 
 You will need to create an **Incoming Webhook** to attach Apprise. This can be accomplished through the **the app store** (bottom left hand side of slack like interface); don't worry, it's free. From within the app store, search for **Incoming Webhook**. Once you click on it you can associate it with your team. You can also assign it a name, and an avatar. Finally you will have to assign it to a channel.
 
@@ -250,5 +251,5 @@ payload = {
 - Tokens can have white space around them for readability if you like. Hence `{{ token }}` is no different then `{{token}}`.
 - All tokens are escaped properly, so don't worry if your defined token has a double quote in it (`"`); it would be correctly escaped before it is sent upstream.
 - Tokens ARE case sensitive, so `{{Token}}` NEEDS to be populated with a `:Token=` value on your URL.
-- Tokens that are not matched correctly simply are not swapped and the {{keyword}} will remain as is in the message.
+- Tokens that are not matched correctly simply are not swapped and the {`{keyword}`} will remain as is in the message.
 - Apprise always requires you to specify a `--body` (`-b`) at a very minimum which can be optionally referenced as `{{app_body}}` in your template. Even if you choose not to use this token, you must still pass in something (anything) just to satisfy this requirement and make use of the template calls.

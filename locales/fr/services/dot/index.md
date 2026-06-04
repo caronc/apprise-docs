@@ -15,6 +15,7 @@ sample_urls:
   - dot://{apitoken}@{device_id}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du compte

@@ -26,6 +26,7 @@ limits:
     max_chars: 7439
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -37,12 +38,12 @@ the `mode=` URL parameter.
 
 ### Mode 1 — Webhook (default)
 
-To use webhook mode, first access <https://teams.webex.com> and create an
+To use webhook mode, first access [https://teams.webex.com](https://teams.webex.com) and create an
 account if you don't already have one. You'll want to create at least one
 'space' before getting the 'incoming webhook'.
 
 Next, install the 'Incoming webhook' integration found under the 'other'
-category at <https://apphub.webex.com/integrations/>. At the time of writing,
+category at [https://apphub.webex.com/integrations/](https://apphub.webex.com/integrations/). At the time of writing,
 [this was a direct link to it](https://apphub.webex.com/applications/incoming-webhooks-cisco-systems-38054-23307-75252).
 
 If you're logged in, click on the 'Connect' button, accept the permissions,
@@ -68,7 +69,7 @@ The last part of the URL is your `{token}`:
 
 ### Mode 2 — Bot (API token + Room ID, supports attachments)
 
-1. Visit <https://developer.webex.com/my-apps> and create a new **Bot**.
+1. Visit [https://developer.webex.com/my-apps](https://developer.webex.com/my-apps) and create a new **Bot**.
 2. After creating the bot, copy the **Bot Access Token** shown on the
    confirmation page (it is only shown once).
 3. Invite the bot to the space/room you want it to post to.
