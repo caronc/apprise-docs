@@ -1,0 +1,14 @@
+{
+  "name": "Unraid",
+  "website": "https://unraid.net/",
+  "since": "2026-07",
+  "level": 80,
+  "description": {
+    "en": "Unraid is a powerful, easy-to-use operating system for self-hosted servers and network-attached storage. Make the most out of your hardware.",
+    "fr": "Unraid est un système d'exploitation puissant et facile à utiliser pour les serveurs auto-hébergés et le stockage en réseau. Optimisez les performances de votre matériel.."
+  },
+  "sponsor_message": {
+    "en": "The possibilities are limitless with Unraid.",
+    "fr": "Les possibilités sont illimitées avec Unraid."
+  }
+}

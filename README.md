@@ -106,14 +106,31 @@ instead of falling back to the default English route.
   (e.g. `lint-docs.mjs` validates frontmatter and service metadata).
 
 - **`shared_templates/`**
-  Shared Markdown partials that are injected into service pages via markers
-  such as `<!-- GLOBAL:SERVICE:PARAMS -->`. For example,
-  `service-params.md` documents the parameters that apply to every service.
+  Shared Markdown partials that are injected into pages via `TEMPLATE:*`
+  markers. For example, `service-params.md` is injected with
+  `<!-- TEMPLATE:SERVICE-PARAMS -->` and documents the parameters that apply
+  to every service.
 
 - **`templates/`**
   Starter templates for contributors creating new content.
   Copy `templates/new_service.md` as the starting point for a new service
   page and fill in the placeholders.
+
+- **`sponsorships/`**
+  Company-level sponsorship entries for organizations that sponsor Apprise as a whole (independent of any specific notification service). Each subdirectory represents one sponsor:
+
+  ```text
+  sponsorships/
+    <company-id>/
+      meta.json        # level (1–100), optional weight (1–5), name, website, since date
+      logo.svg         # primary/default logo
+      logo-light.svg   # optional explicit light-mode variant
+      logo-dark.svg    # optional dark-mode variant
+  ```
+
+  The sync pipeline reads this directory and generates localized `apps/docs/public/company-sponsors*.json` files, which power the sponsors page widget. `level` controls visibility features; optional `weight` only tunes rotating banner frequency for level 75+ sponsors. Company logos follow the same light/default/dark naming convention as service logos, including `.svg`, `.png`, `.jpg`, and `.jpeg` variants. See [`sponsorships/README.md`](sponsorships/README.md) for the full field reference and level definitions.
+
+  For **service-specific** sponsorships (a company sponsoring a notification plugin that Apprise already supports), use `sponsorship_level:` in that service's own `locales/<locale>/services/<slug>/index.md` frontmatter instead. Both types of sponsorship appear on the [Sponsors page](locales/en/contributing/sponsors.mdx) and are documented for contributors in [CONTRIBUTING.md](CONTRIBUTING.md#sponsorship-system).
 
 ## Getting Started as a Contributor
 
@@ -261,6 +278,7 @@ sample_urls:
   - example://{token}/{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -281,7 +299,7 @@ Valid syntax is as follows:
 | token    | yes      | Token to access the example server                                                             |
 | target   | no       | The target you wish to notify. If no target is specified, we send a notification to ourselves. |
 
-<!-- GLOBAL:SERVICE:PARAMS -->
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Example
 
@@ -301,6 +319,8 @@ apprise -vv -t "My Title" -b "Message Body" \
 Some pages contain special comment markers such as:
 
 - `<!-- SERVICE:DETAILS -->`
+- `<!-- SPONSORS:BANNER -->`
+- `<!-- TEMPLATE:SERVICE-PARAMS -->`
 - `<!-- SERVICES:COUNT -->`
 - `<!-- SERVICES:BEGIN -->` / `<!-- SERVICES:END -->`
 
@@ -333,6 +353,39 @@ This repository uses automated checks to ensure:
 
 Linting exists to **help contributors**, not to block them. Most failures are
 formatting or unsupported metadata issues and are easy to fix.
+
+### URL Builder Popular Services
+
+The URL Builder can show a small curated list of commonly used, non-sponsored
+services before a visitor starts typing. That list is maintained per locale in:
+
+- `locales/en/popular-services.json`
+- `locales/<locale>/popular-services.json` for localized popularity lists
+
+The file is optional. If it is missing, the site treats it as an empty popular
+list and shows only sponsored entries, if any. Sponsored services always appear
+first; if a service appears in both the sponsored data and the popular list, the
+sponsored entry wins and is not duplicated.
+
+Schema:
+
+```json
+{
+  "services": ["telegram", "discord"],
+  "max_items": 12
+}
+```
+
+- `services` is required and must be an array of service directory IDs from
+  `locales/en/services/<id>/`. Use stable IDs such as `telegram`, `discord`, or
+  `msteams`, not translated display titles.
+- `max_items` is optional. When provided, it limits how many popular entries
+  are used after invalid or unavailable services are skipped.
+- Invalid JSON, unsupported keys, duplicate entries, and invalid optional fields
+  are checked by `pnpm lint:docs`.
+- Unknown service IDs are warned about by `pnpm lint:docs` and ignored during
+  site sync instead of failing the build. This keeps the public site resilient
+  while still making stale entries easy to fix.
 
 ## How You Can Help
 

@@ -56,10 +56,28 @@ has_image: false
 #    ended: YYYY-MM-DD
 #    ended: YYYY-MM
 #    ended: YYYY
+
+# Sponsorship (do not set manually — maintainer use only)
+# sponsorship_level: 50   # Integer 1-100; unlocks site features at each tier
+# sponsorship_weight: 1   # Optional integer 1-5; banner ticket count for level 75+
+# sponsor_since: 2026-06  # Optional YYYY-MM; maintainer note for sponsorship start
+# sponsor_message: ""     # Optional level 75+ banner text; empty string disables it
 ---
+
+<!-- Leave the below as is as it will place the sponsor banner when eligible -->
+<!-- SPONSORS:BANNER -->
 
 <!-- Leave the below as is as it will place our ## Overview section -->
 <!-- SERVICE:DETAILS -->
+
+<!--
+  LOGO FILES (place in the images/ directory alongside this file):
+    logo.svg            — default logo, shown in light and dark mode
+    logo.png / .jpg     — bitmap fallback when SVG is unavailable
+    logo-light.svg      — optional explicit light-mode variant
+    logo-dark.svg       — optional dark-mode variant (e.g. white logos)
+  The sync pipeline publishes all images/ files automatically.
+-->
 
 ## Account Setup
 
@@ -80,7 +98,7 @@ Valid syntax is as follows:
 | -------- | -------- | ----------- |
 
 <!-- Leave the below as is as it will place our ## Global Parameters section -->
-<!-- GLOBAL:SERVICE:PARAMS -->
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## 📖 Examples
 

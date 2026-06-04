@@ -1,0 +1,13 @@
+{
+  "services": [
+    "telegram",
+    "pushover",
+    "email",
+    "ntfy",
+    "signal",
+    "discord",
+    "whatsapp",
+    "gotify",
+    "matrix"
+  ]
+}

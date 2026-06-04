@@ -18,5 +18,12 @@
   "resultsFilteredOne": "Showing {shown} of {total} matching service",
   "resultsFilteredOther": "Showing {shown} of {total} matching services",
   "resultsNoneOne": "No matches in {total} service",
-  "resultsNoneOther": "No matches in {total} services"
+  "resultsNoneOther": "No matches in {total} services",
+  "sponsorFilterTooltip": "Show only sponsored services",
+  "popularFilterTooltip": "Show only popular services",
+  "sponsorEmptyTitle": "No sponsored services yet",
+  "sponsorEmptyHint": "Sponsor Apprise to have your service listed here",
+  "sponsorEmptyLink": "See what sponsors receive",
+  "sponsorBlurb": "Want your service or company listed here?",
+  "sponsorBlurbLink": "Learn how to sponsor Apprise"
 }

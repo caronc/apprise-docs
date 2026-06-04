@@ -1,0 +1,108 @@
+---
+title: "Sponsor Apprise"
+description: "How service and company sponsors are recognized on the Apprise documentation site."
+sidebar:
+  hidden: true
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Sponsor Recognition
+
+Sponsors can support a specific notification service or Apprise as a whole. Recognition is based on the level you choose and is reviewed before placement. Higher levels include the visibility from lower levels; values between named tiers may be used for ordering within that tier.
+
+| Level | Tier                      | Service sponsor placement                                                              | Company sponsor placement                                       |
+| ----: | ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+|     1 | Community Supporter       | Listed by name on the Sponsors page.                                                   | Listed by name on the Sponsors page.                            |
+|    10 | URL Builder Supporter     | Adds a heart beside the service in URL Builder search results.                         | Listed by name on the Sponsors page.                            |
+|    15 | Service Listing Supporter | Adds service-list heart, highlighted row, bold title, and sponsored filter visibility. | Listed by name on the Sponsors page.                            |
+|    20 | Promoted Service          | Shows in the URL Builder's default sponsored dropdown before search.                   | Listed by name on the Sponsors page.                            |
+|    25 | Logo Supporter            | Adds a compact Sponsors page logo card and service-page support notice.                | Adds a compact Sponsors page logo card when a logo is provided. |
+|    50 | Strategic Sponsor         | Larger Sponsors page logo placement.                                                   | Larger Sponsors page logo placement.                            |
+|    75 | Featured Sponsor          | Adds rotating banner placement with sponsor message.                                   | Adds rotating banner placement with sponsor message.            |
+|   100 | Lead Sponsor              | Highest default rotating-banner weight among featured sponsors.                        | Highest default rotating-banner weight among featured sponsors. |
+
+Sponsored services and companies also appear on the [Sponsors](../sponsors/) page alongside individual supporters.
+
+---
+
+## How to Become a Sponsor
+
+<Tabs>
+  <TabItem label="Sponsor a Service">
+    Use this path if your company's notification service is already listed in Apprise and you want increased visibility for that specific service.
+
+    1. Visit [GitHub Sponsors — caronc](https://github.com/sponsors/caronc) and choose a tier that includes service sponsorship.
+
+    2. Open a pull request against the [apprise-docs](https://github.com/caronc/apprise-docs) repository and add `sponsorship_level:` to the frontmatter of your service's documentation page at `locales/en/services/<slug>/index.md`:
+
+       ```yaml
+       sponsorship_level: 50
+       sponsorship_weight: 1
+       sponsor_since: "2026-06"
+       sponsor_message: "Proudly supporting Apprise open source development."
+       ```
+
+       `sponsorship_level` should be the integer (1–100) that corresponds to the sponsorship tier you have chosen. `sponsorship_weight` is optional and maintainer-controlled; it affects rotating banner frequency for level 75+ sponsors only. `sponsor_since` is an optional maintainer note in `YYYY-MM` format. `sponsor_message` is optional and appears in level 75+ banners; omit it to use the default message, or set it to an empty string to show no message.
+
+    The maintainer will review the PR, confirm the sponsorship, and merge it. The site will reflect the change automatically on the next build.
+
+  </TabItem>
+  <TabItem label="Sponsor as a Company">
+    Use this path if your company wants recognition on the Apprise documentation site without being tied to a specific notification service — for example, if you use Apprise extensively in your own product.
+
+    1. Visit [GitHub Sponsors — caronc](https://github.com/sponsors/caronc) and choose a tier.
+
+    2. Open a pull request against the [apprise-docs](https://github.com/caronc/apprise-docs) repository. Create a new directory under `sponsorships/` with your company ID and add a `meta.json` file:
+
+       ```text
+       sponsorships/
+         your-company-id/
+           meta.json
+           logo.svg         (optional but recommended)
+           logo-light.svg   (optional — explicit light-mode variant)
+           logo-dark.svg    (optional — dark-mode variant)
+       ```
+
+       The `meta.json` structure:
+
+       ```json
+       {
+         "name": "Your Company",
+         "website": "https://yourcompany.com",
+         "since": "2026-07",
+         "level": 50,
+         "weight": 1,
+         "description": {
+           "en": "Optional short blurb shown on the sponsors page.",
+           "fr": "Courte description affichée sur la page des sponsors."
+         },
+         "sponsor_message": {
+           "en": "Proudly supporting Apprise open source development.",
+           "fr": "Fier de soutenir le développement open source d'Apprise."
+         }
+       }
+       ```
+
+       `level` controls which visibility features are unlocked. `weight` is optional and maintainer-controlled; it affects rotating banner frequency for level 75+ sponsors only. `since` is an optional `YYYY-MM` sponsorship start date shown quietly on sponsor cards. `description` is shown on prominent sponsors-page cards. `sponsor_message` is shown in level 75+ banners. Both may be localized objects. If a locale is missing, the site falls back to English; if `sponsor_message` is missing entirely, the site uses the default support message. Set `sponsor_message` to an empty string to show no message.
+
+       Company sponsor logos use the same naming pattern as service logos: `logo-light.*` for an explicit light-mode asset, `logo.*` or `logo-512px.*` as the default fallback, and `logo-dark.*` when a separate dark-mode asset is needed. Supported formats are `.svg`, `.png`, `.jpg`, and `.jpeg`.
+
+    The maintainer will review the PR, confirm the sponsorship, and merge it.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Sponsor Placement Policy
+
+Apprise welcomes sponsors who use, support, or provide tools that help people build and operate software. Sponsored placement is reviewed manually and may be declined, removed, or refunded when a sponsor or advertised destination conflicts with the project's values or puts users at risk.
+
+We do not accept sponsored placement for illegal services, adult sexual content, malware, scams, hate or harassment, or services whose primary purpose is copyright infringement or evading the law. Other requests are reviewed on their actual product, destination, and lawful use cases.
+
+Sponsored placement is recognition of support, not an endorsement. The maintainer has final discretion over what appears on Apprise-owned pages.
+
+---
+
+_Have questions? Reach out via [GitHub Issues](https://github.com/caronc/apprise/issues) or the [GitHub Sponsors page](https://github.com/sponsors/caronc)._

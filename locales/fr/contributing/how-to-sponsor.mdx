@@ -1,0 +1,97 @@
+---
+title: "Parrainer Apprise"
+description: "Comment les parrains de services et d'entreprises sont reconnus sur le site de documentation Apprise."
+sidebar:
+  hidden: true
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Reconnaissance des sponsors
+
+Les sponsors peuvent soutenir un service de notification précis ou Apprise dans son ensemble. La reconnaissance dépend du niveau choisi et chaque placement est vérifié avant publication. Les niveaux supérieurs incluent la visibilité des niveaux inférieurs ; les valeurs entre deux niveaux nommés peuvent servir à ajuster l'ordre d'affichage.
+
+| Niveau | Palier                     | Placement pour un service                                                                          | Placement pour une entreprise                                                       |
+| -----: | -------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+|      1 | Soutien communautaire      | Nom affiché sur la page Sponsors.                                                                  | Nom affiché sur la page Sponsors.                                                   |
+|     10 | Soutien Générateur d'URL   | Ajoute un cœur près du service dans les résultats de recherche du Générateur d'URL.                | Nom affiché sur la page Sponsors.                                                   |
+|     15 | Soutien liste des services | Ajoute le cœur dans la liste, la ligne mise en évidence, le titre en gras et le filtre sponsorisé. | Nom affiché sur la page Sponsors.                                                   |
+|     20 | Service promu              | Affiche le service dans la liste sponsorisée par défaut du Générateur d'URL avant toute recherche. | Nom affiché sur la page Sponsors.                                                   |
+|     25 | Soutien avec logo          | Ajoute une carte compacte avec logo sur la page Sponsors et un encart sur la page du service.      | Ajoute une carte compacte avec logo sur la page Sponsors lorsqu'un logo est fourni. |
+|     50 | Sponsor stratégique        | Placement plus grand avec logo sur la page Sponsors.                                               | Placement plus grand avec logo sur la page Sponsors.                                |
+|     75 | Sponsor en vedette         | Ajoute la bannière rotative avec message du sponsor.                                               | Ajoute la bannière rotative avec message du sponsor.                                |
+|    100 | Sponsor principal          | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.                 | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.  |
+
+Les services et entreprises parrainés apparaissent aussi sur la page [Sponsors](../sponsors/) aux côtés des contributeurs individuels.
+
+---
+
+## Comment devenir sponsor
+
+<Tabs>
+  <TabItem label="Parrainer un service">
+    Utilisez cette méthode si le service de notification de votre entreprise est déjà référencé dans Apprise.
+
+    1. Visitez [GitHub Sponsors — caronc](https://github.com/sponsors/caronc) et choisissez un niveau.
+
+    2. Ouvrez une pull request sur le dépôt [apprise-docs](https://github.com/caronc/apprise-docs) et ajoutez `sponsorship_level:` au frontmatter de la page de documentation de votre service (`locales/en/services/<slug>/index.md`) :
+
+       ```yaml
+       sponsorship_level: 50
+       sponsorship_weight: 1
+       sponsor_since: "2026-06"
+       sponsor_message: "Fier de soutenir le développement open source d'Apprise."
+       ```
+
+       `sponsorship_level` doit être l'entier (1–100) correspondant au niveau de parrainage choisi. `sponsorship_weight` est facultatif et contrôlé par le mainteneur; il influence uniquement la fréquence des bannières rotatives pour les sponsors de niveau 75+. `sponsor_since` est une note facultative du mainteneur au format `YYYY-MM`. `sponsor_message` est facultatif et apparaît dans les bannières de niveau 75+; omettez-le pour utiliser le message par défaut, ou définissez-le à une chaîne vide pour ne pas afficher de message.
+
+    Le mainteneur vérifiera la PR, confirmera le parrainage et la fusionnera.
+
+  </TabItem>
+  <TabItem label="Parrainer en tant qu'entreprise">
+    Utilisez cette méthode si votre entreprise souhaite être reconnue sur le site sans être liée à un service spécifique.
+
+    1. Visitez [GitHub Sponsors — caronc](https://github.com/sponsors/caronc) et choisissez un niveau.
+
+    2. Ouvrez une pull request sur [apprise-docs](https://github.com/caronc/apprise-docs). Créez un répertoire sous `sponsorships/` avec l'identifiant de votre entreprise et ajoutez un fichier `meta.json` :
+
+       ```json
+       {
+         "name": "Votre Entreprise",
+         "website": "https://votreentreprise.com",
+         "since": "2026-07",
+         "level": 50,
+         "weight": 1,
+         "description": {
+           "en": "Optional short blurb shown on the sponsors page.",
+           "fr": "Courte description affichée sur la page des sponsors."
+         },
+         "sponsor_message": {
+           "en": "Proudly supporting Apprise open source development.",
+           "fr": "Fier de soutenir le développement open source d'Apprise."
+         }
+       }
+       ```
+
+       `level` contrôle les fonctionnalités de visibilité débloquées. `weight` est facultatif et contrôlé par le mainteneur; il influence uniquement la fréquence des bannières rotatives pour les sponsors de niveau 75+. `since` est une date de début facultative au format `YYYY-MM`, affichée discrètement sur les cartes de sponsors. `description` apparaît sur les cartes mises en avant de la page des sponsors. `sponsor_message` apparaît dans les bannières de niveau 75+. Les deux peuvent être des objets localisés. Si une langue manque, le site utilise l'anglais; si `sponsor_message` est absent, le site utilise le message de soutien par défaut. Définissez `sponsor_message` à une chaîne vide pour ne pas afficher de message.
+
+       Les logos de sponsors d'entreprise utilisent la même convention que les logos de services : `logo-light.*` pour une version claire explicite, `logo.*` ou `logo-512px.*` comme variante par défaut, et `logo-dark.*` lorsqu'une variante sombre est nécessaire. Les formats pris en charge sont `.svg`, `.png`, `.jpg` et `.jpeg`.
+
+    Le mainteneur vérifiera la PR, confirmera le parrainage et la fusionnera.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Politique de placement des sponsors
+
+Apprise accueille les sponsors qui utilisent, soutiennent ou fournissent des outils utiles aux personnes qui construisent et exploitent des logiciels. Chaque placement sponsorisé est vérifié manuellement et peut être refusé, retiré ou remboursé lorsqu'un sponsor ou une destination publicitaire entre en conflit avec les valeurs du projet ou met les utilisateurs en danger.
+
+Nous n'acceptons pas de placement sponsorisé pour des services illégaux, du contenu sexuel adulte, des logiciels malveillants, des arnaques, de la haine ou du harcèlement, ni pour des services dont l'objectif principal est la violation du droit d'auteur ou le contournement de la loi. Les autres demandes sont évaluées selon le produit réel, la destination liée et les usages légitimes.
+
+Un placement sponsorisé reconnaît un soutien ; il ne constitue pas une recommandation. Le mainteneur conserve le dernier mot sur ce qui apparaît sur les pages contrôlées par Apprise.
+
+---
+
+_Des questions ? Contactez-nous via [GitHub Issues](https://github.com/caronc/apprise/issues) ou la [page GitHub Sponsors](https://github.com/sponsors/caronc)._

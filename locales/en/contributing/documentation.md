@@ -33,36 +33,47 @@ locales/
     services/
       <service>/
         index.md
+        images/       # optional logos — logo.svg, logo-dark.svg, etc.
     config/
     qa/
     dev/
     contributing/
     assets/
+sponsorships/
+  <id>/               # company-level sponsor entries (maintainer-managed)
+    meta.json
+    logo.svg
 ```
 
 ### Directory Guide
 
-- **Getting Started** (`getting-started/`)  
+- **Getting Started** (`getting-started/`)
   Introductory material for new users
 
-- **Guides** (`guides/`)  
+- **Guides** (`guides/`)
   How-to articles, workflows, best practices, and troubleshooting patterns
 
-- **Config** (`config/`)  
+- **Config** (`config/`)
   Configuration syntax and reference material
 
-- **QA** (`qa/`)  
+- **QA** (`qa/`)
   Troubleshooting, diagnostics, and FAQs
 
-- **Dev** (`dev/`)  
+- **Dev** (`dev/`)
   Developer-focused documentation and internals
 
-- **Contributing** (`contributing/`)  
+- **Contributing** (`contributing/`)
   How to help improve Apprise and its ecosystem
 
-- **Services** (`services/`)  
+- **Services** (`services/`)
   Documentation specific to a notification service, including URL syntax,
   configuration options, and examples
+
+- **Sponsorships** (`sponsorships/`)
+  Company-level sponsor entries, each containing a `meta.json` and optional logo
+  files. This directory is **maintainer-managed** — do not add or modify entries
+  unless you have been asked to do so. See `sponsorships/README.md` for the full
+  schema and logo naming conventions.
 
 ## Getting Started as a Contributor
 
@@ -80,7 +91,7 @@ locales/
    pnpm install
    ```
 
-2. Make your documentation changes  
+2. Make your documentation changes
    Add, edit, or improve any Markdown file.
 
 3. Run validation:
@@ -155,6 +166,7 @@ sample_urls:
   - example://{token}/{target}
 ---
 
+<!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
@@ -187,10 +199,133 @@ apprise -vv -t "My Title" -b "Message Body" \
 ```
 ````
 
-> The markers such as `<!-- SERVICE:DETAILS -->` are intentional and must be left in place.  
-> They are replaced automatically when the documentation is rendered.
+> The service-page markers shown above — `<!-- SPONSORS:BANNER -->`,
+> `<!-- SERVICE:DETAILS -->`, and `<!-- TEMPLATE:SERVICE-PARAMS -->` — are
+> intentional and must be left in place. They are replaced automatically when
+> the documentation is rendered.
 
-If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS *}` or `{/_ SERVICE:DETAILS _/}` insead, e.g.: `{/*- SERVICE:DETAILS */}`
+If you created an `mdx` file instead, you can use `{/* SERVICE:DETAILS */}` instead.
+
+### Build Markers
+
+Most service pages should keep these three markers in this order:
+
+```md
+<!-- SPONSORS:BANNER -->
+<!-- SERVICE:DETAILS -->
+
+...
+
+<!-- TEMPLATE:SERVICE-PARAMS -->
+```
+
+The sync pipeline also supports several other build markers. Markdown files normally
+use the HTML-comment form, while MDX files may use the JSX-comment form instead.
+
+| Form                               | Example                    |
+| ---------------------------------- | -------------------------- |
+| Markdown / MDX-safe HTML comment   | `<!-- SERVICE:DETAILS -->` |
+| MDX JSX comment                    | `{/* SERVICE:DETAILS */}`  |
+| Formatter-tolerant MDX placeholder | `{/_ SERVICE:DETAILS _/}`  |
+
+The following markers are currently supported:
+
+| Marker                                                              | Effect                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<!-- SERVICE:DETAILS -->`                                          | Service pages only. Generates the Overview block (source URL, capabilities, logo).                                                                                                                                              |
+| `<!-- TEMPLATE:SERVICE-PARAMS -->`                                  | Injects the localized reusable service parameter table from `locales/<locale>/_templates/service-params.md`.                                                                                                                    |
+| `<!-- SPONSORS:BANNER -->`                                          | Service pages only. Injects the rotating sponsor banner. The file is automatically converted to `.mdx` when this marker is present. The banner renders nothing if no eligible sponsors exist, so it is safe to add proactively. |
+| `<!-- SERVICES:FILTER -->`                                          | Services index only. Injects the interactive services filter/list component.                                                                                                                                                    |
+| `<!-- SERVICES:COUNT -->`                                           | Any page. Replaced with the number of active supported services.                                                                                                                                                                |
+| `<!-- SERVICES:<GROUP>:COUNT -->`                                   | Any page. Replaced with the number of active services in a group, such as `<!-- SERVICES:GENERAL:COUNT -->`.                                                                                                                    |
+| `<!-- SERVICES:BEGIN -->` / `<!-- SERVICES:END -->`                 | Services index fallback region for the generated static services list when the interactive filter is not used.                                                                                                                  |
+| `<!-- SERVICES:<GROUP>:BEGIN -->` / `<!-- SERVICES:<GROUP>:END -->` | Services index fallback region for one generated service group.                                                                                                                                                                 |
+| `<!-- GRAVEYARD:COUNT -->`                                          | Graveyard page. Replaced with the number of retired services.                                                                                                                                                                   |
+| `<!-- GRAVEYARD:BEGIN -->` / `<!-- GRAVEYARD:END -->`               | Graveyard page. Region replaced with the generated retired-services list.                                                                                                                                                       |
+| `<!-- URL_BUILDER:COMPONENT -->`                                    | URL Builder page only. Injects the URL Builder application.                                                                                                                                                                     |
+| `<!-- COMPANY_SPONSORS -->`                                         | Sponsors page only. Injects the featured sponsor cards.                                                                                                                                                                         |
+| `<!-- TEMPLATE:EVICTION-TABLE -->`                                  | Injects the localized reusable optional dependency eviction table from `locales/<locale>/_templates/eviction-table.md`. This is used by pages such as the Environment reference and resource-usage guide.                       |
+
+`TEMPLATE:*` markers are discovered automatically from:
+
+- `shared_templates/*.md` or `shared_templates/*.mdx`
+- `locales/<locale>/_templates/*.md` or `locales/<locale>/_templates/*.mdx`
+
+For example, `locales/en/_templates/service-params.md` becomes
+`<!-- TEMPLATE:SERVICE-PARAMS -->`, and `locales/en/_templates/eviction-table.md`
+becomes `<!-- TEMPLATE:EVICTION-TABLE -->`. Locale templates override shared templates
+with the same name.
+
+### Full Frontmatter Reference
+
+The example above shows the common fields. A service page may also carry the following
+optional fields:
+
+```md
+---
+# Capability flags — set to true when the service supports the feature
+has_attachments: false
+has_image: false
+has_sms: false
+has_selfhosted: false
+
+# Message length limits (remove the block entirely if the service has no known limits)
+limits:
+  - name: "Title"
+    max_chars: 250
+  - name: "Body"
+    max_chars: 2000
+
+# Retired services — set to the date the service stopped being available
+# ended: YYYY-MM-DD
+
+# -----------------------------------------------------------------------
+# Sponsorship fields — MAINTAINER USE ONLY. Do not add or change these.
+# -----------------------------------------------------------------------
+# sponsorship_level: 50   # Integer 1–100; controls site visibility tier
+# sponsorship_weight: 1   # Optional 1–5; banner rotation weight for level 75+
+# sponsor_since: "2026-06"
+# sponsor_message: ""     # Empty string intentionally suppresses the banner message
+---
+```
+
+#### Service Frontmatter Fields
+
+| Field           | Type         | Required    | Purpose                                                                                                 |
+| --------------- | ------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `title`         | string       | Yes         | Page title and default service display name.                                                            |
+| `description`   | string       | Recommended | Short service summary used by generated listings and metadata.                                          |
+| `sidebar.label` | string       | Recommended | Short label used in navigation and service listings.                                                    |
+| `source`        | URL string   | Recommended | Official service/project website. Only `http://` and `https://` URLs are accepted by the site sync.     |
+| `group`         | string       | Recommended | Service group id used by the services index. Unknown groups fall back to the default group during sync. |
+| `schemas`       | string array | Yes         | Supported Apprise URL schemas, such as `discord://` or `tgram://`.                                      |
+| `sample_urls`   | string array | Recommended | Example Apprise URLs shown in generated metadata and URL Builder hints.                                 |
+| `limits`        | object array | No          | Optional message length limits. Each entry should include a display `name` and `max_chars`.             |
+| `ended`         | date string  | No          | Marks a retired service. Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.                                        |
+
+#### Capability Flags
+
+Capability flags are frontmatter booleans named `has_<feature>`. Set them to `true`
+only when the service supports the feature. These flags drive the service overview,
+feature badges, and URL filter parameters; for example, `has_attachments: true`
+becomes the `attachments` filter token in `?f=attachments`.
+
+| Frontmatter key   | URL filter token | Meaning                                    |
+| ----------------- | ---------------- | ------------------------------------------ |
+| `has_sms`         | `sms`            | Service focuses on SMS/MMS delivery.       |
+| `has_selfhosted`  | `selfhosted`     | Service supports a self-hosted deployment. |
+| `has_attachments` | `attachments`    | Service supports file attachments.         |
+| `has_image`       | `image`          | Service supports graphical/image delivery. |
+
+`has_sponsorship` is a special maintainer-only shorthand for `sponsorship_level: 1`;
+it is documented separately below because it controls sponsor visibility rather than
+a general service capability.
+
+> **Do not add or modify sponsorship fields** unless you are the project maintainer
+> or have been explicitly asked to do so. These fields have commercial significance.
+> An empty `sponsor_message: ""` is intentional — it suppresses the banner message
+> without removing the sponsor's banner slot. See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+> for the full sponsorship level table and validation rules.
 
 ## Localization and Translations
 

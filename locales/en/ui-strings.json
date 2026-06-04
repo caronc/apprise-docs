@@ -43,7 +43,8 @@
     "attachment_support": "Attachment Support",
     "message_character_limits": "Message Character Limits",
     "default_limit_name": "Body",
-    "build_url": "Build Your Apprise URL"
+    "build_url": "Build Your Apprise URL",
+    "sponsor_badge": "This provider proudly supports Apprise open source development."
   },
   "tables": {
     "service": "Service",
@@ -51,6 +52,7 @@
     "feature_icon": "Feature Icon",
     "features": "Features",
     "switch": "Switch",
+    "url_filter": "URL Filter",
     "description": "Description",
     "protocol_icon": "Protocol Icon",
     "encrypted_secure": "Encrypted/Secure",
@@ -86,8 +88,24 @@
       "features_intro": "The Features column identifies some useful 'at-a-glance' details about the URL should you be researching services from this page.",
       "protocols_intro": "The protocols defined are additionally flagged with an icon for quick reference identifying if it is SSL/TLS encrypted or not:"
     },
+    "filter_badge": {
+      "sponsored_label": "Sponsored",
+      "sponsored_description": "This service has an active sponsorship supporting Apprise open source development.",
+      "popular_label": "Popular",
+      "popular_description": "A community-selected popular notification service."
+    },
     "secure": "Secure",
     "insecure": "Insecure"
+  },
+  "pages": {
+    "services": {
+      "title": "Supported Services",
+      "description": "Browse and search all supported Apprise notification services."
+    },
+    "graveyard": {
+      "title": "Retired Services",
+      "description": "Historical archive of retired Apprise notification integrations."
+    }
   },
   "help": {
     "summary": "Questions or Feedback?"
