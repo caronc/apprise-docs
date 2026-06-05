@@ -9,6 +9,8 @@ source: https://gateway.threema.ch/
 schemas:
   - threema
 
+has_chat: true
+
 sample_urls:
   - threema://{gateway_id}@{secret}/{user}
   - threema://{gateway_id}@{secret}/{email}

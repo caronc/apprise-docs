@@ -9,6 +9,8 @@ source: https://developers.facebook.com/docs/whatsapp/cloud-api/get-started
 schemas:
   - whatsapp
 
+has_chat: true
+
 sample_urls:
   - whatsapp://{token}@{from_phone_id}/{targets}
   - whatsapp://{template}:{token}@{from_phone_id}/{targets}

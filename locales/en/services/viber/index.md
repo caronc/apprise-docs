@@ -9,6 +9,8 @@ source: https://www.viber.com/
 schemas:
   - viber
 
+has_chat: true
+
 sample_urls:
   - viber://{token}/{receiver}
   - viber://{token}/{receiver1}/{receiver2}/{receiverN}

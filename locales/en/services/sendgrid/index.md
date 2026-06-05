@@ -9,6 +9,7 @@ source: https://sendgrid.com/
 schemas:
   - sendgrid
 
+has_email: true
 has_attachments: true
 
 sample_urls:

@@ -10,6 +10,9 @@ schemas:
   - nctalk: insecure
   - nctalks
 
+has_chat: true
+has_selfhosted: true
+
 sample_urls:
   - nctalk://{user}:{password}@{hostname}/{room_id}
   - nctalks://{user}:{password}@{hostname}:{port}/{room_id}

@@ -9,6 +9,7 @@ source: https://sendpulse.com/
 schemas:
   - sendpulse
 
+has_email: true
 has_attachments: true
 
 sample_urls:

@@ -9,6 +9,8 @@ source: https://firebase.google.com/docs/cloud-messaging
 schemas:
   - fcm
 
+has_image: true
+
 sample_urls:
   - fcm://{APIKey}/{Device}
   - fcm://{APIKey}/{Device1}/{Device2}/{DeviceN}

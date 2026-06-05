@@ -9,6 +9,8 @@ source: https://zulipchat.com/
 schemas:
   - zulip
 
+has_chat: true
+
 sample_urls:
   - zulip://{botname}@{organization}/{token}/
   - zulip://{botname}@{organization}/{token}/{stream}

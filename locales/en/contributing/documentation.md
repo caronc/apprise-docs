@@ -267,6 +267,9 @@ optional fields:
 has_attachments: false
 has_image: false
 has_sms: false
+has_chat: false
+has_email: false
+has_local: false
 has_selfhosted: false
 
 # Message length limits (remove the block entirely if the service has no known limits)
@@ -310,12 +313,15 @@ only when the service supports the feature. These flags drive the service overvi
 feature badges, and URL filter parameters; for example, `has_attachments: true`
 becomes the `attachments` filter token in `?f=attachments`.
 
-| Frontmatter key   | URL filter token | Meaning                                    |
-| ----------------- | ---------------- | ------------------------------------------ |
-| `has_sms`         | `sms`            | Service focuses on SMS/MMS delivery.       |
-| `has_selfhosted`  | `selfhosted`     | Service supports a self-hosted deployment. |
-| `has_attachments` | `attachments`    | Service supports file attachments.         |
-| `has_image`       | `image`          | Service supports graphical/image delivery. |
+| Frontmatter key   | URL filter token | Meaning                                                          |
+| ----------------- | ---------------- | ---------------------------------------------------------------- |
+| `has_sms`         | `sms`            | Service focuses on SMS/MMS delivery.                             |
+| `has_chat`        | `chat`           | Service targets chat rooms, channels, or direct messages.        |
+| `has_email`       | `email`          | Service focuses on email delivery.                               |
+| `has_local`       | `local`          | Service targets a local/native system or device.                 |
+| `has_selfhosted`  | `selfhosted`     | Service supports a self-hosted deployment.                       |
+| `has_attachments` | `attachments`    | Service supports file attachments.                               |
+| `has_image`       | `image`          | Service uses Apprise-managed status images or icons in messages. |
 
 `has_sponsorship` is a special maintainer-only shorthand for `sponsorship_level: 1`;
 it is documented separately below because it controls sponsor visibility rather than

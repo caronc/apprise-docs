@@ -9,6 +9,7 @@ source: https://revolt.chat
 schemas:
   - revolt
 
+has_chat: true
 has_image: true
 
 sample_urls:

@@ -10,6 +10,8 @@ schemas:
   - ncloud: insecure
   - nclouds
 
+has_selfhosted: true
+
 sample_urls:
   - nclouds://{hostname}/@{user}
   - nclouds://{hostname}:{port}/#{group}

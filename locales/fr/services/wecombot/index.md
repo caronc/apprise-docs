@@ -9,6 +9,8 @@ source: https://weixin.qq.com/
 schemas:
   - wecombot
 
+has_chat: true
+
 sample_urls:
   - wecombot://{botkey}
   - https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd

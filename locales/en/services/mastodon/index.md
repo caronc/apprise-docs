@@ -13,6 +13,8 @@ schemas:
   - toots
 
 has_attachments: true
+has_image: true
+has_selfhosted: true
 
 sample_urls:
   - mastodons://{token}@{host}

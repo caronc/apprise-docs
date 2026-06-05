@@ -9,6 +9,8 @@ source: https://twist.com
 schemas:
   - twist
 
+has_chat: true
+
 sample_urls:
   - twist://{password}:{email}
   - twist://{email}/{password}

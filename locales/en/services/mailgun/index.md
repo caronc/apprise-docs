@@ -9,6 +9,7 @@ source: https://www.mailgun.com/
 schemas:
   - mailgun
 
+has_email: true
 has_attachments: true
 
 sample_urls:

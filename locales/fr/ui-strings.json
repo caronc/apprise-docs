@@ -6,14 +6,14 @@
   },
   "nav": {
     "categories": {
-    "getting-started": "Premiers Pas",
-    "guides": "Intégrations et Guides",
+      "getting-started": "Premiers Pas",
+      "guides": "Intégrations et Guides",
       "cli": "CLI Apprise",
       "api": "API Apprise",
       "library": "Bibliothèque Python",
-    "services": "Services Pris en Charge",
+      "services": "Services Pris en Charge",
       "qa": "Dépannage",
-    "contributing": "Projet et Communauté"
+      "contributing": "Projet et Communauté"
     },
     "subcategories": {
       "api": {
@@ -66,15 +66,21 @@
       "desktop": "Notifications de bureau"
     },
     "feature": {
-      "attachments": "Pièces jointes",
       "sms": "Prise en charge SMS/MMS",
+      "chat": "Messagerie instantanée",
+      "email": "E-mail",
+      "local": "Système local/natif",
       "selfhosted": "Application auto-hébergeable",
+      "attachments": "Pièces jointes",
       "image": "Prise en charge des images"
     },
     "feature_description": {
-      "attachments": "Ce service de notification prend en charge les pièces jointes.",
       "sms": "Propose un service de notification axé sur l’envoi de SMS/MMS.",
+      "chat": "Propose un service de notification axé sur les salons, canaux ou messages directs.",
+      "email": "Propose un service de notification axé sur l’envoi d’e-mails.",
+      "local": "Propose un service de notification ciblant un système ou appareil local/natif.",
       "selfhosted": "Propose un service de notification compatible avec une solution auto-hébergée.",
+      "attachments": "Ce service de notification prend en charge les pièces jointes.",
       "image": "Ce service de notification prend en charge l’envoi de messages sous forme d’images."
     },
     "reference_break": {
@@ -128,7 +134,8 @@
     "banner_dismiss_title": "Masquer pendant 1 an",
     "page_tagline": "Apprise est gratuit et open source. Vos contributions aident à faire avancer le développement, à couvrir les coûts serveur et à maintenir le flux de notifications.",
     "github_sponsors": "GitHub Sponsors",
-    "paypal": "PayPal"
+    "paypal": "PayPal",
+    "sponsors_link": "Voir les sponsors et les niveaux de reconnaissance"
   },
   "staging": {
     "label": "Aperçu",

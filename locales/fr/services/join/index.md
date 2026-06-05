@@ -9,6 +9,8 @@ source: https://joaoapps.com/join/
 schemas:
   - join
 
+has_image: true
+
 sample_urls:
   - join://{apikey}/
   - join://{apikey}/{device_id}

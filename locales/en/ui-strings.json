@@ -66,15 +66,21 @@
       "desktop": "Desktop Based Notifications"
     },
     "feature": {
-      "attachments": "Attachment Support",
       "sms": "SMS/MMS Support",
+      "chat": "Chat Support",
+      "email": "Email Support",
+      "local": "Local/Native Support",
       "selfhosted": "Upstream App can be Self Hosted",
+      "attachments": "Attachment Support",
       "image": "Image Support"
     },
     "feature_description": {
-      "attachments": "The notification service provides attachment support.",
       "sms": "Offers a notification service focused on SMS/MMS delivery.",
+      "chat": "Offers a notification service focused on chat rooms, channels, or direct messages.",
+      "email": "Offers a notification service focused on email delivery.",
+      "local": "Offers a notification service that targets a local/native system or device.",
       "selfhosted": "Offers a notification service that supports a self-hosted solution.",
+      "attachments": "The notification service provides attachment support.",
       "image": "The notification service supports message delivery through graphical images."
     },
     "reference_break": {
@@ -128,7 +134,8 @@
     "banner_dismiss_title": "Dismiss for 1 year",
     "page_tagline": "Apprise is free and open source. Your contributions help fuel development, cover server costs, and keep the notifications flowing.",
     "github_sponsors": "GitHub Sponsors",
-    "paypal": "PayPal"
+    "paypal": "PayPal",
+    "sponsors_link": "View sponsors and recognition tiers"
   },
   "staging": {
     "label": "Preview",

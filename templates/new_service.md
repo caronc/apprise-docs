@@ -25,21 +25,29 @@ sample_urls:
   # who want to see more will read the documentation below.
   - schema://{credentials}/{targets}
 
-# `has_*` values always default to `false` if not provided
-# ---
-# If the service supports attachments, set this value.  If 'has_attachments' is not defined, than
-# it is presumed to be 'false' (no attachment support)
+# `has_*` values always default to `false` if not provided.
+# Set these only when the service truly supports the capability.
+
+# File attachment support, not avatar/logo image support.
 has_attachments: false
 
-# If the Apprise service operates/supports SMS/MMS service calls
+# Graphical notification image/status presentation controlled by Apprise.
+has_image: false
+
+# SMS/MMS delivery through this plugin or its upstream provider.
 has_sms: false
 
-# If the Apprise service supports a messaging app/solution that can be selfhosted
-has_selfhosted: false
+# Chat rooms, channels, group chats, direct messages, or chat bot destinations.
+has_chat: false
 
-# If the Apprise service makes use of passing along a graphical representation of the notification
-# type (info/warning/success/failure) then this should be set to true
-has_image: false
+# Email delivery through SMTP or a dedicated email provider.
+has_email: false
+
+# Same-machine native notifications or a locally attached/native device.
+has_local: false
+
+# Upstream app/service can be operated as a self-hosted deployment.
+has_selfhosted: false
 
 # Define any message limits — only applicable when the user specifies
 # ?overflow=truncate or ?overflow=split; otherwise the upstream service handles

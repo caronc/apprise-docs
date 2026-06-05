@@ -10,8 +10,10 @@ schemas:
   - mmost: insecure
   - mmosts
 
-has_image: true
+has_chat: true
+has_selfhosted: true
 has_attachments: true
+has_image: true
 
 sample_urls:
   - mmosts://{hostname}/{token}

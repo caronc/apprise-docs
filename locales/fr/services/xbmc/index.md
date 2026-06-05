@@ -10,6 +10,7 @@ schemas:
   - xbmc: insecure
 
 has_image: true
+has_selfhosted: true
 
 sample_urls:
   - xbmc://{hostname}

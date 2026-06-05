@@ -265,6 +265,9 @@ L'exemple ci-dessus présente les champs courants. Une page de service peut éga
 has_attachments: false
 has_image: false
 has_sms: false
+has_chat: false
+has_email: false
+has_local: false
 has_selfhosted: false
 
 # Limites de longueur de message (supprimer le bloc entier si le service n'a pas de limites connues)
@@ -309,12 +312,15 @@ Ces indicateurs alimentent l'aperçu du service, les badges de fonctionnalités 
 paramètres de filtre d'URL ; par exemple, `has_attachments: true` devient le jeton de
 filtre `attachments` dans `?f=attachments`.
 
-| Clé frontmatter   | Jeton de filtre URL | Signification                                               |
-| ----------------- | ------------------- | ----------------------------------------------------------- |
-| `has_sms`         | `sms`               | Service axé sur la livraison SMS/MMS.                       |
-| `has_selfhosted`  | `selfhosted`        | Service prenant en charge un déploiement auto-hébergé.      |
-| `has_attachments` | `attachments`       | Service prenant en charge les pièces jointes.               |
-| `has_image`       | `image`             | Service prenant en charge la livraison graphique/par image. |
+| Clé frontmatter   | Jeton de filtre URL | Signification                                                     |
+| ----------------- | ------------------- | ----------------------------------------------------------------- |
+| `has_sms`         | `sms`               | Service axé sur la livraison SMS/MMS.                             |
+| `has_chat`        | `chat`              | Service ciblant salons, canaux ou messages directs.               |
+| `has_email`       | `email`             | Service axé sur l’envoi d’e-mails.                                |
+| `has_local`       | `local`             | Service ciblant un système ou appareil local/natif.               |
+| `has_selfhosted`  | `selfhosted`        | Service prenant en charge un déploiement auto-hébergé.            |
+| `has_attachments` | `attachments`       | Service prenant en charge les pièces jointes.                     |
+| `has_image`       | `image`             | Service utilisant les images ou icônes d'état gérées par Apprise. |
 
 `has_sponsorship` est un raccourci spécial réservé aux mainteneurs pour
 `sponsorship_level: 1` ; il est documenté séparément ci-dessous parce qu'il contrôle

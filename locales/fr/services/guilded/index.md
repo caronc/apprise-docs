@@ -9,8 +9,9 @@ source: https://guilded.gg/
 schemas:
   - guilded
 
-has_image: true
+has_chat: true
 has_attachments: true
+has_image: true
 
 sample_urls:
   - https://media.guilded.gg/webhooks/{WebhookID}/{WebhookToken}

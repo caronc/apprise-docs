@@ -15,6 +15,7 @@ sample_urls:
   - barks://{host}:{port}/{device_key}
 
 has_selfhosted: true
+has_image: true
 ---
 
 <!-- SPONSORS:BANNER -->

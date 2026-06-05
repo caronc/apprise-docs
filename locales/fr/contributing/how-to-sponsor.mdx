@@ -6,27 +6,30 @@ sidebar:
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
+import SupportProject from "~/components/SupportProject.astro";
 
-## Reconnaissance des sponsors
+Apprise est gratuit et open source — votre soutien permet de le faire fonctionner. Que vous soyez un utilisateur individuel, un prestataire de services ou une entreprise, il existe une option adaptée à votre situation.
+
+## Reconnaissance des Sponsors
 
 Les sponsors peuvent soutenir un service de notification précis ou Apprise dans son ensemble. La reconnaissance dépend du niveau choisi et chaque placement est vérifié avant publication. Les niveaux supérieurs incluent la visibilité des niveaux inférieurs ; les valeurs entre deux niveaux nommés peuvent servir à ajuster l'ordre d'affichage.
 
-| Niveau | Palier                     | Placement pour un service                                                                          | Placement pour une entreprise                                                       |
-| -----: | -------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-|      1 | Soutien communautaire      | Nom affiché sur la page Sponsors.                                                                  | Nom affiché sur la page Sponsors.                                                   |
-|     10 | Soutien Générateur d'URL   | Ajoute un cœur près du service dans les résultats de recherche du Générateur d'URL.                | Nom affiché sur la page Sponsors.                                                   |
-|     15 | Soutien liste des services | Ajoute le cœur dans la liste, la ligne mise en évidence, le titre en gras et le filtre sponsorisé. | Nom affiché sur la page Sponsors.                                                   |
-|     20 | Service promu              | Affiche le service dans la liste sponsorisée par défaut du Générateur d'URL avant toute recherche. | Nom affiché sur la page Sponsors.                                                   |
-|     25 | Soutien avec logo          | Ajoute une carte compacte avec logo sur la page Sponsors et un encart sur la page du service.      | Ajoute une carte compacte avec logo sur la page Sponsors lorsqu'un logo est fourni. |
-|     50 | Sponsor stratégique        | Placement plus grand avec logo sur la page Sponsors.                                               | Placement plus grand avec logo sur la page Sponsors.                                |
-|     75 | Sponsor en vedette         | Ajoute la bannière rotative avec message du sponsor.                                               | Ajoute la bannière rotative avec message du sponsor.                                |
-|    100 | Sponsor principal          | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.                 | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.  |
+| Niveau | Palier                     | Placement pour un service                                                                                                                 | Placement pour une entreprise                                                                                                             |
+| -----: | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+|      1 | Soutien communautaire      | Nom affiché sur la page Sponsors.                                                                                                         | Nom affiché sur la page Sponsors.                                                                                                         |
+|     10 | Soutien Générateur d'URL   | Ajoute un cœur près du service dans les résultats de recherche du Générateur d'URL.                                                       | Nom affiché sur la page Sponsors.                                                                                                         |
+|     15 | Soutien liste des services | Ajoute le cœur dans la liste, la ligne mise en évidence, le titre en gras et le filtre sponsorisé.                                        | Nom affiché sur la page Sponsors.                                                                                                         |
+|     20 | Service promu              | Affiche le service dans la liste sponsorisée par défaut du Générateur d'URL avant toute recherche.                                        | Nom affiché sur la page Sponsors.                                                                                                         |
+|     25 | Soutien avec logo          | Ajoute une carte compacte avec logo sur la page Sponsors et un encart sur la page du service.                                             | Ajoute une carte compacte avec logo sur la page Sponsors lorsqu'un logo est fourni.                                                       |
+|     50 | Sponsor stratégique        | Placement plus grand avec logo sur la page Sponsors.                                                                                      | Placement plus grand avec logo sur la page Sponsors.                                                                                      |
+|     75 | Sponsor en vedette         | Ajoute une bannière rotative sur l'ensemble des <!-- SERVICES:COUNT --> pages de documentation de services, avec un message personnalisé. | Ajoute une bannière rotative sur l'ensemble des <!-- SERVICES:COUNT --> pages de documentation de services, avec un message personnalisé. |
+|    100 | Sponsor principal          | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.                                                        | Poids de bannière rotative par défaut le plus élevé parmi les sponsors en vedette.                                                        |
 
 Les services et entreprises parrainés apparaissent aussi sur la page [Sponsors](../sponsors/) aux côtés des contributeurs individuels.
 
 ---
 
-## Comment devenir sponsor
+## Comment Devenir Sponsor
 
 <Tabs>
   <TabItem label="Parrainer un service">
@@ -84,7 +87,7 @@ Les services et entreprises parrainés apparaissent aussi sur la page [Sponsors]
 
 ---
 
-## Politique de placement des sponsors
+## Politique de Placement des Sponsors
 
 Apprise accueille les sponsors qui utilisent, soutiennent ou fournissent des outils utiles aux personnes qui construisent et exploitent des logiciels. Chaque placement sponsorisé est vérifié manuellement et peut être refusé, retiré ou remboursé lorsqu'un sponsor ou une destination publicitaire entre en conflit avec les valeurs du projet ou met les utilisateurs en danger.
 
@@ -94,4 +97,4 @@ Un placement sponsorisé reconnaît un soutien ; il ne constitue pas une recomma
 
 ---
 
-_Des questions ? Contactez-nous via [GitHub Issues](https://github.com/caronc/apprise/issues) ou la [page GitHub Sponsors](https://github.com/sponsors/caronc)._
+<SupportProject />

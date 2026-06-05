@@ -10,8 +10,9 @@ schemas:
   - signal: insecure
   - signals
 
-has_attachments: true
+has_chat: true
 has_selfhosted: true
+has_attachments: true
 
 sample_urls:
   - signal://{user}:{password}@{hostname}/{from_phone}

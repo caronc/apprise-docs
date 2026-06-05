@@ -9,6 +9,8 @@ source: https://chat.google.com/
 schemas:
   - gchat
 
+has_chat: true
+
 sample_urls:
   - https://chat.googleapis.com/v1/spaces/{workspace}/messages?key={webhook_key}&token={webhook_token}
   - gchat://{workspace}/{webhook_key}/{webhook_token}

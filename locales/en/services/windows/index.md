@@ -9,6 +9,7 @@ group: desktop
 schemas:
   - windows: insecure
 
+has_local: true
 has_image: true
 
 sample_urls:

@@ -9,6 +9,7 @@ source: https://aws.amazon.com/ses/
 schemas:
   - ses
 
+has_email: true
 has_attachments: true
 
 sample_urls:

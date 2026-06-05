@@ -11,6 +11,7 @@ schemas:
   - kodis
 
 has_image: true
+has_selfhosted: true
 
 sample_urls:
   - kodis://{hostname}

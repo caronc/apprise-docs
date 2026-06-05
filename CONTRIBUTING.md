@@ -250,6 +250,25 @@ pnpm lint:fix
 - Small fixes are merged quickly
 - Larger changes may involve discussion
 
+## Service Capability Flags
+
+Service pages can expose capability badges and URL filter tokens through boolean
+frontmatter fields named `has_<feature>`. Set a flag only when the plugin
+actually supports that capability.
+
+| Frontmatter key   | URL filter token | Meaning                                                      |
+| ----------------- | ---------------- | ------------------------------------------------------------ |
+| `has_sms`         | `sms`            | Service focuses on SMS/MMS delivery.                         |
+| `has_chat`        | `chat`           | Service targets chat rooms, channels, or direct messages.    |
+| `has_email`       | `email`          | Service focuses on email delivery.                           |
+| `has_local`       | `local`          | Service targets a local/native system or device.             |
+| `has_selfhosted`  | `selfhosted`     | Upstream app/service supports a self-hosted deployment.      |
+| `has_attachments` | `attachments`    | Plugin sends file attachments.                               |
+| `has_image`       | `image`          | Plugin uses Apprise-controlled graphical/image presentation. |
+
+`has_sponsorship` is not a service capability flag. It is a maintainer-only
+sponsorship shorthand documented below.
+
 ## Sponsorship System
 
 The Apprise documentation includes a sponsorship recognition system that gives service providers and companies visibility across the site. Understanding how it works helps you avoid accidentally overwriting sponsor data.

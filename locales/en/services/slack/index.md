@@ -9,6 +9,7 @@ source: https://slack.com/
 schemas:
   - slack
 
+has_chat: true
 has_attachments: true
 has_image: true
 

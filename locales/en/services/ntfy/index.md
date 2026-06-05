@@ -11,6 +11,8 @@ schemas:
   - ntfys
 
 has_attachments: true
+has_image: true
+has_selfhosted: true
 
 sample_urls:
   - ntfy://{topic}

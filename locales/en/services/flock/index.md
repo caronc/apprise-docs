@@ -9,6 +9,9 @@ source: https://flock.com/
 schemas:
   - flock
 
+has_chat: true
+has_image: true
+
 sample_urls:
   - https://api.flock.com/hooks/sendMessage/{token}
   - flock://{token}/

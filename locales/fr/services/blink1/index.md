@@ -11,8 +11,9 @@ group: desktop
 schemas:
   - blink1: insecure
 
-has_image: false
+has_local: true
 has_selfhosted: true
+has_image: false
 
 sample_urls:
   - blink1://

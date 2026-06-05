@@ -9,10 +9,11 @@ source: https://postmarkapp.com
 schemas:
   - postmark
 
-has_attachments: true
-
 limits:
   max_chars: 10485760
+
+has_email: true
+has_attachments: true
 
 sample_urls:
   - postmark://APIToken:FromEmail/ToEmail

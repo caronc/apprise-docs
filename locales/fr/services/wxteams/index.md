@@ -10,14 +10,15 @@ schemas:
   - wxteams
   - webex
 
+has_chat: true
+has_attachments: true
+
 sample_urls:
   - https://api.ciscospark.com/v1/webhooks/incoming/{token}
   - https://webexapis.com/v1/webhooks/incoming/{token}
   - wxteams://{token}/
   - webex://{token}/
   - wxteams://{bot_token}/{room_id}/
-
-has_attachments: true
 
 limits:
   - name: "Webhook"

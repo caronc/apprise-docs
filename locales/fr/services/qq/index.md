@@ -9,6 +9,8 @@ source: https://github.com/songquanpeng/message-pusher
 schemas:
   - qq
 
+has_chat: true
+
 sample_urls:
   - https://qmsg.zendee.cn/send/{token}
   - qq://{token}

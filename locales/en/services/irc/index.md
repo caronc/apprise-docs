@@ -9,6 +9,8 @@ schemas:
   - irc: insecure
   - ircs
 
+has_chat: true
+
 sample_urls:
   - irc://{host}/#channel
   - ircs://{host}/#channel

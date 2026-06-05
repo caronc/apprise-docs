@@ -12,6 +12,8 @@ schemas:
 limits:
   max_chars: 2048
 
+has_chat: true
+
 sample_urls:
   - wechat://{corpid}:{corpsecret}@{agentid}/@all
   - wechat://{corpid}:{corpsecret}@{agentid}/{userid}

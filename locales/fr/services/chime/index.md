@@ -9,6 +9,8 @@ source: https://aws.amazon.com/chime/
 schemas:
   - chime
 
+has_chat: true
+
 sample_urls:
   - chime://{WebhookID}/{Token}
 

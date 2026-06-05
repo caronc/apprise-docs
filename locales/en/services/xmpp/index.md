@@ -10,6 +10,7 @@ schemas:
   - xmpp: insecure
   - xmpps
 
+has_chat: true
 has_selfhosted: true
 
 sample_urls:

@@ -9,6 +9,7 @@ source: https://resend.com/
 schemas:
   - resend
 
+has_email: true
 has_attachments: true
 
 sample_urls:

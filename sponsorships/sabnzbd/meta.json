@@ -1,0 +1,14 @@
+{
+  "name": "SABnzbd",
+  "website": "https://sabnzbd.org/",
+  "since": "2026-06",
+  "level": 20,
+  "description": {
+    "en": "SABnzbd is a free, open-source Usenet downloader that automates the process of fetching files.",
+    "fr": "SABnzbd est un téléchargeur Usenet gratuit et open source qui automatise le processus de téléchargement de fichiers."
+  },
+  "sponsor_message": {
+    "en": "Free and easy binary newsreader.",
+    "fr": "Lecteur de news binaire gratuit et facile."
+  }
+}

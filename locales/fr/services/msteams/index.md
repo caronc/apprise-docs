@@ -11,6 +11,7 @@ schemas:
 
 ended: 2026-05-22
 
+has_chat: true
 has_image: true
 
 sample_urls:

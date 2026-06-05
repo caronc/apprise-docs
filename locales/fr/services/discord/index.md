@@ -8,13 +8,14 @@ source: https://discordapp.com/
 schemas:
   - discord
 
+has_chat: true
+has_attachments: true
+has_image: true
+
 sample_urls:
   - https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
   - discord://{WebhookID}/{WebhookToken}
   - discord://{botname}@{WebhookID}/{WebhookToken}
-
-has_attachments: true
-has_image: true
 
 limits:
   max_chars: 2000

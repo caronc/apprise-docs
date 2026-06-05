@@ -9,6 +9,7 @@ source: https://www.brevo.com
 schemas:
   - brevo
 
+has_email: true
 has_attachments: true
 
 sample_urls:

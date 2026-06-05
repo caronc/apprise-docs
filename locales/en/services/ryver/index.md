@@ -9,6 +9,7 @@ source: https://ryver.com/
 schemas:
   - ryver
 
+has_chat: true
 has_image: true
 
 sample_urls:

@@ -9,6 +9,7 @@ source: https://groupme.com/
 schemas:
   - groupme
 
+has_chat: true
 has_attachments: true
 
 sample_urls:

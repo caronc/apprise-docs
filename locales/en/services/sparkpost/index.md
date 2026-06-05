@@ -9,6 +9,7 @@ source: https://sparkpost.com/
 schemas:
   - sparkpost
 
+has_email: true
 has_attachments: true
 
 sample_urls:

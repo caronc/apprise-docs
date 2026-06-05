@@ -10,6 +10,7 @@ schemas:
   - dot
 
 has_attachments: true
+has_image: true
 
 sample_urls:
   - dot://{apitoken}@{device_id}

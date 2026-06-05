@@ -9,6 +9,9 @@ source: http://growl.info/
 schemas:
   - growl
 
+has_local: true
+has_image: true
+
 sample_urls:
   - growl://{hostname}
   - growl://{hostname}:{port}

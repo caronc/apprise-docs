@@ -9,6 +9,7 @@ source: https://telegram.org/
 schemas:
   - tgram
 
+has_chat: true
 has_attachments: true
 has_image: true
 

@@ -9,6 +9,8 @@ source: https://zoom.us
 schemas:
   - zoom
 
+has_chat: true
+
 sample_urls:
   - https://inbots.zoom.us/incoming/hook/{webhook_id}?token={token}
   - zoom://{webhook_id}/{token}/

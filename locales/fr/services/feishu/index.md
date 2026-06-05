@@ -9,6 +9,8 @@ source: https://open.feishu.cn/
 schemas:
   - feishu
 
+has_chat: true
+
 sample_urls:
   - feishu://{token}
 

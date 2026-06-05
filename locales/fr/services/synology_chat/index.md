@@ -10,6 +10,9 @@ schemas:
   - synology: insecure
   - synologys
 
+has_chat: true
+has_selfhosted: true
+
 sample_urls:
   - synologys://{hostname}/{token}
   - synology://{hostname}:{port}/{token}

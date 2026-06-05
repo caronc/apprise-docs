@@ -6,6 +6,9 @@ group: desktop
 schemas:
   - macosx: insecure
 
+has_local: true
+has_image: true
+
 sample_urls:
   - macosx://
 

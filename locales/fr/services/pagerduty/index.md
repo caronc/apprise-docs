@@ -9,7 +9,7 @@ source: https://www.pagerduty.com
 schemas:
   - pagerduty
 
-has_attachments: true
+has_image: true
 
 sample_urls:
   - pagerduty://{integration_key}@{api_key}

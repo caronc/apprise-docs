@@ -6,21 +6,24 @@ sidebar:
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
+import SupportProject from "~/components/SupportProject.astro";
+
+Apprise is free and open source — support keeps it running. Whether you are an individual user, a service provider, or a company, there is a path below that fits your situation.
 
 ## Sponsor Recognition
 
 Sponsors can support a specific notification service or Apprise as a whole. Recognition is based on the level you choose and is reviewed before placement. Higher levels include the visibility from lower levels; values between named tiers may be used for ordering within that tier.
 
-| Level | Tier                      | Service sponsor placement                                                              | Company sponsor placement                                       |
-| ----: | ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-|     1 | Community Supporter       | Listed by name on the Sponsors page.                                                   | Listed by name on the Sponsors page.                            |
-|    10 | URL Builder Supporter     | Adds a heart beside the service in URL Builder search results.                         | Listed by name on the Sponsors page.                            |
-|    15 | Service Listing Supporter | Adds service-list heart, highlighted row, bold title, and sponsored filter visibility. | Listed by name on the Sponsors page.                            |
-|    20 | Promoted Service          | Shows in the URL Builder's default sponsored dropdown before search.                   | Listed by name on the Sponsors page.                            |
-|    25 | Logo Supporter            | Adds a compact Sponsors page logo card and service-page support notice.                | Adds a compact Sponsors page logo card when a logo is provided. |
-|    50 | Strategic Sponsor         | Larger Sponsors page logo placement.                                                   | Larger Sponsors page logo placement.                            |
-|    75 | Featured Sponsor          | Adds rotating banner placement with sponsor message.                                   | Adds rotating banner placement with sponsor message.            |
-|   100 | Lead Sponsor              | Highest default rotating-banner weight among featured sponsors.                        | Highest default rotating-banner weight among featured sponsors. |
+| Level | Tier                      | Service sponsor placement                                                                                                     | Company sponsor placement                                                                                                     |
+| ----: | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|     1 | Community Supporter       | Listed by name on the Sponsors page.                                                                                          | Listed by name on the Sponsors page.                                                                                          |
+|    10 | URL Builder Supporter     | Adds a heart beside the service in URL Builder search results.                                                                | Listed by name on the Sponsors page.                                                                                          |
+|    15 | Service Listing Supporter | Adds service-list heart, highlighted row, bold title, and sponsored filter visibility.                                        | Listed by name on the Sponsors page.                                                                                          |
+|    20 | Promoted Service          | Shows in the URL Builder's default sponsored dropdown before search.                                                          | Listed by name on the Sponsors page.                                                                                          |
+|    25 | Logo Supporter            | Adds a compact Sponsors page logo card and service-page support notice.                                                       | Adds a compact Sponsors page logo card when a logo is provided.                                                               |
+|    50 | Strategic Sponsor         | Larger Sponsors page logo placement.                                                                                          | Larger Sponsors page logo placement.                                                                                          |
+|    75 | Featured Sponsor          | Adds a rotating sponsor banner across all <!-- SERVICES:COUNT --> service documentation pages, with a custom sponsor message. | Adds a rotating sponsor banner across all <!-- SERVICES:COUNT --> service documentation pages, with a custom sponsor message. |
+|   100 | Lead Sponsor              | Highest default rotating-banner weight among featured sponsors.                                                               | Highest default rotating-banner weight among featured sponsors.                                                               |
 
 Sponsored services and companies also appear on the [Sponsors](../sponsors/) page alongside individual supporters.
 
@@ -105,4 +108,4 @@ Sponsored placement is recognition of support, not an endorsement. The maintaine
 
 ---
 
-_Have questions? Reach out via [GitHub Issues](https://github.com/caronc/apprise/issues) or the [GitHub Sponsors page](https://github.com/sponsors/caronc)._
+<SupportProject />

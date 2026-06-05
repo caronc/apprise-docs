@@ -9,6 +9,8 @@ source: https://open.larksuite.com/
 schemas:
   - lark
 
+has_chat: true
+
 sample_urls:
   - https://open.larksuite.com/open-apis/bot/v2/hook/{token}
   - lark://{token}

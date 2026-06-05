@@ -9,8 +9,6 @@ source: https://streamlabs.com/
 schemas:
   - strmlabs
 
-has_image: true
-
 sample_urls:
   - strmlabs://{access_token}/
 ---

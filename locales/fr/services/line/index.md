@@ -9,6 +9,7 @@ source: https://line.me
 schemas:
   - line
 
+has_chat: true
 has_image: true
 
 sample_urls:

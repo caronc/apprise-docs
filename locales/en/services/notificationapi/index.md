@@ -11,6 +11,7 @@ schemas:
   - notificationapi
 
 has_sms: true
+has_image: true
 
 sample_urls:
   - napi://{ClientID}/{ClientSecret}/{Target}

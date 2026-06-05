@@ -11,6 +11,7 @@ schemas:
   - sogs
   - session: insecure
 
+has_chat: true
 has_selfhosted: true
 
 sample_urls:

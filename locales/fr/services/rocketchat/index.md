@@ -10,6 +10,8 @@ schemas:
   - rocket: insecure
   - rockets
 
+has_chat: true
+has_selfhosted: true
 has_image: true
 
 sample_urls:
