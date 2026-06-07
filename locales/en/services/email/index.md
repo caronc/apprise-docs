@@ -125,15 +125,21 @@ Most public providers require TLS. Prefer `mailtos://` for external servers.
 
 Send using a custom SMTP host:
 
-- `mailtos://user:password@server.com?smtp=smtp.server.com&from=noreply@server.com`
+```text
+mailtos://user:password@server.com?smtp=smtp.server.com&from=noreply@server.com
+```
 
 Include a From display name:
 
-- `mailtos://user:password@server.com?smtp=smtp.server.com&from=Optional%20Name<noreply@server.com>`
+```text
+mailtos://user:password@server.com?smtp=smtp.server.com&from=Optional%20Name<noreply@server.com>
+```
 
 Force SSL (usually port 465):
 
-- `mailtos://user:password@server.com:465?smtp=smtp.server.com&mode=ssl&from=noreply@server.com`
+```text
+mailtos://user:password@server.com:465?smtp=smtp.server.com&mode=ssl&from=noreply@server.com
+```
 
 ## Local Relay (No Authentication Required)
 
@@ -157,12 +163,37 @@ mailto://server.com?smtp=smtp.server.com&from=noreply@server.com
 
 ## From Name vs From Address
 
-If you want to set a display name, you can use either:
+The From address has two components: the **email address** and the optional **display name** (what recipients see in their mail client instead of a raw address).
 
-- `from=Optional%20Name<noreply@example.com>` (preferred)
-- `name=Optional%20Name&from=noreply@example.com`
+**Historical form -- still fully supported:** `name=` accepted only a plain display name string; `from=` accepted only an email address. Using them together combined the two:
 
-If both are provided, the name embedded in `from=` takes precedence.
+```text
+name=No%20Reply&from=noreply@example.com
+# Result: "No Reply" <noreply@example.com>
+```
+
+**Modern form -- preferred:** Apprise now parses `Display Name <email@example.com>` in both `from=` and `name=`. Either parameter can supply both components in one value. The preferred approach is to use `from=` alone:
+
+```text
+from=No%20Reply <noreply@example.com>
+# Result: "No Reply" <noreply@example.com>
+```
+
+When `from=` contains a complete `Name <email>` value, it is self-contained -- there is no need to also provide `name=`.
+
+**Behaviour summary:**
+
+| Parameters               | Display name        | Email address                |
+| ------------------------ | ------------------- | ---------------------------- |
+| `from=email` only        | App name (fallback) | `from=` value                |
+| `name=Name` only         | `name=` value       | Derived from URL user + host |
+| `from=email&name=Name`   | `name=` value       | `from=` value                |
+| `from=Name <email>` only | Embedded name       | Embedded email               |
+| `name=Name <email>` only | Embedded name       | Embedded email               |
+
+:::caution
+Do not mix `name=` with a `from=` value that already embeds a display name (e.g. `from=Name <email>&name=Other`). The two are combined in an undefined way that can produce a malformed From header. Use `from=Name <email>` alone when the combined form is intended.
+:::
 
 ## Header Manipulation
 
@@ -432,26 +463,26 @@ The `pgpkey=` parameter has been renamed to `pgppub=` to clarify that it holds a
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                               |
-| -------- | -------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                                                                               |
-| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                                                                                         |
-| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.                                                                        |
-| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                                                                                |
-| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                                                                                           |
-| from     |       No | From address. Supports `Optional Name<email@example.com>`. Maps to the email From header.                                                                                 |
-| name     |       No | Legacy alias for the From name. If both `from=` and `name=` are provided, `from=` takes precedence.                                                                       |
-| to       |       No | Recipient override. Also supported via URL path targets.                                                                                                                  |
-| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                                    |
-| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                              |
-| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                                                       |
-| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                                             |
-| pgp      |       No | PGP mode: `no` (default), `sign`, or `encrypt`. Prefix shorthand accepted: `n`, `s`, `e`. Legacy `yes`/`true` implies `encrypt` (deprecated). `none`/`false` map to `no`. |
-| pgppub   |       No | Path or URL to a recipient's ASCII-armoured PGP **public** key (`.asc`). When set, WKD and auto-generation are bypassed. Masked in privacy-safe URLs.                     |
-| pgpprv   |       No | Path to the sender's ASCII-armoured PGP **private** key (`.asc`). Required for `pgp=sign`. Passphrase-protected keys are not supported. Masked in privacy-safe URLs.      |
-| pgpkey   |       No | **Deprecated.** Alias for `pgppub=`. Still accepted but emits a deprecation warning. Will be removed in a future release. Use `pgppub=` instead.                          |
-| wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                           |
-| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                             |
+| Variable | Required | Description                                                                                                                                                                                                                                              |
+| -------- | -------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     |    Yes\* | SMTP username. May be a user id or a full email address. Can also be specified as `?user=`.                                                                                                                                                              |
+| pass     |    Yes\* | SMTP password. Can also be specified as `?pass=`.                                                                                                                                                                                                        |
+| domain   |      Yes | Domain portion of the URL host. For `mailto://user:pass@example.com`, the domain is `example.com`.                                                                                                                                                       |
+| port     |       No | SMTP port. Defaults to 25 (mailto) and 587 (mailtos) unless provider defaults are applied.                                                                                                                                                               |
+| smtp     |       No | Override the SMTP host. If set, provider detection is bypassed.                                                                                                                                                                                          |
+| from     |       No | From address. Accepts a plain email (`noreply@example.com`) or a combined `Display Name <email>` value. When the combined form is used, no `name=` is needed.                                                                                            |
+| name     |       No | From display name. Historically accepted a name string only; now also accepts `Display Name <email>` format. When used with `from=`, `name=` sets the display name and `from=` sets the email. Do not combine with a `from=` that already embeds a name. |
+| to       |       No | Recipient override. Also supported via URL path targets.                                                                                                                                                                                                 |
+| cc       |       No | Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                                                                                                                   |
+| bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                                                                                                             |
+| reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                                                                                                                                      |
+| mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                                                                                                                            |
+| pgp      |       No | PGP mode: `no` (default), `sign`, or `encrypt`. Prefix shorthand accepted: `n`, `s`, `e`. Legacy `yes`/`true` implies `encrypt` (deprecated). `none`/`false` map to `no`.                                                                                |
+| pgppub   |       No | Path or URL to a recipient's ASCII-armoured PGP **public** key (`.asc`). When set, WKD and auto-generation are bypassed. Masked in privacy-safe URLs.                                                                                                    |
+| pgpprv   |       No | Path to the sender's ASCII-armoured PGP **private** key (`.asc`). Required for `pgp=sign`. Passphrase-protected keys are not supported. Masked in privacy-safe URLs.                                                                                     |
+| pgpkey   |       No | **Deprecated.** Alias for `pgppub=`. Still accepted but emits a deprecation warning. Will be removed in a future release. Use `pgppub=` instead.                                                                                                         |
+| wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                                                                                                          |
+| +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                                                                                                            |
 
 **\*** Not required for anonymous relays.
 
