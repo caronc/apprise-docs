@@ -146,7 +146,13 @@ urls:
       pgpprv: "/home/joe/My Keys/private.asc"
 ```
 
-YAML sub-keys always take precedence over values parsed from the URL. When the same field is defined in both the URL and as a YAML sub-key, the sub-key wins — this applies equally to structural URL components (`user:pass@host`) and any query-string parameters already embedded in the URL (`?user=abc&password=123`). Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
+YAML sub-keys follow a strict three-level priority — the highest level wins when the same field is set by more than one source:
+
+1. **YAML token sub-keys** (highest) — always override everything else.
+2. **URL query-string parameters** (e.g. `?smtp=...`, `?user=abc`) — override URL-path values.
+3. **URL-path values** (lowest) — the `user`, `password`, `host`, and `port` parsed from the URL itself (e.g. `user:pass@host:port`).
+
+Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
 
 This means the URL itself can be as minimal as just the schema, with all credentials and options in the YAML block and no URL encoding required anywhere. The [email service](/services/email/) is shown above, but the same approach works for any Apprise service.
 
@@ -161,6 +167,51 @@ urls:
       verify: yes
       to: ops-room@example.com
 ```
+
+### Two Equivalent Token Indentation Styles
+
+Token sub-keys may be written at either the same indentation level as the URL key (**sibling form**) or indented one level deeper (**child form**). Both forms produce identical results.
+
+**Child form** — tokens indented one level under the URL key (YAML standard nesting):
+
+```yaml
+urls:
+  - mailtos://example.com:
+      password: "myP@ss#w0rd!"
+      smtp: smtp.example.com
+      from: "Joe User <joe@example.com>"
+```
+
+**Sibling form** — tokens at the same indentation level as the URL key:
+
+```yaml
+urls:
+  - mailtos://example.com:
+    password: "myP@ss#w0rd!"
+    smtp: smtp.example.com
+    from: "Joe User <joe@example.com>"
+```
+
+Both produce exactly the same loaded service. The sibling form is especially convenient when copying configuration from tools or templates that use flat indentation.
+
+The `_` placeholder is useful when the URL should carry no embedded credentials at all — every parameter is supplied through tokens:
+
+```yaml
+urls:
+  - mailtos://_:
+    user: sender@example.com
+    password: secret
+    smtp: smtp.example.com
+    from: sender@example.com
+    to: recipient@example.com
+    tag:
+      - ops
+      - alerts
+```
+
+:::note
+In YAML token blocks, always write `password:` — not `pass:`. The `pass` shorthand is a URL-path convention (`user:pass@host`) that is resolved by the URL parser when processing the URL string itself. YAML token keys map directly to plugin parameter names, where the correct name is `password`.
+:::
 
 ## YAML Tagging and Grouping
 

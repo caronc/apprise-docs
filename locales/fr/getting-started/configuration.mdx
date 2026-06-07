@@ -146,7 +146,13 @@ urls:
       pgpprv: "/home/joe/Mes Clés/private.asc"
 ```
 
-Les sous-clés YAML ont toujours la priorité sur les valeurs extraites de l'URL. Lorsque le même champ est défini à la fois dans l'URL et en tant que sous-clé YAML, c'est la sous-clé qui l'emporte — que ce soit face aux composantes structurelles de l'URL (`user:pass@host`) ou aux paramètres de requête déjà présents dans l'URL (`?user=abc&password=123`). Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
+Les sous-clés YAML suivent une priorité à trois niveaux — le niveau le plus haut l'emporte lorsque le même champ est défini par plusieurs sources :
+
+1. **Sous-clés YAML** (le plus haut) — remplacent toujours tout le reste.
+2. **Paramètres de requête de l'URL** (ex. `?smtp=...`, `?user=abc`) — remplacent les valeurs du chemin d'URL.
+3. **Valeurs du chemin d'URL** (le plus bas) — `user`, `password`, `host` et `port` extraits de l'URL elle-même (ex. `user:pass@host:port`).
+
+Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
 
 Cela signifie que l'URL elle-même peut se réduire au strict minimum — le schéma seul — avec tous les identifiants et options dans le bloc YAML, sans aucun encodage URL nulle part. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
 
@@ -161,6 +167,51 @@ urls:
       verify: yes
       to: ops-room@example.com
 ```
+
+### Deux Styles d'Indentation Equivalents
+
+Les sous-clés de tokens peuvent être écrites au même niveau d'indentation que la clé d'URL (**forme voisine**) ou indentées d'un niveau supplémentaire (**forme enfant**). Les deux formes produisent des résultats identiques.
+
+**Forme enfant** -- tokens indentés d'un niveau sous la clé d'URL (imbrication YAML standard) :
+
+```yaml
+urls:
+  - mailtos://example.com:
+      password: "myP@ss#w0rd!"
+      smtp: smtp.example.com
+      from: "Joe User <joe@example.com>"
+```
+
+**Forme voisine** -- tokens au même niveau d'indentation que la clé d'URL :
+
+```yaml
+urls:
+  - mailtos://example.com:
+    password: "myP@ss#w0rd!"
+    smtp: smtp.example.com
+    from: "Joe User <joe@example.com>"
+```
+
+Les deux produisent exactement le même service chargé. La forme voisine est particulièrement pratique lorsqu'on copie une configuration depuis des outils ou des modèles qui utilisent une indentation plate.
+
+Le placeholder `_` est utile lorsque l'URL ne doit contenir aucun identifiant -- tous les paramètres sont fournis via les tokens :
+
+```yaml
+urls:
+  - mailtos://_:
+    user: sender@example.com
+    password: secret
+    smtp: smtp.example.com
+    from: sender@example.com
+    to: recipient@example.com
+    tag:
+      - ops
+      - alerts
+```
+
+:::note
+Dans les blocs de tokens YAML, écrivez toujours `password:` -- pas `pass:`. Le raccourci `pass` est une convention du chemin d'URL (`user:pass@host`) résolue par l'analyseur d'URL lors du traitement de la chaîne d'URL. Les clés de tokens YAML correspondent directement aux noms de paramètres du plugin, dont le nom correct est `password`.
+:::
 
 ## Tags et Groupement en YAML
 
