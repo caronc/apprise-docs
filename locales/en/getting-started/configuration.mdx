@@ -56,6 +56,15 @@ mailto://user:password@gmail.com
 discord://webhook_id/webhook_token
 ```
 
+### Parameter Priority in TEXT Configuration
+
+TEXT URLs -- and any URL passed directly via the CLI or Python library -- follow a two-level priority. The same rule applies globally whenever no YAML token block is involved:
+
+1. **Query-string parameters** (`?key=value`) -- override URL-path values, including aliases (e.g. `?pass=` is treated as `?password=`).
+2. **URL-path values** (lowest) -- credentials and host parsed directly from the URL string (e.g. `user:pass@host:port`).
+
+YAML configuration adds a third, higher-priority level on top of these two: [YAML token sub-keys](#yaml-configuration) always win over both.
+
 ## TEXT Tagging and Grouping
 
 Tags let you organize notification services into logical groups such as `personal`, `ops`, or `critical`. You can then target groups without changing your destination URLs.

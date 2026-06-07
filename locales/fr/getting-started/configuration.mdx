@@ -56,6 +56,15 @@ mailto://user:password@gmail.com
 discord://webhook_id/webhook_token
 ```
 
+### Priorité des Paramètres en Configuration TEXT
+
+Les URLs TEXT -- et toute URL passée directement via la CLI ou la bibliothèque Python -- suivent une priorité à deux niveaux. Cette règle s'applique de manière globale dès qu'aucun bloc de tokens YAML n'est impliqué :
+
+1. **Paramètres de requête** (`?clé=valeur`) -- ont la priorité sur les valeurs du chemin URL, y compris les alias (ex. `?pass=` est traité comme `?password=`).
+2. **Valeurs du chemin URL** (plus bas) -- identifiants et hôte extraits directement de la chaîne URL (ex. `user:pass@host:port`).
+
+La configuration YAML ajoute un troisième niveau, encore plus prioritaire : les [sous-clés de tokens YAML](#configuration-yaml) l'emportent toujours sur les deux niveaux précédents.
+
 ## Tags et Groupement en TEXT
 
 Les tags vous permettent d'organiser vos services de notification en groupes logiques tels que `personal`, `ops` ou `critical`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
