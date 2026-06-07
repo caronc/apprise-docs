@@ -199,11 +199,11 @@ urls:
     to: recipient@example.com
 ```
 
-Utilisez le placeholder `_` lorsque l'URL ne doit contenir aucun identifiant :
+Lorsque tous les identifiants sont fournis sous forme de tokens YAML, il suffit d'omettre les identifiants de l'URL -- un simple `schema://` suffit :
 
 ```yaml
 urls:
-  - mailtos://_:
+  - mailtos://:
     user: sender@example.com
     password: "myP@ss#w0rd!"
     smtp: smtp.example.com
@@ -212,7 +212,11 @@ urls:
 ```
 
 :::note
-Dans les blocs de tokens YAML, écrivez toujours `password:` -- pas `pass:`. Le raccourci `pass` est une convention du chemin d'URL (`user:pass@host`) résolue par l'analyseur d'URL. Les clés de tokens YAML correspondent directement aux noms de paramètres du plugin, dont le nom correct est `password`.
+L'ancienne forme `mailtos://_:` (avec un placeholder `_`) est toujours acceptée et produit le même résultat. Les deux styles fonctionnent.
+:::
+
+:::note
+Dans les blocs de tokens YAML, `password:` et `pass:` sont tous deux acceptés -- `pass:` est automatiquement normalisé en `password:` par Apprise. Lorsque les deux clés apparaissent dans le même bloc, `password:` a la priorité.
 :::
 
 </TabItem>

@@ -199,11 +199,11 @@ urls:
     to: recipient@example.com
 ```
 
-Use the `_` placeholder when the URL itself should carry no embedded credentials:
+When all credentials are supplied as YAML tokens, omit them from the URL entirely -- a bare `schema://` is all that is needed:
 
 ```yaml
 urls:
-  - mailtos://_:
+  - mailtos://:
     user: sender@example.com
     password: "myP@ss#w0rd!"
     smtp: smtp.example.com
@@ -212,7 +212,11 @@ urls:
 ```
 
 :::note
-In YAML token blocks always write `password:` -- not `pass:`. The `pass` shorthand is a URL-path convention (`user:pass@host`) resolved by the URL parser when it processes the URL string. YAML token keys map directly to plugin parameter names, where the correct name is `password`.
+The older `mailtos://_:` form (with a `_` placeholder) is still accepted and produces the same result. Either style works.
+:::
+
+:::note
+In YAML token blocks, both `password:` and `pass:` are accepted -- `pass:` is automatically normalized to `password:` by Apprise. When both keys appear in the same block, `password:` takes precedence.
 :::
 
 </TabItem>
