@@ -56,6 +56,15 @@ mailto://user:password@gmail.com
 discord://webhook_id/webhook_token
 ```
 
+### Parameter Priority in TEXT Configuration
+
+TEXT URLs -- and any URL passed directly via the CLI or Python library -- follow a two-level priority. The same rule applies globally whenever no YAML token block is involved:
+
+1. **Query-string parameters** (`?key=value`) -- override URL-path values, including aliases (e.g. `?pass=` is treated as `?password=`).
+2. **URL-path values** (lowest) -- credentials and host parsed directly from the URL string (e.g. `user:pass@host:port`).
+
+YAML configuration adds a third, higher-priority level on top of these two: [YAML token sub-keys](#yaml-configuration) always win over both.
+
 ## TEXT Tagging and Grouping
 
 Tags let you organize notification services into logical groups such as `personal`, `ops`, or `critical`. You can then target groups without changing your destination URLs.
@@ -146,7 +155,13 @@ urls:
       pgpprv: "/home/joe/My Keys/private.asc"
 ```
 
-YAML sub-keys always take precedence over values parsed from the URL. When the same field is defined in both the URL and as a YAML sub-key, the sub-key wins — this applies equally to structural URL components (`user:pass@host`) and any query-string parameters already embedded in the URL (`?user=abc&password=123`). Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
+YAML sub-keys follow a strict three-level priority — the highest level wins when the same field is set by more than one source:
+
+1. **YAML token sub-keys** (highest) — always override everything else.
+2. **URL query-string parameters** (e.g. `?smtp=...`, `?user=abc`) — override URL-path values.
+3. **URL-path values** (lowest) — the `user`, `password`, `host`, and `port` parsed from the URL itself (e.g. `user:pass@host:port`).
+
+Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
 
 This means the URL itself can be as minimal as just the schema, with all credentials and options in the YAML block and no URL encoding required anywhere. The [email service](/services/email/) is shown above, but the same approach works for any Apprise service.
 
@@ -161,6 +176,129 @@ urls:
       verify: yes
       to: ops-room@example.com
 ```
+
+### YAML URL Entry Forms
+
+A `urls:` entry can take four distinct forms. Each form controls how many service instances are created and how parameter values are applied.
+
+<Tabs syncKey="yaml-entry-forms">
+<TabItem label="Single Instance">
+
+One URL entry creates one service instance. Token keys map directly to plugin parameters and override any value already in the URL.
+
+Tokens may be written either indented one level under the URL key (**child form**, standard YAML nesting) or at the same indentation level as the URL key (**sibling form**). Both produce identical results.
+
+**Child form:**
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: "myP@ss#w0rd!"
+      to: recipient@example.com
+```
+
+**Sibling form** (equivalent):
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+    user: sender@example.com
+    password: "myP@ss#w0rd!"
+    to: recipient@example.com
+```
+
+When all credentials are supplied as YAML tokens, omit them from the URL entirely -- a bare `schema://` is all that is needed:
+
+```yaml
+urls:
+  - mailtos://:
+    user: sender@example.com
+    password: "myP@ss#w0rd!"
+    smtp: smtp.example.com
+    from: sender@example.com
+    to: recipient@example.com
+```
+
+:::note
+The older `mailtos://_:` form (with a `_` placeholder) is still accepted and produces the same result. Either style works.
+:::
+
+:::note
+In YAML token blocks, both `password:` and `pass:` are accepted -- `pass:` is automatically normalized to `password:` by Apprise. When both keys appear in the same block, `password:` takes precedence.
+:::
+
+</TabItem>
+<TabItem label="Multiple Targets">
+
+When a plugin parameter accepts multiple values (such as `to:` for multiple recipients), supply them as a comma-separated string **or** as a YAML list under that key. Either way, **one service instance** is created with all values in its target list -- this is not the same as creating multiple instances.
+
+**Comma-separated** (equivalent to `?to=user1,user2` in the URL):
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: secret
+      to: user1@example.com, user2@example.com
+```
+
+**YAML list** (same result, easier to read for long lists):
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: secret
+      to:
+        - user1@example.com
+        - user2@example.com
+```
+
+The same syntax applies to `tag:` and any other list-type parameter.
+
+</TabItem>
+<TabItem label="Multiple Instances">
+
+When the child value of a URL key is a YAML **list**, Apprise creates one service instance per list entry. Each entry's tokens override values from the URL independently -- entries do **not** inherit tokens from each other.
+
+```yaml
+urls:
+  - mailto://user:pass@gmail.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+```
+
+This loads two `mailto://` services. Both inherit `user:pass@gmail.com` from the URL. Each instance gets its own `to` and `tag`; neither sees the other entry's values.
+
+:::caution
+To create multiple instances, the list must be indented as a **child** of the URL key (one level deeper), not at the same level as the URL key. Multiple targets for a single instance use the comma-separated or YAML-list token form shown in the "Multiple Targets" tab instead.
+:::
+
+</TabItem>
+<TabItem label="Multiple Instances + Shared Tokens">
+
+Combine a child-indented list (one instance per entry) with sibling tokens (at the same indentation level as the URL key) to share settings across every generated instance.
+
+Per-entry tokens take priority over sibling tokens for any key that both define.
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+    user: sender@example.com
+    password: shared_secret
+```
+
+This creates two `mailtos://` instances. The sibling tokens `user:` and `password:` are applied to both. Each entry's own `to:` and `tag:` are per-instance and override any sibling value for the same key.
+
+</TabItem>
+</Tabs>
 
 ## YAML Tagging and Grouping
 
@@ -190,21 +328,26 @@ urls:
 
 ### Reusing One URL with Multiple YAML Entries
 
-A YAML list under a URL creates one service definition for each list item. Apprise starts with the same parsed URL each time, then applies that item's YAML values as overrides.
+A child-indented YAML list under a URL key creates one service instance per list entry. This is covered in detail in the [Multiple Instances](#yaml-url-entry-forms) and [Multiple Instances + Shared Tokens](#yaml-url-entry-forms) tabs above.
 
-This is useful when several destinations share the same credentials but need different targets, tags, or options:
+:::caution
+A misplaced `-` bullet can silently split one intended entry into several independent instances, each with only a subset of the intended parameters.
 
 ```yaml
-version: 1
+# Intended: one instance with two targets
 urls:
-  - mailto://user:pass@gmail.com:
-      - to: manager@example.com
-        tag: boss
-      - to: coworker@example.com
-        tag: new-hire
+  - schema://host:
+      to: user1@example.com, user2@example.com  # correct: one instance
+
+# Accidental: two independent instances, each missing the other's config
+urls:
+  - schema://host:
+      - to: user1@example.com   # instance 1 -- only sees its own keys
+      - to: user2@example.com   # instance 2 -- only sees its own keys
 ```
 
-The example above loads two `mailto://` services. Both inherit `user:pass@gmail.com` from the URL, while each entry gets its own `to` and `tag` value.
+This split is intentional and useful when different instances genuinely need different settings. But if the goal is one instance with multiple targets, use a comma-separated value or a YAML list under the key instead.
+:::
 
 ### Grouping Tags with YAML Configuration
 

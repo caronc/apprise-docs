@@ -56,6 +56,15 @@ mailto://user:password@gmail.com
 discord://webhook_id/webhook_token
 ```
 
+### Priorité des Paramètres en Configuration TEXT
+
+Les URLs TEXT -- et toute URL passée directement via la CLI ou la bibliothèque Python -- suivent une priorité à deux niveaux. Cette règle s'applique de manière globale dès qu'aucun bloc de tokens YAML n'est impliqué :
+
+1. **Paramètres de requête** (`?clé=valeur`) -- ont la priorité sur les valeurs du chemin URL, y compris les alias (ex. `?pass=` est traité comme `?password=`).
+2. **Valeurs du chemin URL** (plus bas) -- identifiants et hôte extraits directement de la chaîne URL (ex. `user:pass@host:port`).
+
+La configuration YAML ajoute un troisième niveau, encore plus prioritaire : les [sous-clés de tokens YAML](#configuration-yaml) l'emportent toujours sur les deux niveaux précédents.
+
 ## Tags et Groupement en TEXT
 
 Les tags vous permettent d'organiser vos services de notification en groupes logiques tels que `personal`, `ops` ou `critical`. Vous pouvez ensuite cibler ces groupes sans modifier vos URL de destination.
@@ -146,7 +155,13 @@ urls:
       pgpprv: "/home/joe/Mes Clés/private.asc"
 ```
 
-Les sous-clés YAML ont toujours la priorité sur les valeurs extraites de l'URL. Lorsque le même champ est défini à la fois dans l'URL et en tant que sous-clé YAML, c'est la sous-clé qui l'emporte — que ce soit face aux composantes structurelles de l'URL (`user:pass@host`) ou aux paramètres de requête déjà présents dans l'URL (`?user=abc&password=123`). Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
+Les sous-clés YAML suivent une priorité à trois niveaux — le niveau le plus haut l'emporte lorsque le même champ est défini par plusieurs sources :
+
+1. **Sous-clés YAML** (le plus haut) — remplacent toujours tout le reste.
+2. **Paramètres de requête de l'URL** (ex. `?smtp=...`, `?user=abc`) — remplacent les valeurs du chemin d'URL.
+3. **Valeurs du chemin d'URL** (le plus bas) — `user`, `password`, `host` et `port` extraits de l'URL elle-même (ex. `user:pass@host:port`).
+
+Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
 
 Cela signifie que l'URL elle-même peut se réduire au strict minimum — le schéma seul — avec tous les identifiants et options dans le bloc YAML, sans aucun encodage URL nulle part. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
 
@@ -161,6 +176,129 @@ urls:
       verify: yes
       to: ops-room@example.com
 ```
+
+### Formes d'Entrée YAML pour les URLs
+
+Une entrée `urls:` peut prendre quatre formes distinctes. Chaque forme contrôle le nombre d'instances de service créées et la façon dont les valeurs des paramètres sont appliquées.
+
+<Tabs syncKey="yaml-entry-forms">
+<TabItem label="Instance Unique">
+
+La forme la plus courante : une entrée URL crée une instance de service. Les clés de tokens correspondent directement aux paramètres du plugin et remplacent toute valeur déjà présente dans l'URL.
+
+Les tokens peuvent être écrits soit indentés d'un niveau sous la clé d'URL (**forme enfant**, imbrication YAML standard) soit au même niveau d'indentation que la clé d'URL (**forme voisine**). Les deux produisent des résultats identiques.
+
+**Forme enfant :**
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: "myP@ss#w0rd!"
+      to: recipient@example.com
+```
+
+**Forme voisine** (équivalente) :
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+    user: sender@example.com
+    password: "myP@ss#w0rd!"
+    to: recipient@example.com
+```
+
+Lorsque tous les identifiants sont fournis sous forme de tokens YAML, il suffit d'omettre les identifiants de l'URL -- un simple `schema://` suffit :
+
+```yaml
+urls:
+  - mailtos://:
+    user: sender@example.com
+    password: "myP@ss#w0rd!"
+    smtp: smtp.example.com
+    from: sender@example.com
+    to: recipient@example.com
+```
+
+:::note
+L'ancienne forme `mailtos://_:` (avec un placeholder `_`) est toujours acceptée et produit le même résultat. Les deux styles fonctionnent.
+:::
+
+:::note
+Dans les blocs de tokens YAML, `password:` et `pass:` sont tous deux acceptés -- `pass:` est automatiquement normalisé en `password:` par Apprise. Lorsque les deux clés apparaissent dans le même bloc, `password:` a la priorité.
+:::
+
+</TabItem>
+<TabItem label="Cibles Multiples">
+
+Lorsqu'un paramètre de plugin accepte plusieurs valeurs (comme `to:` pour plusieurs destinataires), fournissez-les sous forme de chaîne séparée par des virgules **ou** de liste YAML sous cette clé. Dans les deux cas, **une seule instance de service** est créée avec toutes les valeurs dans sa liste de cibles -- ce n'est pas la même chose que créer plusieurs instances.
+
+**Séparé par des virgules** (équivalent à `?to=user1,user2` dans l'URL) :
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: secret
+      to: user1@example.com, user2@example.com
+```
+
+**Liste YAML** (même résultat, plus lisible pour les longues listes) :
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      user: sender@example.com
+      password: secret
+      to:
+        - user1@example.com
+        - user2@example.com
+```
+
+La même syntaxe s'applique à `tag:` et à tout autre paramètre de type liste.
+
+</TabItem>
+<TabItem label="Instances Multiples">
+
+Lorsque la valeur enfant d'une clé d'URL est une **liste** YAML, Apprise crée une instance de service par entrée de la liste. Les tokens de chaque entrée remplacent les valeurs de l'URL de façon indépendante -- les entrées n'héritent **pas** des tokens des autres entrées.
+
+```yaml
+urls:
+  - mailto://user:pass@gmail.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+```
+
+Ceci charge deux services `mailto://`. Les deux héritent de `user:pass@gmail.com` depuis l'URL. Chaque instance reçoit ses propres `to` et `tag` ; aucune ne voit les valeurs de l'autre entrée.
+
+:::caution
+Pour créer plusieurs instances, la liste doit être indentée en tant qu'**enfant** de la clé d'URL (un niveau plus profond), et non au même niveau. Pour plusieurs cibles d'une instance unique, utilisez plutôt la forme séparée par des virgules ou la liste YAML sous la clé, présentées dans l'onglet "Cibles Multiples".
+:::
+
+</TabItem>
+<TabItem label="Instances Multiples + Tokens Partagés">
+
+Combinez une liste indentée en enfant (une instance par entrée) avec des tokens voisins (au même niveau d'indentation que la clé d'URL) pour partager des paramètres entre toutes les instances générées.
+
+Les tokens par entrée ont la priorité sur les tokens voisins pour toute clé que les deux définissent.
+
+```yaml
+urls:
+  - mailtos://smtp.example.com:
+      - to: manager@example.com
+        tag: boss
+      - to: coworker@example.com
+        tag: new-hire
+    user: sender@example.com
+    password: shared_secret
+```
+
+Ceci crée deux instances `mailtos://`. Les tokens voisins `user:` et `password:` sont appliqués aux deux. Les `to:` et `tag:` propres à chaque entrée sont spécifiques à l'instance et remplacent toute valeur voisine pour la même clé.
+
+</TabItem>
+</Tabs>
 
 ## Tags et Groupement en YAML
 
@@ -190,21 +328,26 @@ urls:
 
 ### Réutiliser une URL avec Plusieurs Entrées YAML
 
-Une liste YAML placée sous une URL crée une définition de service pour chaque élément de la liste. Apprise part de la même URL analysée à chaque fois, puis applique les valeurs YAML de cet élément comme remplacements.
+Une liste YAML indentée sous une clé d'URL crée une instance de service par entrée. Le détail complet est présenté dans les onglets [Instances Multiples](#formes-dentrée-yaml-pour-les-urls) et [Instances Multiples + Tokens Partagés](#formes-dentrée-yaml-pour-les-urls) ci-dessus.
 
-C'est utile lorsque plusieurs destinations partagent les mêmes identifiants mais ont besoin de cibles, tags ou options différents :
+:::caution
+Un tiret `-` mal placé peut silencieusement diviser une entrée en plusieurs instances indépendantes, chacune ne recevant qu'une partie des paramètres souhaités.
 
 ```yaml
-version: 1
+# Intention : une instance avec deux cibles
 urls:
-  - mailto://user:pass@gmail.com:
-      - to: manager@example.com
-        tag: boss
-      - to: coworker@example.com
-        tag: new-hire
+  - schema://host:
+      to: user1@example.com, user2@example.com  # correct : une instance
+
+# Accidentel : deux instances indépendantes, chacune sans la config de l'autre
+urls:
+  - schema://host:
+      - to: user1@example.com   # instance 1 -- ne voit que ses propres clés
+      - to: user2@example.com   # instance 2 -- ne voit que ses propres clés
 ```
 
-L'exemple ci-dessus charge deux services `mailto://`. Les deux héritent de `user:pass@gmail.com` depuis l'URL, tandis que chaque entrée reçoit ses propres valeurs `to` et `tag`.
+Cette division est intentionnelle et utile lorsque des instances différentes ont vraiment besoin de paramètres distincts. Mais si l'objectif est une instance unique avec plusieurs cibles, utilisez plutôt une valeur séparée par des virgules ou une liste YAML sous la clé.
+:::
 
 ### Regrouper des Tags avec une Configuration YAML
 
