@@ -26,10 +26,10 @@ sample_urls:
 
 ## Configuration du compte
 
-La prise en charge XMPP exige **slixmpp version 1.15.0 ou plus récente** :
+La prise en charge XMPP exige **slixmpp version 1.16.0 ou plus récente** :
 
 ```bash
-pip install "slixmpp>=1.15.0"
+pip install "slixmpp>=1.16.0"
 ```
 
 Vous aurez besoin des éléments suivants :

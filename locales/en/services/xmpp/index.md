@@ -26,10 +26,10 @@ sample_urls:
 
 ## Account Setup
 
-XMPP support requires **slixmpp version 1.15.0 or newer**:
+XMPP support requires **slixmpp version 1.16.0 or newer**:
 
 ```bash
-pip install "slixmpp>=1.15.0"
+pip install "slixmpp>=1.16.0"
 ```
 
 From here, you will need:
