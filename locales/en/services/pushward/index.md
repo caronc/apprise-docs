@@ -52,8 +52,9 @@ The notification level may be set explicitly; when it is omitted, it is derived 
 | Variable | Required | Description                                                                                                       |
 | -------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
 | apikey   | \*Yes    | Your PushWard integration key (begins with `hlk_`). It may also be supplied as a `?apikey=` query argument.        |
-| level    | No       | The notification level: `passive`, `active`, `time-sensitive`, or `critical`. Derived from the Apprise type if unset. |
-| volume   | No       | The alert volume (`0.0`–`1.0`); only applied when `level` is `critical`.                                            |
+| level    | No       | Forces this level for every notification: `passive`, `active`, `time-sensitive`, or `critical`. Short-forms work too (e.g. `crit`). |
+| info / success / warning / failure | No | Override the level used for that notification type (defaults: `active` / `active` / `time-sensitive` / `time-sensitive`). e.g. `?info=passive&failure=critical`. |
+| volume   | No       | The alert volume (`0.0`–`1.0`); only applied when the resolved level is `critical`.                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
