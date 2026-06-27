@@ -44,17 +44,25 @@ Valid syntax is as follows:
 
 - `pushward://{apikey}`
 - `pushward://{apikey}?level={level}`
+- `pushward://{apikey}?info={level}&success={level}&warning={level}&failure={level}`
 
-The notification level may be set explicitly; when it is omitted, it is derived from the Apprise notification type.
+The notification level may be set explicitly via `?level=` to force the same level for every notification, or you may fine-tune each Apprise type individually using `?info=`, `?success=`, `?warning=`, and `?failure=`. When omitted, the level is derived automatically from the Apprise notification type using the following defaults:
+
+| Apprise Type | PushWard Level   |
+| ------------ | ---------------- |
+| `info`       | `active`         |
+| `success`    | `active`         |
+| `warning`    | `time-sensitive` |
+| `failure`    | `time-sensitive` |
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                       |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
-| apikey   | \*Yes    | Your PushWard integration key (begins with `hlk_`). It may also be supplied as a `?apikey=` query argument.        |
-| level    | No       | Forces this level for every notification: `passive`, `active`, `time-sensitive`, or `critical`. Short-forms work too (e.g. `crit`). |
-| info / success / warning / failure | No | Override the level used for that notification type (defaults: `active` / `active` / `time-sensitive` / `time-sensitive`). e.g. `?info=passive&failure=critical`. |
-| volume   | No       | The alert volume (`0.0`–`1.0`); only applied when the resolved level is `critical`.                                |
+| Variable                           | Required | Description                                                                                                                                                      |
+| ---------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey                             | \*Yes    | Your PushWard integration key (begins with `hlk_`). It may also be supplied as a `?apikey=` query argument.                                                      |
+| level                              | No       | Forces this level for every notification: `passive`, `active`, `time-sensitive`, or `critical`. Short-forms work too (e.g. `crit`).                              |
+| info / success / warning / failure | No       | Override the level used for that notification type (defaults: `active` / `active` / `time-sensitive` / `time-sensitive`). e.g. `?info=passive&failure=critical`. |
+| volume                             | No       | The alert volume (`0.0`–`1.0`); only applied when the resolved level is `critical`.                                                                              |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -74,9 +82,17 @@ apprise -vv -t "Server Down" -b "Production is unreachable." \
    "pushward://hlk_xxxxxxxxxxxx?level=critical&volume=0.8"
 ```
 
+Map individual Apprise notification types to different PushWard levels:
+
+```bash
+apprise -vv -t "Info" -b "Deployment finished." \
+   "pushward://hlk_xxxxxxxxxxxx?info=passive&failure=critical"
+```
+
 Example YAML configuration:
 
 ```yaml
 urls:
   - pushward://hlk_xxxxxxxxxxxx?level=time-sensitive
+  - pushward://hlk_xxxxxxxxxxxx?info=passive&warning=time-sensitive&failure=critical
 ```
