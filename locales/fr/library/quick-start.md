@@ -145,6 +145,46 @@ apobj.notify(body="...", tag="2:alerts:3")
 
 Le nombre de tentatives ne modifie pas la configuration permanente du service.
 
+### Pièces jointes
+
+Passez des fichiers à `notify()` via l'argument `attach`. Les chemins locaux, les URL distantes et les données en mémoire sont tous acceptés.
+
+```python
+# Fichier local
+apobj.notify(
+    title="Rapport prêt",
+    body="Veuillez consulter le fichier joint.",
+    attach="/chemin/vers/rapport.pdf",
+)
+
+# URL distante — nom de fichier déduit automatiquement depuis le chemin (photo.jpg)
+apobj.notify(
+    body="Jetez un œil à ça.",
+    attach="https://example.com/images/photo.jpg",
+)
+
+# URL distante avec remplacement explicite du nom via ?name=
+apobj.notify(
+    body="Miniature jointe.",
+    attach="https://example.com/thumbnails/abc123?name=apercu.jpg",
+)
+
+# Plusieurs pièces jointes
+apobj.notify(
+    body="Deux fichiers joints.",
+    attach=[
+        "/chemin/vers/rapport.pdf",
+        "https://example.com/images/photo.jpg",
+    ],
+)
+```
+
+Lorsqu'une URL `http://` ou `https://` est utilisée comme pièce jointe, Apprise résout le nom de fichier dans cet ordre :
+
+1. Paramètre de requête `?name=` (s'il est présent et non vide).
+2. Composant nom de fichier du chemin de l'URL (`photo.jpg` depuis `/images/photo.jpg`).
+3. Repli : `attachment.001`, `attachment.002`, …
+
 ### Charger des fichiers de configuration
 
 Vous pouvez utiliser l'objet `AppriseConfig` pour charger des URL depuis des fichiers YAML ou texte externes au lieu de les coder en dur.

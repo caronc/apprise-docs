@@ -145,6 +145,46 @@ apobj.notify(body="...", tag="2:alerts:3")
 
 The retry count does not permanently modify the service configuration.
 
+### Attachments
+
+Pass files to `notify()` using the `attach` argument. Local paths, remote URLs, and in-memory data are all accepted.
+
+```python
+# Local file
+apobj.notify(
+    title="Report ready",
+    body="Please see the attached file.",
+    attach="/path/to/report.pdf",
+)
+
+# Remote URL — filename derived from the URL path automatically (photo.jpg)
+apobj.notify(
+    body="Check this out.",
+    attach="https://example.com/images/photo.jpg",
+)
+
+# Remote URL with an explicit filename override via ?name=
+apobj.notify(
+    body="Thumbnail attached.",
+    attach="https://example.com/thumbnails/abc123?name=preview.jpg",
+)
+
+# Multiple attachments
+apobj.notify(
+    body="Two files attached.",
+    attach=[
+        "/path/to/report.pdf",
+        "https://example.com/images/photo.jpg",
+    ],
+)
+```
+
+When an `http://` or `https://` URL is used as an attachment, Apprise resolves the filename in this order:
+
+1. `?name=` query parameter (if provided and non-empty).
+2. Filename component of the URL path (`photo.jpg` from `/images/photo.jpg`).
+3. Fallback: `attachment.001`, `attachment.002`, …
+
 ### Loading Configuration Files
 
 You can use the `AppriseConfig` object to load URLs from external YAML or Text files instead of hardcoding them.

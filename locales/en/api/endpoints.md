@@ -48,6 +48,48 @@ Send notifications without using persistent storage.
 - `title`: (Optional) The message title.
 - `type`: (Optional) Message type: `info` (default), `success`, `warning`, `failure`.
 - `format`: (Optional) Text format: `text` (default), `markdown`, `html`.
+- `attach`: (Optional) One or more attachments. See [Attachments](#attachments) below.
+
+## Attachments
+
+The `/notify/` and `/notify/{KEY}` endpoints accept an optional `attach` field. You may mix the following forms within a single request.
+
+### Binary file upload
+
+When submitting the request as `multipart/form-data`, include the file directly in the `attach` field. The filename provided by the client is used as-is.
+
+### HTTP/HTTPS URL string
+
+Pass an `http://` or `https://` URL as a string. Apprise downloads the file at request time and derives the attachment filename automatically.
+
+Filename resolution follows this priority order:
+
+1. `?name=` query parameter — append it to the URL to force a specific name.
+2. Filename from the URL path — extracted from the last path segment (e.g. `photo.jpg` from `/images/photo.jpg`).
+3. Fallback — `attachment.001`, `attachment.002`, … when no name can be determined.
+
+```text
+# Filename resolved from URL path: photo.jpg
+https://example.com/images/photo.jpg
+
+# Filename resolved from URL path: abc123
+https://example.com/thumbnails/abc123
+
+# Filename forced via ?name=: thumbnail.jpg
+https://example.com/thumbnails/abc123?name=thumbnail.jpg
+```
+
+An empty or whitespace-only `?name=` is treated as if the parameter were absent, so Apprise falls back to the URL path.
+
+### JSON object
+
+Pass an object with a `url` key and an optional `filename` key:
+
+```json
+{ "url": "https://example.com/thumbnails/abc123", "filename": "thumbnail.jpg" }
+```
+
+When `filename` is provided in the JSON object it takes the highest priority, overriding both the URL path and any `?name=` parameter.
 
 ## Persistent (Stateful) Endpoints
 

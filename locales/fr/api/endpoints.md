@@ -48,6 +48,48 @@ Envoyez des notifications sans utiliser de stockage persistant.
 - `title` : facultatif. Titre du message.
 - `type` : facultatif. Type de message : `info` (par défaut), `success`, `warning`, `failure`.
 - `format` : facultatif. Format du texte : `text` (par défaut), `markdown`, `html`.
+- `attach` : facultatif. Une ou plusieurs pièces jointes. Voir [Pièces jointes](#pièces-jointes) ci-dessous.
+
+## Pièces jointes
+
+Les points de terminaison `/notify/` et `/notify/{KEY}` acceptent un champ `attach` facultatif. Les formes suivantes peuvent être combinées au sein d'une même requête.
+
+### Envoi de fichier binaire
+
+Lors de la soumission de la requête en `multipart/form-data`, incluez directement le fichier dans le champ `attach`. Le nom de fichier fourni par le client est utilisé tel quel.
+
+### URL HTTP/HTTPS
+
+Passez une URL `http://` ou `https://` sous forme de chaîne. Apprise télécharge le fichier au moment de la requête et détermine automatiquement le nom de la pièce jointe.
+
+La résolution du nom de fichier suit cet ordre de priorité :
+
+1. Paramètre de requête `?name=` — ajoutez-le à l'URL pour imposer un nom précis.
+2. Nom de fichier extrait du chemin de l'URL — dernier segment du chemin (ex. `photo.jpg` depuis `/images/photo.jpg`).
+3. Repli — `attachment.001`, `attachment.002`, … lorsqu'aucun nom ne peut être déterminé.
+
+```text
+# Nom résolu depuis le chemin de l'URL : photo.jpg
+https://example.com/images/photo.jpg
+
+# Nom résolu depuis le chemin de l'URL : abc123
+https://example.com/thumbnails/abc123
+
+# Nom imposé via ?name= : thumbnail.jpg
+https://example.com/thumbnails/abc123?name=thumbnail.jpg
+```
+
+Un paramètre `?name=` vide ou composé uniquement d'espaces est traité comme absent : Apprise revient alors au chemin de l'URL.
+
+### Objet JSON
+
+Passez un objet avec une clé `url` et une clé `filename` facultative :
+
+```json
+{ "url": "https://example.com/thumbnails/abc123", "filename": "thumbnail.jpg" }
+```
+
+Lorsque `filename` est présent dans l'objet JSON, il est prioritaire sur tout le reste, y compris le chemin de l'URL et le paramètre `?name=`.
 
 ## Points de terminaison Persistants avec État
 
