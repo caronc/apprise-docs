@@ -1,0 +1,420 @@
+---
+title: "Message Format Pipeline"
+description: How source formats, plugin destination formats, URL overrides, and service dialect adapters interact during notification delivery.
+sidebar:
+  order: 5
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Apprise separates the format of the caller's message from the format each
+notification plugin expects:
+
+| Value           | Meaning                                   | Set by                                            |
+| --------------- | ----------------------------------------- | ------------------------------------------------- |
+| `body_format`   | Format of the incoming message            | `notify()`, `AppriseAsset`, CLI, or API caller    |
+| `notify_format` | Format the plugin delivers to its service | Plugin class; optionally overridden by `?format=` |
+
+Both values are independent. The same HTML source can become plain text for
+one plugin, CommonMark for another, and stay HTML for a third -- all in a
+single `notify()` call.
+
+## Conversion Flow
+
+For every matched plugin, Apprise:
+
+1. Reads `body_format` from the `notify()` call.
+   If none is supplied, it falls back to `AppriseAsset.body_format`, which
+   defaults to `None`.
+2. Reads `notify_format` from the plugin instance (class default or
+   `?format=` override).
+3. When `body_format` is not `None`, calls
+   `convert_between(body_format, notify_format, body)` and replaces the
+   body with the result. Results are cached per unique destination format
+   so the same conversion is not repeated for multiple plugins that share
+   a format.
+4. Calls `plugin.notify(body=<converted>, body_format=<original_format>)`.
+   The body that arrives at the plugin is already in `notify_format`.
+   The pre-conversion content is not preserved or passed separately.
+   `body_format` carries only the **format identifier** (e.g.
+   `NotifyFormat.HTML`) -- not a copy of the original body text.
+
+```text
+Apprise.notify(body=..., body_format=HTML)
+         |
+         |  convert_between(HTML, plugin.notify_format, body)
+         |  (skipped when body_format is None)
+         v
+plugin.notify(
+    body=<already converted to notify_format>,
+    body_format=HTML,    # the original format tag -- not the original body
+)
+         |
+         v
+plugin._build_send_calls(
+    body=<already converted>,
+    body_format=HTML,
+)
+```
+
+Title conversion follows the same path but only when the plugin has no
+native title field (`title_maxlen <= 0`). When `title_maxlen > 0`, the
+title is passed unchanged and the plugin is responsible for any further
+formatting.
+
+## When No Source Format Is Provided
+
+When `body_format` is `None`, Apprise skips conversion entirely:
+
+```python
+apobj.notify(body="<b>Hello</b>")
+```
+
+The plugin receives `"<b>Hello</b>"` unchanged and `body_format=None`.
+Declaring a `notify_format` on the plugin class does not alter this.
+Conversion only runs when the caller declares a source format.
+
+## Setting the Plugin Destination
+
+`NotifyBase` defaults to plain text. Set `notify_format` when the upstream
+service accepts a richer format:
+
+```python
+from apprise import NotifyFormat
+from apprise.plugins.base import NotifyBase
+
+
+class NotifyExample(NotifyBase):
+    notify_format = NotifyFormat.MARKDOWN
+```
+
+The effective value is always accessible as `self.notify_format`.
+
+<Tabs syncKey="destination-format">
+<TabItem value="text" label="TEXT">
+
+`NotifyFormat.TEXT` is the default when a plugin does not declare a format.
+
+| Source `body_format` | Body delivered to the plugin                          |
+| -------------------- | ----------------------------------------------------- |
+| `TEXT`               | Unchanged text                                        |
+| `MARKDOWN`           | Unchanged Markdown source (no destructive conversion) |
+| `HTML`               | Tags removed; block structure flattened to plain text |
+| `None`               | Body unchanged; no conversion performed               |
+
+Markdown-to-text has no conversion step today; the Markdown syntax arrives
+as-is. If the upstream service still interprets Markdown characters on its
+text delivery path, escape them inside `send()`.
+
+</TabItem>
+<TabItem value="markdown" label="MARKDOWN">
+
+Set `notify_format = NotifyFormat.MARKDOWN` when the upstream service
+accepts Markdown.
+
+| Source `body_format` | Body delivered to the plugin                      |
+| -------------------- | ------------------------------------------------- |
+| `TEXT`               | Unchanged text, which is already valid CommonMark |
+| `MARKDOWN`           | Unchanged Markdown                                |
+| `HTML`               | Converted to notification-friendly CommonMark     |
+| `None`               | Body unchanged; no conversion performed           |
+
+HTML conversion always produces **standard CommonMark**. Services that
+use a non-standard dialect (Telegram MarkdownV2, Slack mrkdwn, WhatsApp,
+Google Chat) must translate that CommonMark into their own syntax inside
+the plugin -- not inside the shared conversion layer.
+
+</TabItem>
+<TabItem value="html" label="HTML">
+
+Set `notify_format = NotifyFormat.HTML` when the upstream service accepts
+HTML.
+
+| Source `body_format` | Body delivered to the plugin                           |
+| -------------------- | ------------------------------------------------------ |
+| `TEXT`               | HTML-escaped text with line breaks converted to `<br>` |
+| `MARKDOWN`           | Rendered HTML                                          |
+| `HTML`               | Unchanged HTML                                         |
+| `None`               | Body unchanged; no conversion performed                |
+
+The plugin is responsible for any further sanitization, tag allowlisting,
+or payload wrapping that its upstream API requires.
+
+</TabItem>
+</Tabs>
+
+## Optional `?format=` URL Override
+
+Without an override, the plugin class's `notify_format` is used:
+
+```text
+example://host/token
+```
+
+A `format=` query parameter changes the destination for that plugin
+instance only:
+
+```text
+example://host/token?format=text
+example://host/token?format=markdown
+example://host/token?format=html
+```
+
+The effective destination is always `self.notify_format` regardless of
+whether it came from the class or a URL override. Automatic conversion
+still requires a non-`None` source `body_format`.
+
+When plugin logic must distinguish a URL override from the class default,
+inspect `kwargs` before calling the base `__init__`:
+
+```python
+def __init__(self, **kwargs):
+    # Capture whether the caller explicitly set a format override.
+    self.format_overridden = "format" in kwargs
+    super().__init__(**kwargs)
+```
+
+Most plugins only need `self.notify_format` and do not need to track the
+override separately.
+
+## Using `body_format` in Plugin Hooks
+
+The body reaching `_build_send_calls()` and `send()` has already been
+converted to `self.notify_format`. The `body_format` parameter that also
+arrives carries the **original source format**, which plugins use to decide
+whether further service-specific work is needed.
+
+The most common use case is checking that the body is the result of an
+HTML-to-CommonMark conversion before applying a service dialect translation:
+
+```python
+def _build_send_calls(
+    self, body=None, title=None, body_format=None, **kwargs
+):
+    if not (
+        self.notify_format == NotifyFormat.MARKDOWN
+        and body_format == NotifyFormat.HTML
+    ):
+        # Direct Markdown or other source: pass through unchanged.
+        yield from super()._build_send_calls(
+            body=body,
+            title=title,
+            body_format=body_format,
+            **kwargs,
+        )
+        return
+
+    # body is CommonMark here; adapt it to the service dialect.
+    body = self._commonmark_to_service_dialect(body)
+
+    # Declare the body as Markdown so the base class uses
+    # Markdown-aware overflow splitting.
+    yield from super()._build_send_calls(
+        body=body,
+        title=title,
+        body_format=NotifyFormat.MARKDOWN,
+        **kwargs,
+    )
+```
+
+<Tabs syncKey="plugin-hook-pattern">
+<TabItem value="pre-split" label="Adapt before Splitting">
+
+Translate the entire body before the base class splits it into chunks.
+Evolution (WhatsApp) and Google Chat both use this shape because their
+dialect syntax can be split safely at word boundaries without carrying
+state between chunks.
+
+```python
+# In NotifyEvolution (_commonmark_to_whatsapp) and
+# NotifyGoogleChat (_commonmark_to_google_chat):
+
+def _build_send_calls(
+    self, body=None, title=None, body_format=None, **kwargs
+):
+    if not (
+        self.notify_format == NotifyFormat.MARKDOWN
+        and body_format == NotifyFormat.HTML
+    ):
+        yield from super()._build_send_calls(
+            body=body, title=title, body_format=body_format, **kwargs,
+        )
+        return
+
+    # Merge title as bold text before dialect conversion when the
+    # service has no native title field.
+    if self.title_maxlen <= 0 and title:
+        title_text = title.lstrip("\r\n \t\v\f#-")
+        if title_text:
+            heading = f"**{title_text}**"
+            body = f"{heading}\n{body}" if body else heading
+        title = ""
+
+    # Translate CommonMark to the service dialect in one pass.
+    body = self._commonmark_to_service_dialect(body)
+
+    yield from super()._build_send_calls(
+        body=body,
+        title=title,
+        body_format=NotifyFormat.MARKDOWN,
+        **kwargs,
+    )
+```
+
+</TabItem>
+<TabItem value="post-split" label="Adapt after Splitting (per Chunk)">
+
+Split using Markdown-aware overflow handling to protect links, then
+translate each chunk independently. Slack uses this approach so that each
+mrkdwn chunk is independently valid even when a message is split across
+multiple API calls.
+
+```python
+# In NotifySlack:
+
+def _build_send_calls(
+    self, body=None, title=None, body_format=None, **kwargs
+):
+    if not (
+        self.notify_format == NotifyFormat.MARKDOWN
+        and body_format == NotifyFormat.HTML
+    ):
+        yield from super()._build_send_calls(
+            body=body, title=title, body_format=body_format, **kwargs,
+        )
+        return
+
+    # Split using Markdown-aware heuristics (protects links and spans),
+    # then restore HTML provenance so send() knows to convert each chunk.
+    for chunk in super()._build_send_calls(
+        body=body,
+        title=title,
+        body_format=NotifyFormat.MARKDOWN,
+        **kwargs,
+    ):
+        yield {**chunk, "body_format": NotifyFormat.HTML}
+
+
+def send(self, body, title="", notify_type=..., body_format=None, **kwargs):
+    if (
+        self.notify_format == NotifyFormat.MARKDOWN
+        and body_format == NotifyFormat.HTML
+    ):
+        # Translate this chunk from CommonMark to mrkdwn.
+        body = self._commonmark_to_slack(body)
+
+    # ... rest of send() ...
+```
+
+</TabItem>
+<TabItem value="format-override" label="Handling a ?format= Override">
+
+When a user sets `?format=text` on a plugin whose class default is
+`MARKDOWN`, `self.notify_format` changes to `TEXT` and the body arrives
+already stripped of HTML tags. If that plugin normally passes Markdown
+directly to its upstream service, the plain-text body will render
+WYSIWYG -- no further steps are needed.
+
+The more interesting case is when the plugin itself authored the body as
+Markdown and the user asks for literal text delivery. In that scenario the
+plugin can detect the mismatch and escape its own syntax:
+
+```python
+def send(self, body, title="", notify_type=..., body_format=None, **kwargs):
+    if (
+        self.notify_format == NotifyFormat.TEXT
+        and body_format == NotifyFormat.MARKDOWN
+    ):
+        # The original message was Markdown; the user requested text
+        # output. Escape service-specific syntax so the output is
+        # visually identical to the source (WYSIWYG delivery).
+        body = self._escape_markdown_for_text_delivery(body)
+
+    # ... continue with send ...
+```
+
+This escaping is service-specific and belongs in the plugin. The shared
+conversion layer must not contain any provider-specific rules.
+
+</TabItem>
+<TabItem value="multi-format" label="Multi-Format Payloads">
+
+Some upstream APIs accept multiple body representations in a single
+request (for example an email service that accepts both a plain-text and
+an HTML part in the same payload). In that case the plugin calls
+`convert_between()` directly inside `send()` to produce the additional
+format:
+
+```python
+from ..conversion import convert_between
+
+def send(self, body, title="", notify_type=..., body_format=None, **kwargs):
+    # body is already in self.notify_format (e.g. HTML).
+    # Derive a plain-text fallback for clients that cannot render HTML.
+    text_body = convert_between(
+        NotifyFormat.HTML, NotifyFormat.TEXT, body
+    )
+
+    payload = {
+        "html": body,
+        "text": text_body,
+    }
+    # ... send payload ...
+```
+
+Pushover, Brevo, and the email plugin all use this pattern.
+
+</TabItem>
+</Tabs>
+
+## Overflow Handling after Adaptation
+
+Pass the format of the adapted body to `super()._build_send_calls()` so
+the base class selects the right splitting strategy:
+
+```python
+yield from super()._build_send_calls(
+    body=body,
+    title=title,
+    body_format=NotifyFormat.MARKDOWN,  # matches the body's actual format
+    **kwargs,
+)
+```
+
+Passing the wrong format causes character-boundary splits that break links,
+code spans, or other inline syntax. When adaptation happens after splitting
+(the Slack per-chunk pattern), preserve enough provenance in each chunk's
+`body_format` so every chunk is converted correctly in `send()`.
+
+Telegram carries entity state between chunks and gracefully degrades spans
+that cannot fit within the upstream size limit; consult
+`NotifyTelegram._repair_split_chunk()` for a reference implementation.
+
+## Plugin Boundaries
+
+- `apprise/conversion.py` converts between text, HTML, and CommonMark.
+  It must not contain dialect-specific rules for any named service.
+- Service dialects, escaping rules, payload fields, and upstream API modes
+  belong exclusively in the plugin file.
+- Removing a plugin file must remove all behavior for that service with no
+  changes required to the shared conversion layer.
+- Generic utilities (scanners, stack helpers, link re-encoders) may live in
+  `conversion.py` only when they carry no provider-specific knowledge.
+  Current exports: `build_backtick_run_index`, `find_unescaped_run`,
+  `commonmark_escape_link_url`, `commonmark_scan_angle_dest`,
+  `commonmark_emphasis_run`, `commonmark_force_close_spans`,
+  `commonmark_prepend_title`.
+
+## Implementation Checklist
+
+1. Set `notify_format` on the class; omit it to default to `TEXT`.
+2. Treat `?format=` as an optional per-instance destination override.
+3. The body is already converted when `_build_send_calls()` and `send()` run;
+   do not call `html_to_markdown()` or `convert_between()` again on the
+   same body.
+4. Use `body_format` to detect the original source and decide whether
+   service-specific adaptation is needed.
+5. Pass the adapted body's format into `super()._build_send_calls()` so
+   overflow splitting uses the right strategy.
+6. Test `body_format=None`, each supported source, URL `?format=` overrides,
+   and split or truncated messages.
