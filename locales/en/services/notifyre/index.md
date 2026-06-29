@@ -49,17 +49,17 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| apikey   | \*Yes    | Your Notifyre API token (Settings > Developer). |
-| phoneno  | \*Yes    | The target phone or fax number to notify. Numbers must include the country code (e.g. `+15551234567`). |
-| from     | No       | The sender phone or fax number. When omitted, Notifyre uses a shared number from your account pool. |
-| mode     | No       | Delivery mode: `sms` (default) or `fax`. |
+| Variable | Required | Description                                                                                                             |
+| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| apikey   | \*Yes    | Your Notifyre API token (Settings > Developer).                                                                         |
+| phoneno  | \*Yes    | The target phone or fax number to notify. Numbers must include the country code (e.g. `+15551234567`).                  |
+| from     | No       | The sender phone or fax number. When omitted, Notifyre uses a shared number from your account pool.                     |
+| mode     | No       | Delivery mode: `sms` (default) or `fax`.                                                                                |
 | campaign | No       | Campaign name attached to the message. Defaults to the Apprise application ID (`Apprise`). Applies to both SMS and fax. |
-| template | No       | Fax template name. Used only in fax mode. |
-| ref      | No       | Client reference string for tracking. Used only in fax mode. |
-| hq       | No       | High-quality fax flag. Set to `no` to disable. Defaults to `yes`. Used only in fax mode. |
-| header   | No       | Cover page header text. Used only in fax mode. |
+| template | No       | Fax template name. Used only in fax mode.                                                                               |
+| ref      | No       | Client reference string for tracking. Used only in fax mode.                                                            |
+| hq       | No       | High-quality fax flag. Set to `no` to disable. Defaults to `yes`. Used only in fax mode.                                |
+| header   | No       | Cover page header text. Used only in fax mode.                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

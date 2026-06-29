@@ -49,17 +49,17 @@ Voici les syntaxes valides :
 
 ## Detail des parametres
 
-| Variable | Requis | Description |
-| -------- | ------ | ----------- |
-| apikey   | \*Oui  | Votre jeton API Notifyre (Parametres > Developpeur). |
-| phoneno  | \*Oui  | Le numero de telephone ou de fax cible. Les numeros doivent inclure l'indicatif pays (ex. `+15551234567`). |
-| from     | Non    | Le numero de l'expediteur. Si omis, Notifyre utilise un numero partage de votre compte. |
-| mode     | Non    | Mode de livraison : `sms` (defaut) ou `fax`. |
+| Variable | Requis | Description                                                                                                                          |
+| -------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| apikey   | \*Oui  | Votre jeton API Notifyre (Parametres > Developpeur).                                                                                 |
+| phoneno  | \*Oui  | Le numero de telephone ou de fax cible. Les numeros doivent inclure l'indicatif pays (ex. `+15551234567`).                           |
+| from     | Non    | Le numero de l'expediteur. Si omis, Notifyre utilise un numero partage de votre compte.                                              |
+| mode     | Non    | Mode de livraison : `sms` (defaut) ou `fax`.                                                                                         |
 | campaign | Non    | Nom de campagne associe au message. Par defaut, l'identifiant de l'application Apprise (`Apprise`). Applicable aux modes SMS et fax. |
-| template | Non    | Nom du modele de fax. Applicable uniquement en mode fax. |
-| ref      | Non    | Reference client pour le suivi. Applicable uniquement en mode fax. |
-| hq       | Non    | Indicateur de qualite elevee pour le fax. Definir a `no` pour desactiver. Par defaut `yes`. Applicable uniquement en mode fax. |
-| header   | Non    | Texte d'en-tete de la page de couverture. Applicable uniquement en mode fax. |
+| template | Non    | Nom du modele de fax. Applicable uniquement en mode fax.                                                                             |
+| ref      | Non    | Reference client pour le suivi. Applicable uniquement en mode fax.                                                                   |
+| hq       | Non    | Indicateur de qualite elevee pour le fax. Definir a `no` pour desactiver. Par defaut `yes`. Applicable uniquement en mode fax.       |
+| header   | Non    | Texte d'en-tete de la page de couverture. Applicable uniquement en mode fax.                                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
