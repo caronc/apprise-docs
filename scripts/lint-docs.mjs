@@ -56,6 +56,7 @@ const ALLOWED_KEYS = new Set([
   "sponsorship_weight",
   "sponsor_since",
   "sponsor_message",
+  "keywords",
 ]);
 
 const ROOT = process.cwd();
