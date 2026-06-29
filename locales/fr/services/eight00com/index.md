@@ -12,6 +12,8 @@ schemas:
 has_sms: true
 has_attachments: true
 
+keywords: "800.com"
+
 sample_urls:
   - eight00com://{token}@{fromPhoneNo}
   - eight00com://{token}@{fromPhoneNo}/{toPhoneNo}
