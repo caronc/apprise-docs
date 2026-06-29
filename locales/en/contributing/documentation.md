@@ -272,6 +272,12 @@ has_email: false
 has_local: false
 has_selfhosted: false
 
+# Optional extra search terms for the service listing search box.
+# Use this when users would type a name that does not appear in the title
+# or any schema token. Dots are allowed so domain-style names stay as one
+# token. Matching is substring-based, so shorter queries still find results.
+# keywords: "alias, legacy-name"
+
 # Message length limits (remove the block entirely if the service has no known limits)
 limits:
   - name: "Title"
@@ -294,17 +300,18 @@ limits:
 
 #### Service Frontmatter Fields
 
-| Field           | Type         | Required    | Purpose                                                                                                 |
-| --------------- | ------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
-| `title`         | string       | Yes         | Page title and default service display name.                                                            |
-| `description`   | string       | Recommended | Short service summary used by generated listings and metadata.                                          |
-| `sidebar.label` | string       | Recommended | Short label used in navigation and service listings.                                                    |
-| `source`        | URL string   | Recommended | Official service/project website. Only `http://` and `https://` URLs are accepted by the site sync.     |
-| `group`         | string       | Recommended | Service group id used by the services index. Unknown groups fall back to the default group during sync. |
-| `schemas`       | string array | Yes         | Supported Apprise URL schemas, such as `discord://` or `tgram://`.                                      |
-| `sample_urls`   | string array | Recommended | Example Apprise URLs shown in generated metadata and URL Builder hints.                                 |
-| `limits`        | object array | No          | Optional message length limits. Each entry should include a display `name` and `max_chars`.             |
-| `ended`         | date string  | No          | Marks a retired service. Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.                                        |
+| Field           | Type         | Required    | Purpose                                                                                                                                                                                                                             |
+| --------------- | ------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`         | string       | Yes         | Page title and default service display name.                                                                                                                                                                                        |
+| `description`   | string       | Recommended | Short service summary used by generated listings and metadata.                                                                                                                                                                      |
+| `sidebar.label` | string       | Recommended | Short label used in navigation and service listings.                                                                                                                                                                                |
+| `source`        | URL string   | Recommended | Official service/project website. Only `http://` and `https://` URLs are accepted by the site sync.                                                                                                                                 |
+| `group`         | string       | Recommended | Service group id used by the services index. Unknown groups fall back to the default group during sync.                                                                                                                             |
+| `schemas`       | string array | Yes         | Supported Apprise URL schemas, such as `discord://` or `tgram://`.                                                                                                                                                                  |
+| `sample_urls`   | string array | Recommended | Example Apprise URLs shown in generated metadata and URL Builder hints.                                                                                                                                                             |
+| `keywords`      | string       | No          | Extra search terms for the service listing search box. Comma or space separated; dots preserved. Use when the title and schemas do not contain a name users would naturally type. Matching is substring-based and case-insensitive. |
+| `limits`        | object array | No          | Optional message length limits. Each entry should include a display `name` and `max_chars`.                                                                                                                                         |
+| `ended`         | date string  | No          | Marks a retired service. Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.                                                                                                                                                                    |
 
 #### Capability Flags
 

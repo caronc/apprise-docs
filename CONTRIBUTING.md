@@ -269,6 +269,23 @@ actually supports that capability.
 `has_sponsorship` is not a service capability flag. It is a maintainer-only
 sponsorship shorthand documented below.
 
+## Service Search Keywords
+
+Service pages may optionally declare extra search terms through a `keywords:` frontmatter field. Use it when a user would naturally search for a name that does not appear in the `sidebar.label`, `title`, or any schema token.
+
+```yaml
+keywords: "alias, legacy-name"
+```
+
+**Rules:**
+
+- Separate multiple terms with commas or spaces. Dots are allowed so that domain-style names survive as a single token rather than being split into fragments.
+- Keywords are case-insensitive and matched as substrings, so list the most specific recognizable form and let the search engine handle prefix/partial matching.
+- Only add terms a real user would type. Do not duplicate terms that already appear in the title or schema strings — they are already indexed.
+- Do not use `keywords:` as a general tag list or marketing label.
+
+The `keywords:` field is validated by the docs linter (`pnpm lint`). Any unsupported frontmatter key will fail the check, so no additional configuration is needed.
+
 ## Sponsorship System
 
 The Apprise documentation includes a sponsorship recognition system that gives service providers and companies visibility across the site. Understanding how it works helps you avoid accidentally overwriting sponsor data.

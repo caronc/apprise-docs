@@ -64,12 +64,12 @@ La syntaxe valide est la suivante :
 
 ## Détail des Paramètres
 
-| Variable     | Obligatoire | Description                                                                                                                                                                                                                                                                      |
-| ------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey       | \*Oui       | La cle API fournie par votre tableau de bord Flowtriq. Elle est transmise au point de terminaison webhook via l'en-tete HTTP `X-API-Key`.                                                                                                                                       |
-| hostname     | \*Oui       | Le nom d'hote du serveur Flowtriq (ou de votre instance auto-hebergee). Pour le service cloud Flowtriq, il s'agit de `flowtriq.com`.                                                                                                                                            |
+| Variable     | Obligatoire | Description                                                                                                                                                                                                                       |
+| ------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey       | \*Oui       | La cle API fournie par votre tableau de bord Flowtriq. Elle est transmise au point de terminaison webhook via l'en-tete HTTP `X-API-Key`.                                                                                         |
+| hostname     | \*Oui       | Le nom d'hote du serveur Flowtriq (ou de votre instance auto-hebergee). Pour le service cloud Flowtriq, il s'agit de `flowtriq.com`.                                                                                              |
 | webhook_path | \*Oui       | La partie chemin de l'URL du webhook fournie par le tableau de bord Flowtriq (tout ce qui suit le nom d'hote). Par exemple, si l'URL du webhook est `https://flowtriq.com/hooks/abc123`, le chemin du webhook est `hooks/abc123`. |
-| port         | Non         | Le port sur lequel ecoute le serveur Flowtriq. Par defaut **443** pour le schema `flowtriq://`.                                                                                                                                                                                  |
+| port         | Non         | Le port sur lequel ecoute le serveur Flowtriq. Par defaut **443** pour le schema `flowtriq://`.                                                                                                                                   |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

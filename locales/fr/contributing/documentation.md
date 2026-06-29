@@ -270,6 +270,12 @@ has_email: false
 has_local: false
 has_selfhosted: false
 
+# Termes de recherche supplémentaires optionnels pour la boîte de recherche de la liste des services.
+# À utiliser lorsque les utilisateurs tapent un nom qui n'apparaît pas dans le titre ou les schémas.
+# Les points sont autorisés pour que les noms composés restent un seul token.
+# La correspondance est par sous-chaîne, donc des requêtes plus courtes trouvent quand même des résultats.
+# keywords: "alias, ancien-nom"
+
 # Limites de longueur de message (supprimer le bloc entier si le service n'a pas de limites connues)
 limits:
   - name: "Titre"
@@ -292,17 +298,18 @@ limits:
 
 #### Champs Frontmatter d'un Service
 
-| Champ           | Type               | Obligatoire | Rôle                                                                                                                                     |
-| --------------- | ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`         | chaîne             | Oui         | Titre de la page et nom d'affichage par défaut du service.                                                                               |
-| `description`   | chaîne             | Recommandé  | Court résumé du service utilisé par les listes générées et les métadonnées.                                                              |
-| `sidebar.label` | chaîne             | Recommandé  | Libellé court utilisé dans la navigation et les listes de services.                                                                      |
-| `source`        | chaîne URL         | Recommandé  | Site officiel du service/projet. Seules les URL `http://` et `https://` sont acceptées par la synchronisation du site.                   |
-| `group`         | chaîne             | Recommandé  | Identifiant de groupe utilisé par l'index des services. Les groupes inconnus reviennent au groupe par défaut pendant la synchronisation. |
-| `schemas`       | tableau de chaînes | Oui         | Schémas d'URL Apprise pris en charge, comme `discord://` ou `tgram://`.                                                                  |
-| `sample_urls`   | tableau de chaînes | Recommandé  | Exemples d'URL Apprise utilisés dans les métadonnées générées et les aides du générateur d'URL.                                          |
-| `limits`        | tableau d'objets   | Non         | Limites optionnelles de longueur de message. Chaque entrée doit inclure un `name` affichable et `max_chars`.                             |
-| `ended`         | chaîne de date     | Non         | Marque un service retiré. Utilisez `YYYY`, `YYYY-MM` ou `YYYY-MM-DD`.                                                                    |
+| Champ           | Type               | Obligatoire | Rôle                                                                                                                                                                                                                                                                                                                                              |
+| --------------- | ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`         | chaîne             | Oui         | Titre de la page et nom d'affichage par défaut du service.                                                                                                                                                                                                                                                                                        |
+| `description`   | chaîne             | Recommandé  | Court résumé du service utilisé par les listes générées et les métadonnées.                                                                                                                                                                                                                                                                       |
+| `sidebar.label` | chaîne             | Recommandé  | Libellé court utilisé dans la navigation et les listes de services.                                                                                                                                                                                                                                                                               |
+| `source`        | chaîne URL         | Recommandé  | Site officiel du service/projet. Seules les URL `http://` et `https://` sont acceptées par la synchronisation du site.                                                                                                                                                                                                                            |
+| `group`         | chaîne             | Recommandé  | Identifiant de groupe utilisé par l'index des services. Les groupes inconnus reviennent au groupe par défaut pendant la synchronisation.                                                                                                                                                                                                          |
+| `schemas`       | tableau de chaînes | Oui         | Schémas d'URL Apprise pris en charge, comme `discord://` ou `tgram://`.                                                                                                                                                                                                                                                                           |
+| `sample_urls`   | tableau de chaînes | Recommandé  | Exemples d'URL Apprise utilisés dans les métadonnées générées et les aides du générateur d'URL.                                                                                                                                                                                                                                                   |
+| `keywords`      | chaîne             | Non         | Termes de recherche supplémentaires pour la boîte de recherche de la liste des services. Séparés par des virgules ou des espaces ; les points sont autorisés. À utiliser lorsque le titre et les schémas ne contiennent pas un nom que les utilisateurs taperaient naturellement. La correspondance est par sous-chaîne et insensible à la casse. |
+| `limits`        | tableau d'objets   | Non         | Limites optionnelles de longueur de message. Chaque entrée doit inclure un `name` affichable et `max_chars`.                                                                                                                                                                                                                                      |
+| `ended`         | chaîne de date     | Non         | Marque un service retiré. Utilisez `YYYY`, `YYYY-MM` ou `YYYY-MM-DD`.                                                                                                                                                                                                                                                                             |
 
 #### Indicateurs de Capacité
 

@@ -64,12 +64,12 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable     | Required | Description                                                                                                                                                                          |
-| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| apikey       | \*Yes    | The API Key provided by your Flowtriq dashboard. It is passed to the webhook endpoint via the `X-API-Key` HTTP header.                                                              |
-| hostname     | \*Yes    | The hostname of the Flowtriq server (or your self-hosted instance). For the Flowtriq cloud service this is `flowtriq.com`.                                                          |
+| Variable     | Required | Description                                                                                                                                                                                                           |
+| ------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey       | \*Yes    | The API Key provided by your Flowtriq dashboard. It is passed to the webhook endpoint via the `X-API-Key` HTTP header.                                                                                                |
+| hostname     | \*Yes    | The hostname of the Flowtriq server (or your self-hosted instance). For the Flowtriq cloud service this is `flowtriq.com`.                                                                                            |
 | webhook_path | \*Yes    | The path component of the webhook URL provided by the Flowtriq dashboard (everything after the hostname). For example, if the webhook URL is `https://flowtriq.com/hooks/abc123`, the webhook path is `hooks/abc123`. |
-| port         | No       | The port the Flowtriq server listens on. Defaults to **443** for the `flowtriq://` schema.                                                                                          |
+| port         | No       | The port the Flowtriq server listens on. Defaults to **443** for the `flowtriq://` schema.                                                                                                                            |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

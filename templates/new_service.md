@@ -49,6 +49,15 @@ has_local: false
 # Upstream app/service can be operated as a self-hosted deployment.
 has_selfhosted: false
 
+# Optional extra search terms for the service listing search box.
+# Use this when users would naturally type a name that does not appear in the
+# title or any schema token (e.g. a legacy brand name or a common alias).
+# Separate multiple terms with commas or spaces. Dots are allowed so that
+# domain-style names survive as one searchable token. Matching is substring-based,
+# so shorter queries still find results. Only add terms a real user would type;
+# do not duplicate the title or schemas.
+# keywords: "alias, legacy-name"
+
 # Define any message limits — only applicable when the user specifies
 # ?overflow=truncate or ?overflow=split; otherwise the upstream service handles
 # content beyond these values.  Remove this block entirely if the service has no
