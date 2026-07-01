@@ -102,6 +102,7 @@ In the above example, we introduce several tokens... `app_id`, `app_title`, `tar
 - **app_id**: The Application identifier; usually set to `Apprise`, but developers of custom applications may choose to over-ride this and place their name here. this is how you acquire this value.
 - **app_desc**: Similar the the Application Identifier, this is the Application Description. It's usually just a slightly more descriptive alternative to the _app_id_. This is usually set to `Apprise Notification` unless it has been over-ridden by a developer.
 - **app_color**: A hex code that identifies a colour associate with a message. For instance, `info` type messages are generally blue where as `warning` ones are orange, etc.
+- **app_color_hex**: Explicit alias for `app_color`; same hex string value, provided so templates can use a self-documenting name for the hex variant.
 - **app_type**: The message type itself; it may be `info`, `warning`, `success`, etc
 - **app_title**: The actual title (`--title` or `-t` if from the command line) that was passed into the apprise notification when called.
 - **app_body**: The actual body (`--body` or `-b` if from the command line) that was passed into the apprise notification when called.

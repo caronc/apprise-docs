@@ -102,6 +102,7 @@ Dans l’exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_
 - **app_id** : l’identifiant de l’application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
 - **app_desc** : la description de l’application, souvent une variante un peu plus explicite de `app_id`. Elle vaut généralement `Apprise Notification` sauf surcharge.
 - **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont souvent bleus, tandis que les messages `warning` sont orange.
+- **app_color_hex** : alias explicite de `app_color` ; meme valeur hexadecimale, fourni pour que les gabarits puissent utiliser un nom auto-documenté pour la variante hexadecimale.
 - **app_type** : le type du message lui-même, comme `info`, `warning`, `success`, etc.
 - **app_title** : le titre réel transmis à la notification Apprise via `--title` ou `-t`.
 - **app_body** : le corps réel transmis à la notification Apprise via `--body` ou `-b`.

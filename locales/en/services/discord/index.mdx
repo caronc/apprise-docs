@@ -97,16 +97,18 @@ The template file is read and validated on every send. Files that are not valid 
 
 The following tokens are always available inside your template and cannot be overridden:
 
-| Token           | Description                                                                              |
-| --------------- | ---------------------------------------------------------------------------------------- |
-| `app_id`        | The application identifier; defaults to `Apprise`.                                       |
-| `app_desc`      | The application description; defaults to `Apprise Notification`.                         |
-| `app_color`     | A decimal integer colour for the message type (`info` = blue, `warning` = orange, etc.). |
-| `app_type`      | The message type: `info`, `warning`, `success`, or `failure`.                            |
-| `app_title`     | The notification title passed via `--title` / `-t`.                                      |
-| `app_body`      | The notification body passed via `--body` / `-b`.                                        |
-| `app_image_url` | The image URL associated with the message type, if one exists.                           |
-| `app_url`       | The Apprise instance URL (defaults to `https://github.com/caronc/apprise`).              |
+| Token           | Description                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| `app_id`        | The application identifier; defaults to `Apprise`.                                                  |
+| `app_desc`      | The application description; defaults to `Apprise Notification`.                                    |
+| `app_color`     | The colour as a hex string (e.g. `#3AA3E3` for info). Useful inside JSON string values.             |
+| `app_color_hex` | Explicit alias for `app_color`; same hex string. Use when you want to name the hex variant clearly. |
+| `app_color_int` | The colour as a bare decimal integer (e.g. `3842019`). Use this in Discord's `"color"` embed field. |
+| `app_type`      | The message type: `info`, `warning`, `success`, or `failure`.                                       |
+| `app_title`     | The notification title passed via `--title` / `-t`.                                                 |
+| `app_body`      | The notification body passed via `--body` / `-b`.                                                   |
+| `app_image_url` | The image URL associated with the message type, if one exists.                                      |
+| `app_url`       | The Apprise instance URL (defaults to `https://github.com/caronc/apprise`).                         |
 
 ### Custom Tokens
 
@@ -150,7 +152,7 @@ A minimal embed with a title and description. Colour reflects the Apprise notifi
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}}
+      "color": {{app_color_int}}
     }
   ]
 }
@@ -168,7 +170,7 @@ A styled embed with a coloured left bar, footer credit, and the Apprise status i
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}},
+      "color": {{app_color_int}},
       "thumbnail": {
         "url": "{{app_image_url}}"
       },
@@ -192,7 +194,7 @@ An embed with inline fields for deployment details. Populate `{{service}}`, `{{e
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}},
+      "color": {{app_color_int}},
       "fields": [
         { "name": "Service",     "value": "{{service}}",     "inline": true },
         { "name": "Environment", "value": "{{environment}}", "inline": true },

@@ -97,16 +97,18 @@ Le fichier de gabarit est lu et valide a chaque envoi. Les fichiers qui ne sont 
 
 Les jetons suivants sont toujours disponibles dans votre gabarit et ne peuvent pas etre remplaces :
 
-| Jeton           | Description                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                              |
-| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                                |
-| `app_color`     | Entier decimal representant la couleur du type de message (`info` = bleu, `warning` = orange, etc.) |
-| `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                                     |
-| `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                          |
-| `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                           |
-| `app_image_url` | L'URL de l'image associee au type de message, si elle existe.                                       |
-| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                       |
+| Jeton           | Description                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                                                                   |
+| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                                                                     |
+| `app_color`     | La couleur sous forme de chaine hexadecimale (par ex. `#3AA3E3` pour info). Utile dans les valeurs de chaine JSON.                       |
+| `app_color_hex` | Alias explicite de `app_color` ; meme chaine hexadecimale. A utiliser lorsque vous souhaitez nommer clairement la variante hexadecimale. |
+| `app_color_int` | La couleur sous forme d'entier decimal brut (par ex. `3842019`). A utiliser dans le champ `"color"` des embeds Discord.                  |
+| `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                                                                          |
+| `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                                                               |
+| `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                                                                |
+| `app_image_url` | L'URL de l'image associee au type de message, si elle existe.                                                                            |
+| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                                                            |
 
 ### Jetons personnalises
 
@@ -150,7 +152,7 @@ Un embed minimal avec un titre et une description. La couleur reflete le type de
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}}
+      "color": {{app_color_int}}
     }
   ]
 }
@@ -168,7 +170,7 @@ Un embed avec barre laterale coloree, credit en pied de message, et l'image de s
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}},
+      "color": {{app_color_int}},
       "thumbnail": {
         "url": "{{app_image_url}}"
       },
@@ -192,7 +194,7 @@ Un embed avec champs en ligne pour les details de deploiement. Renseignez `{{ser
     {
       "title": "{{app_title}}",
       "description": "{{app_body}}",
-      "color": {{app_color}},
+      "color": {{app_color_int}},
       "fields": [
         { "name": "Service",       "value": "{{service}}",       "inline": true },
         { "name": "Environnement", "value": "{{environnement}}", "inline": true },
