@@ -50,8 +50,8 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
+| Variable | Required | Description                                                         |
+| -------- | -------- | ------------------------------------------------------------------- |
 | token    | \*Yes    | The UUID webhook token from your Stackfield room's integration URL. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->

@@ -50,8 +50,8 @@ La syntaxe valide est la suivante :
 
 ## Detail des parametres
 
-| Variable | Obligatoire | Description |
-| -------- | ----------- | ----------- |
+| Variable | Obligatoire | Description                                                                                    |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------- |
 | token    | \*Oui       | Le jeton UUID du webhook obtenu depuis les parametres d'integration de votre salle Stackfield. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->

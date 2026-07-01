@@ -12,6 +12,10 @@ schemas:
 has_sms: true
 has_attachments: true
 
+sample_urls:
+  - notifyre://{apikey}/{phoneno}
+  - notifyre://{apikey}/{faxno}?mode=fax
+
 limits:
   - name: "SMS"
     max_chars: 160

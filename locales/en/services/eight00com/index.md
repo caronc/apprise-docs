@@ -44,13 +44,13 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable   | Required  | Description |
-| ---------- | --------- | ----------- |
-| token      | \*Yes     | Your 800.com Personal Access Token. |
-| fromPhoneNo | \*Yes    | Your text-enabled 800.com phone number. |
-| toPhoneNo  | No        | The recipient phone number(s). When omitted, the message is sent to the `fromPhoneNo`. Separate multiple numbers with `/` in the URL or use `?to=` with commas. |
-| to         | No        | Alias for `toPhoneNo`. Accepts comma-separated numbers. |
-| from       | No        | Alternative way to supply the sender number as a query parameter. |
+| Variable    | Required | Description                                                                                                                                                     |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token       | \*Yes    | Your 800.com Personal Access Token.                                                                                                                             |
+| fromPhoneNo | \*Yes    | Your text-enabled 800.com phone number.                                                                                                                         |
+| toPhoneNo   | No       | The recipient phone number(s). When omitted, the message is sent to the `fromPhoneNo`. Separate multiple numbers with `/` in the URL or use `?to=` with commas. |
+| to          | No       | Alias for `toPhoneNo`. Accepts comma-separated numbers.                                                                                                         |
+| from        | No       | Alternative way to supply the sender number as a query parameter.                                                                                               |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

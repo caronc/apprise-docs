@@ -20,11 +20,11 @@ Ces valeurs sont indépendantes. Une même source HTML peut devenir du texte bru
 
 Le format source n'est pas toujours `None`. Il dépend de l'interface qui déclenche la notification :
 
-| Interface                                              | Valeur par défaut lorsqu'aucun format n'est déclaré                                            |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)                                      | `text` — la CLI définit toujours un format source ; remplacez-le avec `--input-format`         |
-| [Bibliothèque Python](../)                             | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset`        |
-| [Apprise API](../../api/)                              | `none` — sauf si `format` est inclus dans la charge utile de la requête                        |
+| Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                    |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)          | `text` — la CLI définit toujours un format source ; remplacez-le avec `--input-format` |
+| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset` |
+| [Apprise API](../../api/)  | `none` — sauf si `format` est inclus dans la charge utile de la requête                |
 
 Consultez [Formatage](../../getting-started/formatting/) pour la perspective utilisateur sur ces valeurs par défaut et leur impact sur la livraison vers des destinations mixtes.
 
@@ -46,12 +46,6 @@ Apprise.notify(body=..., body_format=HTML)
 plugin.notify(
     body=<déjà converti vers notify_format>,
     body_format=HTML,    # le tag de format d'origine -- pas le corps original
-)
-         |
-         v
-plugin._build_send_calls(
-    body=<déjà converti>,
-    body_format=HTML,
 )
 ```
 
@@ -103,12 +97,12 @@ La conversion Markdown vers texte ne comporte actuellement aucune étape destruc
 
 Définissez `notify_format = NotifyFormat.MARKDOWN` lorsque le service en amont accepte Markdown.
 
-| Source `body_format` | Corps transmis au plugin                        |
-| -------------------- | ----------------------------------------------- |
+| Source `body_format` | Corps transmis au plugin                                   |
+| -------------------- | ---------------------------------------------------------- |
 | `TEXT`               | Texte inchangé (le texte brut est déjà du Markdown valide) |
-| `MARKDOWN`           | Markdown inchangé                               |
-| `HTML`               | Converti en Markdown standard                   |
-| `None`               | Corps inchangé ; aucune conversion effectuée    |
+| `MARKDOWN`           | Markdown inchangé                                          |
+| `HTML`               | Converti en Markdown standard                              |
+| `None`               | Corps inchangé ; aucune conversion effectuée               |
 
 La conversion HTML produit toujours du **Markdown standard**. Les services utilisant leur propre syntaxe Markdown personnalisée (Telegram MarkdownV2, Slack mrkdwn, WhatsApp, Google Chat) doivent traduire ce Markdown standard vers leur propre format à l'intérieur du plugin -- l'étape de conversion intégrée d'Apprise est intentionnellement générique.
 
@@ -160,9 +154,9 @@ La plupart des plugins ont seulement besoin de `self.notify_format` et n'ont pas
 
 ## Ce que Reçoit le Plugin
 
-Au moment où `_build_send_calls()` et `send()` s'exécutent, la conversion et le dimensionnement sont déjà effectués. Ce que reçoit votre plugin :
+Au moment où `send()` s'exécute, la conversion et le dimensionnement sont déjà effectués. Ce que reçoit votre plugin :
 
-- **`body`** — déjà converti vers `self.notify_format` et dimensionné selon `overflow_mode`. Avec `SPLIT`, chaque appel à `send()` reçoit un bloc d'au plus `body_maxlen` caractères. Avec `TRUNCATE`, le corps est limité à `body_maxlen`. Avec `UPSTREAM` (valeur par défaut), le corps arrive inchangé et peut dépasser la limite déclarée. N'appelez pas `convert_between()`, `html_to_markdown()` ni ne re-découpez le corps dans `send()`.
+- **`body`** — déjà converti vers `self.notify_format` et dimensionné selon `overflow_mode`. Avec `SPLIT`, chaque appel à `send()` reçoit un bloc d'au plus `body_maxlen` caractères. Avec `TRUNCATE`, le corps est limité à `body_maxlen`. Avec `UPSTREAM` (valeur par défaut), le corps arrive inchangé et peut dépasser la limite déclarée.
 - **`title`** — tronqué à `title_maxlen` caractères. Lorsque `title_maxlen <= 0`, le titre a été fusionné dans `body` par la classe de base et arrive sous forme de chaîne vide.
 - **`body_format`** — le format de départ du contenu (par exemple `NotifyFormat.HTML`) ; pas le texte original du corps lui-même
 
@@ -229,11 +223,11 @@ Le même schéma s'applique à tout service acceptant plusieurs représentations
 
 Définissez `overflow_mode` sur la classe pour déclarer comment la classe de base gère le contenu qui dépasse `body_maxlen` ou `title_maxlen`. Chaque appel à `send()` reçoit du contenu déjà dimensionné en conséquence -- ne redécoupez pas ni ne retronquez dans `send()` :
 
-| Mode                 | Appels à `send()` | Garantie sur le corps                 |
-| -------------------- | ----------------- | ------------------------------------- |
-| `UPSTREAM` (défaut)  | Un seul           | Inchangé ; peut dépasser `body_maxlen` |
-| `TRUNCATE`           | Un seul           | Limité à `body_maxlen`                |
-| `SPLIT`              | Un par bloc       | Chaque bloc ≤ `body_maxlen`           |
+| Mode                | Appels à `send()` | Garantie sur le corps                  |
+| ------------------- | ----------------- | -------------------------------------- |
+| `UPSTREAM` (défaut) | Un seul           | Inchangé ; peut dépasser `body_maxlen` |
+| `TRUNCATE`          | Un seul           | Limité à `body_maxlen`                 |
+| `SPLIT`             | Un par bloc       | Chaque bloc ≤ `body_maxlen`            |
 
 ```python
 from apprise.common import OverflowMode
@@ -245,21 +239,6 @@ class NotifyExample(NotifyBase):
 ```
 
 Le paramètre URL `?overflow=` permet aux utilisateurs de remplacer le mode par instance, mais la valeur par défaut de la classe doit correspondre à ce que l'API en amont peut réellement accepter.
-
-Lors de l'appel à `super()._build_send_calls()`, transmettez le format du corps adapté afin que la classe de base choisisse la bonne stratégie de découpage pour le contenu reçu :
-
-```python
-yield from super()._build_send_calls(
-    body=body,
-    title=title,
-    body_format=NotifyFormat.MARKDOWN,  # correspond au format réel du corps
-    **kwargs,
-)
-```
-
-Transmettre le mauvais format provoque des découpages aux limites de caractères qui brisent les liens, les plages de code ou d'autres syntaxes en ligne. Lorsque la traduction se produit dans `send()` plutôt qu'avant le découpage, veillez à ce que le `body_format` de chaque bloc conserve le format source d'origine pour que `send()` puisse le convertir correctement.
-
-Telegram transporte l'état des entités entre les blocs et dégrade correctement les plages qui ne peuvent pas tenir dans la limite du service en amont ; consultez `NotifyTelegram._repair_split_chunk()` pour une implémentation de référence.
 
 ## Frontières des Plugins
 
@@ -273,9 +252,9 @@ Telegram transporte l'état des entités entre les blocs et dégrade correctemen
 Les sections précédentes couvrent l'ensemble du sujet. Cette liste résume les décisions clés pour référence rapide :
 
 1. **Déclarez `notify_format` sur la classe** pour indiquer à Apprise vers quel format convertir avant que votre plugin s'exécute. Omettez-le pour accepter du texte brut (`TEXT`).
-2. **Ne reconvertissez pas le corps** dans `_build_send_calls()` ou `send()`. Il est déjà dans `self.notify_format`. Utilisez `body_format` pour vérifier ce qu'était le contenu à l'origine, pas pour déclencher une nouvelle passe de conversion.
+2. **Ne reconvertissez pas le corps** dans `send()`. Il est déjà dans `self.notify_format`. Utilisez `body_format` pour vérifier ce qu'était le contenu à l'origine, pas pour déclencher une nouvelle passe de conversion.
 3. **Vérifiez `body_format` pour décider si une mise en forme propre au service est nécessaire.** Si votre service utilise sa propre syntaxe Markdown (Slack mrkdwn, Telegram MarkdownV2, WhatsApp), appliquez cette traduction uniquement lorsque `body_format` est `HTML` -- c'est-à-dire que le corps était initialement du HTML et qu'Apprise l'a converti en Markdown standard.
 4. **Pour les charges utiles multi-format** (comme l'email avec des parties HTML et texte séparées), appelez `convert_between()` dans `send()` pour dériver les représentations supplémentaires à partir du corps déjà converti.
 5. **Traitez `?format=` comme un remplacement facultatif par instance.** La destination effective est toujours `self.notify_format` quelle que soit son origine. La plupart des plugins n'ont pas besoin de distinguer si la valeur provient de la classe ou d'un paramètre URL.
-6. **Définissez `overflow_mode`, `body_maxlen` et `title_maxlen` sur la classe** pour déclarer les limites et la stratégie de découpage de votre service en amont. Chaque appel à `send()` reçoit du contenu déjà dimensionné selon ces limites -- ne redécoupez pas dans `send()`. Transmettez le format du corps adapté à `super()._build_send_calls()` pour que la classe de base utilise la bonne stratégie.
+6. **Définissez `overflow_mode`, `body_maxlen` et `title_maxlen` sur la classe** pour déclarer les limites et la stratégie de découpage de votre service en amont. Chaque appel à `send()` reçoit du contenu déjà dimensionné selon ces limites -- ne redécoupez pas ni ne retronquez dans `send()`.
 7. **Testez la matrice complète** : `body_format=None`, chaque format source pris en charge, les remplacements `?format=` par URL et les messages découpés ou tronqués.

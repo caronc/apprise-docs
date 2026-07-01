@@ -44,13 +44,13 @@ La syntaxe valide est la suivante :
 
 ## Detail des Parametres
 
-| Variable    | Obligatoire | Description |
-| ----------- | ----------- | ----------- |
-| token       | \*Oui       | Votre jeton d'acces personnel 800.com. |
-| fromPhoneNo | \*Oui       | Votre numero 800.com active pour la messagerie. |
+| Variable    | Obligatoire | Description                                                                                                                                                                       |
+| ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token       | \*Oui       | Votre jeton d'acces personnel 800.com.                                                                                                                                            |
+| fromPhoneNo | \*Oui       | Votre numero 800.com active pour la messagerie.                                                                                                                                   |
 | toPhoneNo   | Non         | Le(s) numero(s) de telephone du destinataire. Si omis, le message est envoye au `fromPhoneNo`. Separez plusieurs numeros par `/` dans l'URL ou utilisez `?to=` avec des virgules. |
-| to          | Non         | Alias pour `toPhoneNo`. Accepte des numeros separes par des virgules. |
-| from        | Non         | Facon alternative de fournir le numero de l'expediteur comme parametre de requete. |
+| to          | Non         | Alias pour `toPhoneNo`. Accepte des numeros separes par des virgules.                                                                                                             |
+| from        | Non         | Facon alternative de fournir le numero de l'expediteur comme parametre de requete.                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

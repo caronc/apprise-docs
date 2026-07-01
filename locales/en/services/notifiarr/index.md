@@ -1,6 +1,9 @@
 ---
 title: "notifiarr Notifications"
 description: "Send notifiarr notifications."
+
+sample_urls:
+  - notifiarr://{api_key}/{channel_id}
 ---
 
 ## Notifiarr Notifications

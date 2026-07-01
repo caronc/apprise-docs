@@ -700,6 +700,22 @@ for (const file of files) {
   }
 
   validateServiceSponsorship(data, file);
+
+  // Service index pages must declare at least one sample URL so the URL
+  // builder and docs have something concrete to display.
+  const svcInfo = serviceInfo(file);
+  if (svcInfo) {
+    const urls = data.sample_urls;
+    if (
+      !Array.isArray(urls) ||
+      urls.length === 0 ||
+      !urls.some((u) => typeof u === "string" && u.trim() !== "")
+    ) {
+      fail(
+        `[frontmatter] ${path.relative(ROOT, file)}: service pages must define at least one entry under sample_urls`,
+      );
+    }
+  }
 }
 
 validateSponsorshipDirectory();

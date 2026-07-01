@@ -66,19 +66,6 @@ La syntaxe valide est la suivante :
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Exemples
-
-Envoyer une notification Microsoft Teams :
-
-```bash
-# Assuming our {host} is prod-site.logic.azure.com
-# Assuming our {port} is 443
-# Assuming our {workflow} is T1JJ3T3L2@DEFK543
-# Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
-apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
-   workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
-```
-
 ## Modèles
 
 ### L’Argument d’URL `template`
@@ -170,3 +157,16 @@ Publierait dans MSTeams en suivant le template ci-dessus :
 - Les jetons sont **sensibles à la casse**. Ainsi, `{{Token}}` doit être alimenté par une valeur `:Token=` dans votre URL.
 - Les jetons qui ne correspondent à rien ne sont tout simplement pas remplacés, et `{{keyword}}` restera tel quel dans le message.
 - Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé sous `{{app_body}}` dans votre template. Même si vous ne l’utilisez pas, vous devez tout de même fournir une valeur pour satisfaire cette exigence et utiliser les appels de template.
+
+## Exemples
+
+Envoyer une notification Microsoft Teams :
+
+```bash
+# Assuming our {host} is prod-site.logic.azure.com
+# Assuming our {port} is 443
+# Assuming our {workflow} is T1JJ3T3L2@DEFK543
+# Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```

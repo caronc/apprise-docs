@@ -147,6 +147,57 @@ Both forms post `{"text": "Title: Body"}` by default (title omitted when blank).
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## Templating
+
+The `?template=` argument lets you supply a pre-built Slack Block Kit JSON file. Apprise reads the file, substitutes any `{{token}}` placeholders, and posts the result directly -- giving you full control over the layout without modifying any Apprise code.
+
+The template must be a valid JSON object with a non-empty `"blocks"` list (Slack Block Kit format). Block Kit is validated by the Slack API itself; an invalid structure will result in a rejected notification.
+
+### Built-in Tokens
+
+The following tokens are always available inside your template:
+
+| Token           | Description                                                                 |
+| --------------- | --------------------------------------------------------------------------- |
+| `app_id`        | The application identifier; defaults to `Apprise`.                          |
+| `app_desc`      | The application description; defaults to `Apprise Notification`.            |
+| `app_color`     | A hex colour string for the message type (e.g. `#3AA3E3` for info).         |
+| `app_type`      | The message type: `info`, `warning`, `success`, or `failure`.               |
+| `app_title`     | The notification title passed via `--title` / `-t`.                         |
+| `app_body`      | The notification body passed via `--body` / `-b`.                           |
+| `app_image_url` | The image URL associated with the message type, if one exists.              |
+| `app_url`       | The Apprise instance URL (defaults to `https://github.com/caronc/apprise`). |
+
+### Custom Tokens
+
+Any token you invent beyond the built-in set can be supplied at send time using the `:key=value` prefix on the Apprise URL:
+
+```text
+slack://{tokenA}/{tokenB}/{tokenC}/?template=/path/to/template.json&:env=production&:team=platform
+```
+
+Inside the template, reference it as `{{env}}` or `{{team}}`.
+
+### Template Example
+
+Save the following as a `.json` file and point `?template=` at it. This example produces a header block with the title, a section block with the body, and a coloured sidebar via the `color` field:
+
+```json
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": { "type": "plain_text", "text": "{{app_title}}" }
+    },
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "{{app_body}}" }
+    }
+  ],
+  "color": "{{app_color}}"
+}
+```
+
 ## Examples
 
 Send a Slack notification to the channel `#nuxref`:
@@ -179,32 +230,10 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
 ```
 
-Send a notification using a custom Slack Block Kit JSON template:
+Send a notification using a custom Block Kit template (see the **Template Example** above), injecting custom tokens with the `:key=value` prefix:
 
 ```bash
-# First create your template file, e.g. /etc/apprise/slack-blocks.json:
-# {
-#   "blocks": [
-#     {
-#       "type": "header",
-#       "text": {"type": "plain_text", "text": "{{app_title}}"}
-#     },
-#     {
-#       "type": "section",
-#       "text": {"type": "mrkdwn", "text": "{{app_body}}"}
-#     }
-#   ],
-#   "color": "{{app_color}}"
-# }
-#
-# Then reference it with template= (blocks mode is implied automatically):
-apprise -vv -t "Alert" -b "Disk usage at 95%" \
-   "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/?template=/etc/apprise/slack-blocks.json"
-```
-
-Custom tokens can be injected into any template using the `:key=value` prefix:
-
-```bash
+# Assuming the template is saved at /etc/apprise/slack-blocks.json
 apprise -vv -t "Deploy" -b "v2.3.1 deployed" \
-   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-tmpl.json&:env=production&:team=platform"
+   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-blocks.json&:env=production&:team=platform"
 ```

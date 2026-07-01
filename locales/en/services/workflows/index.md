@@ -66,19 +66,6 @@ Valid syntax is as follows:
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Examples
-
-Send a Microsoft Teams notification:
-
-```bash
-# Assuming our {host} is prod-site.logic.azure.com
-# Assuming our {port} is 443
-# Assuming our {workflow} is T1JJ3T3L2@DEFK543
-# Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
-apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
-```
-
 ## Templating
 
 ### The `template` URL Argument
@@ -170,3 +157,16 @@ Would post to MSTeams (with respect to our template above):
 - Tokens ARE case sensitive, so `{{Token}}` NEEDS to be populated with a `:Token=` value on your URL.
 - Tokens that are not matched correctly simply are not swapped and the {`{keyword}`} will remain as is in the message.
 - Apprise always requires you to specify a `--body` (`-b`) at a very minimum which can be optionally referenced as `{{app_body}}` in your template. Even if you choose not to use this token, you must still pass in something (anything) just to satisfy this requirement and make use of the template calls.
+
+## Examples
+
+Send a Microsoft Teams notification:
+
+```bash
+# Assuming our {host} is prod-site.logic.azure.com
+# Assuming our {port} is 443
+# Assuming our {workflow} is T1JJ3T3L2@DEFK543
+# Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```

@@ -147,6 +147,57 @@ Les deux formes envoient `{"text": "Titre : Corps"}` par défaut (le titre est o
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## Gabarits
+
+L'argument `?template=` permet de fournir un fichier JSON Slack Block Kit preconstruit. Apprise lit le fichier, substitue les espaces reserves `{{jeton}}`, puis envoie le resultat directement -- vous donnant un controle total sur la mise en page sans modifier le code d'Apprise.
+
+Le gabarit doit etre un objet JSON valide avec une liste `"blocks"` non vide (format Slack Block Kit). La structure est validee par l'API Slack ; un format invalide entrainera le rejet de la notification.
+
+### Jetons integres
+
+Les jetons suivants sont toujours disponibles dans votre gabarit :
+
+| Jeton           | Description                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                        |
+| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                          |
+| `app_color`     | Une chaine de couleur hexadecimale pour le type de message (par exemple `#3AA3E3` pour info). |
+| `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                               |
+| `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                    |
+| `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                     |
+| `app_image_url` | L'URL de l'image associee au type de message, si elle existe.                                 |
+| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                 |
+
+### Jetons personnalises
+
+Tout jeton que vous inventez au-dela de l'ensemble integre peut etre fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
+
+```text
+slack://{tokenA}/{tokenB}/{tokenC}/?template=/chemin/gabarit.json&:env=production&:team=platform
+```
+
+Dans le gabarit, referenciez-le sous la forme `{{env}}` ou `{{team}}`.
+
+### Exemple de gabarit
+
+Enregistrez le contenu suivant sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Cet exemple produit un bloc d'en-tete avec le titre, un bloc de section avec le corps, et une barre laterale coloree via le champ `color` :
+
+```json
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": { "type": "plain_text", "text": "{{app_title}}" }
+    },
+    {
+      "type": "section",
+      "text": { "type": "mrkdwn", "text": "{{app_body}}" }
+    }
+  ],
+  "color": "{{app_color}}"
+}
+```
+
 ## Exemples
 
 Envoyer une notification Slack vers le canal `#nuxref` :
@@ -179,32 +230,10 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
 ```
 
-Envoyer une notification à l'aide d'un gabarit JSON Slack Block Kit personnalisé :
+Envoyer une notification via un gabarit Block Kit personnalise (voir l'**Exemple de gabarit** ci-dessus), en injectant des jetons personnalises avec le prefixe `:cle=valeur` :
 
 ```bash
-# Créez d'abord votre fichier gabarit, par exemple /etc/apprise/slack-blocks.json :
-# {
-#   "blocks": [
-#     {
-#       "type": "header",
-#       "text": {"type": "plain_text", "text": "{{app_title}}"}
-#     },
-#     {
-#       "type": "section",
-#       "text": {"type": "mrkdwn", "text": "{{app_body}}"}
-#     }
-#   ],
-#   "color": "{{app_color}}"
-# }
-#
-# Puis référencez-le avec template= (le mode blocks est activé automatiquement) :
-apprise -vv -t "Alerte" -b "Utilisation disque à 95 %" \
-   "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/?template=/etc/apprise/slack-blocks.json"
-```
-
-Des jetons personnalisés peuvent être injectés dans n'importe quel gabarit avec le préfixe `:clé=valeur` :
-
-```bash
-apprise -vv -t "Déploiement" -b "v2.3.1 déployé" \
-   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-tmpl.json&:env=production&:team=platform"
+# Supposons que le gabarit soit enregistre sous /etc/apprise/slack-blocks.json
+apprise -vv -t "Deploiement" -b "v2.3.1 deploye" \
+   "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-blocks.json&:env=production&:team=platform"
 ```
