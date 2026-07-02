@@ -79,7 +79,6 @@ of posting to a channel.
 | `channel_id` | No       | Numeric channel ID to post to. May be repeated for multiple channels. |
 | `user_id`    | No       | Numeric user ID for a direct message. Prefix with `@`.                |
 | `mode`       | No       | Operating mode: `bot` (default) or `webhook`.                         |
-| `msg_type`   | No       | Message body format: `kmarkdown` (default) or `text`.                 |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -113,9 +112,9 @@ apprise -vv -b "Webhook notification" \
     "kook://WEBHOOK_KEY?mode=webhook"
 ```
 
-Force plain-text formatting:
+Force plain-text formatting (uses the standard Apprise `?format=` parameter):
 
 ```bash
 apprise -vv -b "Plain text message" \
-    "kook://BOT_TOKEN/CHANNEL_ID?msg_type=text"
+    "kook://BOT_TOKEN/CHANNEL_ID?format=text"
 ```

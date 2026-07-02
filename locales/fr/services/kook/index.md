@@ -79,7 +79,6 @@ utilisateur plutôt que de publier dans un canal.
 | `channel_id` | Non    | Identifiant numérique du canal cible. Peut être répété pour plusieurs canaux.     |
 | `user_id`    | Non    | Identifiant numérique d'un utilisateur pour un message direct. Préfixez avec `@`. |
 | `mode`       | Non    | Mode de fonctionnement : `bot` (par défaut) ou `webhook`.                         |
-| `msg_type`   | Non    | Format du message : `kmarkdown` (par défaut) ou `text`.                           |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -113,9 +112,9 @@ apprise -vv -b "Notification webhook" \
     "kook://WEBHOOK_KEY?mode=webhook"
 ```
 
-Forcer le format texte brut :
+Forcer le format texte brut (paramètre standard Apprise `?format=`) :
 
 ```bash
 apprise -vv -b "Message texte brut" \
-    "kook://BOT_TOKEN/CHANNEL_ID?msg_type=text"
+    "kook://BOT_TOKEN/CHANNEL_ID?format=text"
 ```
