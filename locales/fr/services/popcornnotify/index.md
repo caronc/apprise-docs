@@ -9,12 +9,23 @@ source: https://popcornnotify.com
 schemas:
   - popcorn
 
+ended: 2026
+
 sample_urls:
   - popcorn://{ApiKey}/{PhoneNo}/
   - popcorn://{ApiKey}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}/
   - popcorn://{ApiKey}/{Email}/
   - popcorn://{ApiKey}/{Email1}/{Email2}/{EmailN}/
 ---
+
+:::note
+
+## Motif de fin du service
+
+Popcorn Notify a été lancé en 2018 comme une API unique permettant d'envoyer des courriels et des SMS. Aucune annonce publique ni explication concernant sa fermeture ne semble avoir été publiée, mais son site web et son API de notification renvoient désormais une réponse HTTP 503 et le service n'est plus utilisable.
+
+La date exacte et le motif de la fermeture sont inconnus. La date ci-dessus indique 2026 comme l'année où l'indisponibilité a été confirmée ; l'ancienne [fiche Product Hunt](https://www.producthunt.com/products/popcorn-notify) et le [paquet client Python](https://pypi.org/project/popcornnotify/) ne subsistent qu'à titre de références historiques.
+:::
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
