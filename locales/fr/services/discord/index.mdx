@@ -58,7 +58,7 @@ La syntaxe valide est la suivante :
 
 Discord prend egalement en charge differents arguments web. Les valeurs ci-dessous correspondent aux valeurs par defaut et n'ont donc pas besoin d'etre precisees, sauf si vous souhaitez les remplacer :
 
-- `discord://{WebhookID}/{WebhookToken}/?tts=No&avatar=Yes&footer=No&image=Yes`
+- `discord://{WebhookID}/{WebhookToken}/?tts=No&avatar=Yes&footer=No&image=Yes&batch=Yes`
 
 ## Detail des Parametres
 
@@ -76,6 +76,7 @@ Discord prend egalement en charge differents arguments web. Les valeurs ci-desso
 | href         | Non         | Definit une URL vers laquelle le titre doit pointer lors de la publication de la notification Discord. Cela force le message au format `markdown` afin de tirer parti de la section `embeds` de Discord. Vous pouvez aussi utiliser `url=` comme alias.                                                                                                                                                |
 | thread       | Non         | Permet facultativement de definir le `thread_id` auquel appliquer votre message.                                                                                                                                                                                                                                                                                                                       |
 | ping         | Non         | Permet facultativement d'indiquer un role, un utilisateur ou un nom interprete, comme `everyone`, qui devra toujours etre pingue lors de l'envoi du message. Suivez la syntaxe [identifiee ci-dessus](#mentionner-des-roles-tags-et-utilisateurs) pour le format attendu.                                                                                                                              |
+| batch        | Non         | Lorsque defini sur **Yes** (valeur par defaut), plusieurs pieces jointes sont regroupees en un seul message Discord dans la limite du nombre et de la taille autorises par message. Definir sur **No** pour envoyer une piece jointe par message, ce qui correspondait au seul comportement pris en charge avant l'ajout de cette fonctionnalite.                   |
 | template     | Non         | Fournit le chemin vers un fichier JSON a utiliser a la place du payload Discord construit par defaut par Apprise. Utilisez des doubles accolades `\{\{jeton\}\}` pour indiquer les valeurs a substituer avant l'envoi (par exemple `\{\{app_body\}\}` ou `\{\{app_title\}\}`). Le fichier doit produire un objet JSON Discord valide avec un champ `content` non vide ou un tableau `embeds` non vide. |
 
 {/*TEMPLATE:SERVICE-PARAMS*/}
@@ -246,6 +247,29 @@ Envoyer une notification qui mentionne `@everyone` dans le salon :
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
 apprise -vv -t "Bonjour a Tous" -b "Message de Test that pings @everyone" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
+```
+
+Envoyer plusieurs pieces jointes dans un seul message Discord (comportement par defaut) :
+
+```bash
+# Supposons que notre {WebhookID} soit 4174216298
+# Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
+apprise -vv -t "Titre du Test" -b "Corps du Test" \
+   --attach /chemin/vers/fichier1.png \
+   --attach /chemin/vers/fichier2.png \
+   --attach /chemin/vers/fichier3.png \
+   "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
+```
+
+Envoyer plusieurs pieces jointes une par message (comportement precedent) :
+
+```bash
+# Supposons que notre {WebhookID} soit 4174216298
+# Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
+apprise -vv -t "Titre du Test" -b "Corps du Test" \
+   --attach /chemin/vers/fichier1.png \
+   --attach /chemin/vers/fichier2.png \
+   "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?batch=no"
 ```
 
 Envoyer une notification exploitant la prise en charge integree de `markdown` par Discord :
