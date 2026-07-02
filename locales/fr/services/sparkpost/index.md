@@ -126,6 +126,7 @@ Vous pouvez specifier autant de tokens que vous le souhaitez. Apprise fournit eg
 - **app_id** : identifiant de l'application ; il vaut generalement `Apprise`, mais les developpeurs d'applications personnalisees peuvent le surcharger et y placer leur propre nom.
 - **app_desc** : description de l'application ; c'est en general une variante un peu plus explicite de _app_id_. Cette valeur est habituellement `Apprise Notification`, sauf surcharge par un developpeur.
 - **app_color** : code hexadecimal identifiant une couleur associee au message. Par exemple, les messages `info` sont generalement bleus tandis que les messages `warning` sont orange.
+- **app_color_hex** : alias explicite de `app_color` ; meme valeur hexadecimale, fourni pour que les gabarits puissent utiliser un nom auto-documenté pour la variante hexadecimale.
 - **app_type** : type du message lui-meme, par exemple `info`, `warning` ou `success`.
 - **app_title** : titre reel, c'est-a-dire la valeur `--title` ou `-t` transmise lors de l'appel a la notification Apprise.
 - **app_body** : corps reel du message, c'est-a-dire la valeur `--body` ou `-b` transmise lors de l'appel a la notification Apprise.
