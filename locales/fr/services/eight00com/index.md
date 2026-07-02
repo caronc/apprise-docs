@@ -12,7 +12,7 @@ schemas:
 has_sms: true
 has_attachments: true
 
-keywords: "800.com"
+keywords: huit, cents
 
 sample_urls:
   - eight00com://{token}@{fromPhoneNo}
