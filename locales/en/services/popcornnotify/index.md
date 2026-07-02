@@ -9,12 +9,23 @@ source: https://popcornnotify.com
 schemas:
   - popcorn
 
+ended: 2026
+
 sample_urls:
   - popcorn://{ApiKey}/{PhoneNo}/
   - popcorn://{ApiKey}/{PhoneNo1}/{PhoneNo2}/{PhoneNoN}/
   - popcorn://{ApiKey}/{Email}/
   - popcorn://{ApiKey}/{Email1}/{Email2}/{EmailN}/
 ---
+
+:::note
+
+## Service End Reason
+
+Popcorn Notify launched in 2018 as a single API for sending email and SMS messages. No public shutdown announcement or explanation appears to have been published, but its website and notification API now return an HTTP 503 response and the service is no longer usable.
+
+The exact shutdown date and reason are unknown. The date above records 2026 as the year the outage was confirmed; the former [Product Hunt listing](https://www.producthunt.com/products/popcorn-notify) and [Python client package](https://pypi.org/project/popcornnotify/) remain available only as historical references.
+:::
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
