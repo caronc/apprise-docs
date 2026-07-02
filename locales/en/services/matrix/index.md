@@ -83,7 +83,7 @@ You may notify multiple DM users in a single URL:
 - `matrixs://{token}@{hostname}/@{user1}/@{user2}`
 
 :::note
-Unlike room identifiers, DM user targets **always** have the authenticated homeserver appended when no explicit homeserver is provided. `@alice` is always resolved as `@alice:{home_server}`, regardless of the `hsreq` setting. To DM a user on a different server, include the homeserver explicitly: `@alice:otherhost.com`.
+When you write `@alice` without a server name, Apprise fills it in automatically using your homeserver. To reach someone on a different server, write their full address instead: `@alice:otherhost.com`. If direct messages are not going through, try adding `?hsreq=no` to your URL -- this helps on some self-hosted server setups (see below).
 :::
 
 ### Mixing Target Types
@@ -127,38 +127,34 @@ If you explicitly include a homeserver component, Apprise honours it exactly as 
 
 ### Opt-out Behaviour (Compatibility Mode)
 
-You may disable homeserver enforcement by specifying `?hsreq=no`. In this setting:
+Most people will never need this. If your notifications are working, skip ahead.
+
+If things are not working -- particularly if you see 404 errors when Apprise tries to join a room -- try adding `?hsreq=no` to your URL. This tells Apprise to use room names and IDs exactly as you typed them, without automatically adding your server name to the end:
 
 - `#room` is used exactly as provided.
 - `!room` is used exactly as provided.
 
-`hsreq` applies only to room identifiers (`#` and `!`). DM user targets (`@`) are not affected -- they always have the authenticated homeserver applied when no explicit homeserver is included in the target.
-
-This is intended for environments where a reverse proxy, non-standard server behaviour, or strict URL routing makes `:homeserver` suffixing undesirable.
-
-If you are using room IDs (prefixed with `!`), note that many Matrix deployments expect fully-qualified room IDs. If your server rejects `!room:{hostname}` but accepts `!room` as-is, `hsreq=no` may be required.
-
-For example; given:
+Given this URL:
 
 ```text
 matrix://user:pass@localhost/#room/!abc123
 ```
 
-With default behaviour (`hsreq=yes`):
+With the default setting:
 
 - `#room` becomes `#room:localhost`
 - `!abc123` becomes `!abc123:localhost`
 
-With enforcement disabled:
+With `?hsreq=no`:
 
 ```text
 matrix://user:pass@localhost/#room/!abc123?hsreq=no
 ```
 
-- `#room` is used as `#room`
-- `!abc123` is used as `!abc123`
+- `#room` stays `#room`
+- `!abc123` stays `!abc123`
 
-In both cases, a DM target such as `@alice` would become `@alice:localhost` regardless of `hsreq`.
+This also applies to DM targets. The person you are messaging is always looked up with their full address (for example `@alice:localhost`) -- that part does not change. But if DM delivery is failing anyway, adding `?hsreq=no` can help on certain servers. It is worth trying before anything else.
 
 ## Webhook Mode
 
@@ -258,11 +254,16 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "matrixs://syt_abc123@matrix.example.com/#general"
 ```
 
-Disable homeserver enforcement:
+If a room or DM target is not being found (try running with `-vv` to see the error), add `?hsreq=no` to stop Apprise from appending the server name automatically:
 
 ```bash
+# Room ID target
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    matrixs://nuxref:abc123@matrix.example.com/!abc123?hsreq=no
+
+# DM target -- also worth trying if @bob delivery fails
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   matrixs://nuxref:abc123@matrix.example.com/@bob?hsreq=no
 ```
 
 Use API v2 (required for attachments in some deployments):

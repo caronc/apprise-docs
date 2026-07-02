@@ -83,7 +83,7 @@ Vous pouvez notifier plusieurs utilisateurs en DM dans une seule URL :
 - `matrixs://{token}@{hostname}/@{user1}/@{user2}`
 
 :::note
-Contrairement aux identifiants de salon, les cibles DM **reçoivent toujours** le homeserver authentifié lorsqu’aucun homeserver explicite n’est fourni. `@alice` est donc toujours résolu en `@alice:{home_server}`, quelle que soit la valeur de `hsreq`. Pour envoyer un DM à un utilisateur sur un autre serveur, précisez explicitement le homeserver, par exemple `@alice:otherhost.com`.
+Lorsque vous écrivez `@alice` sans préciser de serveur, Apprise le renseigne automatiquement avec votre homeserver. Pour contacter quelqu’un sur un autre serveur, indiquez son adresse complète : `@alice:otherhost.com`. Si vos messages directs ne sont pas transmis, essayez d’ajouter `?hsreq=no` à votre URL -- cela aide sur certaines installations de serveurs auto-hébergés (voir ci-dessous).
 :::
 
 ### Mélanger les Types de Cibles
@@ -127,38 +127,34 @@ Si vous incluez explicitement un homeserver, Apprise le respecte exactement tel 
 
 ### Désactivation de ce Comportement (Mode Compatibilité)
 
-Vous pouvez désactiver cette contrainte en précisant `?hsreq=no`. Dans ce cas :
+La plupart des utilisateurs n’auront jamais besoin de cette option. Si vos notifications fonctionnent, passez à la suite.
 
-- `#room` est utilise exactement tel qu'il est fourni.
-- `!room` est utilise exactement tel qu'il est fourni.
+Si les choses ne fonctionnent pas -- notamment si vous observez des erreurs 404 lorsqu’Apprise tente de rejoindre un salon -- essayez d’ajouter `?hsreq=no` à votre URL. Cela indique à Apprise d’utiliser les noms et identifiants de salon exactement tels que vous les avez saisis, sans y ajouter automatiquement le nom de votre serveur :
 
-`hsreq` ne s’applique qu’aux identifiants de salon, c’est-à-dire `#` et `!`. Les cibles DM de type `@` ne sont pas concernées : elles utilisent toujours le homeserver authentifié lorsqu’aucun homeserver explicite n’est présent.
+- `#room` est utilise exactement tel qu’il est fourni.
+- `!room` est utilise exactement tel qu’il est fourni.
 
-Ce mode est destiné aux environnements où un reverse proxy, un comportement serveur non standard ou un routage URL strict rend l’ajout du suffixe `:homeserver` indésirable.
-
-Si vous utilisez des room IDs préfixés par `!`, notez que de nombreuses installations Matrix attendent des identifiants complètement qualifiés. Si votre serveur rejette `!room:{hostname}` mais accepte `!room` tel quel, `hsreq=no` peut être nécessaire.
-
-Par exemple, avec :
+Avec cette URL :
 
 ```text
 matrix://user:pass@localhost/#room/!abc123
 ```
 
-Avec le comportement par défaut, `hsreq=yes` :
+Avec le paramètre par défaut :
 
 - `#room` devient `#room:localhost`
 - `!abc123` devient `!abc123:localhost`
 
-Avec la contrainte désactivée :
+Avec `?hsreq=no` :
 
 ```text
 matrix://user:pass@localhost/#room/!abc123?hsreq=no
 ```
 
-- `#room` est utilise comme `#room`
-- `!abc123` est utilise comme `!abc123`
+- `#room` reste `#room`
+- `!abc123` reste `!abc123`
 
-Dans les deux cas, une cible DM comme `@alice` deviendrait `@alice:localhost`, quelle que soit la valeur de `hsreq`.
+Cela s’applique aussi aux cibles DM. La personne à qui vous écrivez est toujours recherchée avec son adresse complète (par exemple `@alice:localhost`) -- cela ne change pas. Mais si la livraison des messages directs échoue quand même, ajouter `?hsreq=no` peut aider sur certains serveurs. C’est la première chose à essayer.
 
 ## Mode Webhook
 
@@ -254,11 +250,16 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://syt_abc123@matrix.example.com/#general"
 ```
 
-Desactiver l'imposition du homeserver :
+Si un salon ou une cible DM n'est pas trouvé (utilisez `-vv` pour voir l'erreur), ajoutez `?hsreq=no` pour qu'Apprise n'ajoute pas automatiquement le nom du serveur :
 
 ```bash
+# Cible de type room ID
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/!abc123?hsreq=no
+
+# Cible DM -- a essayer si la livraison de @bob echoue
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   matrixs://nuxref:abc123@matrix.example.com/@bob?hsreq=no
 ```
 
 Utiliser l’API v2, requise pour les pièces jointes sur certains déploiements :
