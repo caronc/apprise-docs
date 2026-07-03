@@ -12,6 +12,7 @@
   "setupGuide": "Setup guide",
   "serviceWebsite": "Service website",
   "secure": "Secure",
+  "insecure": "Insecure",
   "alwaysSecure": "Always secure",
 
   "urlPattern": "URL Pattern",

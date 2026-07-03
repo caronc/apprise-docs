@@ -12,6 +12,7 @@
   "setupGuide": "Guide de configuration",
   "serviceWebsite": "Site du service",
   "secure": "S\u00e9curis\u00e9",
+  "insecure": "Non s\u00e9curis\u00e9",
   "alwaysSecure": "Toujours s\u00e9curis\u00e9",
 
   "urlPattern": "Patron d\u2019URL",
