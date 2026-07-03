@@ -66,6 +66,26 @@ La syntaxe valide est la suivante :
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## Mentions MS Teams
+
+Lorsque votre Workflow envoie des messages vers un canal **Microsoft Teams**, Apprise gere automatiquement les `@mentions`. Il suffit d'entourer l'adresse UPN (adresse e-mail) ou le nom d'affichage du destinataire avec des balises `<at>` directement dans le corps du message :
+
+```text
+Bonjour <at>alice@example.com</at>, la compilation a echoue !
+```
+
+Apprise detecte chaque balise `<at>...</at>` dans le corps et injecte automatiquement la structure d'entite Teams requise dans la charge utile -- aucune configuration supplementaire n'est necessaire. Les mentions multiples et la suppression des doublons sont toutes deux gerees :
+
+```text
+<at>alice@example.com</at> et <at>bob@example.com</at>, merci de bien vouloir verifier.
+```
+
+:::note
+La detection automatique des mentions ne s'applique qu'a la **charge utile par defaut** (sans argument `template=`). Si vous fournissez un modele personnalise, ajoutez `msteams.entities` manuellement dans votre JSON -- consultez [Prise en charge des mentions dans les cartes adaptatives](https://learn.microsoft.com/fr-fr/microsoftteams/platform/task-modules-and-cards/cards/cards-format#mention-support-within-adaptive-cards).
+
+Le corps doit egalement etre transmis au format **Markdown** (le format par defaut pour ce plugin). Si vous envoyez `body_format=html`, le convertisseur HTML supprime les balises `<at>` avant qu'Apprise ne les traite.
+:::
+
 ## Modèles
 
 ### L’Argument d’URL `template`
@@ -170,4 +190,20 @@ Envoyer une notification Microsoft Teams :
 # Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```
+
+Envoyer une notification Teams avec une @mention :
+
+```bash
+apprise -vv -t "Compilation echouee" \
+   -b "Salut <at>alice@example.com</at>, la compilation nocturne necessite votre attention." \
+   workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```
+
+Mentionner plusieurs personnes dans un seul message :
+
+```bash
+apprise -vv -t "Deploiement termine" \
+   -b "<at>alice@example.com</at> et <at>bob@example.com</at> -- deploye en production." \
+   workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
