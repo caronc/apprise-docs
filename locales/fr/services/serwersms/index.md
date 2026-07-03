@@ -1,6 +1,6 @@
 ---
 title: "Notifications SerwerSMS"
-description: "Envoyez des notifications SMS via la passerelle polonaise SerwerSMS."
+description: "Envoyez des notifications SMS et MMS via la passerelle polonaise SerwerSMS."
 sidebar:
   label: "SerwerSMS"
 
@@ -10,6 +10,7 @@ schemas:
   - serwersms
 
 has_sms: true
+has_attachments: true
 
 keywords: "serwer, serwersms.pl"
 
@@ -59,6 +60,10 @@ Le prefixe de groupe `#` doit etre saisi sous la forme `%23` directement dans un
 Au moins un `target_phone` ou un `target_group` doit etre fourni. Chaque cible genere un appel API distinct.
 :::
 
+:::note
+Lorsqu'une piece jointe est fournie, le message est automatiquement envoye en MMS via le point de terminaison MMS de SerwerSMS. Aucune configuration supplementaire n'est necessaire -- il suffit de passer `--attach` en ligne de commande ou de fournir une piece jointe dans l'appel API.
+:::
+
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
@@ -91,4 +96,12 @@ Envoyer a un numero de telephone et a un groupe dans une seule URL :
 ```bash
 apprise -vv -t "Alerte" -b "Verifiez les journaux" \
    "serwersms://monlogin:secret@MonApp/+48123456789/%23200"
+```
+
+Envoyer un MMS avec une image en piece jointe :
+
+```bash
+apprise -vv -t "Alerte" -b "Voir la piece jointe" \
+   --attach /chemin/vers/image.jpg \
+   serwersms://monlogin:secret@MonApp/+48123456789
 ```

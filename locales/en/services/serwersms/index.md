@@ -1,6 +1,6 @@
 ---
 title: "SerwerSMS Notifications"
-description: "Send SMS notifications via the SerwerSMS Polish gateway."
+description: "Send SMS and MMS notifications via the SerwerSMS Polish gateway."
 sidebar:
   label: "SerwerSMS"
 
@@ -10,6 +10,7 @@ schemas:
   - serwersms
 
 has_sms: true
+has_attachments: true
 
 keywords: "serwer, serwersms.pl"
 
@@ -59,6 +60,10 @@ The `#` group prefix must be written as `%23` when entered directly in a URL (e.
 At least one `target_phone` or `target_group` must be provided. Each target triggers a separate API call.
 :::
 
+:::note
+When an attachment is provided, the message is automatically sent as MMS via the SerwerSMS MMS endpoint. No extra configuration is needed -- simply pass `--attach` on the command line or supply an attachment in the API call.
+:::
+
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Examples
@@ -91,4 +96,12 @@ Send to a phone number and a group in one URL:
 ```bash
 apprise -vv -t "Alert" -b "Check the logs" \
    "serwersms://mylogin:secret@MyApp/+48123456789/%23200"
+```
+
+Send an MMS with an image attachment:
+
+```bash
+apprise -vv -t "Alert" -b "See attached" \
+   --attach /path/to/image.jpg \
+   serwersms://mylogin:secret@MyApp/+48123456789
 ```
