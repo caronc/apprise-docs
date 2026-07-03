@@ -253,6 +253,47 @@ Les pièces jointes sont entièrement prises en charge.
 
 Les limites de votre fournisseur SMTP peuvent s'appliquer. Apprise n'impose pas lui-même de restriction de taille sur les pièces jointes.
 
+## Pièces Jointes Intégrées (RFC 2387)
+
+Par défaut, toutes les pièces jointes sont envoyées comme téléchargements standards (`Content-Disposition: attachment`). Ajouter `?inline=yes` à votre URL demande à Apprise d'incorporer les pièces jointes de type image **dans** le corps de l'e-mail, en utilisant la structure MIME `multipart/related` définie dans la [RFC 2387](https://datatracker.ietf.org/doc/html/rfc2387) et le schéma d'URI `cid:` de la [RFC 2392](https://datatracker.ietf.org/doc/html/rfc2392).
+
+### Fonctionnement
+
+Lorsque `inline=yes` est défini :
+
+- **E-mails HTML** -- Apprise analyse le corps à la recherche de références `cid:nom_de_fichier` existantes. Pour chaque pièce jointe de type image (type MIME `image/*`) qui n'est pas encore référencée, Apprise ajoute automatiquement `<br/><img src="cid:nom_de_fichier">` à la fin du corps, de sorte que chaque image soit toujours visible en ligne. L'enveloppe MIME passe de `multipart/mixed` à `multipart/related`, et chaque pièce jointe intégrée reçoit les en-têtes `Content-Disposition: inline` et `Content-ID`.
+- **E-mails en texte brut** -- les images ne peuvent pas être incorporées dans du texte brut. Apprise ajoute à la place des lignes `[Image: nom_de_fichier]` au corps, afin que le destinataire sache que des images sont jointes. La pièce jointe est tout de même envoyée comme téléchargement standard.
+- **Pièces jointes non-images** -- les fichiers qui ne sont pas des images (PDF, tableurs, etc.) sont toujours envoyés comme téléchargements standards, quel que soit le paramètre `inline=`.
+
+### Référencer les images manuellement
+
+Si vous écrivez vous-même des références `cid:` dans un corps HTML, Apprise les respecte et n'ajoute pas d'ancre en doublon :
+
+```text
+<p>Voir le graphique ci-dessous :</p>
+<img src="cid:chart.png">
+```
+
+Lorsque `inline=yes` est actif et que `chart.png` fait partie des pièces jointes, aucune ancre supplémentaire n'est ajoutée -- la pièce jointe est quand même intégrée via l'en-tête `Content-ID`.
+
+### Références cid: sans pièce jointe correspondante
+
+Si une référence `cid:nom_de_fichier` apparaît dans le corps mais qu'aucune pièce jointe portant ce nom exact n'a été fournie, Apprise enregistre un avertissement pour vous aider à déboguer l'incohérence :
+
+```text
+Email inline: no attachment matches cid:chart.png -- check the filename.
+```
+
+### Exemple
+
+Envoyer un e-mail HTML avec une image intégrée en ligne :
+
+```bash
+apprise -vv -t "Rapport" -b "<h1>Résumé</h1><p>Voir le graphique ci-joint.</p>" \
+    "mailto://user:pass@example.com?inline=yes" \
+    --attach /chemin/vers/chart.png
+```
+
 ## Sécurité PGP
 
 Apprise prend en charge deux modes PGP pour les e-mails sortants, sélectionnés avec le paramètre `?pgp=`.
@@ -482,6 +523,7 @@ Le paramètre `pgpkey=` a été renommé en `pgppub=` pour indiquer clairement q
 | pgpprv   |    Non | Chemin vers la clé PGP **privée** blindée ASCII (`.asc`) de l'expéditeur. Requis pour `pgp=sign`. Les clés protégées par phrase de passe ne sont pas prises en charge. Masqué dans les URL anonymisées.                                                        |
 | pgpkey   |    Non | **Déprécié.** Alias de `pgppub=`. Toujours accepté mais génère un avertissement de dépréciation. Sera supprimé dans une prochaine version. Utilisez `pgppub=` à la place.                                                                                      |
 | wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.                                                                                                    |
+| inline   |    Non | Incorpore les pièces jointes de type image dans le corps des e-mails HTML (`yes` ou `no`). Par défaut : `no`. Voir [Pièces Jointes Intégrées](#pieces-jointes-integrees-rfc-2387).                                                                              |
 | +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                                                                                                             |
 
 **\*** Non requis pour les relais anonymes.
