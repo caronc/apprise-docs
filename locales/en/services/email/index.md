@@ -253,6 +253,47 @@ Attachments are fully supported.
 
 SMTP provider limits may apply. Apprise does not impose attachment size restrictions.
 
+## Inline Attachments (RFC 2387)
+
+By default all attachments are sent as regular downloads (`Content-Disposition: attachment`). Adding `?inline=yes` to your URL tells Apprise to embed image attachments **inside** the email body using the `multipart/related` MIME structure defined in [RFC 2387](https://datatracker.ietf.org/doc/html/rfc2387) and the `cid:` URI scheme from [RFC 2392](https://datatracker.ietf.org/doc/html/rfc2392).
+
+### How it works
+
+When `inline=yes` is set:
+
+- **HTML emails** -- Apprise scans the body for existing `cid:filename` references. For each image attachment (`image/*` MIME type) that is not yet referenced, Apprise automatically appends `<br/><img src="cid:filename">` to the body so every image is always visible inline. The MIME wrapper is upgraded from `multipart/mixed` to `multipart/related` and each inlined attachment receives `Content-Disposition: inline` and a `Content-ID` header.
+- **Plain-text emails** -- Images cannot be embedded in plain text. Apprise instead appends `[Image: filename]` placeholder lines to the body so the recipient knows image attachments are present. The attachment itself is still sent as a regular download.
+- **Non-image attachments** -- Files that are not images (PDFs, spreadsheets, etc.) are always sent as regular downloads regardless of the `inline=` setting.
+
+### Referencing images manually
+
+If you write your own `cid:` references in an HTML body, Apprise honours them and does not add a duplicate anchor:
+
+```text
+<p>See the chart below:</p>
+<img src="cid:chart.png">
+```
+
+When `inline=yes` is active and `chart.png` is among the attachments, no extra anchor is appended -- the attachment is still inlined via the `Content-ID` header.
+
+### Unmatched cid: references
+
+If a `cid:filename` appears in the body but no attachment with that exact name was provided, Apprise logs a warning to help you debug the mismatch:
+
+```text
+Email inline: no attachment matches cid:chart.png -- check the filename.
+```
+
+### Example
+
+Send an HTML email with an image embedded inline:
+
+```bash
+apprise -vv -t "Report" -b "<h1>Summary</h1><p>See attached chart.</p>" \
+    "mailto://user:pass@example.com?inline=yes" \
+    --attach /path/to/chart.png
+```
+
 ## PGP Security
 
 Apprise supports two PGP modes for outbound email, selected with the `?pgp=` parameter.
@@ -482,6 +523,7 @@ The `pgpkey=` parameter has been renamed to `pgppub=` to clarify that it holds a
 | pgpprv   |       No | Path to the sender's ASCII-armoured PGP **private** key (`.asc`). Required for `pgp=sign`. Passphrase-protected keys are not supported. Masked in privacy-safe URLs.                                                                                     |
 | pgpkey   |       No | **Deprecated.** Alias for `pgppub=`. Still accepted but emits a deprecation warning. Will be removed in a future release. Use `pgppub=` instead.                                                                                                         |
 | wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                                                                                                          |
+| inline   |       No | Embed image attachments inline in HTML email bodies (`yes` or `no`). Defaults to `no`. See [Inline Attachments](#inline-attachments-rfc-2387).                                                                                                            |
 | +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                                                                                                            |
 
 **\*** Not required for anonymous relays.
