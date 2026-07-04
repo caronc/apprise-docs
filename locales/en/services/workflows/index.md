@@ -66,6 +66,26 @@ Valid syntax is as follows:
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+## MS Teams Mentions
+
+When your Workflow delivers messages to a **Microsoft Teams** channel, Apprise automatically handles `@mentions` for you. Wrap the recipient's UPN (email address) or display name in `<at>` tags directly in your message body:
+
+```text
+Hello <at>alice@example.com</at>, the build has failed!
+```
+
+Apprise detects every `<at>...</at>` tag in the body and injects the required Teams entity structure into the payload automatically -- no extra configuration needed. Multiple mentions and duplicate suppression are both handled:
+
+```text
+<at>alice@example.com</at> and <at>bob@example.com</at>, please review.
+```
+
+:::note
+Mention auto-detection only applies to the **default payload** (no `template=` argument). If you supply a custom template, add `msteams.entities` to your JSON by hand -- see [Mention support within Adaptive Cards](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format#mention-support-within-adaptive-cards).
+
+The body must also arrive in **Markdown format** (the default for this plugin). If you send `body_format=html`, the HTML converter strips `<at>` tags before Apprise sees them.
+:::
+
 ## Templating
 
 ### The `template` URL Argument
@@ -170,4 +190,20 @@ Send a Microsoft Teams notification:
 # Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```
+
+Send a Teams notification that @mentions a specific user:
+
+```bash
+apprise -vv -t "Build Failed" \
+   -b "Hey <at>alice@example.com</at>, the nightly build needs attention." \
+   workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```
+
+Mention multiple people in one message:
+
+```bash
+apprise -vv -t "Deployment Complete" \
+   -b "<at>alice@example.com</at> and <at>bob@example.com</at> -- deployed to prod." \
+   workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
