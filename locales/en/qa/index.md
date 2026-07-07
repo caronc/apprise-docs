@@ -19,7 +19,7 @@ The output can help you pinpoint what is wrong with your URL.
 
 If the output appears cryptic, or you feel that you've exhausted all avenues, Don't be afraid to [open a ticket and ask here](https://github.com/caronc/apprise/issues). It greatly helps if you share the output received from your debug response. It might be just a simple tweak to your URL that is needed, otherwise we might have a good bug we need to solve.
 
-Please feel free to join us on [Discord](https://discord.gg/MMPeN2D); it's not a big community, but it's growing slowly. You may just find an answer here after asking.
+Please feel free to join us on [Discord](https://discord.gg/EGg4rhmpC2); it's not a big community, but it's growing slowly. You may just find an answer here after asking.
 
 Just be cautious as the debugging information can potentially expose personal information (such as your password and/or private access tokens) to the screen. Please remember to erase this or swap it with some random characters before posting such a thing publicly.
 

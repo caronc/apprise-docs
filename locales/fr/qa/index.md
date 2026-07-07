@@ -18,7 +18,7 @@ La sortie peut vous aider a identifier precisement ce qui ne va pas dans votre U
 
 Si la sortie vous semble obscure, ou si vous avez l'impression d'avoir tout essaye, n'hesitez pas a [ouvrir un ticket ici](https://github.com/caronc/apprise/issues). Il est tres utile de partager la sortie recue en mode debug. Il peut s'agir d'un simple ajustement de votre URL, ou bien d'un vrai bug a corriger.
 
-N'hesitez pas a nous rejoindre sur [Discord](https://discord.gg/MMPeN2D) ; la communaute n'est pas enorme, mais elle grandit doucement. Vous pourriez y trouver une reponse rapidement.
+N'hesitez pas a nous rejoindre sur [Discord](https://discord.gg/EGg4rhmpC2) ; la communaute n'est pas enorme, mais elle grandit doucement. Vous pourriez y trouver une reponse rapidement.
 
 Restez prudent : les informations de debogage peuvent exposer a l'ecran des donnees personnelles (mot de passe, jetons d'acces prives, etc.). Pensez a les masquer ou a les remplacer avant toute publication publique.
 
