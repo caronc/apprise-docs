@@ -1,0 +1,428 @@
+---
+title: "Résultats de notification"
+description: "Ce que notify() retourne réellement, et comment inspecter ce qui s'est passé par service."
+sidebar:
+  order: 4.5
+---
+
+`notify()` et `async_notify()` retournent un objet résultat plutôt qu'un simple
+`True`/`False`. Pour vérifier seulement la réussite ou l'échec, traitez-le comme
+un booléen comme avant.
+
+```python
+import apprise
+
+# 1. Construisez votre objet Apprise comme d'habitude
+apobj = apprise.Apprise()
+apobj.add("mailto://user:pass@example.com")
+
+# 2. notify() retourne un objet résultat -- mais vous pouvez toujours
+#    le traiter comme un simple True/False si c'est tout ce qu'il vous faut
+result = apobj.notify(title="Sauvegarde", body="Terminée avec succès")
+
+if result:
+    print("Notification envoyée")
+```
+
+Le reste de cette page montre comment savoir quel service a échoué, pourquoi il a
+échoué, et combien de temps cela a pris.
+
+:::note[Migration depuis une version antérieure]
+`notify()` retournait auparavant simplement `True`, `False` ou `None`. Le code qui
+traite le résultat comme un booléen (`if result:`) continue de fonctionner sans
+changement. Le code qui compare par identité, non -- `result is True`, `result is
+False` et `result is None` valent désormais tous `False`, puisque `result` est
+toujours un objet `AppriseResult`. Remplacez ces vérifications par `result.status` :
+
+```python
+from apprise import AppriseResultStatus
+
+result = apobj.notify(body="Bonjour")
+
+if result:                                            # Fonctionne toujours
+    ...
+
+if result.status == AppriseResultStatus.NOMATCH:      # Remplace `result is None`
+    ...
+```
+
+:::
+
+## La Version Courte
+
+```python
+result = apobj.notify(body="Sauvegarde nocturne terminée")
+
+print(bool(result))               # True/False -- même signification qu'avant
+print(result.status.name)         # SUCCESS, FAILURE, NOMATCH, PARTIAL ou TIMEOUT
+print(len(result))                # combien de services ont réellement été contactés
+print(result.success_count)       # combien d'entre eux ont réussi
+print(result.failed_count)        # combien n'ont pas réussi
+```
+
+`result.status` est un `AppriseResultStatus` (un `IntEnum`) -- l'afficher directement
+affiche sa valeur entière (par ex. `0`), pas son nom. Utilisez `.name`, ou comparez-le
+directement à des valeurs comme `AppriseResultStatus.SUCCESS`, pour obtenir la forme
+lisible.
+
+## Le Résultat Global (`status`)
+
+`result.status` peut prendre cinq valeurs. Les nombres correspondent aux codes de
+sortie de la CLI Apprise, donc les scripts qui vérifient `$?` peuvent garder les
+mêmes significations :
+
+| Statut    | Code de sortie | Signification                                                                                                                                |
+| :-------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SUCCESS` | `0`            | Chaque service correspondant a été notifié avec succès.                                                                                      |
+| `FAILURE` | `1`            | Chaque service correspondant a échoué (aucun n'a réellement délivré la notification), ou la notification n'a pas pu démarrer.                |
+| `NOMATCH` | `3`            | Aucun service ne correspondait au filtre de tag ou de priorité, donc rien n'a été tenté.                                                     |
+| `PARTIAL` | `4`            | Certains services ont envoyé la notification, d'autres non -- voir [Résultats mixtes par service](#résultats-mixtes-par-service) ci-dessous. |
+| `TIMEOUT` | `5`            | Rien n'a été envoyé, mais le seul problème était le manque de temps -- voir [Délais par Service](/library/tag-routing/#délais-par-service).  |
+
+```python
+from apprise import AppriseResultStatus
+
+# Un filtre de priorité exclusif qui ne correspond à rien retourne un
+# résultat qui vaut False avec un statut NOMATCH. Cela signifie
+# qu'aucun service ne correspondait.
+result = apobj.notify(body="Déploiement terminé", tag="2:alerts")
+
+if result.status == AppriseResultStatus.NOMATCH:
+    print("Aucun service ne correspond à cette combinaison tag/priorité")
+```
+
+### Résultats mixtes par service
+
+`result.status` est une seule valeur pour tout l'appel, mais un même appel peut
+notifier plusieurs services avec des résultats différents. Apprise résume ces
+résultats en un seul statut de la façon suivante :
+
+1. **Tout le monde a réussi ?** `SUCCESS`.
+2. **Sinon, au moins un service a-t-il vraiment envoyé la notification ?**
+   `PARTIAL` -- certains sont passés, d'autres non.
+3. **Sinon (rien n'a été envoyé), au moins un service a-t-il échoué ?**
+   `FAILURE` -- un échec clair est plus utile que de résumer tout l'appel comme
+   un simple dépassement de délai.
+4. **Sinon**, rien n'a été envoyé, mais le seul problème était le temps :
+   `TIMEOUT`.
+
+```python
+result = apobj.notify(body="Diffusion vers trois régions", tag="all")
+
+if result.status == AppriseResultStatus.PARTIAL:
+    print("Certaines régions ont été notifiées, d'autres non -- voir le détail par service")
+    for service in result:
+        print(" ", service.name, bool(service))
+```
+
+:::note
+Un service `optional=yes` qui n'a en réalité jamais envoyé la notification ne
+compte pas comme une vraie réussite pour l'étape 2 ci-dessus, même si son propre
+`service.status` (voir [Détail par Service](#détail-par-service) ci-dessous)
+affiche `SUCCESS`. C'est le comportement attendu de `optional`. Si un
+service requis échoue et qu'un service optionnel n'est pas compté comme un
+échec global, l'appel entier reste `FAILURE`, pas `PARTIAL`.
+:::
+
+La même règle « un échec confirmé l'emporte sur un délai dépassé » s'applique
+_au sein_ des tentatives d'un même service : si un service échoue
+lors d'une tentative puis manque de temps avant qu'une nouvelle tentative
+puisse démarrer, le `status` de ce service (ci-dessous) est `FAILURE`, pas
+`TIMEOUT` -- l'échec confirmé est plus informatif que « a manqué de temps »,
+donc il l'emporte. `TIMEOUT` n'apparaît que pour un service qui n'a jamais eu
+d'échec confirmé du tout (par ex. sa toute première tentative était encore en
+cours quand le délai a expiré). Si `retry` vaut `0` (par défaut), il n'y a
+jamais qu'une seule tentative, donc cette question ne se pose pas --
+l'ambiguïté ne concerne que les services configurés avec des tentatives.
+
+## Détail par Service
+
+Parcourez le résultat pour voir exactement ce que chaque service a fait -- « par
+service » signifie simplement une entrée pour chaque service contacté, comme Slack
+ou Discord. Chaque entrée est un `NotifyResult` :
+
+```python
+result = apobj.notify(body="Rapport hebdomadaire en pièce jointe")
+
+# Parcourir le résultat renvoie un NotifyResult par service réellement
+# contacté (les services ignorés n'apparaissent jamais ici)
+for service in result:
+    print(service.name, service.url, bool(service), service.status.name)
+```
+
+Champs utiles sur chaque `NotifyResult` :
+
+| Champ          | Description                                                                                                                                                                                                                                               |
+| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`         | Le nom affiché du service, par ex. `"Slack"`.                                                                                                                                                                                                             |
+| `url`          | L'URL masquée (confidentialité) qui a été contactée.                                                                                                                                                                                                      |
+| `url_id`       | Un identifiant stable pour cette URL qui ne révèle pas ses identifiants.                                                                                                                                                                                  |
+| `tag`          | Tous les tags configurés sur ce service, triés par ordre alphabétique (pas seulement celui du filtre qui l'a fait correspondre cette fois-ci).                                                                                                            |
+| `status`       | `SUCCESS`, `FAILURE` ou `TIMEOUT` pour ce seul service -- jamais `NOMATCH` ni `PARTIAL`, qui ne décrivent tous deux que le lot entier (voir [Résultats mixtes par service](#résultats-mixtes-par-service) ci-dessus), pas un service isolé.               |
+| `optional`     | Si ce service est marqué `optional=yes` (voir [Services Optionnels](/library/tag-routing/#services-optionnels)).                                                                                                                                          |
+| `weight`       | Le nombre d'appels sous-jacents que ce service est configuré pour effectuer par tentative : son nombre de cibles multiplié par `retry + 1` (par ex. une URL SMS avec 50 numéros et sans nouvelle tentative a un poids de 50 ; avec `retry=2`, c'est 150). |
+| `max_attempts` | Combien de tentatives étaient autorisées (`retry` + 1).                                                                                                                                                                                                   |
+| `elapsed`      | Secondes entre la première et la dernière tentative de ce service (`start_time` et `end_time` sont les horodatages sous-jacents).                                                                                                                         |
+
+:::note
+Si un service est `optional=yes`, son `status` se lit comme `SUCCESS` même si la
+livraison réelle a échoué ou dépassé le délai -- c'est le comportement prévu de
+`optional`. Cela signifie aussi qu'il est compté dans `result.success_count` (et exclu de
+`result.timeout_count`, même si la tentative sous-jacente a effectivement expiré).
+Regardez les tentatives brutes (ci-dessous) si vous voulez savoir ce qui s'est
+_réellement_ passé.
+:::
+
+## Détail par Tentative
+
+Chaque nouvelle tentative (et chaque appel individuel qu'Apprise a effectué pour ce
+service) est également enregistrée. Parcourez un `NotifyResult` lui-même pour voir
+chaque `NotifyAttempt` :
+
+```python
+result = apobj.notify(body="Sauvegarde nocturne terminée")
+
+for service in result:
+    # len(service) indique combien de tentatives ce service a réellement utilisées
+    print(service.name, "->", len(service), "tentative(s) effectuée(s)")
+
+    # Chaque tentative a son propre statut et sa propre durée. Cela montre
+    # quelle tentative a réussi, ou combien de temps un délai dépassé a pris.
+    for attempt in service:
+        print(" ", attempt.status.name, f"{attempt.elapsed:.2f}s")
+```
+
+Contrairement à `service.status`, le `status` d'une tentative est toujours le résultat
+d'origine -- `SUCCESS`, `FAILURE` ou `TIMEOUT` -- jamais ajusté pour `optional`. Chaque
+tentative a aussi son propre `start_time` et `end_time`.
+
+:::note
+Une tentative `TIMEOUT` ne représente pas forcément un appel réellement effectué.
+Quand le délai global expire avant qu'une nouvelle tentative n'ait pu démarrer,
+Apprise enregistre une tentative `TIMEOUT` à durée nulle pour marquer cette
+décision, plutôt que de la faire disparaître silencieusement -- donc « chaque
+tentative est enregistrée » inclut des tentatives qui ont été sautées, pas
+seulement celles qui ont réellement atteint le service.
+:::
+
+## Lire les Journaux
+
+Tout avertissement ou erreur qu'un service a journalisé pendant sa notification est
+capturé et attribué à ce service précis. Cela aide quand plusieurs services sont
+notifiés en même temps et qu'il faut savoir quel service a produit chaque ligne de
+journal.
+
+```python
+result = apobj.notify(body="Déploiement de la nouvelle version")
+
+for service in result:
+    # .logs() renvoie chaque avertissement/erreur journalisé par ce
+    # service, dans l'ordre, à travers toutes ses tentatives -- chaque
+    # ligne est un NotifyLogEntry
+    for line in service.logs():
+        print(f"[{service.name}] {line}")
+```
+
+`service.logs()` est un raccourci qui parcourt toutes les tentatives pour vous. Si
+vous devez savoir quelle tentative précise a produit quel message, lisez plutôt
+`attempt.logs` directement -- une simple liste de `NotifyLogEntry` pour cette seule
+tentative. Chaque `NotifyLogEntry` a trois champs : `level` (par ex. `"WARNING"`),
+`message`, et `time` ; l'afficher avec `print()` le formate comme une ligne de
+journal normale (`str()` reprend le format par défaut du module `logging` de
+Python).
+
+`NotifyLogEntry` prend aussi en charge l'égalité, le hachage et le tri, tous
+basés sur `time` (l'égalité/le hachage tiennent aussi compte de `level` et
+`message`). `result.logs()` -- sur l'`AppriseResult` global, pas
+`service.logs()` -- s'appuie exactement là-dessus pour vous donner chaque
+entrée de chaque service déjà fusionnée en une seule chronologie, plutôt
+qu'un bloc d'entrées par service à la fois :
+
+```python
+result = apobj.notify(body="Déploiement de la nouvelle version")
+
+# Chaque entrée de chaque service, rejouée dans l'ordre où elle s'est
+# réellement produite
+for entry in result.logs():
+    print(entry)
+```
+
+## Suivre les Journaux en Direct
+
+Tout ce qui précède lit les journaux _après_ que `notify()` a déjà terminé. Si vous
+construisez quelque chose comme un flux console en direct ou un panneau de
+progression dans votre propre application, vous ne voulez pas attendre -- vous
+voulez savoir qu'un avertissement ou une erreur s'est produit au moment même où
+cela se produit, même pendant que plusieurs services sont encore en train d'être
+notifiés en arrière-plan.
+
+Utilisez `log_callback` pour cela. Donnez-lui une fonction, et Apprise
+l'appelle avec `(entry, service)` pour chaque `NotifyLogEntry` au moment où elle
+est capturée, en direct :
+
+```python
+def on_log(entry, service):
+    print(f"[{service.name}] {entry}")
+
+apobj = apprise.Apprise(log_callback=on_log)
+apobj.add("slack://tokenA/tokenB/tokenC")
+apobj.add("discord://webhook_id/webhook_token")
+
+# on_log() se déclenche pour chaque avertissement/erreur au moment où il se
+# produit, potentiellement pour les deux services à la fois, pas seulement
+# une fois que notify() est terminé
+apobj.notify(body="Déploiement de la nouvelle version")
+```
+
+Le callback peut être n'importe quel objet appelable qui accepte ces deux
+arguments : une fonction, une lambda, ou un objet avec une méthode `__call__()`.
+Une fonction classique suffit souvent. Utilisez `Apprise(log_callback=...)` comme
+valeur par défaut pour tout l'objet, ou `notify(log_callback=...)` pour un seul
+envoi :
+
+```python
+recent_logs = []
+
+def collect_log(entry, service):
+    # Gardez juste les informations utiles pour la page d'état de votre app.
+    recent_logs.append(
+        {
+            "service": service.name,
+            "level": entry.level,
+            "message": entry.message,
+        }
+    )
+
+apobj = apprise.Apprise()
+apobj.add("mailto://user:pass@example.com")
+
+# Utilisez ce callback seulement pour cette notification.
+result = apobj.notify(
+    body="Sauvegarde terminée",
+    log_callback=collect_log,
+)
+```
+
+Si votre application utilise déjà `asyncio`, le callback peut aussi retourner une
+coroutine. Utilisez-le avec `async_notify()` afin qu'Apprise dispose d'une boucle
+d'événements pour le planifier :
+
+```python
+async def publish_log(entry, service):
+    await websocket.send_json(
+        {
+            "service": service.name,
+            "level": entry.level,
+            "message": entry.message,
+        }
+    )
+
+apobj = apprise.Apprise(log_callback=publish_log)
+apobj.add("discord://webhook_id/webhook_token")
+
+result = await apobj.async_notify(body="Déploiement démarré")
+```
+
+Quelques points à connaître :
+
+- **C'est entièrement optionnel.** Omettez-le (le comportement par défaut) et
+  tout fonctionne exactement comme avant -- `log_callback` ne change rien à la
+  valeur de retour de `notify()` ni aux journaux que vous pouvez déjà lire dans
+  le résultat après coup.
+- **Définissez-le une fois, ou juste pour un appel.** `Apprise(log_callback=...)`
+  s'applique à chaque appel `notify()`/`async_notify()` effectué avec cet objet.
+  Passer `log_callback=` directement à `notify()` remplace cette valeur par
+  défaut pour ce seul appel :
+
+  ```python
+  apobj.notify(body="Alerte ponctuelle", log_callback=on_log)
+  ```
+
+- **Il peut être appelé depuis plusieurs threads à la fois.** Apprise peut
+  notifier plusieurs services en parallèle, donc si deux services journalisent
+  un avertissement au même moment, `on_log()` peut réellement s'exécuter deux
+  fois en même temps, sur deux threads différents. Gardez le callback court et
+  évitez de toucher un état partagé à moins qu'il ne soit thread-safe (une `queue.Queue`
+  l'est ; une simple liste sur laquelle vous faites `append()` sans verrou ne
+  l'est pas).
+- **Il peut aussi être `async def`.** Un callback asynchrone est planifié sur la
+  boucle d'événements qui exécute `async_notify()` -- utile par exemple pour
+  pousser des mises à jour via une websocket. Si vous donnez un callback
+  asynchrone à un appel `notify()` classique (non async) sans aucune boucle
+  d'événements en cours d'exécution, il n'y a nulle part où le planifier, donc
+  cette entrée est simplement ignorée (avec un avertissement journalisé à ce
+  sujet).
+- **Si votre callback lève une exception, notify() continue quand même.**
+  L'erreur est journalisée, pas relancée vers vous -- un bug dans `on_log()` ne
+  devrait jamais pouvoir casser une notification réelle.
+
+## Compter les Choses
+
+```python
+result = apobj.notify(body="Diffusion sur tous les canaux", tag="all")
+
+print(len(result))            # services réellement tentés
+print(result.success_count)   # combien ont réussi
+print(result.failed_count)    # combien n'ont pas réussi
+print(result.timeout_count)   # combien ont spécifiquement expiré
+```
+
+## Export en JSON
+
+Chaque niveau du résultat -- l'appel entier, chaque service, chaque tentative, chaque
+ligne de journal -- peut être converti en JSON pour la journalisation, le transfert
+vers un fichier journal, ou l'envoi vers un autre programme.
+
+```python
+result = apobj.notify(body="Sauvegarde nocturne terminée")
+
+# L'appel entier, sous forme d'une seule chaîne JSON (chaque
+# service/tentative/journal imbriqué à l'intérieur)
+print(result.json())
+
+# Ou juste le détail d'un seul service
+for service in result:
+    print(service.json())
+```
+
+Si vous voulez un simple `dict` Python plutôt qu'une chaîne JSON (par ex. pour
+l'intégrer dans une structure plus large avant de tout sérialiser ensemble),
+appelez `.asdict()` au lieu de `.json()` -- disponible à chaque niveau
+(`result.asdict()`, `service.asdict()`, `attempt.asdict()`).
+
+## À propos de `async_notify()`
+
+`async_notify()` retourne exactement le même type d'`AppriseResult` que `notify()` --
+pensez à bien récupérer (et, si le résultat vous importe, vérifier) sa valeur de
+retour :
+
+```python
+result = await apobj.async_notify(body="Sauvegarde nocturne terminée")
+
+if not result:
+    print("Quelque chose a échoué :", result.status.name)
+```
+
+## Référence Rapide
+
+| Vous voulez savoir...                                                           | Vérifiez ceci                                                      |
+| :------------------------------------------------------------------------------ | :----------------------------------------------------------------- |
+| Est-ce que tout a fonctionné ?                                                  | `bool(result)`                                                     |
+| Pourquoi l'appel entier n'a-t-il pas réussi ?                                   | `result.status` (comparez-le, ou utilisez `.name` pour l'afficher) |
+| Quels services ont même été tentés ?                                            | `for service in result: ...`                                       |
+| Un service précis a-t-il réussi ?                                               | `bool(service)`                                                    |
+| Combien de tentatives un service a-t-il pris ?                                  | `len(service)`                                                     |
+| Que s'est-il réellement passé à chaque tentative ?                              | `for attempt in service: ...`                                      |
+| Quels avertissements/erreurs un service a-t-il journalisés ?                    | `service.logs()` / `attempt.logs`                                  |
+| Je veux les journaux de tous les services, fusionnés dans l'ordre chronologique | `result.logs()`                                                    |
+| Je veux voir les journaux en direct, au fur et à mesure                         | `log_callback=` sur `Apprise()` ou `notify()`                      |
+| Combien de temps cela a-t-il pris ?                                             | `.elapsed` sur `result`, `service`, ou `attempt`                   |
+| J'ai besoin de ça en JSON, ou en simple dict                                    | `.json()` / `.asdict()`                                            |
+
+## Voir Aussi
+
+- [Routage par Tags & Tentatives](/library/tag-routing/) -- escalade par priorité,
+  tentatives/attente par service, services optionnels, et les réglages de délai qui
+  produisent un statut `TIMEOUT`.
+- [Assets & Branding](/library/assets/) -- où `service_timeout` et les autres valeurs
+  par défaut de session sont configurés.
