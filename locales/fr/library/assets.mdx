@@ -85,11 +85,12 @@ Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurabl
 
 ### Concurrence et envoi
 
-| Champ                   | Type    | Défaut | Utilisé par              | Notes                                                                                                |
-| ----------------------- | ------- | -----: | ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `async_mode`            | `bool`  | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                           |
-| `default_service_retry` | `int`   |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.   |
-| `default_service_wait`  | `float` |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`. |
+| Champ                   | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
+| ----------------------- | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `async_mode`            | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                 |
+| `default_service_retry` | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                         |
+| `default_service_wait`  | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                       |
+| `service_timeout`       | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. `0` désactive la limite. Voir [Résultats de notification](/library/results/). |
 
 ### Découverte de plugins
 
@@ -176,6 +177,30 @@ from apprise import AppriseAsset
 
 # Forcer l'envoi séquentiel (pas de concurrence)
 asset = AppriseAsset(async_mode=False)
+```
+
+</TabItem>
+
+<TabItem value="timeout" label="Délai par Service">
+
+Donne à chaque service de la session le même budget de temps, au lieu des 60
+secondes par défaut. Voir [Résultats de notification](/library/results/) pour
+savoir comment un service qui dépasse son délai vous est signalé en retour.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Donne 10 secondes à chaque service (toutes tentatives comprises)
+# avant qu'Apprise n'abandonne et ne signale un TIMEOUT
+asset = AppriseAsset(service_timeout=10)
+
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+# Cet appel a également son propre plafond de 30 secondes, en plus du
+# budget de 10 secondes par service de l'asset -- le délai le plus
+# court l'emporte
+apobj.notify(body="Alerte urgente", timeout=30)
 ```
 
 </TabItem>
@@ -300,4 +325,5 @@ Ils doivent être fournis par code afin d'empêcher l'exécution de code non fia
 
 ## Voir aussi
 
-- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/délai par service et les remplacements par appel dans les fichiers de configuration.
+- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/attente par service, les délais maximum par service et les remplacements par appel dans les fichiers de configuration.
+- [Résultats de notification](./results/) -- comment un service en échec ou dont le délai a expiré vous est signalé depuis `notify()`.

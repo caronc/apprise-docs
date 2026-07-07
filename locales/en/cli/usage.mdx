@@ -34,6 +34,45 @@ You can view the full help menu at any time by running `apprise --help`.
 | `-R` | `--recursion-depth` | Maximum number of recursive `include` directives allowed while loading config. Default is `1`. Set to `0` to ignore `include`/import statements. |
 | `-P` | `--plugin-path`     | Add one or more paths to scan for custom notification plugins.                                                                                   |
 
+### Timeouts
+
+Sometimes a service is slow to respond, or simply unreachable. These flags cap how long Apprise is willing to wait before giving up and moving on.
+
+| Flag  | Long flag         | Description                                                                                                                                     |
+| :---- | :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-L`  | `--limit`         | Give up on the whole run if it's taking too long, in seconds (e.g. `2.5`). Default `0` -- no limit.                                             |
+| `-SL` | `--service-limit` | Give up on any single service if it's taking too long, in seconds, or `0` to turn this off. Leave unset for Apprise's own default (60 seconds). |
+
+```bash
+# Give up on the whole run after 10 seconds
+apprise -t "Status" -b "Quick check" --limit 10 \
+    "slack://tokenA/tokenB/tokenC"
+
+# Give each individual service only 5 seconds, no matter how many
+# services are being notified
+apprise -t "Status" -b "Quick check" --service-limit 5 \
+    "slack://tokenA/tokenB/tokenC" "discord://webhook_id/webhook_token"
+```
+
+:::tip
+`--limit` caps the whole run; `--service-limit` caps each service on its own. Use `--service-limit` when you want consistent patience across many services; use `--limit` when you just want the whole command to finish by a certain time.
+:::
+
+:::caution
+A time limit can stop Apprise from _waiting_ on a service, but it cannot forcibly
+stop a service call that is already running. Python cannot neatly interrupt a
+network request that is stuck halfway through.
+
+With the CLI, if the overall result is `TIMEOUT`, Apprise waits about 5 extra
+seconds to let the abandoned call finish on its own. If it is still running, the
+command exits anyway by stopping the process. In practice, a CLI command usually
+finishes within about `--limit`/`--service-limit` + 5 seconds. That is useful for
+cron jobs or automations that must not hang forever.
+
+This guarantee is specific to the CLI. A Python app using Apprise as a library
+cannot stop its whole process just to halt one notification.
+:::
+
 ### Attachments
 
 | Flag | Long flag  | Description                                                                                 |
@@ -61,6 +100,7 @@ Apprise supports a persistent storage cache. You can tune it with the flags belo
 | `-v`  | `--verbose`       | Increase verbosity. You can stack it (for example `-vvvv`).                                   |
 | `-D`  | `--debug`         | Debug mode, useful for troubleshooting.                                                       |
 | `-V`  | `--version`       | Print version and exit.                                                                       |
+| `-h`  | `--help`          | Show the help message and exit.                                                               |
 
 ## Environment Variables
 
@@ -379,7 +419,8 @@ Persistent storage writes to the following location by default, unless `APPRISE_
 
 - `~/.local/share/apprise/cache`
 
-Apprise can cache certain lookups and authentication details on disk to reduce repeated API calls. This is enabled by default for the CLI (mode `auto`).
+Apprise can cache certain lookups and authentication details on disk to reduce
+repeated API calls. This is enabled by default for the CLI (mode `auto`).
 
 To interact with storage, use the `storage` subcommand:
 
@@ -394,10 +435,12 @@ see [Persistent Storage](/cli/persistent-storage/).
 
 The Apprise CLI exits with:
 
-- `0` if all notifications were sent successfully.
-- `1` if one or more notifications could not be sent.
+- `0` if every notified service succeeded.
+- `1` if every notified service failed, or the notification could not start.
 - `2` if there was a command line error (for example, invalid arguments).
 - `3` if one or more service URLs were successfully loaded, but none could be notified due to user filtering (tags).
+- `4` if some services sent successfully and at least one other did not.
+- `5` if no service sent successfully, but the only problem was that one or more services ran out of time (see [Timeouts](#timeouts) above).
 
 ## Integrations
 

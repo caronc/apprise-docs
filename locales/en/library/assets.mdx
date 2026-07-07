@@ -85,11 +85,12 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 ### Concurrency and Delivery
 
-| Field                   | Type    | Default | Used by                | Notes                                                                                              |
-| ----------------------- | ------- | ------: | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `async_mode`            | `bool`  |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                        |
-| `default_service_retry` | `int`   |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`. |
-| `default_service_wait`  | `float` |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.      |
+| Field                   | Type            | Default | Used by                | Notes                                                                                                                                                                                                  |
+| ----------------------- | --------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `async_mode`            | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                            |
+| `default_service_retry` | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                     |
+| `default_service_wait`  | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                          |
+| `service_timeout`       | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. `0` disables the limit. See [Notification Results](/library/results/). |
 
 ### Plugin Discovery
 
@@ -101,7 +102,7 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 | Field           | Type                  | Default | Used by                   | Notes                                                                                           |
 | --------------- | --------------------- | ------: | ------------------------- | ----------------------------------------------------------------------------------------------- |
-| `storage_path`  | `str                  |   None` | `None`                    | PersistentStore root. If unset, Apprise operates memory-only for storage-backed features.       |
+| `storage_path`  | `str`                 |  `None` | PersistentStore           | PersistentStore root. If unset, Apprise operates memory-only for storage-backed features.       |
 | `storage_mode`  | `PersistentStoreMode` |  `auto` | PersistentStore behaviour | `auto`, `flush`, `memory`.                                                                      |
 | `storage_idlen` | `int`                 |     `8` | Namespace generation      | Controls how long generated namespace directories are.                                          |
 | `storage_salt`  | `bytes`               |   `b""` | Namespace generation      | Provides optional salting for namespace generation, string values are encoded using `encoding`. |
@@ -176,6 +177,29 @@ from apprise import AppriseAsset
 
 # Force sequential sending (no concurrency)
 asset = AppriseAsset(async_mode=False)
+```
+
+</TabItem>
+
+<TabItem value="timeout" label="Service Timeout">
+
+Give every service in the session the same time budget, instead of the default
+60 seconds. See [Notification Results](/library/results/) for how a service
+that runs out of time is reported back to you.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Give each service 10 seconds (including all of its own retries)
+# before Apprise gives up on it and reports a TIMEOUT
+asset = AppriseAsset(service_timeout=10)
+
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+# This one call also gets its own 30-second ceiling, on top of the
+# asset's own 10-second-per-service budget -- whichever is sooner wins
+apobj.notify(body="Time-sensitive alert", timeout=30)
 ```
 
 </TabItem>
@@ -300,4 +324,5 @@ These must be provided programmatically to prevent untrusted code execution.
 
 ## See Also
 
-- [Tag Routing & Retry](./tag-routing/) -- how to configure priority tags, per-service retry/wait, and per-call overrides in configuration files.
+- [Tag Routing & Retry](./tag-routing/) -- how to configure priority tags, per-service retry/wait, per-service timeouts, and per-call overrides in configuration files.
+- [Notification Results](./results/) -- how a timed-out or failed service is reported back to you from `notify()`.

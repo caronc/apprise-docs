@@ -34,6 +34,46 @@ Vous pouvez afficher le menu d'aide complet à tout moment avec `apprise --help`
 | `-R` | `--recursion-depth` | Nombre maximal de directives `include` récursives autorisées lors du chargement de la configuration. Par défaut : `1`. Mettez `0` pour ignorer `include`/imports. |
 | `-P` | `--plugin-path`     | Ajouter un ou plusieurs chemins à scanner pour les plugins de notification personnalisés.                                                                         |
 
+### Délais
+
+Il arrive qu'un service réponde lentement, ou soit simplement injoignable. Ces options limitent la durée pendant laquelle Apprise est prêt à attendre avant d'abandonner et de passer à la suite.
+
+| Flag  | Option longue     | Description                                                                                                                                                      |
+| :---- | :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-L`  | `--limit`         | Abandonne l'exécution entière si elle prend trop de temps, en secondes (par ex. `2.5`). Par défaut `0` -- aucune limite.                                         |
+| `-SL` | `--service-limit` | Abandonne un service s'il prend trop de temps, en secondes, ou `0` pour désactiver complètement. Laissez vide pour la valeur par défaut d'Apprise (60 secondes). |
+
+```bash
+# Abandonner l'exécution entière après 10 secondes
+apprise -t "Statut" -b "Vérification rapide" --limit 10 \
+    "slack://tokenA/tokenB/tokenC"
+
+# N'accorder que 5 secondes à chaque service, quel que soit leur nombre
+apprise -t "Statut" -b "Vérification rapide" --service-limit 5 \
+    "slack://tokenA/tokenB/tokenC" "discord://webhook_id/webhook_token"
+```
+
+:::tip
+`--limit` plafonne l'exécution entière ; `--service-limit` plafonne chaque service individuellement. Utilisez `--service-limit` pour une patience homogène sur de nombreux services ; utilisez `--limit` quand vous voulez simplement que la commande entière se termine avant une certaine durée.
+:::
+
+:::caution
+Une limite de temps peut empêcher Apprise de continuer à _attendre_ un service, mais
+elle ne peut pas couper de force un appel déjà en cours. Python ne sait pas arrêter
+proprement une requête réseau bloquée en plein milieu.
+
+Avec la CLI, si le résultat global est `TIMEOUT`, Apprise attend encore environ
+5 secondes pour laisser l'appel abandonné se terminer tout seul. S'il tourne
+toujours, la commande se termine quand même en arrêtant le processus. En pratique,
+cela veut dire qu'une commande CLI finit en général dans environ
+`--limit`/`--service-limit` + 5 secondes. C'est utile pour un script cron ou une
+automatisation qui ne doit pas rester bloquée indéfiniment.
+
+Cette garantie concerne la CLI uniquement. Une application Python qui utilise
+Apprise comme bibliothèque ne peut pas arrêter tout son propre processus juste
+pour stopper une seule notification.
+:::
+
 ### Pièces Jointes
 
 | Flag | Option longue | Description                                                                                                        |
@@ -61,6 +101,7 @@ Apprise prend en charge un cache de stockage persistant. Vous pouvez l'ajuster a
 | `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                           |
 | `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                      |
 | `-V`  | `--version`       | Afficher la version puis quitter.                                                                         |
+| `-h`  | `--help`          | Afficher le message d'aide puis quitter.                                                                  |
 
 ## Variables d'Environnement
 
@@ -393,10 +434,12 @@ Pour l'explication complète (UID, emplacements de cache, captures d'écran et w
 
 La CLI Apprise quitte avec :
 
-- `0` si toutes les notifications ont été envoyées avec succès.
-- `1` si une ou plusieurs notifications n'ont pas pu être envoyées.
+- `0` si tous les services notifiés ont réussi.
+- `1` si tous les services notifiés ont échoué, ou si la notification n'a pas pu démarrer.
 - `2` s'il y a eu une erreur de ligne de commande (par exemple des arguments invalides).
 - `3` si une ou plusieurs URL de service ont été chargées avec succès, mais qu'aucune n'a pu être notifiée à cause du filtrage utilisateur (tags).
+- `4` si certains services ont envoyé la notification avec succès et qu'au moins un autre ne l'a pas fait.
+- `5` si aucun service n'a envoyé la notification avec succès, mais que le seul problème était le manque de temps (voir [Délais](#délais) ci-dessus).
 
 ## Intégrations
 
