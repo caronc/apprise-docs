@@ -17,14 +17,22 @@ async def main():
     apobj = apprise.Apprise()
     apobj.add('mailto://user:pass@example.com')
 
-    # Attendre l'envoi de la notification
-    await apobj.async_notify(
+    # Attendre l'envoi de la notification. Comme notify(),
+    # async_notify() retourne un AppriseResult : gardez-le si vous
+    # voulez savoir si l'envoi a réussi.
+    result = await apobj.async_notify(
         title='Test asynchrone',
         body='Ceci a été envoyé de manière asynchrone',
     )
 
+    if not result:
+        print("L'envoi a échoué :", result.status.name)
+
 asyncio.run(main())
 ```
+
+Voir [Résultats de notification](/library/results/) pour tout ce que `result`
+peut vous dire : détail par service, durée, journaux capturés, et plus encore.
 
 ## Sérialisation (Pickle)
 

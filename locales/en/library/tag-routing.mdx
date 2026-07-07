@@ -81,7 +81,7 @@ When you trigger a tag **without** specifying a priority prefix, Apprise uses th
 
 1. Services are grouped by their configured tag priority.
 2. The lowest-numbered group (highest urgency) runs first.
-3. If **every** service in that group succeeds, Apprise returns `True` immediately -- the higher-numbered groups are never triggered.
+3. If **every** service in that group succeeds, the result evaluates as true immediately -- the higher-numbered groups are never triggered.
 4. If any service in the group fails, Apprise **escalates** to the next priority level and runs that group.
 
 ```python
@@ -170,9 +170,11 @@ apprise --config=config.yml --tag="2:alerts" --body="Scheduled maintenance windo
 | `"0:alerts"` | Exclusive -- only priority-0 entries; `alerts` and `0:alerts` definitions are identical |
 
 :::note
-If no service matches the exact priority you specify, **nothing is sent**. `notify()` returns `None`
-and the CLI exits with code `3` (no matching services found). This is intentional -- an exclusive
-filter is a precise selection, not a fallback request.
+If no service matches the exact priority you specify, **nothing is sent**. The result
+`notify()` gives back evaluates as `False` (its `status` is `NOMATCH` -- see
+[Notification Results](/library/results/)), and the CLI exits with code `3` (no matching
+services found). This is intentional -- an exclusive filter is a precise selection, not a
+fallback request.
 :::
 
 ### Multi-Chain Failure Behaviour
@@ -194,10 +196,10 @@ apobj = Apprise(asset=asset)
 apobj.notify(body="Critical alert", tag=["ops", "security"])
 ```
 
-| `abort_on_chain_failure` | Behaviour when a chain fails                                         |
-| :----------------------- | :------------------------------------------------------------------- |
-| `False` (default)        | All chains complete; every service gets a chance                     |
-| `True`                   | Remaining escalation rounds are skipped; `False` is returned at once |
+| `abort_on_chain_failure` | Behaviour when a chain fails                                   |
+| :----------------------- | :------------------------------------------------------------- |
+| `False` (default)        | All chains complete; every service gets a chance               |
+| `True`                   | Remaining escalation rounds are skipped; the result is `False` |
 
 ---
 
@@ -269,16 +271,64 @@ fall back to the asset default (see [Global Defaults](#global-defaults-via-appri
 
 ---
 
+## Per-Service Timeouts
+
+Every service gets a time budget -- if it (including all of its retries and waits) hasn't
+finished within that window, Apprise stops waiting on it rather than hanging forever. This
+is separate from `retry`/`wait` above: a service can be given plenty of retries but still be
+cut off if the whole thing is taking too long.
+
+By default, each service gets **60 seconds**. Set your own value with `service_timeout` on
+`AppriseAsset`, or turn the limit off entirely with `0`:
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Give every service 10 seconds instead of the default 60
+asset = AppriseAsset(service_timeout=10)
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+apobj.notify(body="Quick health check")
+```
+
+```bash
+# CLI equivalent -- --service-limit (-SL) applies the same limit to every service
+apprise --service-limit 10 --body "Quick health check" \
+    "slack://tokenA/tokenB/tokenC"
+```
+
+A service that runs out of time is reported with a `TIMEOUT` status instead of a plain
+failure -- see [Notification Results](/library/results/) for how to check this from Python.
+
+:::caution
+Apprise can stop _waiting_ on a service once its budget passes, but it cannot forcibly
+interrupt a call that is already in progress -- Python has no way to do that to a
+blocking network request. In practice that means the affected service keeps running in
+the background even after Apprise reports `TIMEOUT` and moves on, and a single
+synchronous service dispatched on its own can, in rare cases, still finish (successfully
+or not) after its budget expired, since there was nothing else running that a deadline
+check could interrupt in between. Treat `service_timeout`/`timeout=` as "Apprise won't
+wait longer than this," not as a hard, forcible cutoff for the underlying call.
+:::
+
+| Parameter         | Type            | Constraints                         | Default |
+| :---------------- | :-------------- | :---------------------------------- | :------ |
+| `service_timeout` | `int` / `float` | `0` or more; `0` disables the limit | `60`    |
+
+---
+
 ## Optional Services
 
-The `optional` flag marks a service as a "nice to have" endpoint. When `optional=yes` is
-set on a service, a delivery failure for that service is **silently absorbed** -- the
-overall `notify()` call still returns `True` even if that endpoint was unreachable.
+The `optional` flag marks a service as allowed to fail without failing the whole
+notification. When `optional=yes` is set on a service, a delivery failure for that
+service does not affect the overall result. The overall result still evaluates as
+true if all required services succeeded.
 
-This is useful any time you want to send a notification _opportunistically_: deliver it if
-the endpoint is up, but do not let its absence signal a problem to the calling application.
+Use this for endpoints that should receive the notification when they are available,
+but should not make the calling application treat the notification as failed.
 
-### Motivating example -- home-screen displays
+### Example: home-screen displays
 
 Suppose your home automation system has four Kodi screens tagged `media`. You want to show
 a notification on whichever screens are currently on, but you do not want a delivery
@@ -331,7 +381,7 @@ urls:
 </Tabs>
 
 ```python
-# Even if every screen is off, this call returns True.
+# Even if every screen is off, this result still evaluates as true.
 apobj.notify(body="Dinner is ready", tag="media")
 ```
 
@@ -344,17 +394,20 @@ apprise --config=config.yml --tag="media" --body="Dinner is ready"
 The flag is per-service. You can freely mix optional and required endpoints within the
 same tag group. The aggregate result follows these rules:
 
-| Services in batch                                  | Result  |
-| :------------------------------------------------- | :------ |
-| All required, all succeed                          | `True`  |
-| All required, one or more fail                     | `False` |
-| All optional, all fail                             | `True`  |
-| All optional, all succeed                          | `True`  |
-| Mix of required and optional; required all succeed | `True`  |
-| Mix of required and optional; any required fails   | `False` |
+| Services in batch                                    | Result            |
+| :--------------------------------------------------- | :---------------- |
+| All required, all succeed                            | True (`SUCCESS`)  |
+| All required, one or more fail                       | False (`FAILURE`) |
+| All required, one or more time out, and none fail    | False (`TIMEOUT`) |
+| All optional, all fail                               | True (`SUCCESS`)  |
+| All optional, all time out                           | True (`SUCCESS`)  |
+| All optional, all succeed                            | True (`SUCCESS`)  |
+| Mix of required and optional; required all succeed   | True (`SUCCESS`)  |
+| Mix of required and optional; any required fail      | False (`FAILURE`) |
+| Mix of required and optional; required time out only | False (`TIMEOUT`) |
 
-In short: optional failures are invisible to the caller. Only a required service failure
-can cause `notify()` to return `False`.
+In short: optional failures and optional timeouts do not fail the overall result.
+Only a required service failure or timeout can make the result evaluate as false.
 
 ### How `optional` interacts with retries
 
@@ -481,7 +534,7 @@ urls:
 </Tabs>
 
 ```python
-# Always returns True regardless of how many displays responded.
+# The result still evaluates as true, no matter how many displays responded.
 apobj.notify(body="Motion detected", tag="displays")
 ```
 
@@ -489,7 +542,8 @@ apobj.notify(body="Motion detected", tag="displays")
 
 ## Global Defaults via AppriseAsset
 
-If you want **every** service in an Apprise session to share the same retry and wait defaults without editing each URL, set them on `AppriseAsset`:
+If you want **every** service in an Apprise session to share the same retry, wait, and
+timeout defaults without editing each URL, set them on `AppriseAsset`:
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -497,13 +551,14 @@ from apprise import Apprise, AppriseAsset
 asset = AppriseAsset(
     default_service_retry=2,   # retry up to 2 more times on failure before giving up
     default_service_wait=3.0,  # wait 3 seconds between retries
+    service_timeout=10,        # give up on a stuck service after 10 seconds
 )
 
 apobj = Apprise(asset=asset)
 apobj.add("slack://tokenA/tokenB/tokenC")
 apobj.add("discord://webhook_id/webhook_token")
 
-apobj.notify(body="Default retry/wait applied to every service")
+apobj.notify(body="Defaults applied to every service")
 ```
 
 Per-URL values (`?retry=` / `?wait=` or YAML keys) **override** the asset defaults for that specific service only. All other services still use the asset defaults.
@@ -530,6 +585,45 @@ apprise --config=config.yml --tag="2:alerts:3" --body="Priority 2 only"
 
 The `:N` suffix follows the same validation rules as the `retry` URL parameter. Specifying it does **not** affect `wait` -- each service still uses its own configured wait value between retries.
 
+---
+
+## Per-Call Timeout Override
+
+Pass `timeout=` to `notify()` to cap how long **this one call** is allowed to take, from
+start to finish -- across every service it notifies. Unlike `service_timeout` (which is a
+per-service budget set on `AppriseAsset`), `timeout` is a ceiling on the whole call.
+
+```python
+# Cap this entire call at 30 seconds, regardless of the asset's own
+# per-service timeout
+apobj.notify(body="Time-sensitive alert", timeout=30)
+```
+
+```bash
+# CLI equivalent -- --limit (-L) applies to the whole run
+apprise --limit 30 --body "Time-sensitive alert" \
+    "slack://tokenA/tokenB/tokenC"
+```
+
+When both are set, **whichever one is sooner wins** for each service -- `timeout=` never
+extends a stricter `service_timeout`, and a generous `service_timeout` never overrides a
+tighter `timeout=`.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Each service normally gets up to 60 seconds (the AppriseAsset default)...
+apobj = Apprise(asset=AppriseAsset())
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+# ...but this call cuts every service off at 5 seconds instead.
+apobj.notify(body="Give up quickly this time", timeout=5)
+```
+
+`timeout` defaults to `0`, meaning "no call-level cap" -- only the `AppriseAsset`
+`service_timeout` applies. Negative values raise an error, the same way an invalid
+`service_timeout` does.
+
 ### Multi-tag OR and AND filters
 
 Apprise supports two ways to combine tag names in a single notify call.
@@ -540,8 +634,8 @@ Apprise supports two ways to combine tag names in a single notify call.
 | **AND** -- multiple tag names in one filter entry | Match only services that carry **all** of the listed tags | A single `--tag "a, b"` flag in the CLI; a nested list in Python   |
 
 When using **OR**, each tag name forms an **independent escalation chain**.
-Every chain must find a fully-successful priority group before `notify()`
-returns `True`. A `:N` retry suffix on any token applies only to services
+Every chain must find a fully-successful priority group before the result
+evaluates as true. A `:N` retry suffix on any token applies only to services
 matched by that token; other tokens are unaffected.
 
 ```python
@@ -741,7 +835,7 @@ apprise --config=config.yml --tag="alerts" --body="Alert"
 **Three OR chains each with multiple priority levels** -- `alpha`, `beta`, and `gamma`
 are independent chains dispatched simultaneously. Within each chain, lower-numbered
 groups run first; failures escalate to the next level. Once any chain exhausts all its
-levels without success, Apprise stops and returns `False` without running further rounds
+levels without success, Apprise stops with a failed result without running further rounds
 for the other chains.
 
 <Tabs syncKey="config-format">
@@ -801,7 +895,7 @@ urls:
 | 3 (if round 2 failed for alpha)      | Discord (priority 700)     |                        |                           |
 
 All three chains run their round-1 batches **simultaneously**. As soon as any chain
-exhausts all its priority levels without success, Apprise returns `False` without
+exhausts all its priority levels without success, Apprise returns a failed result without
 starting further rounds for the surviving chains.
 
 ```python
@@ -961,10 +1055,12 @@ apprise --config=config.yml --tag="50:alerts" --body="Maintenance window"
 | Per-service retry count         | `?retry=N` URL param or YAML `retry:` key                         | Per service definition      |
 | Per-service retry wait          | `?wait=S` URL param or YAML `wait:` key                           | Per service definition      |
 | Optional service flag           | `?optional=yes` URL param or YAML `optional: yes` key             | Per service definition      |
+| Per-service timeout             | `AppriseAsset(service_timeout=N)` or `--service-limit N`          | Per service definition      |
 | Global retry/wait defaults      | `AppriseAsset(default_service_retry=N, default_service_wait=S)`   | All services in the session |
 | Escalation dispatch             | `notify(tag="tagname")` or `--tag tagname` (no priority prefix)   | One notify() / CLI call     |
 | Exclusive dispatch              | `notify(tag="N:tagname")` or `--tag N:tagname`                    | One notify() / CLI call     |
 | Per-call retry override         | `notify(tag="tagname:N")` or `--tag tagname:N`                    | One notify() / CLI call     |
+| Per-call timeout override       | `notify(timeout=N)` or `--limit N`                                | One notify() / CLI call     |
 | Multi-tag OR dispatch           | `notify(tag=["tagA", "tagB"])` or `--tag tagA --tag tagB`         | One notify() / CLI call     |
 | Multi-tag AND dispatch          | `notify(tag=[["tagA", "tagB"]])` or `--tag "tagA, tagB"`          | One notify() / CLI call     |
 | Multi-tag OR with per-tag retry | `notify(tag=["tagA:N", "tagB:M"])` or `--tag tagA:N --tag tagB:M` | One notify() / CLI call     |
