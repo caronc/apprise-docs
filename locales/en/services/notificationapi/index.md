@@ -1,10 +1,10 @@
 ---
-title: "NotificationAPI Notifications"
-description: "Send NotificationAPI notifications."
+title: "NotificationAPI (now Pingram) Notifications"
+description: "Send NotificationAPI (Pingram) notifications."
 sidebar:
-  label: "NotificationAPI"
+  label: "NotificationAPI (Pingram)"
 
-source: https://www.notificationapi.com
+source: https://www.pingram.io
 
 schemas:
   - napi
@@ -14,6 +14,7 @@ has_sms: true
 has_image: true
 
 sample_urls:
+  - napi://{ApiKey}/{Target}
   - napi://{ClientID}/{ClientSecret}/{Target}
   - napi://{Type}@{ClientID}/{ClientSecret}/{Target}
 
@@ -24,29 +25,43 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
+:::note
+NotificationAPI has rebranded to [Pingram](https://www.pingram.io). The `napi://` and `notificationapi://` URL schemes are unchanged and remain fully backwards compatible. What changed is authentication: new Pingram accounts issue a single API key instead of the legacy `clientId`/`clientSecret` pair. Both formats are documented below.
+:::
+
 ## Account Setup
 
-NotificationAPI lets you trigger email, SMS, calls, push, and in‑app notifications using a single API. The Apprise plugin supports the US, CA, and EU regional hosts. Configure the content once in NotificationAPI, then trigger it from Apprise by sending the notification **type** and **recipient** information, with optional merge‑tag parameters.
+NotificationAPI (now Pingram) lets you trigger email, SMS, calls, push, and in‑app notifications using a single API. The Apprise plugin supports the US, CA, and EU regional hosts. Configure the content once in your dashboard, then trigger it from Apprise by sending the notification **type** and **recipient** information, with optional merge‑tag parameters.
 
-1. Create a NotificationAPI account and sign in.
-2. In the dashboard, locate your **clientId** and **clientSecret** under _Environments_.
+1. Create a Pingram account and sign in.
+2. Obtain your credentials. This depends on whether your account predates the rebrand:
+   - **Current (Pingram) accounts:** locate your API key under the **API Keys** (or **Environments**) section of the dashboard. Keys are prefixed `pingram_sk_` (secret key) or `pingram_pk_` (public key).
+   - **Legacy (pre‑rebrand NotificationAPI) accounts:** locate your **clientId** and **clientSecret** under _Environments_. This pairing still works, but is deprecated in favour of a single API key.
 3. Create or identify the **notification type** you want to trigger (for example, `order_tracking`).
 4. Make sure your recipients have the correct identifiers:
    - **Email** notifications require an email address on the `to` object.
    - **SMS** notifications require a phone number in **E.164** format, for example `+15005550006`.
-   - You can also address users by a NotificationAPI **user id**.
+   - You can also address users by a Pingram/NotificationAPI **user id**. With a Pingram API key, the `id` is now optional alongside an email or phone target; with a legacy `clientId`/`clientSecret` pair, an `id` is still required.
 5. If you are hosted outside the US, note your region’s API host (US default, CA, or EU).
 
 ## Syntax
 
-Valid syntax is as follows (both `napi://` and `notificationapi://` are accepted aliases):
+Valid syntax is as follows (both `napi://` and `notificationapi://` are accepted aliases). Apprise automatically detects a Pingram API key by its `pingram_sk_`/`pingram_pk_` prefix, so no extra flag is needed to select the current, single‑credential format:
+
+**Current (Pingram API key):**
+
+- `napi://{ApiKey}/{Target}`
+- `napi://{Type}@{ApiKey}/{Target}`
+- `napi://{ApiKey}/{Id}/{Target}` (an `id` may still optionally be supplied)
+
+**Legacy (deprecated, NotificationAPI clientId/clientSecret):**
 
 - `napi://{ClientID}/{ClientSecret}/{Target}`
 - `napi://{Type}@{ClientID}/{ClientSecret}/{Target}`
 
 **Targets** can be combined in a single path and are grouped by a leading **id**. Each `{Target}` segment may be:
 
-- a user id (`userid` or `@userid`)
+- a user id (`userid` or `@userid`) — required to start a new group with a legacy `clientId`/`clientSecret` pair; optional with a Pingram API key
 - an email (`name@example.com`)
 - an E.164 phone number (`+15551234567`)
 
@@ -55,6 +70,7 @@ Examples of grouped targets:
 - `userid/test@example.com` → id + email
 - `userid/+15551234567` → id + SMS
 - `userid/+15551234567/test@example.com` → id + SMS + email
+- `+15551234567` → SMS with no id (Pingram API key only)
 
 ## Parameter Breakdown
 
@@ -62,9 +78,9 @@ Examples of grouped targets:
 | ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `type`     | No       | Notification type id from your NotificationAPI dashboard. Defaults to `apprise`.                                                                                                                                                    |
 | `mode`     | No       | Notification mode; can be either `message` or `template`. Defaults to `message`.                                                                                                                                                    |
-| `id`       | Yes\*    | Client id. Required unless supplied in the path.                                                                                                                                                                                    |
-| `secret`   | Yes\*    | Client secret. Required unless supplied in the path.                                                                                                                                                                                |
-| `to`       | No       | Comma‑separated target; each subset of targets must have and `id` associated with them                                                                                                                                              |
+| `id`       | Yes\*    | Client id, or a Pingram API key (`pingram_sk_…`/`pingram_pk_…`). Required unless supplied in the path.                                                                                                                              |
+| `secret`   | Yes\*\*  | Client secret. Only applies to a legacy `clientId`; not used (and not required) when `id` is a Pingram API key.                                                                                                                    |
+| `to`       | No       | Comma‑separated target. With a legacy `clientId`/`clientSecret` pair, each subset of targets must have an `id` associated with them; with a Pingram API key, the `id` is optional.                                                |
 | `region`   | No       | `us` (default), `ca`, or `eu` to select the API host.                                                                                                                                                                               |
 | `channels` | No       | Channels are detected based on first target detected. The following channels can be proivded: `email`, `sms` , `inapp`, `web_push`, `mobile_push` and/or `slack`.                                                                   |
 | `from`     | No       | Display name for the email _From_ identity.                                                                                                                                                                                         |
@@ -72,7 +88,8 @@ Examples of grouped targets:
 | `bcc`      | No       | Comma‑separated list of BCC addresses.                                                                                                                                                                                              |
 | `:{key}`   | No       | Dynamic template parameter tokens passed to `parameters` (e.g., `:orderId=123`). It's important to prefix each one of these with a colon (`:`) for it to be correctly interpreted. This is only used if `mode` is set to `template` |
 
-\* Required when not already set in the URL path component.
+\* Required when not already set in the URL path component.  
+\*\* Required only alongside a legacy `clientId`; never required alongside a Pingram API key.
 
 ### NotificationAPI Default Parameters
 
@@ -96,6 +113,31 @@ These defaults are common across all Apprise plugins, in addition to the service
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Examples
+
+### Current (Pingram API key)
+
+Send an SMS notification; no recipient `id` is required with a Pingram API key:
+
+```bash
+apprise -vv -t "Order Update" -b "Your order shipped." \
+   napi://pingram_sk_abc123/+15551234567
+```
+
+Send an email notification the same way, letting Pingram pick the channel:
+
+```bash
+apprise -vv -t "Welcome" -b "Hello from Apprise" \
+   napi://pingram_sk_abc123/user@example.com
+```
+
+An `id` can still optionally be supplied alongside a target:
+
+```bash
+apprise -vv -t "Order Update" -b "Your order shipped." \
+   napi://pingram_sk_abc123/myid/+15551234567
+```
+
+### Legacy (deprecated, clientId/clientSecret)
 
 Send to one email recipient by type and let NotificationAPI pick the channel:
 
