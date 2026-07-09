@@ -14,7 +14,7 @@ has_sms: true
 has_image: true
 
 body_formats:
-  - text
+  - text: default
   - html
 
 sample_urls:

@@ -13,7 +13,7 @@ has_attachments: true
 has_image: true
 
 body_formats:
-  - text
+  - text: default
   - markdown
 
 sample_urls:
@@ -27,7 +27,7 @@ limits:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-{/*SERVICE:DETAILS*/}
+<!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
@@ -83,7 +83,7 @@ Discord can also support a variety of website arguments, the below identifies th
 | batch        | No       | When set to **Yes** (the default), multiple attachments are grouped into a single Discord message where the per-message count and total size limits allow. Set to **No** to send one attachment per message, which was the only supported behaviour prior to this feature being added.                                                                                                                                          |
 | template     | No       | Provide a path to a JSON file you would prefer to use instead of the default Discord payload constructed by Apprise. Use double `\{\{token\}\}` curly braces to identify tokens you wish to have substituted in the template before submission (e.g. `\{\{app_body\}\}` or `\{\{app_title\}\}`). The template must produce a valid Discord webhook JSON object with a non-empty `content` string or a non-empty `embeds` array. |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Templating
 

@@ -13,7 +13,7 @@ has_attachments: true
 has_image: true
 
 body_formats:
-  - text
+  - text: default
   - markdown
 
 sample_urls:
@@ -27,7 +27,7 @@ limits:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-{/*SERVICE:DETAILS*/}
+<!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
@@ -83,7 +83,7 @@ Discord prend egalement en charge differents arguments web. Les valeurs ci-desso
 | batch        | Non         | Lorsque defini sur **Yes** (valeur par defaut), plusieurs pieces jointes sont regroupees en un seul message Discord dans la limite du nombre et de la taille autorises par message. Definir sur **No** pour envoyer une piece jointe par message, ce qui correspondait au seul comportement pris en charge avant l'ajout de cette fonctionnalite.                                                      |
 | template     | Non         | Fournit le chemin vers un fichier JSON a utiliser a la place du payload Discord construit par defaut par Apprise. Utilisez des doubles accolades `\{\{jeton\}\}` pour indiquer les valeurs a substituer avant l'envoi (par exemple `\{\{app_body\}\}` ou `\{\{app_title\}\}`). Le fichier doit produire un objet JSON Discord valide avec un champ `content` non vide ou un tableau `embeds` non vide. |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Modeles
 

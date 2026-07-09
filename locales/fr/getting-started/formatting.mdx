@@ -54,11 +54,13 @@ Cela rend les destinations plus compatibles _sans_ vous obliger à adapter manue
 
 Si vous ne précisez **pas** de format, Apprise suppose des états légèrement différents selon le composant utilisé :
 
-| Interface                    | Format d'entrée par défaut                                                                                                         |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                             |
-| [Python API](../../library/) | `none` - le contenu est transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou défini dans `AppriseAsset()` |
-| [Apprise-API](../../api/)    | `text` - remplacez cette valeur en fournissant `format` dans la charge utile `/notify/`                                            |
+| Interface                    | Format d'entrée par défaut                                                                                                                                                                                |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                                                                                                    |
+| [Python API](../../library/) | `none` - le contenu est transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou défini dans `AppriseAsset()`                                                                        |
+| [Apprise-API](../../api/)    | `none` - le contenu est transmis tel quel sauf si `format` est fourni dans la charge utile `/notify/`, ou si l'opérateur du serveur définit `APPRISE_DEFAULT_FORMAT` pour changer cette valeur par défaut |
+
+Le formatage sur l'Apprise-API est entièrement optionnel, requête par requête. Un opérateur qui souhaite que chaque requête sur son serveur suppose un format sans que chaque appelant ait à le préciser peut définir la variable d'environnement `APPRISE_DEFAULT_FORMAT` (par exemple `APPRISE_DEFAULT_FORMAT=text`) -- consultez la [référence des variables d'environnement](../../api/reference/environment/) pour plus de détails. Une valeur `format` fournie dans la requête a toujours priorité sur cette valeur par défaut du serveur.
 
 À l'exception du CLI, si aucun `input_format` n'est précisé :
 
@@ -221,7 +223,7 @@ Dans ces cas, définir `format=` peut :
 
 Ce comportement est **spécifique au plugin** et ne s'applique que lorsque le service prend explicitement en charge plusieurs formats de sortie.
 
-### Quand est-ce Utile ?
+### Cas d'Usage
 
 Préciser un format de sortie est utile si :
 

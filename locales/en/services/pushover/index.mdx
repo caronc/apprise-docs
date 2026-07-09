@@ -12,7 +12,7 @@ schemas:
 has_attachments: true
 
 body_formats:
-  - text
+  - text: default
   - html
   - markdown
 
@@ -30,7 +30,7 @@ limits:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-{/*SERVICE:DETAILS*/}
+<!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
@@ -75,7 +75,7 @@ Valid syntax is as follows:
 | key       | No       | A 64-character hexadecimal string representing a 256-bit AES key used for [end-to-end encryption](https://pushover.net/api#e2ee). When set, the `message`, `title`, `url`, and `url_title` fields are each encrypted client-side before being transmitted. Requires the `cryptography` Python package (`pip install cryptography`). If the package is absent, Apprise falls back to sending the message unencrypted with a warning.                                                                                                                                      |
 | e2ee      | No       | Controls whether end-to-end encryption is applied when a `key` is configured. Defaults to **yes**. Set to **no** to temporarily send plaintext even when a key is present.                                                                                                                                                                                                                                                                                                                                                                                               |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## End-to-End Encryption (E2EE)
 

@@ -24,11 +24,11 @@ Lors de l'écriture d'un plugin, vous déclarez `notify_format` pour indiquer à
 
 Le format source n'est pas toujours `None`. Il dépend de l'interface qui déclenche la notification :
 
-| Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                    |
-| -------------------------- | -------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)          | `text` — la CLI définit toujours un format source ; remplacez-le avec `--input-format` |
-| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset` |
-| [Apprise API](../../api/)  | `text` — remplacez cette valeur avec `format` dans la charge utile de la requête       |
+| Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)          | `text` — la CLI définit toujours un format source ; remplacez-le avec `--input-format`                                                |
+| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset`                                                |
+| [Apprise API](../../api/)  | `none` — le formatage est entièrement optionnel ; définissez `format` dans la charge utile de la requête pour changer ce comportement |
 
 Consultez [Formatage](../../getting-started/formatting/) pour la perspective utilisateur sur ces valeurs par défaut et leur impact sur la livraison vers des destinations mixtes.
 
@@ -36,7 +36,7 @@ Consultez [Formatage](../../getting-started/formatting/) pour la perspective uti
 
 Pour chaque plugin sélectionné, Apprise :
 
-1. Résout le `body_format` déclaré par l'appelant depuis l'appel à `notify()`. Lorsque la bibliothèque Python est utilisée sans format, cette valeur est `None`. L'API Apprise et la CLI utilisent toutes deux `TEXT` par défaut ; les utilisateurs de la CLI peuvent remplacer cette valeur avec `--input-format`, tandis que ceux de l'API peuvent fournir `format` dans la charge utile de la requête. Si `body_format` n'est pas fourni à l'appel `notify()` de la bibliothèque Python, il utilise `AppriseAsset.body_format`, dont la valeur par défaut est `None`.
+1. Résout le `body_format` déclaré par l'appelant depuis l'appel à `notify()`. Cette valeur est `None` sauf si l'appelant en a déclaré un : pour la bibliothèque Python, `body_format` n'est défini que s'il est passé à `notify()` ou prédéfini dans `AppriseAsset` ; pour l'API Apprise, uniquement si `format` était inclus dans la charge utile de la requête. La CLI est la seule exception -- elle définit toujours un format source (`TEXT` par défaut), remplaçable avec `--input-format`.
 2. Appelle `plugin.resolve_format(body_format)`, une seule fois par plugin, pour déterminer le format effectivement utilisé pour cet envoi. Pour un plugin à format unique, c'est toujours son seul format déclaré. Pour un plugin multi-format, un remplacement explicite via `?format=` l'emporte s'il fait partie des formats déclarés du plugin ; sinon, si le `body_format` déclaré par l'appelant correspond lui-même à un format déclaré, le plugin s'y aligne directement (aucune conversion nécessaire) ; sinon, le premier format déclaré du plugin est utilisé. Un remplacement `?format=` non pris en charge par le plugin enregistre un avertissement et retombe sur cette même logique d'alignement/valeur par défaut.
 3. Lorsque le `body_format` déclaré par l'appelant n'est pas `None`, appelle `convert_between(body_format, cible, body)` et remplace le corps par le résultat. Les résultats sont mis en cache par cible résolue unique afin que la même conversion ne soit pas répétée pour plusieurs plugins qui se résolvent vers la même cible.
 4. Appelle `plugin.notify(body=<converted>, body_format=<cible>, format_controlled=<l'appelant a-t-il déclaré quelque chose ?>)`. Le corps qui parvient au plugin est déjà dans le format résolu. Le contenu avant conversion n'est pas conservé ni transmis séparément. À partir de ce point, `body_format` transporte l'**identifiant de format résolu** (par exemple `NotifyFormat.HTML`) -- pas une copie du texte original du corps, et ce n'est plus la valeur d'origine de l'appelant, potentiellement `None`. `format_controlled` vaut `True` lorsque l'appelant a déclaré un format source quelconque, `False` si rien n'a été déclaré -- voir [Lire `body_format` et `format_controlled` dans `send()`](#lire-body_format-et-format_controlled-dans-send) plus bas.
@@ -189,7 +189,7 @@ class NotifyExample(NotifyBase):
 
 Les plugins multi-format sont entièrement optionnels. La plupart des plugins déclarent un seul format et n'ont jamais besoin de lire `body_format`/`format_controlled` dans `send()` pour cette raison -- `self.notify_format` reste un simple scalaire et chaque comparaison le concernant continue de fonctionner sans changement.
 
-Les plugins génériques de simple relais -- ceux qui transmettent le corps à un consommateur en aval sans l'inspecter (Custom JSON/XML/Form sont les exemples intégrés) -- peuvent déclarer les trois formats et se passer entièrement de `send_text()`/`send_html()`/`send_markdown()`, puisque le corps résolu et déjà converti est tout ce dont `send()` a besoin.
+Les plugins génériques de simple relais -- ceux qui transmettent le corps à un consommateur en aval sans l'inspecter (Custom JSON/XML/Form et le plugin de relais Apprise API sont les exemples intégrés) -- peuvent déclarer les trois formats et se passer entièrement de `send_text()`/`send_html()`/`send_markdown()`, puisque le corps résolu et déjà converti est tout ce dont `send()` a besoin. Un plugin de relais ne devrait également transmettre son champ `format` que lorsque `format_controlled` vaut `True` -- une source non déclarée doit atteindre le service en aval exactement telle qu'elle a été reçue, sans que ce plugin n'impose silencieusement un format au nom de l'appelant.
 
 Un outil qui explore `Apprise().details()` (un générateur d'URL, par exemple) peut lire les formats déclarés d'un service via `args.format.supported` -- voir [L'argument `format`](../../inspection/#largument-format) pour le détail complet du schéma.
 

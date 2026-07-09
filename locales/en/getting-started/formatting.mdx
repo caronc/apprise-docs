@@ -54,11 +54,13 @@ This makes destinations more compatible _without_ requiring you to manually tail
 
 If you do **not** specify a format, Apprise assumes slightly different states depending on which component you're using:
 
-| Interface                    | Default input format                                                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [CLI](../../cli/)            | `text`                                                                                                                         |
-| [Python API](../../library/) | `none` - content passed as is unless `body_format` is provided in the `notify()` call or preset in the `AppriseAsset()` object |
-| [Apprise-API](../../api/)    | `text` - override it by providing `format` in the `/notify/` payload                                                           |
+| Interface                    | Default input format                                                                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                                                           |
+| [Python API](../../library/) | `none` - content passed as is unless `body_format` is provided in the `notify()` call or preset in the `AppriseAsset()` object                                   |
+| [Apprise-API](../../api/)    | `none` - content passed as is unless `format` is provided in the `/notify/` payload, or the server operator sets `APPRISE_DEFAULT_FORMAT` to change this default |
+
+Formatting on the Apprise-API is entirely opt-in per request. An operator who wants every request on their server to assume a format without every caller specifying one can set the `APPRISE_DEFAULT_FORMAT` environment variable (e.g. `APPRISE_DEFAULT_FORMAT=text`) -- see the [Environment Variables reference](../../api/reference/environment/) for details. A `format` value in the request always takes priority over this server-wide default.
 
 With the exception of the CLI, if no `input_format` is specified:
 
@@ -221,7 +223,7 @@ In these cases, setting `format=` may:
 
 This behaviour is **plugin-specific** and only applies when the service explicitly supports multiple output formats.
 
-### When Is This Useful?
+### Use Cases
 
 Specifying an output format is useful when:
 

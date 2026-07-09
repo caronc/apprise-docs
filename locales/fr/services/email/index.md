@@ -12,7 +12,7 @@ has_email: true
 has_attachments: true
 
 body_formats:
-  - html
+  - html: default
   - text
 
 sample_urls:

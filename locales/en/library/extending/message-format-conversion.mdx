@@ -24,11 +24,11 @@ When writing a plugin, you declare `notify_format` to tell Apprise what format(s
 
 The source format is not always `None`. It depends on which interface triggers the notification:
 
-| Interface                 | Default when no format is declared                                                |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| [CLI](../../cli/)         | `text` — the CLI always sets a source format; override with `--input-format`      |
-| [Python Library](../)     | `none` — unless `body_format` is passed to `notify()` or preset in `AppriseAsset` |
-| [Apprise API](../../api/) | `text` — override it by including `format` in the request payload                 |
+| Interface                 | Default when no format is declared                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| [CLI](../../cli/)         | `text` — the CLI always sets a source format; override with `--input-format`               |
+| [Python Library](../)     | `none` — unless `body_format` is passed to `notify()` or preset in `AppriseAsset`          |
+| [Apprise API](../../api/) | `none` — formatting is entirely opt-in; set `format` in the request payload to change this |
 
 See [Formatting](../../getting-started/formatting/) for the end-user perspective on these defaults and how they affect delivery across mixed destinations.
 
@@ -36,7 +36,7 @@ See [Formatting](../../getting-started/formatting/) for the end-user perspective
 
 For every matched plugin, Apprise:
 
-1. Resolves the caller's declared `body_format` from the `notify()` call. When the Python Library is used without a format, this is `None`. The Apprise API and CLI both default to `TEXT`; CLI callers can override it with `--input-format`, while API callers can provide `format` in the request payload. If `body_format` is not provided to the Python Library's `notify()`, it falls back to `AppriseAsset.body_format`, which defaults to `None`.
+1. Resolves the caller's declared `body_format` from the `notify()` call. This is `None` unless the caller declared one: for the Python Library, `body_format` is only set if passed to `notify()` or preset in `AppriseAsset`; for the Apprise API, only if `format` was included in the request payload. The CLI is the one exception -- it always sets a source format (`TEXT` by default), overridable with `--input-format`.
 2. Calls `plugin.resolve_format(body_format)`, once per plugin, to determine the one format this send actually renders as. For a single-format plugin this is always its one declared format. For a multi-format plugin, an explicit `?format=` override wins if it's one of the plugin's declared formats; otherwise, if the caller's declared `body_format` itself matches a declared format, the plugin aligns directly to it (no conversion needed); otherwise the plugin's first declared format is used. A `?format=` override that the plugin doesn't support logs a warning and falls through to the same alignment/default logic.
 3. When the caller's declared `body_format` is not `None`, calls `convert_between(body_format, target, body)` and replaces the body with the result. Results are cached per unique resolved target so the same conversion is not repeated for multiple plugins that resolve to the same target.
 4. Calls `plugin.notify(body=<converted>, body_format=<target>, format_controlled=<caller declared anything?>)`. The body that arrives at the plugin is already in the resolved format. The pre-conversion content is not preserved or passed separately. From this point on, `body_format` carries the **resolved format identifier** (e.g. `NotifyFormat.HTML`) -- not a copy of the original body text, and no longer the caller's original, possibly-`None` value. `format_controlled` is `True` when the caller declared any source format, `False` when nothing was declared -- see [Reading `body_format` and `format_controlled` in `send()`](#reading-body_format-and-format_controlled-in-send) below.
@@ -189,7 +189,7 @@ class NotifyExample(NotifyBase):
 
 Multi-format plugins are entirely opt-in. Most plugins declare one format and never need to read `body_format`/`format_controlled` in `send()` for this purpose -- `self.notify_format` stays a plain scalar and every comparison against it keeps working unchanged.
 
-Generic pass-through plugins -- ones that forward the body to a downstream consumer without inspecting it (Custom JSON/XML/Form are the built-in examples) -- can declare all three formats and skip `send_text()`/`send_html()`/`send_markdown()` entirely, since the resolved and already-converted body is all `send()` needs.
+Generic pass-through plugins -- ones that forward the body to a downstream consumer without inspecting it (Custom JSON/XML/Form and the Apprise API relay plugin are the built-in examples) -- can declare all three formats and skip `send_text()`/`send_html()`/`send_markdown()` entirely, since the resolved and already-converted body is all `send()` needs. A relay plugin should also only forward its `format` field when `format_controlled` is `True` -- an undeclared source should reach the downstream service exactly as received, without this plugin silently forcing a format on the caller's behalf.
 
 Tooling that introspects `Apprise().details()` (a URL builder, for example) can read a service's declared formats from `args.format.supported` -- see [The `format` Argument](../inspection/#the-format-argument) for the full schema shape.
 

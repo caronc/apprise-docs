@@ -12,7 +12,7 @@ schemas:
 has_attachments: true
 
 body_formats:
-  - text
+  - text: default
   - html
   - markdown
 
@@ -30,7 +30,7 @@ limits:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-{/*SERVICE:DETAILS*/}
+<!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
@@ -75,7 +75,7 @@ La syntaxe valide est la suivante :
 | key       | Non         | Chaine hexadecimale de 64 caracteres representant une cle AES 256 bits utilisee pour le [chiffrement de bout en bout](https://pushover.net/api#e2ee). Lorsqu'elle est definie, les champs `message`, `title`, `url` et `url_title` sont chiffres cote client avant d'etre transmis a l'API Pushover. Necessite le paquet Python `cryptography` (`pip install cryptography`). Si le paquet est absent, Apprise envoie le message en texte clair avec un avertissement.                                                                                              |
 | e2ee      | Non         | Controle si le chiffrement de bout en bout est applique lorsqu'une `key` est configuree. La valeur par defaut est **yes**. Definir sur **no** pour envoyer temporairement en texte clair meme lorsqu'une cle est presente.                                                                                                                                                                                                                                                                                                                                         |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+<!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Chiffrement de Bout en Bout (E2EE)
 

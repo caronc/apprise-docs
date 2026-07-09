@@ -14,7 +14,7 @@ has_attachments: true
 has_image: true
 
 body_formats:
-  - html
+  - html: default
   - markdown
 
 sample_urls:
