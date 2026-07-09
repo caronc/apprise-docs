@@ -47,7 +47,7 @@ Envoyez des notifications sans utiliser de stockage persistant.
 - `body` : obligatoire. Corps du message.
 - `title` : facultatif. Titre du message.
 - `type` : facultatif. Type de message : `info` (par défaut), `success`, `warning`, `failure`.
-- `format` : facultatif. Format du texte : `text`, `markdown`, `html`. En l'absence de cette valeur, aucun format n'est appliqué et le contenu est transmis tel quel (sauf si `APPRISE_DEFAULT_FORMAT` est défini sur le serveur).
+- `format` : facultatif. Format du texte : `text`, `markdown`, `html`. Si ce champ est complètement omis, aucun format n'est appliqué et le contenu est transmis tel quel (sauf si `APPRISE_DEFAULT_FORMAT` est défini sur le serveur). Envoyer `format` vide ou `null` force aussi la transmission telle quelle, même si `APPRISE_DEFAULT_FORMAT` est défini -- c'est interprété comme une demande explicite de votre part de ne rien formater.
 - `attach` : facultatif. Une ou plusieurs pièces jointes. Voir [Pièces jointes](#pièces-jointes) ci-dessous.
 
 ## Pièces jointes

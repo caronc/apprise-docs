@@ -119,7 +119,7 @@ Pour les intégrations, JSON est généralement le plus simple.
 - `body` (requis) : contenu du message
 - `title` (optionnel) : titre du message
 - `type` (optionnel) : `info` (par défaut), `success`, `warning` ou `failure`
-- `format` (optionnel) : `text`, `markdown` ou `html` -- l'omettre signifie qu'aucun format n'est appliqué et que le contenu passe tel quel (sauf si le serveur définit `APPRISE_DEFAULT_FORMAT`)
+- `format` (optionnel) : `text`, `markdown` ou `html` -- l'omettre complètement signifie qu'aucun format n'est appliqué et que le contenu passe tel quel (sauf si le serveur définit `APPRISE_DEFAULT_FORMAT`) ; l'envoyer vide ou `null` force aussi la transmission telle quelle, même si une valeur par défaut est configurée sur le serveur
 - `tag` (optionnel, avec état) : route vers un sous-ensemble d'URL enregistrées
 
 ### Tags
