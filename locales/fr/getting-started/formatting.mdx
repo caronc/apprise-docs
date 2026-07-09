@@ -58,7 +58,7 @@ Si vous ne précisez **pas** de format, Apprise suppose des états légèrement 
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | [CLI](../../cli/)            | `text`                                                                                                                             |
 | [Python API](../../library/) | `none` - le contenu est transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou défini dans `AppriseAsset()` |
-| [Apprise-API](../../api/)    | `none` - le contenu est transmis tel quel sauf si `format` est fourni dans la charge utile `/notify/`                              |
+| [Apprise-API](../../api/)    | `text` - remplacez cette valeur en fournissant `format` dans la charge utile `/notify/`                                            |
 
 À l'exception du CLI, si aucun `input_format` n'est précisé :
 
@@ -187,7 +187,7 @@ Cela ne décrit **pas** l'entrée que vous fournissez. Cela indique plutôt au p
 
 Lorsque les deux sont précisés, Apprise adapte correctement le contenu si nécessaire avant de le transmettre à la route de diffusion amont sélectionnée.
 
-Si le service amont ne prend **pas** en charge le format de sortie demandé, il est ignoré silencieusement et le comportement par défaut du service est utilisé à la place.
+Si le service amont ne prend **pas** en charge le format de sortie demandé, la demande est ignorée (un avertissement est journalisé) et le comportement par défaut du service est utilisé à la place.
 
 ### Exemples
 

@@ -11,6 +11,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text
+  - html
+  - markdown
+
 sample_urls:
   - xmls://{hostname}
   - xml://{hostname}:{port}
@@ -53,6 +58,10 @@ Le champ _MessageType_ sera l'une des valeurs suivantes :
 - **failure** : Un rapport d'échec
 - **warning** : Un rapport d'avertissement
 
+### Format du message
+
+Le champ `Message` est transmis exactement tel que vous le fournissez : ce service relaie le contenu sans le modifier et prend en charge `text`, `html` et `markdown`. Si vous ne précisez pas `?format=`, le texte brut est utilisé par défaut.
+
 ## Syntaxe
 
 La syntaxe valide est la suivante :
@@ -78,6 +87,7 @@ L'ajout d'un `s` au schéma (c'est-à-dire `xmls://`) bascule vers une connexion
 | user     | Non    | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _nom d'utilisateur_ pour l'authentification.                                                                                                 |
 | password | Non    | Si votre système est configuré pour utiliser HTTP-AUTH, vous pouvez fournir le _mot de passe_ pour l'authentification.                                                                                                      |
 | method   | Non    | Spécifier éventuellement la méthode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Par défaut, si aucune méthode n'est spécifiée, `post` est utilisé. |
+| format   | Non    | La valeur par défaut est _text_. Définissez cette valeur sur _markdown_ ou _html_ si votre point de réception attend ce format.                                                                                             |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

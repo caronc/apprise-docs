@@ -12,6 +12,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html
+  - text
+
 sample_urls:
   - mailersend://APIToken:FromEmail/ToEmail
   - mailersend://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
@@ -50,16 +54,16 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable    | Required | Description                                                                    |
-| ----------- | -------- | ------------------------------------------------------------------------------ |
-| `APIToken`  | Yes      | Your MailerSend API token with at least the Email send permission.             |
-| `FromEmail` | Yes      | Verified sender email address. Must belong to a domain verified in MailerSend. |
-| `ToEmail`   | No       | One or more recipient email addresses in the URL path.                         |
-| `to`        | No       | Additional recipients as a comma-separated list in the query string.           |
-| `cc`        | No       | Carbon-copy recipients, comma-separated.                                       |
-| `bcc`       | No       | Blind carbon-copy recipients, comma-separated.                                 |
-| `reply`     | No       | Reply-To email address.                                                        |
-| `format`    | No       | Notification format override (`html` or `text`).                               |
+| Variable    | Required | Description                                                                                |
+| ----------- | -------- | ------------------------------------------------------------------------------------------ |
+| `APIToken`  | Yes      | Your MailerSend API token with at least the Email send permission.                         |
+| `FromEmail` | Yes      | Verified sender email address. Must belong to a domain verified in MailerSend.             |
+| `ToEmail`   | No       | One or more recipient email addresses in the URL path.                                     |
+| `to`        | No       | Additional recipients as a comma-separated list in the query string.                       |
+| `cc`        | No       | Carbon-copy recipients, comma-separated.                                                   |
+| `bcc`       | No       | Blind carbon-copy recipients, comma-separated.                                             |
+| `reply`     | No       | Reply-To email address.                                                                    |
+| `format`    | No       | MailerSend sends HTML by default. Set this to `text` to send a plain-text message instead. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

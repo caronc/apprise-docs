@@ -58,7 +58,7 @@ If you do **not** specify a format, Apprise assumes slightly different states de
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | [CLI](../../cli/)            | `text`                                                                                                                         |
 | [Python API](../../library/) | `none` - content passed as is unless `body_format` is provided in the `notify()` call or preset in the `AppriseAsset()` object |
-| [Apprise-API](../../api/)    | `none` - content passed as is unless `format` is provided in `/notify/` payload                                                |
+| [Apprise-API](../../api/)    | `text` - override it by providing `format` in the `/notify/` payload                                                           |
 
 With the exception of the CLI, if no `input_format` is specified:
 
@@ -187,7 +187,7 @@ This does **not** describe the input you are providing. Instead, it instructs th
 
 When both are specified, Apprise will correctly adapt the content as needed before handing it off to the selected upstream delivery route.
 
-If the upstream service does **not** support the requested output format, it is silently ignored and the service’s default behaviour is used instead.
+If the upstream service does **not** support the requested output format, the request is ignored (a warning is logged) and the service's default behaviour is used instead.
 
 ### Examples
 

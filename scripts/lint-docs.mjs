@@ -50,6 +50,7 @@ const ALLOWED_KEYS = new Set([
   "source",
   "group",
   "limits",
+  "body_formats",
   "ended",
   "has_sponsorship",
   "sponsorship_level",

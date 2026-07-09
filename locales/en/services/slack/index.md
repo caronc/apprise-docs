@@ -13,6 +13,10 @@ has_chat: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - markdown
+  - text
+
 sample_urls:
   - https://hooks.slack.com/services/{tokenA}/{tokenB}/{tokenC}
   - slack://{tokenA}/{tokenB}/{tokenC}
@@ -28,6 +32,10 @@ limits:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Message Format
+
+Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead.
 
 ## Account Setup
 

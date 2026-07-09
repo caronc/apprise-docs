@@ -12,6 +12,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html
+  - text
+
 sample_urls:
   - brevo://APIToken:FromEmail/ToEmail
   - brevo://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
@@ -59,16 +63,16 @@ Le modèle d'URL du plugin est :
 
 ## Détail des Paramètres
 
-| Variable    | Requis | Description                                                                                           |
-| ----------- | ------ | ----------------------------------------------------------------------------------------------------- |
-| `APIToken`  | Oui    | Clé API transactionnelle Brevo, valeur de l'en-tête `api-key`.                                        |
-| `FromEmail` | Oui    | Adresse e-mail d'expéditeur vérifiée dans Brevo, `sender.email`.                                      |
-| `ToEmail`   | Non    | Une ou plusieurs adresses e-mail destinataires dans le chemin URL.                                    |
-| `to`        | Non    | Destinataires supplémentaires sous forme de liste séparée par des virgules dans la chaîne de requête. |
-| `cc`        | Non    | Destinataires en copie, séparés par des virgules.                                                     |
-| `bcc`       | Non    | Destinataires en copie cachée, séparés par des virgules.                                              |
-| `reply`     | Non    | En-tête Reply-To, facultativement avec un nom d'affichage.                                            |
-| `format`    | Non    | Remplace le format par défaut, `html` ou `text`, de manière cohérente avec le noyau Apprise.          |
+| Variable    | Requis | Description                                                                                                |
+| ----------- | ------ | ---------------------------------------------------------------------------------------------------------- |
+| `APIToken`  | Oui    | Clé API transactionnelle Brevo, valeur de l'en-tête `api-key`.                                             |
+| `FromEmail` | Oui    | Adresse e-mail d'expéditeur vérifiée dans Brevo, `sender.email`.                                           |
+| `ToEmail`   | Non    | Une ou plusieurs adresses e-mail destinataires dans le chemin URL.                                         |
+| `to`        | Non    | Destinataires supplémentaires sous forme de liste séparée par des virgules dans la chaîne de requête.      |
+| `cc`        | Non    | Destinataires en copie, séparés par des virgules.                                                          |
+| `bcc`       | Non    | Destinataires en copie cachée, séparés par des virgules.                                                   |
+| `reply`     | Non    | En-tête Reply-To, facultativement avec un nom d'affichage.                                                 |
+| `format`    | Non    | Brevo envoie du HTML par défaut. Définissez cette valeur sur `text` pour envoyer un message en texte brut. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

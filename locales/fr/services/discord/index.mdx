@@ -12,6 +12,10 @@ has_chat: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text
+  - markdown
+
 sample_urls:
   - https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
   - discord://{WebhookID}/{WebhookToken}
@@ -72,7 +76,7 @@ Discord prend egalement en charge differents arguments web. Les valeurs ci-desso
 | image        | Non         | Inclut une image dans le message afin de representer le type de notification. La valeur par defaut est **Yes**.                                                                                                                                                                                                                                                                                        |
 | avatar       | Non         | Remplace l'icone d'avatar Discord par defaut par une icone identifiant le type de notification. La valeur par defaut est **Yes**.                                                                                                                                                                                                                                                                      |
 | avatar_url   | Non         | Remplace l'URL de l'icone d'avatar Discord par defaut. Si elle n'est pas definie, Apprise choisit dynamiquement l'URL en fonction du type de message, info, success, warning ou error.                                                                                                                                                                                                                 |
-| format       | Non         | La valeur par defaut est `text`. Si vous souhaitez toutefois gerer vous-meme le formatage, vous pouvez definir cette valeur sur `markdown`. Si le mode est defini sur markdown, Apprise analysera les lignes d'en-tete, generalement seules et entourees de hashtags `#`, puis les placera dans des objets embarques afin d'obtenir une presentation plus elegante.                                    |
+| format       | Non         | Discord envoie du texte brut par défaut. Définissez cette valeur sur `markdown` lorsque vous voulez qu'Apprise utilise les embeds Discord pour une mise en page plus riche.                                                                                                                                                                                                                            |
 | href         | Non         | Definit une URL vers laquelle le titre doit pointer lors de la publication de la notification Discord. Cela force le message au format `markdown` afin de tirer parti de la section `embeds` de Discord. Vous pouvez aussi utiliser `url=` comme alias.                                                                                                                                                |
 | thread       | Non         | Permet facultativement de definir le `thread_id` auquel appliquer votre message.                                                                                                                                                                                                                                                                                                                       |
 | ping         | Non         | Permet facultativement d'indiquer un role, un utilisateur ou un nom interprete, comme `everyone`, qui devra toujours etre pingue lors de l'envoi du message. Suivez la syntaxe [identifiee ci-dessus](#mentionner-des-roles-tags-et-utilisateurs) pour le format attendu.                                                                                                                              |

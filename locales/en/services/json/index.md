@@ -11,6 +11,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text
+  - html
+  - markdown
+
 sample_urls:
   - json://{hostname}
   - jsons://{hostname}:{port}
@@ -45,6 +50,10 @@ The _type_ will be one of the following:
 - **failure**: A failure report
 - **warning**: A warning report
 
+### Message Format
+
+The `message` field is delivered exactly as you provide it — this service is a pass-through and supports `text`, `html`, and `markdown` alike. If you don't specify `?format=`, plain text is assumed and delivered as-is.
+
 ## Syntax
 
 Valid syntax is as follows:
@@ -70,6 +79,7 @@ Adding an `s` to the schema (i.e. `jsons://`) switches to a secure HTTPS connect
 | user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                                                                   |
 | password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                   |
 | method   | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used. |
+| format   | No       | The default is _text_. Set this to _markdown_ or _html_ when your receiving endpoint expects that format.                                                                                           |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
