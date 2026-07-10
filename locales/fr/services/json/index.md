@@ -11,6 +11,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - json://{hostname}
   - jsons://{hostname}:{port}
@@ -45,6 +50,10 @@ Le _type_ prendra l'une des valeurs suivantes :
 - **failure** : rapport d'echec
 - **warning** : avertissement
 
+### Format du message
+
+Le champ `message` est transmis exactement tel que vous le fournissez : ce service relaie le contenu sans le modifier et prend en charge `text`, `html` et `markdown`. Si vous ne precisez pas `?format=`, le texte brut est utilise par defaut.
+
 ## Syntaxe
 
 La syntaxe valide est la suivante :
@@ -70,6 +79,7 @@ L'ajout d'un `s` au schema, c'est-a-dire `jsons://`, bascule vers une connexion 
 | user     | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                                                                                                   |
 | password | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                                                                                                   |
 | method   | Non         | Permet facultativement de preciser la methode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Si aucune methode n'est precisee, `post` est utilise par defaut. |
+| format   | Non         | La valeur par défaut est _text_. Définissez cette valeur sur _markdown_ ou _html_ si votre point de réception attend ce format.                                                                                                     |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

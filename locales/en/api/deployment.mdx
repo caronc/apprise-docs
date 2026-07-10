@@ -45,6 +45,7 @@ docker run --name apprise \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
   -e APPRISE_ADMIN=y \
+  -e APPRISE_DEFAULT_FORMAT=text \
   -d caronc/apprise:latest
 ```
 
@@ -58,6 +59,7 @@ docker run --name apprise \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
   -e APPRISE_ADMIN=y \
+  -e APPRISE_DEFAULT_FORMAT=text \
   --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
   --health-interval=30s \
   --health-timeout=5s \
@@ -80,6 +82,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
       - ./attach:/attach
@@ -98,6 +101,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
       - ./attach:/attach
@@ -144,6 +148,8 @@ spec:
               value: 1
             - name: APPRISE_ADMIN
               value: y
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
 ```
 
 The following example expands on the above and offers a **liveness** and **readiness** probe:
@@ -175,6 +181,8 @@ spec:
               value: 1
             - name: APPRISE_ADMIN
               value: y
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
 
           # Ready only when /status returns 200
           readinessProbe:
@@ -468,6 +476,8 @@ spec:
               value: "1"
             - name: APPRISE_ADMIN
               value: "y"
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
           ports:
             - containerPort: 8000
               name: http
@@ -543,6 +553,8 @@ spec:
               value: "1"
             - name: APPRISE_ADMIN
               value: "y"
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
           ports:
             - containerPort: 8000
               name: http
@@ -655,6 +667,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
 
     volumes:
       - ./config:/config

@@ -92,18 +92,37 @@ Les échecs remontent à Apprise et affectent le statut global de la notificatio
 
 Votre fonction wrapper peut accepter les paramètres suivants.
 
-| Paramètre     | Requis | Description                                                                                                                                         |
-| ------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `body`        | Oui    | Corps de la notification                                                                                                                            |
-| `title`       | Non    | Titre de la notification                                                                                                                            |
-| `notify_type` | Non    | L'une des valeurs `info`, `success`, `warning`, `failure`                                                                                           |
-| `body_format` | Non    | `text`, `html` ou `markdown`                                                                                                                        |
-| `meta`        | Non    | Métadonnées d'URL analysées et fusionnées                                                                                                           |
-| `attach`      | Non    | Liste d'objets `AppriseAttachment`<br/> Voir [Pièces jointes](../attachments/) pour lire, valider et transmettre des fichiers depuis un décorateur. |
-| `*args`       | Oui    | Requis pour la compatibilité future                                                                                                                 |
-| `**kwargs`    | Oui    | Requis pour la compatibilité future                                                                                                                 |
+| Paramètre           | Requis | Description                                                                                                                                         |
+| ------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`              | Oui    | Corps de la notification                                                                                                                            |
+| `title`             | Non    | Titre de la notification                                                                                                                            |
+| `notify_type`       | Non    | L'une des valeurs `info`, `success`, `warning`, `failure`                                                                                           |
+| `body_format`       | Non    | Le format résolu pour cet envoi (`text`, `html` ou `markdown`) -- jamais `None`, même si l'appelant n'a rien déclaré                                |
+| `format_controlled` | Non    | `True` si l'appelant a déclaré un format source quelconque, `False` si rien n'a été déclaré                                                         |
+| `meta`              | Non    | Métadonnées d'URL analysées et fusionnées                                                                                                           |
+| `attach`            | Non    | Liste d'objets `AppriseAttachment`<br/> Voir [Pièces jointes](../attachments/) pour lire, valider et transmettre des fichiers depuis un décorateur. |
+| `*args`             | Oui    | Requis pour la compatibilité future                                                                                                                 |
+| `**kwargs`          | Oui    | Requis pour la compatibilité future                                                                                                                 |
 
 Incluez toujours `*args` et `**kwargs` afin de rester compatible avec les futures versions d'Apprise.
+
+### Déclarer un format
+
+Par défaut, votre fonction reçoit le corps **exactement tel que l'appelant l'a envoyé** -- Apprise ne le convertit ni ne le reformate jamais, sauf si vous en faites explicitement la demande. C'est voulu : vous contrôlez déjà qui appelle votre décorateur, le framework n'essaie donc pas de deviner ce dont votre contenu a besoin. Ajoutez `body_format=` à `@notify()` si votre gestionnaire veut qu'Apprise résolve/convertisse d'abord le corps :
+
+```python
+from apprise import NotifyFormat
+from apprise.decorators import notify
+
+@notify(on="foobar", body_format=NotifyFormat.MARKDOWN)
+def my_wrapper(body, title, notify_type, *args, **kwargs):
+    # body arrive déjà en Markdown
+    ...
+```
+
+`body_format=` accepte un seul format, ou un tuple lorsque votre gestionnaire en prend plusieurs en charge (le premier élément est la valeur par défaut). Consultez [Pipeline des formats de message](../message-format-conversion/) pour la vue complète, y compris le fonctionnement des remplacements `?format=` et de la résolution multi-format.
+
+Sans `body_format=` sur `@notify()`, le gestionnaire accepte tous les formats, donc rien n'est jamais converti -- votre fonction reçoit quand même `body_format` et `format_controlled` dans ses kwargs (voir [Lire `body_format` et `format_controlled` dans `send()`](../message-format-conversion/#lire-body_format-et-format_controlled-dans-send)), mais `body_format` se contente de rapporter ce à quoi l'appelant s'est aligné (ou la valeur par défaut, `TEXT`, si rien n'a été déclaré) plutôt que de déclencher une conversion.
 
 Un wrapper minimal peut ressembler à ceci :
 

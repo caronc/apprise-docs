@@ -92,18 +92,37 @@ Failures propagate back to Apprise and affect overall notification status.
 
 Your wrapper function may accept the following parameters.
 
-| Parameter     | Required | Description                                                                                                                               |
-| ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `body`        | Yes      | Notification body                                                                                                                         |
-| `title`       | No       | Notification title                                                                                                                        |
-| `notify_type` | No       | One of `info`, `success`, `warning`, `failure`                                                                                            |
-| `body_format` | No       | `text`, `html`, or `markdown`                                                                                                             |
-| `meta`        | No       | Parsed and merged URL metadata                                                                                                            |
-| `attach`      | No       | List of `AppriseAttachment` objects<br/> See [Attachments](../attachments/) for how to read, validate, and forward files from decorators. |
-| `*args`       | Yes      | Required for forward compatibility                                                                                                        |
-| `**kwargs`    | Yes      | Required for forward compatibility                                                                                                        |
+| Parameter           | Required | Description                                                                                                                               |
+| ------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`              | Yes      | Notification body                                                                                                                         |
+| `title`             | No       | Notification title                                                                                                                        |
+| `notify_type`       | No       | One of `info`, `success`, `warning`, `failure`                                                                                            |
+| `body_format`       | No       | The format this send resolved to (`text`, `html`, or `markdown`) -- never `None`, even if the caller declared nothing                     |
+| `format_controlled` | No       | `True` if the caller declared any source format, `False` if nothing was declared                                                          |
+| `meta`              | No       | Parsed and merged URL metadata                                                                                                            |
+| `attach`            | No       | List of `AppriseAttachment` objects<br/> See [Attachments](../attachments/) for how to read, validate, and forward files from decorators. |
+| `*args`             | Yes      | Required for forward compatibility                                                                                                        |
+| `**kwargs`          | Yes      | Required for forward compatibility                                                                                                        |
 
 **Always include `*args` and `**kwargs`\*\* to remain compatible with future Apprise releases.
+
+### Declaring a format
+
+By default, your function receives the body **exactly as the caller sent it** -- Apprise never converts or reformats it unless you explicitly opt in. This is deliberate: you already control who calls your decorator, so the framework doesn't try to guess what your content needs. Add `body_format=` to `@notify()` if your handler wants Apprise to resolve/convert the body first:
+
+```python
+from apprise import NotifyFormat
+from apprise.decorators import notify
+
+@notify(on="foobar", body_format=NotifyFormat.MARKDOWN)
+def my_wrapper(body, title, notify_type, *args, **kwargs):
+    # body already arrives as Markdown
+    ...
+```
+
+`body_format=` accepts a single format, or a tuple when your handler supports more than one (the first entry is the default). See [Message Format Pipeline](../message-format-conversion/) for the full picture, including how `?format=` overrides and multi-format resolution work.
+
+Without `body_format=` on `@notify()`, the wrapper accepts every format, so nothing is ever converted -- your function still receives `body_format` and `format_controlled` in its kwargs (see [Reading `body_format` and `format_controlled` in `send()`](../message-format-conversion/#reading-body_format-and-format_controlled-in-send)), but `body_format` just reports whatever the caller aligned to (or the default, `TEXT`, when nothing was declared) rather than triggering a conversion.
 
 A minimal wrapper may look like:
 

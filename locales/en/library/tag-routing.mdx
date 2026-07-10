@@ -834,9 +834,10 @@ apprise --config=config.yml --tag="alerts" --body="Alert"
 
 **Three OR chains each with multiple priority levels** -- `alpha`, `beta`, and `gamma`
 are independent chains dispatched simultaneously. Within each chain, lower-numbered
-groups run first; failures escalate to the next level. Once any chain exhausts all its
-levels without success, Apprise stops with a failed result without running further rounds
-for the other chains.
+groups run first; failures escalate to the next level. By default, every chain runs to
+completion even after another chain has already exhausted all its levels without success
+-- see [Multi-Chain Failure Behaviour](#multi-chain-failure-behaviour) above for how to
+change this.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -894,9 +895,10 @@ urls:
 | 2 (if round 1 failed for that chain) | Telegram (priority 5)      | -- exhausted --        | Telegram 3 (priority 200) |
 | 3 (if round 2 failed for alpha)      | Discord (priority 700)     |                        |                           |
 
-All three chains run their round-1 batches **simultaneously**. As soon as any chain
-exhausts all its priority levels without success, Apprise returns a failed result without
-starting further rounds for the surviving chains.
+All three chains run their round-1 batches **simultaneously**. By default, `beta`
+exhausting in round 2 does not stop `alpha` or `gamma` from continuing their own
+escalation rounds -- each chain runs independently to completion, exactly as shown in
+round 3 above.
 
 ```python
 apobj.notify(body="Broadcast", tag=["alpha", "beta", "gamma"])
