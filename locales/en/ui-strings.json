@@ -42,6 +42,8 @@
     "image_support": "Image Support",
     "attachment_support": "Attachment Support",
     "message_character_limits": "Message Character Limits",
+    "body_formats": "Supported Body Format(s)",
+    "default_body_format": "Default",
     "default_limit_name": "Body",
     "build_url": "Build Your Apprise URL",
     "sponsor_badge": "This provider proudly supports Apprise open source development."
