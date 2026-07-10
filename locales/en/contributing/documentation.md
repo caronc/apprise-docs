@@ -285,6 +285,13 @@ limits:
   - name: "Body"
     max_chars: 2000
 
+# Message format(s) the service accepts. Omit this field entirely if the
+# service only accepts plain text. See "Body Formats" below for the
+# ":default" directive used when declaring more than one format.
+# body_formats:
+#   - html: default
+#   - text
+
 # Retired services — set to the date the service stopped being available
 # ended: YYYY-MM-DD
 
@@ -309,9 +316,68 @@ limits:
 | `group`         | string       | Recommended | Service group id used by the services index. Unknown groups fall back to the default group during sync.                                                                                                                             |
 | `schemas`       | string array | Yes         | Supported Apprise URL schemas, such as `discord://` or `tgram://`.                                                                                                                                                                  |
 | `sample_urls`   | string array | Recommended | Example Apprise URLs shown in generated metadata and URL Builder hints.                                                                                                                                                             |
+| `body_formats`  | string array | No          | Message format(s) the service accepts (`text`, `html`, `markdown`). Omit entirely for text-only services. See [Body Formats](#body-formats) below.                                                                                  |
 | `keywords`      | string       | No          | Extra search terms for the service listing search box. Comma or space separated; dots preserved. Use when the title and schemas do not contain a name users would naturally type. Matching is substring-based and case-insensitive. |
 | `limits`        | object array | No          | Optional message length limits. Each entry should include a display `name` and `max_chars`.                                                                                                                                         |
 | `ended`         | date string  | No          | Marks a retired service. Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.                                                                                                                                                                    |
+
+#### Body Formats
+
+`body_formats` declares which message format(s) a service accepts: any of
+`text`, `html`, or `markdown`. It mirrors the plugin's own `notify_format`
+declaration in the Apprise library.
+
+The field is entirely optional. A service page that omits it is documented
+as accepting `text` only, the same default `NotifyBase` itself uses when a
+plugin declares no `notify_format`.
+
+```yaml
+# Text-only service -- no body_formats block needed at all.
+schemas:
+  - example://
+```
+
+When a service accepts more than one format, list them and mark the
+default with a single-key `format: default` mapping, the same shorthand
+`schemas` already uses for `: insecure`:
+
+```yaml
+body_formats:
+  - html: default
+  - text
+```
+
+Rules, in order:
+
+1. **`body_formats` is optional.** Omit it entirely for a text-only
+   service; this is equivalent to `body_formats: [text]`.
+2. **At most one entry may be marked `: default`.** Declaring two or more
+   defaults is a documentation validation failure — there is no way to
+   honor two defaults on the same service.
+3. **If no entry is marked `: default`, the first entry listed is the
+   implicit default.** This is valid and will not fail validation, but
+   `pnpm lint` prints a recommendation to mark one explicitly once a
+   service declares more than one format, since the intent is easy to
+   miss on a quick read otherwise.
+4. **The same format may not be declared twice** in the same list.
+5. **Unknown format names fail validation.** Only `text`, `html`, and
+   `markdown` are recognized.
+
+```yaml
+# Valid: no explicit default -- "text" (the first entry) is used, but
+# pnpm lint recommends marking one explicitly.
+body_formats:
+  - text
+  - html
+  - markdown
+```
+
+```yaml
+# Invalid: two entries marked default -- fails validation.
+body_formats:
+  - html: default
+  - markdown: default
+```
 
 #### Capability Flags
 
