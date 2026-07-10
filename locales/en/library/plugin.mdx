@@ -631,28 +631,28 @@ The following identifies the default values of variables defined in your plugin 
 
 Your plugin should be configured to inherit from `NotifyBase` granting you these defaults
 
-| Attribute                           | Default    | Purpose                                                    | When To Override                                                     |
-| :---------------------------------- | :--------- | :--------------------------------------------------------- | :------------------------------------------------------------------- |
-| `enabled`                           | `True`     | If `False`, the plugin is not used.                        | Disable for platform-specific or dependency-specific reasons.        |
-| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).           | Usually leave as-is.                                                 |
-| `requirements.details`              | `None`     | Human-friendly requirements text.                          | If you need to explain optional or required packages.                |
-| `requirements.packages_required`    | `[]`       | Required packages for full function.                       | If your plugin requires extra libraries.                             |
-| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                   | If you can run without them, but benefit from them.                  |
-| `service_url`                       | `None`     | Vendor or upstream product URL.                            | For public services, set this.                                       |
-| `setup_url`                         | `None`     | Apprise setup page for your service.                       | Set this to your `appriseit.com/services/<service>/` page.           |
-| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                       | Tune for vendor rate limits, or set to `0` for local-only.           |
-| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.          | Set when your service expects a specific size.                       |
-| `body_maxlen`                       | `32768`    | Max body characters before truncation.                     | Set based on upstream constraints.                                   |
-| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported. | Set to `0` for title-less endpoints, or tune to vendor constraints.  |
-| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation. | If upstream is line-sensitive.                                       |
-| `persistent_storage`                | `True`     | Allows the persistent store to be used.                    | If your plugin must never store identifiers or state.                |
-| `storage_mode`                      | `memory`   | Default persistent store mode.                             | Rare, but can be tuned for special behaviours.                       |
-| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                 | If your service must always operate in a specific timezone.          |
-| `notify_format`                     | `text`     | Default message format.                                    | If your service is Markdown or HTML-first.                           |
-| `overflow_mode`                     | `upstream` | Default overflow strategy.                                 | If you want Apprise to split, truncate, or alter overflow behaviour. |
-| `interpret_emojis`                  | `False`    | Emoji interpretation.                                      | If the upstream service benefits from emoji conversion.              |
-| `attachment_support`                | `False`    | Attachment enablement.                                     | Set to `True` if you accept attachments.                             |
-| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.    | Rare, unless you want different formatting.                          |
+| Attribute                           | Default    | Purpose                                                    | When To Override                                                                     |
+| :---------------------------------- | :--------- | :--------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| `enabled`                           | `True`     | If `False`, the plugin is not used.                        | Disable for platform-specific or dependency-specific reasons.                        |
+| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).           | Usually leave as-is.                                                                 |
+| `requirements.details`              | `None`     | Human-friendly requirements text.                          | If you need to explain optional or required packages.                                |
+| `requirements.packages_required`    | `[]`       | Required packages for full function.                       | If your plugin requires extra libraries.                                             |
+| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                   | If you can run without them, but benefit from them.                                  |
+| `service_url`                       | `None`     | Vendor or upstream product URL.                            | For public services, set this.                                                       |
+| `setup_url`                         | `None`     | Apprise setup page for your service.                       | Set this to your `appriseit.com/services/<service>/` page.                           |
+| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                       | Tune for vendor rate limits, or set to `0` for local-only.                           |
+| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.          | Set when your service expects a specific size.                                       |
+| `body_maxlen`                       | `32768`    | Max body characters before truncation.                     | Set based on upstream constraints.                                                   |
+| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported. | Set to `0` for title-less endpoints, or tune to vendor constraints.                  |
+| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation. | If upstream is line-sensitive.                                                       |
+| `persistent_storage`                | `True`     | Allows the persistent store to be used.                    | If your plugin must never store identifiers or state.                                |
+| `storage_mode`                      | `memory`   | Default persistent store mode.                             | Rare, but can be tuned for special behaviours.                                       |
+| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                 | If your service must always operate in a specific timezone.                          |
+| `notify_format`                     | `text`     | Default message format(s); a single value or a tuple.      | If your service is Markdown or HTML-first, or natively renders more than one format. |
+| `overflow_mode`                     | `upstream` | Default overflow strategy.                                 | If you want Apprise to split, truncate, or alter overflow behaviour.                 |
+| `interpret_emojis`                  | `False`    | Emoji interpretation.                                      | If the upstream service benefits from emoji conversion.                              |
+| `attachment_support`                | `False`    | Attachment enablement.                                     | Set to `True` if you accept attachments.                                             |
+| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.    | Rare, unless you want different formatting.                                          |
 
 ## Templates and Metadata
 

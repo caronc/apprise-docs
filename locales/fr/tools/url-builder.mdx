@@ -8,15 +8,16 @@ tableOfContents: false
 
 import SupportProject from "~/components/SupportProject.astro";
 
+<div class="url-builder-page-shell">
+
 Assemblez facilement en temps réel l'un des [**{/* SERVICES:COUNT */}** services pris en charge](../services/).
 
-<details>
+<details class="url-builder-instructions">
 <summary>Instructions</summary>
-1. **Recherchez** un service de notification par nom ou par schéma, par exemple `discord`, `email` ou `slack`.
-1. **Configurez** les champs requis à l'aide du formulaire :
-   - les champs **obligatoires** sont marqués d'un astérisque (`*`) et doivent être remplis pour que l'URL soit valide ;
-   - les champs **sensibles** comme les tokens, mots de passe et clés API sont masqués par défaut. Cliquez sur l'icône en forme d'oeil pour les afficher.
-1. **Copiez** l'URL générée dans votre presse-papiers puis collez-la dans n'importe quelle configuration compatible avec Apprise.
+
+1. **Recherchez** un service de notification par nom ou par schéma, comme `discord`, `email` ou `slack`.
+1. **Configurez** les champs requis dans le formulaire. Les champs obligatoires sont marqués par `*`, et les valeurs sensibles restent masquées sauf si vous les affichez.
+1. **Copiez** l'URL générée dans votre configuration Apprise.
 
 Pour plus de détails sur la syntaxe des URL, consultez le guide [Syntaxe URL Universelle](../getting-started/universal-syntax/).
 
@@ -25,3 +26,5 @@ Pour plus de détails sur la syntaxe des URL, consultez le guide [Syntaxe URL Un
 <!-- URL_BUILDER:COMPONENT -->
 
 <SupportProject />
+
+</div>

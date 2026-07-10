@@ -11,6 +11,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - mailto://userid:pass@domain.com
   - mailtos://domain.com?user=userid&pass=password
@@ -21,6 +25,10 @@ sample_urls:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Format du message
+
+Les e-mails sont envoyés en HTML par défaut, avec une version texte brut pour les clients qui en ont besoin. Définissez `?format=text` si vous voulez envoyer uniquement un e-mail en texte brut.
 
 ## Syntaxe
 

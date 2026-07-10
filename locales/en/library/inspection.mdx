@@ -235,6 +235,14 @@ This matters when your UI needs to present how to enter multiple recipients, cha
 
 If multiple token names map to the same underlying argument via `map_to`, Apprise can expose a `group` field for list types, so tooling can show that one list token acts as an alias for multiple related inputs.
 
+##### The `format` Argument
+
+Every service exposes an `args.format` entry (`text`, `html`, `markdown`). `values` is always all three — `?format=` is accepted for any of them on every service — and `default` is the service's native format.
+
+Since some services natively render more than one format, `args.format` also carries a `supported` list: the subset this specific service actually renders as, in priority order (`supported[0]` matches `default`). For most services `supported` is a single entry equal to `default`. Requesting a `?format=` value that isn't in `supported` still works — the service logs a warning and falls back to its default rather than rejecting the URL.
+
+Use `supported` when you want to show every format option but de-emphasize (not remove) the ones a service doesn't specifically support — `values` stays the full, always-safe set to fall back on if you don't need that distinction.
+
 ### Dependencies and install hints (`requirements`)
 
 Apprise can also return dependency details per plugin via the inspection helper `apprise.plugins.requirements(plugin)`.

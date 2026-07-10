@@ -47,7 +47,7 @@ Send notifications without using persistent storage.
 - `body`: (Required) The message body.
 - `title`: (Optional) The message title.
 - `type`: (Optional) Message type: `info` (default), `success`, `warning`, `failure`.
-- `format`: (Optional) Text format: `text` (default), `markdown`, `html`.
+- `format`: (Optional) Text format: `text`, `markdown`, `html`. If omitted entirely, no format is applied and content is passed through untouched (unless `APPRISE_DEFAULT_FORMAT` is set on the server). Sending `format` as blank or `null` also forces pass-through, even if `APPRISE_DEFAULT_FORMAT` is set -- it's treated as you deliberately asking for no formatting.
 - `attach`: (Optional) One or more attachments. See [Attachments](#attachments) below.
 
 ## Attachments

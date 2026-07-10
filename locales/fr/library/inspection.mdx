@@ -235,6 +235,14 @@ Cela compte lorsque votre interface doit expliquer comment saisir plusieurs dest
 
 Si plusieurs noms de jetons pointent vers le même argument via `map_to`, Apprise peut exposer un champ `group` pour les types liste, afin qu'un outil puisse montrer qu'un jeton liste agit comme alias pour plusieurs entrées liées.
 
+##### L'argument `format`
+
+Chaque service expose une entrée `args.format` (`text`, `html`, `markdown`). `values` contient toujours les trois valeurs -- `?format=` est accepté pour n'importe laquelle d'entre elles sur tous les services -- et `default` est le format natif du service.
+
+Certains services sachant nativement rendre plus d'un format, `args.format` porte aussi une liste `supported` : le sous-ensemble que ce service précis rend réellement, par ordre de priorité (`supported[0]` correspond à `default`). Pour la plupart des services, `supported` ne contient qu'une seule entrée, identique à `default`. Demander une valeur `?format=` absente de `supported` fonctionne quand même -- le service enregistre un avertissement et revient à son format par défaut plutôt que de rejeter l'URL.
+
+Utilisez `supported` si vous voulez afficher toutes les options de format tout en atténuant (sans les retirer) celles qu'un service ne prend pas spécifiquement en charge -- `values` reste l'ensemble complet, toujours sûr, sur lequel se rabattre si cette distinction ne vous est pas nécessaire.
+
 ### Dépendances et indices d'installation (`requirements`)
 
 Apprise peut aussi renvoyer les détails de dépendance par plugin via `apprise.plugins.requirements(plugin)`.
