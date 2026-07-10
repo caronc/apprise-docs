@@ -16,6 +16,11 @@ sample_urls:
   - apprises://{user}@{host}:{port}/{token}
   - apprises://{user}:{password}@{host}:{port}/{token}
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 has_attachments: true
 has_selfhosted: true
 ---

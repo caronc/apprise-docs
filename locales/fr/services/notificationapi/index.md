@@ -13,6 +13,10 @@ schemas:
 has_sms: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+
 sample_urls:
   - napi://{ClientID}/{ClientSecret}/{Target}
   - napi://{Type}@{ClientID}/{ClientSecret}/{Target}
@@ -23,6 +27,10 @@ limits:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Format du message
+
+NotificationAPI utilise le texte brut par défaut. Définissez `?format=html` lorsque le canal e-mail doit recevoir du HTML ; les cibles SMS reçoivent toujours une version texte.
 
 ## Configuration du Compte
 

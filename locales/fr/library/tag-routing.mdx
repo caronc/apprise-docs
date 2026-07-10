@@ -20,11 +20,11 @@ Chaque tag dans un fichier de configuration peut porter un préfixe numérique d
 Les numéros inférieurs signifient une **urgence plus haute** -- ils sont traités en premier.
 
 :::note
-Le numero de priorite est **uniquement un marqueur de regroupement et d'ordre de tri**.
-Les services qui partagent le meme nom de tag et le meme numero de priorite sont
-dispatches ensemble comme un seul groupe. Les groupes s'executent dans l'ordre numerique
-croissant (le numero le plus bas en premier). Les valeurs choisies n'ont pas d'importance
-en elles-memes -- `2`, `50` et `9999` sont aussi valides que `1`, `2` et `3`.
+Le numéro de priorité est **uniquement un marqueur de regroupement et d'ordre de tri**.
+Les services qui partagent le même nom de tag et le même numéro de priorité sont
+dispatchés ensemble comme un seul groupe. Les groupes s'exécutent dans l'ordre numérique
+croissant (le numéro le plus bas en premier). Les valeurs choisies n'ont pas d'importance
+en elles-mêmes -- `2`, `50` et `9999` sont aussi valides que `1`, `2` et `3`.
 Seul leur ordre relatif compte.
 :::
 
@@ -769,28 +769,28 @@ apprise --config=config.yml --tag="5:alerts" \
 
 ## Variantes
 
-Les exemples ci-dessous illustrent des schemas de notification courants.
+Les exemples ci-dessous illustrent des schémas de notification courants.
 
 :::note
-Les numeros de priorite sont des **marqueurs d'ordre relatif**, pas des valeurs fixes.
-Un service a la priorite `2` sera toujours envoye avant un service a la priorite `500`
-pour le meme tag -- les valeurs exactes n'ont pas d'importance, seul leur ordre compte.
+Les numéros de priorité sont des **marqueurs d'ordre relatif**, pas des valeurs fixes.
+Un service à la priorité `2` sera toujours envoyé avant un service à la priorité `500`
+pour le même tag -- les valeurs exactes n'ont pas d'importance, seul leur ordre compte.
 :::
 
 <Tabs>
 <TabItem label="Exemple 1">
 
 **Tag unique avec deux niveaux d'escalade** -- les valeurs `2` et `50` montrent que les
-numeros sont arbitraires ; seul l'ordre importe.
+numéros sont arbitraires ; seul l'ordre importe.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
 ```apache
-# Premier essai (numero inferieur = urgence superieure)
+# Premier essai (numéro inférieur = urgence supérieure)
 2:alertes=slack://tokenA/tokenB/tokenC
 
-# Secours ; s'execute uniquement si la priorite 2 echoue
+# Secours ; s'exécute uniquement si la priorité 2 échoue
 50:alertes=mailto://user:pass@example.com
 ```
 
@@ -811,7 +811,7 @@ urls:
 </Tabs>
 
 ```python
-# Chaine d'escalade : Slack d'abord, e-mail seulement en cas d'echec
+# Chaîne d'escalade : Slack d'abord, e-mail seulement en cas d'échec
 apobj.notify(body="Alerte", tag="alertes")
 ```
 
@@ -823,26 +823,27 @@ apprise --config=config.yml --tag="alertes" --body="Alerte"
 
 <TabItem label="Exemple 2">
 
-**Trois chaines OR avec plusieurs niveaux de priorite** -- `alpha`, `beta` et `gamma`
-sont des chaines independantes dispatchees simultanement. Au sein de chaque chaine,
-les groupes de priorite inferieure s'executent en premier ; les echecs escaladent au
-niveau suivant. Si une chaine epuise tous ses niveaux sans succes, Apprise s'arrete
-immediatement avec un résultat en échec, sans lancer de nouveaux rounds pour les autres chaines.
+**Trois chaînes OR avec plusieurs niveaux de priorité** -- `alpha`, `beta` et `gamma`
+sont des chaînes indépendantes dispatchées simultanément. Au sein de chaque chaîne,
+les groupes de priorité inférieure s'exécutent en premier ; les échecs escaladent au
+niveau suivant. Par défaut, chaque chaîne s'exécute jusqu'à son terme même après qu'une
+autre chaîne a déjà épuisé tous ses niveaux sans succès -- voir « Comportement en cas
+d'échec de chaîne » plus haut pour changer cela.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
 ```apache
-# alpha : trois niveaux avec des valeurs de priorite arbitraires
+# alpha : trois niveaux avec des valeurs de priorité arbitraires
 1:alpha=slack://tokenA/tokenB/tokenC
 1:alpha=mailto://user:pass@gmail.com
 5:alpha=telegram://bottoken/chatid
 700:alpha=discord://webhook_id/webhook_token
 
-# beta : un seul niveau a la priorite 500
+# beta : un seul niveau à la priorité 500
 500:beta=discord://webhook_id2/webhook_token2
 
-# gamma : deux niveaux ; sans prefixe = priorite 0 (la plus haute)
+# gamma : deux niveaux ; sans préfixe = priorité 0 (la plus haute)
 gamma=telegram://bottoken2/chatid2
 200:gamma=telegram://bottoken3/chatid3
 ```
@@ -867,7 +868,7 @@ urls:
   - discord://webhook_id2/webhook_token2:
       tag: 500:beta
 
-  # gamma -- deux niveaux (sans prefixe = priorite 0)
+  # gamma -- deux niveaux (sans préfixe = priorité 0)
   - telegram://bottoken2/chatid2:
       tag: gamma
   - telegram://bottoken3/chatid3:
@@ -877,13 +878,13 @@ urls:
 </TabItem>
 </Tabs>
 
-**Ordre de dispatch quand les trois chaines sont combinees en OR :**
+**Ordre de dispatch quand les trois chaînes sont combinées en OR :**
 
 | Round                              | alpha                      | beta                   | gamma                     |
 | :--------------------------------- | :------------------------- | :--------------------- | :------------------------ |
-| 1                                  | Slack + Gmail (priorite 1) | Discord (priorite 500) | Telegram 2 (priorite 0)   |
-| 2 (si echec au round 1)            | Telegram (priorite 5)      | -- epuise --           | Telegram 3 (priorite 200) |
-| 3 (si echec au round 2 pour alpha) | Discord (priorite 700)     |                        |                           |
+| 1                                  | Slack + Gmail (priorité 1) | Discord (priorité 500) | Telegram 2 (priorité 0)   |
+| 2 (si échec au round 1)            | Telegram (priorité 5)      | -- épuisé --           | Telegram 3 (priorité 200) |
+| 3 (si échec au round 2 pour alpha) | Discord (priorité 700)     |                        |                           |
 
 ```python
 apobj.notify(body="Diffusion", tag=["alpha", "beta", "gamma"])
@@ -901,7 +902,7 @@ apprise --config=config.yml \
 
 <TabItem label="Exemple 3">
 
-**Deux chaines OR independantes avec surcharge de tentatives par appel** -- chaque
+**Deux chaînes OR indépendantes avec surcharge de tentatives par appel** -- chaque
 token porte son propre suffixe `:N` : les services `devops` obtiennent trois tentatives
 et les services `direction` en obtiennent deux.
 
@@ -931,27 +932,27 @@ urls:
 
 ```python
 # devops : retry=3 ; direction : retry=2
-apobj.notify(body="Alerte equipe", tag=["devops:3", "direction:2"])
+apobj.notify(body="Alerte équipe", tag=["devops:3", "direction:2"])
 ```
 
 ```bash
 apprise --config=config.yml \
         --tag="devops:3" \
         --tag="direction:2" \
-        --body="Alerte equipe"
+        --body="Alerte équipe"
 ```
 
 </TabItem>
 
 <TabItem label="Exemple 4">
 
-**Filtre AND** -- seuls les services portant **tous** les tags listes sont dispatches.
+**Filtre AND** -- seuls les services portant **tous** les tags listés sont dispatchés.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
 
 ```apache
-# Les deux tags sur la meme URL ; seul ce service correspond au filtre AND
+# Les deux tags sur la même URL ; seul ce service correspond au filtre AND
 devops direction=slack://tokenA/tokenB/tokenC
 
 # Un seul tag "devops" -- ne correspond PAS au filtre AND
@@ -964,7 +965,7 @@ devops=discord://webhook_id/webhook_token
 ```yaml
 version: 1
 urls:
-  # Les deux tags sur la meme URL
+  # Les deux tags sur la même URL
   - slack://tokenA/tokenB/tokenC:
       tag:
         - devops
@@ -980,21 +981,21 @@ urls:
 
 ```python
 # AND -- le service doit porter "devops" ET "direction"
-apobj.notify(body="Alerte combinee", tag=[["devops", "direction"]])
+apobj.notify(body="Alerte combinée", tag=[["devops", "direction"]])
 ```
 
 ```bash
-# AND -- valeurs separees par une virgule dans un seul flag --tag
-apprise --config=config.yml --tag="devops, direction" --body="Alerte combinee"
+# AND -- valeurs séparées par une virgule dans un seul flag --tag
+apprise --config=config.yml --tag="devops, direction" --body="Alerte combinée"
 ```
 
 </TabItem>
 
 <TabItem label="Exemple 5">
 
-**Dispatch exclusif** -- un prefixe de priorite dans le filtre cible uniquement ce
-niveau exact. Aucune chaine d'escalade n'est construite ; les services correspon-
-dants sont dispatches en un seul lot plat.
+**Dispatch exclusif** -- un préfixe de priorité dans le filtre cible uniquement ce
+niveau exact. Aucune chaîne d'escalade n'est construite ; les services correspon-
+dants sont dispatchés en un seul lot plat.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -1021,7 +1022,7 @@ urls:
 </Tabs>
 
 ```python
-# Exclusif : seules les entrees de priorite 50 s'executent ; Slack est ignore
+# Exclusif : seules les entrées de priorité 50 s'exécutent ; Slack est ignoré
 apobj.notify(body="Maintenance", tag="50:alertes")
 ```
 
@@ -1051,4 +1052,4 @@ apprise --config=config.yml --tag="50:alertes" --body="Maintenance"
 | Envoi OR multi-tags                         | `notify(tag=["tagA", "tagB"])` ou `--tag tagA --tag tagB`               | Un appel notify() / CLI         |
 | Envoi AND multi-tags                        | `notify(tag=[["tagA", "tagB"]])` ou `--tag "tagA, tagB"`                | Un appel notify() / CLI         |
 | Envoi OR multi-tags avec tentatives par tag | `notify(tag=["tagA:N", "tagB:M"])` ou `--tag tagA:N --tag tagB:M`       | Un appel notify() / CLI         |
-| Arret anticipe sur echec de chaine          | `AppriseAsset(abort_on_chain_failure=True)`                             | Tous les services de la session |
+| Arrêt anticipé sur échec de chaîne          | `AppriseAsset(abort_on_chain_failure=True)`                             | Tous les services de la session |
