@@ -313,7 +313,7 @@ class NotifyExample(NotifyBase):
     overflow_mode = OverflowMode.SPLIT
 ```
 
-Pour le CommonMark déclaré, Apprise tente de préserver la lisibilité de la mise en forme lors d'une découpe. Cette réparation peut ajouter des marqueurs de fermeture. Une limite stricte peut donc être dépassée de quelques caractères. Le HTML et les variantes Markdown propres aux services restent traités au mieux.
+Pour le CommonMark déclaré, Apprise tente de préserver la lisibilité lors d'une découpe. La réparation et l'échappement propre au service, comme MarkdownV2 de Telegram, peuvent ajouter des caractères après le dimensionnement. Une limite stricte peut donc être dépassée dans un cas limite.
 
 Le paramètre URL `?overflow=` permet de remplacer le mode pour une instance. La valeur par défaut de la classe doit correspondre aux capacités de l'API en amont.
 
@@ -335,5 +335,5 @@ Les sections précédentes couvrent l'ensemble du sujet. Cette liste résume les
 5. **Pour un service qui envoie les deux formats dans le même message** (comme l'email avec des parties HTML et texte séparées), appelez `convert_between()` dans `send()` pour dériver les représentations supplémentaires à partir du corps déjà converti. Ceci est indépendant de la déclaration de `notify_format` comme tuple -- voir la remarque sous [Envoyer les Deux Formats](#adaptation-propre-au-service-dans-les-plugins) plus haut.
 6. **Pour un service qui rend nativement plus d'un format, un à la fois**, déclarez `notify_format` comme un tuple et acceptez `body_format` dans la signature de `send()` (ou définissez `send_text()`/`send_html()`/`send_markdown()`) plutôt que de coder en dur un seul format.
 7. **Traitez `?format=` comme un remplacement facultatif par instance.** Pour un plugin à format unique, il l'emporte toujours, sans changement par rapport à avant. Pour un plugin multi-format, il n'est honoré que s'il est pris en charge ; un remplacement non pris en charge enregistre un avertissement et retombe sur l'alignement avec l'entrée, puis sur la valeur par défaut du plugin.
-8. **Définissez `overflow_mode`, `body_maxlen` et `title_maxlen` sur la classe** pour déclarer les limites et la stratégie de découpage de votre service en amont. Chaque appel à `send()` reçoit du contenu déjà dimensionné selon ces limites -- aucune modification supplémentaire de la charge utile n'est requise dans `send()`.
+8. **Définissez `overflow_mode`, `body_maxlen` et `title_maxlen` sur la classe** pour déclarer les limites et la stratégie de découpage du service. La taille finale reste une estimation lorsque l'échappement du dialecte ajoute ensuite des caractères.
 9. **Testez la matrice complète** : aucune source déclarée (`format_controlled=False`), chaque format source pris en charge déclaré explicitement (y compris celui correspondant au format résolu par défaut, pour détecter les lacunes de complétion de dialecte), les remplacements `?format=` par URL (pris en charge et non pris en charge), et les messages découpés ou tronqués.

@@ -311,7 +311,7 @@ class NotifyExample(NotifyBase):
     overflow_mode = OverflowMode.SPLIT
 ```
 
-For declared CommonMark, Apprise tries to keep formatting readable across a boundary. Repair can add closing markers, so a strict service limit may still be exceeded by a few characters. HTML and service-specific Markdown remain best effort.
+For declared CommonMark, Apprise tries to keep formatting readable across a boundary. Repair and service-specific escaping, such as Telegram MarkdownV2, can add characters after sizing. A strict service limit may therefore be exceeded in an edge case.
 
 The `?overflow=` URL parameter lets users override the mode per instance. The class default should match what the upstream API accepts.
 
@@ -333,5 +333,5 @@ The sections above cover the full picture. This checklist summarizes the key dec
 5. **For a service that sends both formats in the same message** (such as email with separate HTML and text parts), call `convert_between()` inside `send()` to derive additional representations from the already-converted body. This is unrelated to declaring `notify_format` as a tuple -- see the note under [Send Both Formats](#service-specific-adaptation-in-plugins) above.
 6. **For a service that natively renders more than one format, one at a time**, declare `notify_format` as a tuple and accept `body_format` in `send()`'s signature (or define `send_text()`/`send_html()`/`send_markdown()`) instead of hardcoding a single format.
 7. **Treat `?format=` as an optional per-instance override.** For a single-format plugin it always wins, unchanged from before. For a multi-format plugin it's only honored when supported; an unsupported override logs a warning and falls back to input alignment, then the plugin's default.
-8. **Set `overflow_mode`, `body_maxlen`, and `title_maxlen` on the class** to declare the limits and splitting strategy for your upstream service. Each `send()` call receives content already sized to those limits — no additional changes to the payload is required inside `send()`.
+8. **Set `overflow_mode`, `body_maxlen`, and `title_maxlen` on the class** to declare the limits and splitting strategy for your upstream service. Treat final size as best effort when later dialect escaping adds characters.
 9. **Test the full matrix**: no source declared (`format_controlled=False`), each supported source format declared explicitly (including the one matching the resolved default, to catch dialect-completion gaps), URL `?format=` overrides (supported and unsupported), and split or truncated messages.
