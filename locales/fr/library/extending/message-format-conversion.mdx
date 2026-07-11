@@ -7,14 +7,14 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Lors de l'écriture d'un plugin, vous déclarez `notify_format` pour indiquer à Apprise le(s) format(s) attendu(s) par votre service en amont. Il peut s'agir d'un seul format (la plupart des plugins) ou d'un tuple de formats pour un service qui en gère plusieurs nativement -- voir [Plugins Multi-Format](#plugins-multi-format) plus bas. Lorsqu'une notification arrive, Apprise résout le format déclaré par l'appelant par rapport à ce que le plugin prend réellement en charge, convertit le corps si nécessaire, puis le transmet -- déjà dans le format résolu -- à votre plugin. Au moment où `send()` s'exécute, le corps est pré-formaté. Votre code n'a pas besoin de le reconvertir.
+Lors de l'écriture d'un plugin, `notify_format` indique à Apprise les formats acceptés par le service. Utilisez un format unique ou un tuple/liste ordonné. Un tuple est recommandé pour une déclaration de classe. Apprise résout et convertit l'entrée déclarée avant `send()`.
 
 `body_format` désigne deux choses différentes selon le côté de `notify()` où vous regardez : le format source déclaré par l'appelant en entrée, et le format résolu et effectif que reçoit le `send()` de votre plugin en sortie. Les deux partagent le même nom de paramètre ; un nouveau booléen `format_controlled` indique à `send()` si l'appelant a déclaré une source ou non.
 
 | Valeur                               | Signification                                                     | Définie par                                                                     |
 | ------------------------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | `body_format` (entrée de `notify()`) | Format du message source, ou `None` si non déclaré                | `notify()`, `AppriseAsset`, CLI ou appelant API                                 |
-| `notify_format`                      | Format(s) que le plugin sait livrer                               | Classe du plugin, un seul format ou un tuple                                    |
+| `notify_format`                      | Format(s) que le plugin sait livrer                               | Classe du plugin, un format ou un tuple/liste ordonné                           |
 | `body_format` (entrée de `send()`)   | Le format réellement utilisé pour cet envoi -- jamais `None`      | Calculé une fois par appel à `notify()` et transmis à `send()` -- voir plus bas |
 | `format_controlled`                  | Indique si l'appelant a déclaré un format source, quel qu'il soit | Calculé en même temps que le `body_format` résolu ; voir plus bas               |
 
@@ -97,7 +97,7 @@ class NotifyExample(NotifyBase):
     notify_format = NotifyFormat.MARKDOWN
 ```
 
-Pour un plugin à format unique, la valeur effective est toujours accessible via `self.notify_format`. Pour un plugin multi-format (voir [Plugins Multi-Format](#plugins-multi-format) plus bas), `self.notify_format` contient le tuple complet déclaré -- acceptez `body_format` dans la signature de `send()` pour obtenir le format vers lequel cet envoi précis se résout, sans appeler vous-même `self.resolve_format()`.
+Pour un plugin à format unique, la valeur reste disponible via `self.notify_format`. Pour un plugin multi-format, cette propriété conserve la collection déclarée. Acceptez `body_format` dans `send()` pour connaître le format choisi.
 
 <Tabs syncKey="destination-format">
 <TabItem value="text" label="TEXT">
@@ -146,7 +146,7 @@ Le plugin est responsable de tout assainissement supplémentaire, du filtrage de
 
 ## Plugins Multi-Format
 
-Définissez `notify_format` comme un tuple plutôt qu'une valeur unique lorsqu'un service rend nativement plus d'un format, par exemple un service de chat proposant à la fois un mode HTML et un mode Markdown :
+Utilisez un tuple ou une liste ordonnée lorsque le service accepte plusieurs formats. Le premier élément est la valeur par défaut. Un tuple est préférable pour une constante de classe :
 
 ```python
 from apprise import NotifyFormat
@@ -226,7 +226,7 @@ La plupart des plugins ont seulement besoin de `self.notify_format` (ou du `body
 
 Au moment où `send()` s'exécute, la conversion et le dimensionnement sont déjà effectués. Ce que reçoit votre plugin :
 
-- **`body`** — déjà converti vers le format résolu et dimensionné selon `overflow_mode`. Avec `SPLIT`, chaque appel à `send()` reçoit un bloc d'au plus `body_maxlen` caractères. Avec `TRUNCATE`, le corps est limité à `body_maxlen`. Avec `UPSTREAM` (valeur par défaut), le corps arrive inchangé et peut dépasser la limite déclarée.
+- **`body`** — déjà converti et dimensionné selon `overflow_mode`. Le CommonMark déclaré bénéficie d'une réparation au mieux avant `send()`. Les marqueurs ajoutés peuvent dépasser légèrement `body_maxlen`.
 - **`title`** — tronqué à `title_maxlen` caractères. Lorsque `title_maxlen <= 0`, le titre a été fusionné dans `body` par la classe de base et arrive sous forme de chaîne vide.
 - **`body_format`** — le format vers lequel cet envoi s'est effectivement résolu (par exemple `NotifyFormat.HTML`), jamais `None` ; pas le texte original du corps lui-même.
 - **`format_controlled`** — `True` lorsque l'appelant a déclaré un format source quelconque, `False` si rien n'a été déclaré ; voir [Lire `body_format` et `format_controlled` dans `send()`](#lire-body_format-et-format_controlled-dans-send) plus haut.
@@ -294,15 +294,15 @@ Ceci reste un [plugin multi-format](#plugins-multi-format) dans le sens où `not
 </TabItem>
 </Tabs>
 
-## Gestion du Débordement après Adaptation
+## Gestion du Débordement avant l'Adaptation au Service
 
-Définissez `overflow_mode` sur la classe pour déclarer comment la classe de base gère le contenu qui dépasse `body_maxlen` ou `title_maxlen`. Chaque appel à `send()` reçoit du contenu déjà dimensionné en conséquence -- ne redécoupez pas ni ne retronquez dans `send()` :
+Définissez `overflow_mode` pour gérer le contenu qui dépasse `body_maxlen` ou `title_maxlen`. La découpe ou la troncature a lieu avant l'adaptation au dialecte du service dans `send()`.
 
 | Mode                | Appels à `send()` | Garantie sur le corps                  |
 | ------------------- | ----------------- | -------------------------------------- |
 | `UPSTREAM` (défaut) | Un seul           | Inchangé ; peut dépasser `body_maxlen` |
-| `TRUNCATE`          | Un seul           | Limité à `body_maxlen`                 |
-| `SPLIT`             | Un par bloc       | Chaque bloc ≤ `body_maxlen`            |
+| `TRUNCATE`          | Un seul           | Au mieux près de `body_maxlen`         |
+| `SPLIT`             | Un par bloc       | Au mieux près de `body_maxlen`         |
 
 ```python
 from apprise.common import OverflowMode
@@ -313,14 +313,16 @@ class NotifyExample(NotifyBase):
     overflow_mode = OverflowMode.SPLIT
 ```
 
-Le paramètre URL `?overflow=` permet aux utilisateurs de remplacer le mode par instance, mais la valeur par défaut de la classe doit correspondre à ce que l'API en amont peut réellement accepter.
+Pour le CommonMark déclaré, Apprise tente de préserver la lisibilité de la mise en forme lors d'une découpe. Cette réparation peut ajouter des marqueurs de fermeture. Une limite stricte peut donc être dépassée de quelques caractères. Le HTML et les variantes Markdown propres aux services restent traités au mieux.
+
+Le paramètre URL `?overflow=` permet de remplacer le mode pour une instance. La valeur par défaut de la classe doit correspondre aux capacités de l'API en amont.
 
 ## Frontières des Plugins
 
 - `apprise/conversion.py` convertit entre texte, HTML et Markdown standard. Il ne doit contenir aucune règle de syntaxe propre à un service.
 - La syntaxe propre au service, les règles d'échappement, les champs de charge utile et les modes API appartiennent exclusivement au fichier plugin.
 - Supprimer un fichier plugin doit supprimer tout le comportement de ce service sans aucune modification requise dans le code de conversion partagé.
-- Les utilitaires génériques sans connaissance propre à un service peuvent résider dans `conversion.py`. Exports actuels : `build_backtick_run_index`, `find_unescaped_run`, `commonmark_escape_link_url`, `commonmark_scan_angle_dest`, `commonmark_emphasis_run`, `commonmark_force_close_spans`, `commonmark_prepend_title`, `text_to_markdown`.
+- Les utilitaires génériques peuvent résider dans `conversion.py`. Les exports actuels incluent les analyseurs CommonMark, `commonmark_repair_chunk` et `text_to_markdown`.
 
 ## Liste de Contrôle d'Implémentation
 

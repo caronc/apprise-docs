@@ -7,14 +7,14 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-When writing a plugin, you declare `notify_format` to tell Apprise what format(s) your upstream service expects. This can be a single format (most plugins) or a tuple of formats for a service that natively speaks more than one -- see [Multi-Format Plugins](#multi-format-plugins) below. When a notification arrives, Apprise resolves the caller's declared format against what the plugin actually supports, converts the body if necessary, and hands it — already in the resolved format — to your plugin. By the time `send()` runs, the body is pre-formatted. Your code does not need to re-convert it.
+When writing a plugin, `notify_format` tells Apprise which formats the service accepts. Use one format for most plugins or an ordered tuple/list for a multi-format service. Tuples are recommended for class declarations. Apprise resolves and converts declared input before `send()` runs.
 
 `body_format` means two different things depending on which side of `notify()` you're looking at: the caller's declared source going in, and the resolved, operative format your plugin's `send()` receives coming out. Both use the same parameter name; a new `format_controlled` boolean tells `send()` whether the caller declared a source at all.
 
 | Value                           | Meaning                                                    | Set by                                                                  |
 | ------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `body_format` (into `notify()`) | Format of the incoming message, or `None` if undeclared    | `notify()`, `AppriseAsset`, CLI, or API caller                          |
-| `notify_format`                 | Format(s) the plugin can deliver to its service            | Plugin class; a single format or a tuple                                |
+| `notify_format`                 | Format(s) the plugin can deliver to its service            | Plugin class; one format or an ordered tuple/list                       |
 | `body_format` (into `send()`)   | The one format actually used for this send -- never `None` | Computed once per `notify()` call and passed into `send()` -- see below |
 | `format_controlled`             | Whether the caller declared any source format at all       | Computed alongside the resolved `body_format`; see below                |
 
@@ -97,7 +97,7 @@ class NotifyExample(NotifyBase):
     notify_format = NotifyFormat.MARKDOWN
 ```
 
-For a single-format plugin, the effective value is always accessible as `self.notify_format`. For a multi-format plugin (see [Multi-Format Plugins](#multi-format-plugins) below), `self.notify_format` holds the full declared tuple -- accept `body_format` in `send()`'s signature to get the one format this particular send resolves to, without calling `self.resolve_format()` yourself.
+For a single-format plugin, the value is available as `self.notify_format`. For a multi-format plugin, this property keeps the declared collection. Accept `body_format` in `send()` to get the selected format.
 
 <Tabs syncKey="destination-format">
 <TabItem value="text" label="TEXT">
@@ -146,7 +146,7 @@ The plugin is responsible for any further sanitization, tag allowlisting, or pay
 
 ## Multi-Format Plugins
 
-Set `notify_format` to a tuple instead of a single value when a service natively renders more than one format, for example a chat service that offers both an HTML mode and a Markdown mode:
+Use an ordered tuple or list when a service accepts several formats. The first entry is the default. A tuple is preferred for a class constant:
 
 ```python
 from apprise import NotifyFormat
@@ -226,7 +226,7 @@ Most plugins only need `self.notify_format` (or the `body_format` passed into `s
 
 By the time `send()` runs, conversion and sizing are already done. What your plugin receives:
 
-- **`body`** — already converted to the resolved format and sized according to `overflow_mode`. With `SPLIT`, each `send()` call receives one chunk of at most `body_maxlen` characters. With `TRUNCATE`, the body is capped at `body_maxlen`. With `UPSTREAM` (the default), the body arrives unmodified and may exceed the declared limit.
+- **`body`** — already converted and sized according to `overflow_mode`. Declared CommonMark gets best-effort boundary repair before `send()`. Closing markers can make the result slightly longer than `body_maxlen`.
 - **`title`** — truncated to `title_maxlen` characters. When `title_maxlen <= 0`, the title has been folded into `body` by the base class and arrives as an empty string.
 - **`body_format`** — the one format this send actually rendered as (e.g. `NotifyFormat.HTML`), never `None`; not the original body text itself.
 - **`format_controlled`** — `True` when the caller declared any source format at all, `False` when nothing was declared; see [Reading `body_format` and `format_controlled` in `send()`](#reading-body_format-and-format_controlled-in-send) above.
@@ -292,15 +292,15 @@ This is still a [multi-format plugin](#multi-format-plugins) in the sense that `
 </TabItem>
 </Tabs>
 
-## Overflow Handling after Adaptation
+## Overflow Handling before Service Adaptation
 
-Set `overflow_mode` on the class to declare how the base class handles content that exceeds `body_maxlen` or `title_maxlen`. Each `send()` call receives content that has already been sized accordingly — do not re-split or re-truncate inside `send()`:
+Set `overflow_mode` to control content that exceeds `body_maxlen` or `title_maxlen`. Splitting and truncation happen before service-specific dialect conversion in `send()`.
 
 | Mode                 | `send()` calls | Body guarantee                       |
 | -------------------- | -------------- | ------------------------------------ |
 | `UPSTREAM` (default) | One            | Unmodified; may exceed `body_maxlen` |
-| `TRUNCATE`           | One            | Capped at `body_maxlen`              |
-| `SPLIT`              | One per chunk  | Each chunk ≤ `body_maxlen`           |
+| `TRUNCATE`           | One            | Best effort near `body_maxlen`       |
+| `SPLIT`              | One per chunk  | Best effort near `body_maxlen`       |
 
 ```python
 from apprise.common import OverflowMode
@@ -311,14 +311,16 @@ class NotifyExample(NotifyBase):
     overflow_mode = OverflowMode.SPLIT
 ```
 
-The `?overflow=` URL parameter lets users override the mode per instance, but the class default should match what the upstream API actually accepts.
+For declared CommonMark, Apprise tries to keep formatting readable across a boundary. Repair can add closing markers, so a strict service limit may still be exceeded by a few characters. HTML and service-specific Markdown remain best effort.
+
+The `?overflow=` URL parameter lets users override the mode per instance. The class default should match what the upstream API accepts.
 
 ## Plugin Boundaries
 
 - `apprise/conversion.py` converts between text, HTML, and standard Markdown. It must not contain syntax rules for any specific service.
 - Service-specific syntax, escaping rules, payload fields, and API modes belong exclusively in the plugin file.
 - Removing a plugin file must remove all behavior for that service with no changes required to the shared conversion code.
-- Generic utilities with no service-specific knowledge may live in `conversion.py`. Current exports: `build_backtick_run_index`, `find_unescaped_run`, `commonmark_escape_link_url`, `commonmark_scan_angle_dest`, `commonmark_emphasis_run`, `commonmark_force_close_spans`, `commonmark_prepend_title`, `text_to_markdown`.
+- Generic utilities with no service-specific knowledge may live in `conversion.py`. Current exports include the CommonMark scanners, `commonmark_repair_chunk`, and `text_to_markdown`.
 
 ## Implementation Checklist
 
