@@ -13,7 +13,7 @@ C'est idéal lorsque vous voulez une intégration rapide sans créer puis publie
 Le système de décorateurs fonctionne en important un module Python et en collectant toute fonction enregistrée avec `@notify()`.
 Ces fonctions sont ensuite exposées comme des schémas Apprise.
 
-## Quand utiliser un décorateur
+## Quand Utiliser un Décorateur
 
 Utilisez un gestionnaire basé sur décorateur lorsque :
 
@@ -27,7 +27,7 @@ Utilisez un gestionnaire basé sur décorateur lorsque :
 - vous avez besoin d'un parsing strict, de modèles, de reconstruction native d'URL, de batch ou d'une logique de retry robuste ;
 - vous avez besoin d'une stabilité à long terme, d'une distribution publique ou d'un usage tiers.
 
-## Note de sécurité critique
+## Note de Sécurité Critique
 
 Le système de décorateur nécessite d'importer un module Python pour découvrir les fonctions décorées.
 **Importer un module exécute du code au moment de l'import.**
@@ -41,7 +41,7 @@ Cela signifie :
 N'utilisez des gestionnaires basés sur décorateur qu'avec du **code de confiance** dans des **environnements contrôlés**.
 Ne pointez pas Apprise vers un emplacement partagé ou non fiable sur le système de fichiers.
 
-## Décorateur vs plugin complet
+## Décorateur vs Plugin Complet
 
 Voici la règle pratique.
 
@@ -59,7 +59,7 @@ Voici la règle pratique.
 
 Si votre gestionnaire a vocation à être réutilisé, devient critique pour le métier ou requiert un parsing d'URL solide, un vrai plugin Apprise est généralement plus adapté.
 
-## Utilisation de base
+## Utilisation de Base
 
 Au minimum, vous devez définir un **schéma unique** et une fonction Python.
 
@@ -78,7 +78,7 @@ Une fois chargé, Apprise peut déclencher cette fonction avec :
 apprise -b "Hello world" foobar://
 ```
 
-### Valeurs de retour
+### Valeurs de Retour
 
 Une fonction décorée doit renvoyer :
 
@@ -88,27 +88,29 @@ Une fonction décorée doit renvoyer :
 
 Les échecs remontent à Apprise et affectent le statut global de la notification.
 
-## Signature de fonction
+## Signature de Fonction
 
 Votre fonction wrapper peut accepter les paramètres suivants.
 
-| Paramètre           | Requis | Description                                                                                                                                         |
-| ------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `body`              | Oui    | Corps de la notification                                                                                                                            |
-| `title`             | Non    | Titre de la notification                                                                                                                            |
-| `notify_type`       | Non    | L'une des valeurs `info`, `success`, `warning`, `failure`                                                                                           |
-| `body_format`       | Non    | Le format résolu pour cet envoi (`text`, `html` ou `markdown`) -- jamais `None`, même si l'appelant n'a rien déclaré                                |
-| `format_controlled` | Non    | `True` si l'appelant a déclaré un format source quelconque, `False` si rien n'a été déclaré                                                         |
-| `meta`              | Non    | Métadonnées d'URL analysées et fusionnées                                                                                                           |
-| `attach`            | Non    | Liste d'objets `AppriseAttachment`<br/> Voir [Pièces jointes](../attachments/) pour lire, valider et transmettre des fichiers depuis un décorateur. |
-| `*args`             | Oui    | Requis pour la compatibilité future                                                                                                                 |
-| `**kwargs`          | Oui    | Requis pour la compatibilité future                                                                                                                 |
+| Paramètre          | Requis | Description                                                                                                                                         |
+| ------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`             | Oui    | Corps de la notification                                                                                                                            |
+| `title`            | Non    | Titre de la notification                                                                                                                            |
+| `notify_type`      | Non    | L'une des valeurs `info`, `success`, `warning`, `failure`                                                                                           |
+| `body_format`      | Non    | Le format résolu pour cet envoi (`text`, `html` ou `markdown`) -- jamais `None`, même si l'appelant n'a rien déclaré                                |
+| `body_passthrough` | Non    | `True` si aucune source n'a été déclarée et que la conversion automatique a été ignorée ; sinon `False`                                             |
+| `meta`             | Non    | Métadonnées d'URL analysées et fusionnées                                                                                                           |
+| `attach`           | Non    | Liste d'objets `AppriseAttachment`<br/> Voir [Pièces jointes](../attachments/) pour lire, valider et transmettre des fichiers depuis un décorateur. |
+| `*args`            | Oui    | Requis pour la compatibilité future                                                                                                                 |
+| `**kwargs`         | Oui    | Requis pour la compatibilité future                                                                                                                 |
 
 Incluez toujours `*args` et `**kwargs` afin de rester compatible avec les futures versions d'Apprise.
 
-### Déclarer un format
+### Déclarer un Format
 
-Par défaut, votre fonction reçoit le corps **exactement tel que l'appelant l'a envoyé** -- Apprise ne le convertit ni ne le reformate jamais, sauf si vous en faites explicitement la demande. C'est voulu : vous contrôlez déjà qui appelle votre décorateur, le framework n'essaie donc pas de deviner ce dont votre contenu a besoin. Ajoutez `body_format=` à `@notify()` si votre gestionnaire veut qu'Apprise résolve/convertisse d'abord le corps :
+Par défaut, votre fonction reçoit le corps **exactement tel que l'appelant l'a
+envoyé**. Pour demander à Apprise de le convertir d'abord, ajoutez
+`body_format=` à `@notify()` :
 
 ```python
 from apprise import NotifyFormat
@@ -120,9 +122,15 @@ def my_wrapper(body, title, notify_type, *args, **kwargs):
     ...
 ```
 
-`body_format=` accepte un seul format, ou un tuple lorsque votre gestionnaire en prend plusieurs en charge (le premier élément est la valeur par défaut). Consultez [Pipeline des formats de message](../message-format-conversion/) pour la vue complète, y compris le fonctionnement des remplacements `?format=` et de la résolution multi-format.
+`body_format=` accepte un format ou un tuple de formats pris en charge. Le
+premier format du tuple est utilisé par défaut. Consultez
+[Conversion du Format des Messages](../message-format-conversion/) pour voir
+d'autres exemples.
 
-Sans `body_format=` sur `@notify()`, le gestionnaire accepte tous les formats, donc rien n'est jamais converti -- votre fonction reçoit quand même `body_format` et `format_controlled` dans ses kwargs (voir [Lire `body_format` et `format_controlled` dans `send()`](../message-format-conversion/#lire-body_format-et-format_controlled-dans-send)), mais `body_format` se contente de rapporter ce à quoi l'appelant s'est aligné (ou la valeur par défaut, `TEXT`, si rien n'a été déclaré) plutôt que de déclencher une conversion.
+Sans `body_format=`, Apprise ne convertit pas le corps. Votre fonction reçoit
+tout de même `body_format` et `body_passthrough` dans `kwargs`. `body_format`
+indique le format fourni par l'appelant, ou `TEXT` si aucun format n'a été
+précisé.
 
 Un wrapper minimal peut ressembler à ceci :
 
@@ -134,7 +142,7 @@ def my_wrapper(body, *args, **kwargs):
     print(body)
 ```
 
-## Le dictionnaire `meta`
+## Le Dictionnaire `meta`
 
 Le paramètre `meta` fournit une vue entièrement analysée et fusionnée de :
 
@@ -162,7 +170,7 @@ Exemple de structure :
 
 Seuls les champs présents dans l'URL sont inclus. Au minimum, `schema`, `url`, `asset` et `tag` sont toujours présents.
 
-## Déclarations complexes
+## Déclarations Complexes
 
 Le décorateur peut précharger des valeurs par défaut en spécifiant une URL complète.
 
@@ -192,7 +200,7 @@ Résultat fusionné :
 }
 ```
 
-## Exemples de plugins
+## Exemples de Plugins
 
 <Tabs>
 <TabItem value="logger" label="Logger simple">
@@ -402,7 +410,7 @@ Ces exemples montrent qu'Apprise peut aller bien au-delà des simples notificati
 
 Les valeurs par défaut définies dans le décorateur persistent tant qu'elles ne sont pas explicitement surchargées.
 
-## Comportement d'enregistrement du plugin
+## Comportement d'Enregistrement du Plugin
 
 En interne, le décorateur :
 
@@ -413,7 +421,7 @@ En interne, le décorateur :
 
 Si un schéma existe déjà, Apprise journalise un avertissement et ignore l'enregistrement.
 
-## Charger des décorateurs personnalisés
+## Charger des Décorateurs Personnalisés
 
 ### CLI Apprise
 
@@ -458,7 +466,7 @@ Règles de scan des répertoires :
 
 ---
 
-## Restrictions et bonnes pratiques
+## Restrictions et Bonnes Pratiques
 
 - les schémas doivent être uniques ;
 - gardez les modules sûrs à importer ;

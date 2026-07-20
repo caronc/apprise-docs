@@ -1,13 +1,15 @@
 ---
 title: "Data Overflow"
-description: "Handling upstream services that can't sustain the data you're providing it"
+description: "Split or shorten messages that exceed a service's limit"
 sidebar:
   order: 10
 ---
 
 ## Introduction
 
-Out of the box, Apprise passes the full message (and title) you provide right along to the notification source(s). Some sources can handle a large surplus of data while others might not. These limitations are documented (_to the best of my knowledge_) on each of the [individual services corresponding wiki pages](../../services/).
+Apprise normally sends your full message and title. Some services limit their
+length. When known, these limits appear on the relevant
+[service page](../../services/).
 
 Use the **overflow** parameter when you want Apprise to handle these limits for you. Add it to your Apprise URL, for example:
 
@@ -16,7 +18,7 @@ Use the **overflow** parameter when you want Apprise to handle these limits for 
 - `schema://path/?overflow=upstream`
 - `schema://path/?other=options&more=settings&overflow=split`
 
-The possible **overflow=** options are defined as:
+Choose one of these values:
 
 | Variable     | Description                                                                                                                                                      |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -25,11 +27,11 @@ The possible **overflow=** options are defined as:
 | **upstream** | Passes the full body to the service and lets it enforce its own limit. This is the default.                                                                      |
 
 :::caution
-The **overflow=** option is a best-effort safeguard:
+Message limits vary between services, so this is a best-effort safeguard:
 
-- Apprise prefers word boundaries when possible. It also tries to keep declared Markdown readable when a boundary cuts its formatting.
-- Repair may add a few closing characters. A service with a strict limit can still reject the result.
-- HTML tags and service-specific Markdown may not survive every split cleanly.
+- Apprise tries to split between words.
+- Formatting may change slightly when a message is split.
+- A service may still reject a piece that is close to a strict limit.
 - `split` can turn one large body into many notifications. Be especially careful with SMS or mobile services, where every message may count toward your plan or appear on your phone bill. Use `truncate` when losing the end is safer than sending many messages.
 
 :::
