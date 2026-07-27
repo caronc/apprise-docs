@@ -54,6 +54,17 @@ A quick rule of thumb:
 - `a.path` triggers a download or validation step when needed.
 - `len(a)` returns the attachment size in bytes, when known.
 
+### `send()` May Be Called More Than Once
+
+A long message may be split across several `send()` calls. Apprise includes
+`attach` in only one of those calls, so `if attach:` prevents the same files
+from being sent with every piece.
+
+The attachment is sent with the first piece by default. To send it with another
+piece, override `_attachment_send_index()`. See
+[Knowing Your Position Among Multiple `send()` Calls](../extending/message-format-conversion/#knowing-your-position-among-multiple-send-calls)
+for an example.
+
 ## Attachment Sources
 
 Apprise supports multiple attachment sources. These are all normalized to
@@ -399,7 +410,7 @@ for attachment in attach:
 
 An attachment can fail because it is missing, exceeds size limits, is inaccessible for the current runtime location, or could not be downloaded.
 
-### Prefer `attachment.open()` for upload APIs
+### Prefer `attachment.open()` for Upload APIs
 
 Many services require multipart uploads. Use `attachment.open()` to get a file-like object — this works correctly for **all** attachment types, including `AttachMemory` which has no path on disk:
 
@@ -427,7 +438,7 @@ with attachment as f:
 Do **not** call `open(attachment.path, "rb")` directly. `attachment.path` returns `None` for remote attachments that have not yet been downloaded, and returns only a bare filename (not a full path) for `AttachMemory` objects — both will raise an `OSError`. Always use `attachment.open()` or `with attachment as f:` instead.
 :::
 
-### Base64 When The Upstream Requires It
+### Base64 When the Service Requires It
 
 All attachment types support Base64 export. Some APIs require base64 encoded attachments. Use `attachment.base64()`:
 
@@ -465,10 +476,10 @@ If you hold on to attachment objects beyond `send()`, you are responsible for un
 - Attachment support is opt-in per plugin using `attachment_support = True`. If your service cannot accept files, leave this disabled.
 - Use `attachment.url(privacy=True)` in logs. This ensures any embedded secrets are redacted.
 
-## Guidance For Plugin Authors
+## Guidance for Plugin Authors
 
 Plugins should validate attachment size and count early and handle inaccessible
-attachments gracefully
+attachments gracefully.
 
 ## Practical Examples in Core Plugins
 

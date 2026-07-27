@@ -688,7 +688,7 @@ Votre plugin devrait hériter de `NotifyBase`, ce qui lui donne les valeurs par 
 | `persistent_storage`                | `True`     | Autorise l'utilisation du stockage persistant.                                              | Si votre plugin ne doit jamais stocker d'identifiants ni d'état.                    |
 | `storage_mode`                      | `memory`   | Mode de stockage persistant par défaut.                                                     | Rare, mais ajustable pour des comportements particuliers.                           |
 | `timezone`                          | `None`     | Utilise le fuseau détecté par le serveur quand `None`.                                      | Si votre service doit toujours fonctionner dans un fuseau précis.                   |
-| `notify_format`                     | `text`     | Format(s) de message par défaut ; une seule valeur ou un tuple.                             | Si votre service privilégie Markdown ou HTML, ou rend nativement plusieurs formats. |
+| `notify_format`                     | `text`     | Format(s) par défaut ; une valeur ou un tuple/liste ordonné.                                | Si votre service privilégie Markdown ou HTML, ou rend nativement plusieurs formats. |
 | `overflow_mode`                     | `upstream` | Stratégie de dépassement par défaut.                                                        | Si vous voulez qu'Apprise découpe, tronque ou modifie le dépassement.               |
 | `interpret_emojis`                  | `False`    | Interprétation des emojis.                                                                  | Si le service amont bénéficie d'une conversion des emojis.                          |
 | `attachment_support`                | `False`    | Activation des pièces jointes.                                                              | Définissez `True` si vous acceptez les pièces jointes.                              |
@@ -1180,10 +1180,10 @@ ne le redéclarez pas sur l'alias.
 
 ### `service_url` vs `setup_url`
 
-| Attribut      | Rôle                                                                                                                                                                       |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `service_url` | Lien vers la page d'accueil du fournisseur ou du produit amont (par exemple `https://discord.com/`). Affiché comme "Site du service" dans le générateur d'URL.             |
-| `setup_url`   | Lien vers le guide d'intégration spécifique à Apprise sur `appriseit.com` (par exemple `https://appriseit.com/services/discord/`). Affiché comme "Guide de configuration". |
+| Attribut      | Rôle                                                                                                                                                                                                                                                                                                                |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `service_url` | Lien vers la page d'accueil du fournisseur ou du produit amont (par exemple `https://discord.com/`). Affiché comme "Site du service" dans le générateur d'URL.                                                                                                                                                      |
+| `setup_url`   | Lien vers le guide d'intégration spécifique à Apprise sur `appriseit.com` (par exemple `https://appriseit.com/services/discord/`). Affiché comme "Guide de configuration". Vous pouvez créer ou mettre à jour cette documentation dans le [dépôt de documentation Apprise](https://github.com/caronc/apprise-docs). |
 
 Les deux devraient toujours être définis. Les plugins génériques ou purement
 locaux (par exemple MQTT, notifications Windows) peuvent omettre `service_url`

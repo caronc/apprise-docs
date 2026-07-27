@@ -37,19 +37,20 @@ Mutating an asset after it has been bound to `Apprise` can produce inconsistent 
 
 ## Object Initialization
 
-`AppriseAsset.__init__()` accepts a small number of explicit arguments, plus `**kwargs`.
+`AppriseAsset.__init__()` provides named arguments for storage, timeouts,
+payload limits, and other shared settings. Always use the documented
+constructor name, such as `timezone=`, `service_timeout=`, or
+`payload_max_size=`. These arguments validate values before applying them.
 
-- The explicit arguments (`plugin_paths`, `storage_*`, `timezone`) are validated and normalised.
-- `**kwargs` can override any _existing_ asset attribute, and will raise if an invalid key is provided.
-
-This is intentional. It prevents configuration files from quietly setting unknown fields and it keeps the surface area strict.
+Python constructor arguments and YAML `asset:` keys are separate interfaces.
+Some settings are available to applications through `AppriseAsset(...)` but
+are intentionally unavailable to YAML configuration.
 
 ---
 
 ## Defaults and Field Reference
 
 This table documents the **actual defaults** from the implementation, plus where each field is used.
-Fields prefixed with `_` or `__` are intentionally **not** configuration-file addressable.
 
 ### Identity and Presentation
 
@@ -76,12 +77,12 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 ### Content Interpretation
 
-| Field               | Type           | Default | Used by                | Notes                                                                                                                                                       |
-| ------------------- | -------------- | ------: | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `body_format`       | `NotifyFormat` |  `None` | `None`                 | Formatting pipeline If `None`, no pre-formatting is applied by default.                                                                                     |
-| `interpret_emojis`  | `bool`         |  `None` | `None`                 | Message pre-processing. If `None`, it defers to per-service configuration (for example, `emojis=yes` at the URL level).                                     |
-| `interpret_escapes` | `bool`         | `False` | Message pre-processing | Enables `\n`, `\t`, etc. prior to sending.                                                                                                                  |
-| `encoding`          | `str`          | `utf-8` | Encoding               | Used when encoding internal strings for processing. Plays a roll in how some services output their content upstream. It is advised to leave this at `utf-8` |
+| Field               | Type           | Default | Used by                | Notes                                                                                                                                             |
+| ------------------- | -------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body_format`       | `NotifyFormat` |  `None` | Message pre-processing | Selects the default input format. If `None`, no pre-formatting is applied.                                                                        |
+| `interpret_emojis`  | `bool`         |  `None` | Message pre-processing | Controls emoji conversion. If `None`, it defers to each service (for example, `emojis=yes` at the URL level).                                     |
+| `interpret_escapes` | `bool`         | `False` | Message pre-processing | Enables `\n`, `\t`, etc. prior to sending.                                                                                                        |
+| `encoding`          | `str`          | `utf-8` | Encoding               | Used when encoding strings for processing and by some services when sending content. Keep the default unless a service requires another encoding. |
 
 ### Concurrency and Delivery
 
@@ -140,13 +141,14 @@ With `pgp_autogen = False`, no key pair is created automatically. Apprise falls 
 
 ### Safety Boundaries
 
-| Field            | Type     |      Default | Used by                     | Notes                                                                                                                                                                                                       |
-| ---------------- | -------- | -----------: | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `http_redirects` | `bool`   |       `True` | All HTTP plugins            | When `True` (the default), plugins follow 3xx redirects, matching the behaviour of the underlying requests library. Set to `False` to disable redirect following globally without touching individual URLs. |
-| `secure_logging` | `bool`   |       `True` | Logging pipeline            | Adds overhead to redact secrets from logs, recommended to keep enabled.                                                                                                                                     |
-| `_recursion`     | `int`    |          `0` | Apprise API recursion guard | Prevents loops when one Apprise API instance calls another.                                                                                                                                                 |
-| `_uid`           | `str`    | random UUID4 | Correlation / identity      | Internal identifier, intended for internal correlation.                                                                                                                                                     |
-| `_tzinfo`        | `tzinfo` |    system tz | Time-based behaviour        | The resolved timezone object used by plugins that need localised timestamps.                                                                                                                                |
+| Field                      | Type             |   Default | Used by                      | Notes                                                                                                                                                                                                       |
+| -------------------------- | ---------------- | --------: | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_redirects`           | `bool`           |    `True` | All HTTP plugins             | When `True` (the default), plugins follow 3xx redirects, matching the behaviour of the underlying requests library. Set to `False` to disable redirect following globally without touching individual URLs. |
+| `secure_logging`           | `bool`           |    `True` | Logging pipeline             | Adds overhead to redact secrets from logs, recommended to keep enabled.                                                                                                                                     |
+| `payload_max_size`         | `int`            |       `0` | Message formatting/splitting | Optional input ceiling for the combined title and body. `0` disables it. Applies to every `overflow=` mode.                                                                                                 |
+| `payload_buffer_threshold` | `int`            |      `10` | Message formatting/splitting | A title or body at or below this length may remain whole; see [Payload Size Cap](#payload-size-cap).                                                                                                        |
+| `payload_min_buffer`       | `int`            |      `25` | Message formatting/splitting | Characters reserved for the other side before keeping a short side whole; see [Payload Size Cap](#payload-size-cap).                                                                                        |
+| `timezone`                 | `str` / `tzinfo` | system tz | Time-based behaviour         | Sets the timezone used by plugins that generate timestamps. Accepts an IANA name such as `"America/Toronto"` or a `tzinfo` object. YAML accepts `timezone` or its `tz` alias.                               |
 
 ## Common Usage Patterns
 
@@ -243,7 +245,8 @@ asset = AppriseAsset(
 
 <TabItem value="timezone" label="Timezone Control" >
 
-Plugins that generate timestamps (for example email Date headers) use the resolved `tzinfo`.
+Plugins that generate timestamps (for example email Date headers) use the
+configured timezone.
 
 ```python
 from apprise import AppriseAsset
@@ -307,20 +310,71 @@ asset = AppriseAsset(secure_logging=True)
 
 Disabling this is strongly discouraged outside isolated environments.
 
-### Recursion Protection
+### Payload Size Cap
 
-The asset internally tracks recursion depth to prevent notification loops,
-particularly when Apprise instances interact with one another.
+`payload_max_size` is the payload limit, or total character budget (`N`), for
+the title and body before formatting or splitting begins. A value of `0`
+disables the limit. If the title and body already fit within `N`, Apprise
+leaves both unchanged.
+
+```python
+asset = AppriseAsset(payload_max_size=100000)
+```
+
+Three settings work together when the content is larger than `N`:
+
+| Setting                    | Default | Purpose                                                                   |
+| -------------------------- | ------- | ------------------------------------------------------------------------- |
+| `payload_max_size`         | `0`     | Sets `N`, the total budget. `0` disables the limit.                       |
+| `payload_buffer_threshold` | `10`    | A title or body of this length or shorter may be kept whole.              |
+| `payload_min_buffer`       | `25`    | Space the other side must retain before the short side can be kept whole. |
+
+With the default values, an oversized payload is resolved in this order:
+
+1. **One side is empty:** The other side receives the full budget.
+2. **One side is short:** A title of 10 characters or fewer stays whole if
+   the body can keep 25 characters, or its full length when shorter. The
+   same rule then checks for a short body. If both qualify, the title is
+   checked first.
+3. **Otherwise:** The title and body share `N` in proportion to their
+   original lengths. When `N` has room for both, each keeps at least one
+   character.
+
+For example, a 20-character title and an 18-character body with `N=20`
+split approximately 10/10. A smaller cap may still leave a short fragment,
+but it does not favor one side when both can be represented.
+
+Library users can change both settings when constructing the asset:
+
+```python
+asset = AppriseAsset(
+    payload_max_size=100000,
+    payload_buffer_threshold=10,
+    payload_min_buffer=25,
+)
+```
+
+Setting `payload_min_buffer=0` removes the reservation, so a qualifying
+short side may use the entire cap.
+
+Formatting and escaping can add a few characters afterward. The limit
+applies to every `overflow=` mode, including `upstream`.
 
 ## Configuration File Boundaries
 
-The following fields **cannot** be set via configuration files:
+YAML deliberately supports a smaller set of asset settings than the Python
+constructor. Numeric controls such as `service_timeout`, `payload_max_size`,
+`payload_buffer_threshold`, and `payload_min_buffer` must be supplied
+through their named `AppriseAsset(...)` arguments. Plugin paths and storage
+settings are also application-controlled so configuration files cannot load
+code or redirect persistent storage.
 
-- `plugin_paths`
-- `storage_*`
-- Internal flags prefixed with `_`
+`timezone` is supported in YAML and may also use the `tz` alias:
 
-These must be provided programmatically to prevent untrusted code execution.
+```yaml
+asset:
+  timezone: America/Toronto # or: tz: America/Toronto
+```
 
 ## See Also
 
