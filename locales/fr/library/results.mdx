@@ -5,6 +5,8 @@ sidebar:
   order: 4.5
 ---
 
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 `notify()` et `async_notify()` retournent un objet résultat plutôt qu'un simple
 `True`/`False`. Pour vérifier seulement la réussite ou l'échec, traitez-le comme
 un booléen comme avant.
@@ -249,36 +251,80 @@ for entry in result.logs():
 
 ## Suivre les Journaux en Direct
 
-Tout ce qui précède lit les journaux _après_ que `notify()` a déjà terminé. Si vous
-construisez quelque chose comme un flux console en direct ou un panneau de
-progression dans votre propre application, vous ne voulez pas attendre -- vous
-voulez savoir qu'un avertissement ou une erreur s'est produit au moment même où
-cela se produit, même pendant que plusieurs services sont encore en train d'être
-notifiés en arrière-plan.
+Les exemples précédents lisent les journaux après la fin de `notify()`. Utilisez
+un callback lorsqu'une console ou un suivi de progression doit afficher les
+avertissements et les erreurs pendant l'envoi.
 
-Utilisez `log_callback` pour cela. Donnez-lui une fonction, et Apprise
-l'appelle avec `(entry, service)` pour chaque `NotifyLogEntry` au moment où elle
-est capturée, en direct :
+Utilisez `log_callback` pour recevoir chaque `NotifyLogEntry` en direct.
+Apprise l'appelle de manière synchrone avec `(entry, service)`. Vous pouvez
+utiliser une fonction, une lambda ou un autre objet appelable.
+
+<Tabs>
+<TabItem label="Synchrone">
+
+Affichez, collectez ou transmettez chaque entrée sans `asyncio` :
 
 ```python
 def on_log(entry, service):
-    print(f"[{service.name}] {entry}")
+    print(f"[{service.service_name}] {entry}")
 
 apobj = apprise.Apprise(log_callback=on_log)
 apobj.add("slack://tokenA/tokenB/tokenC")
 apobj.add("discord://webhook_id/webhook_token")
 
-# on_log() se déclenche pour chaque avertissement/erreur au moment où il se
-# produit, potentiellement pour les deux services à la fois, pas seulement
-# une fois que notify() est terminé
+# S'exécute dès qu'un service journalise un avertissement ou une erreur.
 apobj.notify(body="Déploiement de la nouvelle version")
 ```
 
-Le callback peut être n'importe quel objet appelable qui accepte ces deux
-arguments : une fonction, une lambda, ou un objet avec une méthode `__call__()`.
-Une fonction classique suffit souvent. Utilisez `Apprise(log_callback=...)` comme
-valeur par défaut pour tout l'objet, ou `notify(log_callback=...)` pour un seul
-envoi :
+</TabItem>
+<TabItem label="Travail asynchrone">
+
+`log_callback` ne peut pas être une fonction `async def`, même dans une
+application `asyncio`. Planifiez le travail asynchrone depuis une fonction
+classique. Conservez chaque tâche jusqu'à sa fin et vérifiez ses erreurs :
+
+```python
+# Garde les envois en cours jusqu'à leur fin.
+background_tasks = set()
+loop = asyncio.get_running_loop()
+
+def log_task_error(task):
+    # Signale les erreurs sans lire l'exception d'une tâche annulée.
+    if not task.cancelled() and (exc := task.exception()):
+        print(f"publish_log a échoué : {exc}")
+
+def schedule_log(entry, service):
+    # Cette fonction s'exécute en sécurité sur la boucle d'événements.
+    task = loop.create_task(
+        websocket.send_json(
+            {
+                "service": service.service_name,
+                "level": entry.level,
+                "message": entry.message,
+            }
+        )
+    )
+    background_tasks.add(task)
+    # Libère la tâche et signale toute erreur à la fin.
+    task.add_done_callback(background_tasks.discard)
+    task.add_done_callback(log_task_error)
+
+def publish_log(entry, service):
+    # Rend le travail à la boucle depuis n'importe quel thread.
+    loop.call_soon_threadsafe(schedule_log, entry, service)
+
+apobj = apprise.Apprise(log_callback=publish_log)
+apobj.add("discord://webhook_id/webhook_token")
+
+# async_notify() reste utilisable avec await.
+result = await apobj.async_notify(body="Déploiement démarré")
+```
+
+</TabItem>
+</Tabs>
+
+Définissez une valeur par défaut avec `Apprise(log_callback=...)`, ou passez
+`log_callback` à `notify()` ou `async_notify()` pour un seul envoi :
 
 ```python
 recent_logs = []
@@ -287,7 +333,7 @@ def collect_log(entry, service):
     # Gardez juste les informations utiles pour la page d'état de votre app.
     recent_logs.append(
         {
-            "service": service.name,
+            "service": service.service_name,
             "level": entry.level,
             "message": entry.message,
         }
@@ -303,58 +349,28 @@ result = apobj.notify(
 )
 ```
 
-Si votre application utilise déjà `asyncio`, le callback peut aussi retourner une
-coroutine. Utilisez-le avec `async_notify()` afin qu'Apprise dispose d'une boucle
-d'événements pour le planifier :
-
-```python
-async def publish_log(entry, service):
-    await websocket.send_json(
-        {
-            "service": service.name,
-            "level": entry.level,
-            "message": entry.message,
-        }
-    )
-
-apobj = apprise.Apprise(log_callback=publish_log)
-apobj.add("discord://webhook_id/webhook_token")
-
-result = await apobj.async_notify(body="Déploiement démarré")
-```
-
 Quelques points à connaître :
 
-- **C'est entièrement optionnel.** Omettez-le (le comportement par défaut) et
-  tout fonctionne exactement comme avant -- `log_callback` ne change rien à la
-  valeur de retour de `notify()` ni aux journaux que vous pouvez déjà lire dans
-  le résultat après coup.
+- **C'est optionnel.** Il ne modifie ni le résultat de `notify()` ni les
+  journaux enregistrés.
 - **Définissez-le une fois, ou juste pour un appel.** `Apprise(log_callback=...)`
-  s'applique à chaque appel `notify()`/`async_notify()` effectué avec cet objet.
-  Passer `log_callback=` directement à `notify()` remplace cette valeur par
-  défaut pour ce seul appel :
+  s'applique à tous les envois de cet objet. Le passer à `notify()` ou
+  `async_notify()` remplace la valeur par défaut pour un seul appel :
 
   ```python
   apobj.notify(body="Alerte ponctuelle", log_callback=on_log)
   ```
 
 - **Il peut être appelé depuis plusieurs threads à la fois.** Apprise peut
-  notifier plusieurs services en parallèle, donc si deux services journalisent
-  un avertissement au même moment, `on_log()` peut réellement s'exécuter deux
-  fois en même temps, sur deux threads différents. Gardez le callback court et
-  évitez de toucher un état partagé à moins qu'il ne soit thread-safe (une `queue.Queue`
-  l'est ; une simple liste sur laquelle vous faites `append()` sans verrou ne
-  l'est pas).
-- **Il peut aussi être `async def`.** Un callback asynchrone est planifié sur la
-  boucle d'événements qui exécute `async_notify()` -- utile par exemple pour
-  pousser des mises à jour via une websocket. Si vous donnez un callback
-  asynchrone à un appel `notify()` classique (non async) sans aucune boucle
-  d'événements en cours d'exécution, il n'y a nulle part où le planifier, donc
-  cette entrée est simplement ignorée (avec un avertissement journalisé à ce
-  sujet).
+  notifier plusieurs services en parallèle. Gardez le callback court et
+  protégez l'état partagé ; utilisez par exemple `queue.Queue` plutôt que de
+  modifier une liste partagée.
+- **Il doit être une fonction synchrone classique, pas `async def`.** Il est
+  appelé directement et doit se terminer rapidement. Planifiez le travail
+  asynchrone comme indiqué ci-dessus. Apprise ferme toute coroutine renvoyée
+  par erreur et consigne un avertissement.
 - **Si votre callback lève une exception, notify() continue quand même.**
-  L'erreur est journalisée, pas relancée vers vous -- un bug dans `on_log()` ne
-  devrait jamais pouvoir casser une notification réelle.
+  L'erreur est journalisée, mais n'est pas relancée.
 
 ## Compter les Choses
 
@@ -415,7 +431,7 @@ if not result:
 | Que s'est-il réellement passé à chaque tentative ?                              | `for attempt in service: ...`                                      |
 | Quels avertissements/erreurs un service a-t-il journalisés ?                    | `service.logs()` / `attempt.logs`                                  |
 | Je veux les journaux de tous les services, fusionnés dans l'ordre chronologique | `result.logs()`                                                    |
-| Je veux voir les journaux en direct, au fur et à mesure                         | `log_callback=` sur `Apprise()` ou `notify()`                      |
+| Je veux voir les journaux en direct, au fur et à mesure                         | `log_callback=` sur `Apprise()`, `notify()` ou `async_notify()`    |
 | Combien de temps cela a-t-il pris ?                                             | `.elapsed` sur `result`, `service`, ou `attempt`                   |
 | J'ai besoin de ça en JSON, ou en simple dict                                    | `.json()` / `.asdict()`                                            |
 
