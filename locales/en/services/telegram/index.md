@@ -29,6 +29,12 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
+## Message Format
+
+Telegram uses HTML by default and also supports Markdown. Declaring your input format lets Apprise convert and repair supported markup before sending it.
+
+Without an input format, Apprise assumes the body is already suitable for the chosen Telegram format. `overflow=split` is then best effort and may divide markup at an unsafe place, so use `overflow=upstream` when the message must remain intact.
+
 ## Account Setup
 
 Telegram is slightly more complicated then some of the other notification services, so here is quick breakdown of what you need to know and do in order to send Notifications through it using this tool.
