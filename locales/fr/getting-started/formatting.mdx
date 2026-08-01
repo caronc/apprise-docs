@@ -15,15 +15,16 @@ Apprise reconnaît quatre **états de format d'entrée** :
 
 | État                   | Description                                                                                  |
 | :--------------------- | :------------------------------------------------------------------------------------------- |
-| _(implicite)_ **none** | Aucun format déclaré. Le contenu est transmis tel quel.                                      |
+| _(implicite)_ **none** | Aucun format source déclaré. La conversion automatique est ignorée.                          |
 | **text**               | Entrée en texte brut. Apprise peut simplifier le contenu pour les services texte uniquement. |
 | **markdown**           | Entrée en Markdown. Apprise peut convertir ou simplifier selon le besoin.                    |
 | **html**               | Entrée en HTML. Apprise peut supprimer ou convertir le balisage si nécessaire.               |
 
 :::note
 
-- L'état `none` est implicite. Il est utilisé automatiquement lorsqu'aucun format n'est fourni.
-- L'état `none` ne peut pas être défini explicitement via le CLI, la bibliothèque ou l'API.
+- Le CLI utilise `text` par défaut et ne propose pas `none` comme choix.
+- La bibliothèque Python utilise `none` lorsque `body_format=None`.
+- Apprise-API utilise `none` lorsque `format` est omis, vide ou `null`, sauf si le serveur fournit une valeur par défaut pour un champ omis.
 
 :::
 
@@ -54,24 +55,27 @@ Cela rend les destinations plus compatibles _sans_ vous obliger à adapter manue
 
 Si vous ne précisez **pas** de format, Apprise suppose des états légèrement différents selon le composant utilisé :
 
-| Interface                    | Format d'entrée par défaut                                                                                                                                                                                |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                                                                                                    |
-| [Python API](../../library/) | `none` - le contenu est transmis tel quel sauf si `body_format` est fourni dans l'appel `notify()` ou défini dans `AppriseAsset()`                                                                        |
-| [Apprise-API](../../api/)    | `none` - le contenu est transmis tel quel sauf si `format` est fourni dans la charge utile `/notify/`, ou si l'opérateur du serveur définit `APPRISE_DEFAULT_FORMAT` pour changer cette valeur par défaut |
+| Interface                    | Format d'entrée par défaut                                                                                                                |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                                    |
+| [Python API](../../library/) | `none` - aucune conversion automatique sauf si `body_format` est fourni dans `notify()` ou défini dans `AppriseAsset()`                   |
+| [Apprise-API](../../api/)    | `none` - aucune conversion automatique sauf si la requête fournit `format`, ou si l'opérateur du serveur définit `APPRISE_DEFAULT_FORMAT` |
 
 Le formatage sur l'Apprise-API est entièrement optionnel, requête par requête. Si vous gérez votre propre serveur Apprise-API et souhaitez que chaque requête omettant `format` en suppose un automatiquement, définissez la variable d'environnement `APPRISE_DEFAULT_FORMAT` (par exemple `APPRISE_DEFAULT_FORMAT=text`) -- consultez la [référence des variables d'environnement](../../api/reference/environment/) pour plus de détails. Les appelants peuvent toujours passer outre requête par requête : fournir une vraie valeur `format` l'emporte toujours, tout comme le fait de l'envoyer volontairement vide ou `null` -- ce qui est interprété comme une demande explicite de ne rien formater, même si vous avez défini une valeur par défaut à l'échelle du serveur.
 
-À l'exception du CLI, si aucun `input_format` n'est précisé :
+À l'exception du CLI, si aucun format d'entrée n'est précisé, Apprise ignore la conversion automatique et la réparation du balisage. La destination décide encore comment afficher le contenu. Par exemple, `?format=html` indique à un service compatible HTML que le corps est déjà prêt à l'emploi.
 
-- Le contenu est transmis **tel quel**
-- Aucune conversion ni assainissement n'a lieu dans Apprise
-- Tout balisage (HTML, Markdown, etc.) est traité comme du texte littéral
+Les limites de message, la gestion du dépassement, l'encodage, l'échappement, l'emballage JSON et le chiffrement peuvent toujours modifier la charge utile finale. Le mode pass-through signifie donc « ne pas interpréter mon format source », et non « envoyer exactement ces octets ».
 
-Ce comportement est intentionnel et utile si :
+### Pass-Through et Dépassement
 
-- vous savez déjà que la destination ne prend en charge que du texte ;
-- vous voulez un contrôle exact sur ce qui est envoyé.
+Le réglage `overflow` de l'URL s'applique même si aucun format d'entrée n'est déclaré :
+
+- `upstream` envoie un seul message sans le découper ni le tronquer selon la limite documentée du service ;
+- `truncate` conserve la partie qui tient dans la limite et supprime le reste ;
+- `split` privilégie les coupures lisibles comme les retours à la ligne ou les espaces, puis utilise une coupure stricte si nécessaire et envoie toutes les parties dans l'ordre.
+
+Avec un format source inconnu, le découpage reste une solution au mieux. Apprise ne peut pas réparer de manière fiable du HTML, du Markdown, du JSON, du texte chiffré, une signature ou un autre contenu structuré qu'il ne doit pas interpréter. Utilisez `overflow=upstream` si le message doit rester intact, ou déclarez son format pour obtenir un traitement adapté.
 
 Déclarer le bon format d'entrée est facultatif, mais cela permet à Apprise d'aider plus efficacement sur des destinations mixtes.
 
