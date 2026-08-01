@@ -15,6 +15,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
@@ -42,6 +47,8 @@ Alternatively, you may use webhook mode instead of the Matrix Client API. Webhoo
 Matrix accepts plain text, HTML, and Markdown. HTML and Markdown messages include a plain-text fallback for clients that cannot display formatted content. Slack-compatible webhooks receive Markdown unchanged so Slack can render it.
 
 Matrix limits the complete event to 65,536 bytes, including metadata added by the homeserver. The limits above are conservative body fallbacks, not fixed event sizes. For direct sends, Apprise calculates each chunk from its title, format, UTF-8 and JSON expansion, and possible E2EE overhead, so the actual character count may be lower.
+
+If you do not declare an input format, Apprise does not guess or repair the markup. An explicit `?format=html` or `?format=markdown` means the body is already prepared for that output. With `overflow=split`, unknown or structured content is split on a best-effort basis; see [Pass-Through and Overflow](../../getting-started/formatting/#pass-through-and-overflow).
 
 ## Syntax
 

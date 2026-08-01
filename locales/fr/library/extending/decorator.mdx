@@ -108,9 +108,9 @@ Incluez toujours `*args` et `**kwargs` afin de rester compatible avec les future
 
 ### Déclarer un Format
 
-Par défaut, votre fonction reçoit le corps **exactement tel que l'appelant l'a
-envoyé**. Pour demander à Apprise de le convertir d'abord, ajoutez
-`body_format=` à `@notify()` :
+Par défaut, votre fonction reçoit le corps sans conversion automatique de son
+format. Pour demander à Apprise de le convertir d'abord, ajoutez `body_format=`
+à `@notify()` :
 
 ```python
 from apprise import NotifyFormat
@@ -131,6 +131,11 @@ Sans `body_format=`, Apprise ne convertit pas le corps. Votre fonction reçoit
 tout de même `body_format` et `body_passthrough` dans `kwargs`. `body_format`
 indique le format fourni par l'appelant, ou `TEXT` si aucun format n'a été
 précisé.
+
+Le mode pass-through ne contourne pas le traitement normal de remise. Le corps
+peut déjà avoir été découpé ou tronqué selon le mode de dépassement choisi, et
+le wrapper peut encore devoir l'échapper ou l'emballer pour sa destination.
+Utilisez `body_passthrough` pour éviter toute supposition sur le format source.
 
 Un wrapper minimal peut ressembler à ceci :
 

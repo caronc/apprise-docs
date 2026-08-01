@@ -31,6 +31,12 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
+## Format du Message
+
+Telegram utilise le HTML par défaut et accepte aussi le Markdown. Déclarer le format d'entrée permet à Apprise de convertir et de réparer le balisage pris en charge avant l'envoi.
+
+Sans format d'entrée, Apprise suppose que le corps convient déjà au format Telegram choisi. `overflow=split` reste alors une solution au mieux et peut couper le balisage au mauvais endroit ; utilisez `overflow=upstream` si le message doit rester intact.
+
 ## Configuration du Compte
 
 Telegram est un peu plus complexe que certains autres services de notification, voici donc un rapide apercu de ce que vous devez savoir et faire pour envoyer des notifications avec cet outil.

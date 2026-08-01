@@ -122,7 +122,7 @@ For integrations, JSON is usually easiest.
 - `body` (required): message content
 - `title` (optional): message title
 - `type` (optional): `info` (default), `success`, `warning`, or `failure`
-- `format` (optional): `text`, `markdown`, or `html` -- omitted entirely means no format is applied and content passes through untouched (unless the server sets `APPRISE_DEFAULT_FORMAT`); sending it blank or `null` forces pass-through too, even over a configured server default
+- `format` (optional): `text`, `markdown`, or `html` -- omitting it skips automatic format conversion unless the server sets `APPRISE_DEFAULT_FORMAT`; blank or `null` forces pass-through even over that default, while limits, overflow, and service-safe packaging still apply
 - `tag` (optional, stateful): route to a subset of saved URLs
 
 ### Tags
