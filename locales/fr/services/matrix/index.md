@@ -22,16 +22,10 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  - name: "Corps en texte brut non chiffré"
-    max_chars: 60000
-  - name: "Corps HTML/Markdown non chiffré"
-    max_chars: 29000
-  - name: "Corps E2EE en texte brut"
-    max_chars: 40000
-  - name: "Corps E2EE en HTML/Markdown"
-    max_chars: 19000
-  - name: "Corps du webhook"
+  - name: "Corps non chiffré"
     max_chars: 65000
+  - name: "Corps E2EE"
+    max_chars: 40000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -43,19 +37,11 @@ Par défaut, Apprise communique directement avec votre serveur Matrix via l’AP
 
 Vous pouvez aussi utiliser le mode webhook à la place de l’API Client Matrix. Ce mode est activé en précisant **?mode=matrix**, **?mode=slack** ou **?mode=hookshot**, selon le service webhook que vous avez configuré.
 
-## Taille et format des messages
+## Format et taille des messages
 
-Matrix limite l’événement complet à 65 536 octets. Apprise v1 utilise des limites de caractères prudentes pour les messages directs, puis vérifie la taille en octets avant l’envoi.
+Matrix accepte le texte brut, le HTML et le Markdown. Les messages HTML et Markdown incluent une version texte pour les clients qui ne peuvent pas afficher le contenu mis en forme. Les webhooks compatibles avec Slack reçoivent le Markdown inchangé afin que Slack puisse l’afficher.
 
-- Le texte brut comporte un seul corps ; HTML et Markdown ajoutent un corps de repli.
-- E2EE utilise des limites plus petites pour laisser de la place au chiffrement.
-- `overflow=split` place le contenu restant dans des messages supplémentaires.
-
-Apprise v1 accepte un seul format de sortie par URL Matrix : `text`, `html` ou `markdown`. Lorsqu’un appel direct au plugin omet le `body_format` d’entrée, Matrix considère le contenu comme déjà formaté et conserve son corps de repli tel quel.
-
-:::note
-Apprise v1 choisit la limite E2EE avant d’examiner chaque salon. Elle s’applique donc dès qu’E2EE est disponible et activé, même si un salon précis s’avère ensuite non chiffré.
-:::
+Matrix limite l’événement complet à 65 536 octets, y compris les métadonnées ajoutées par le homeserver. Les limites ci-dessus sont des valeurs de repli prudentes pour le corps du message, et non des tailles d’événement fixes. Pour les envois directs, Apprise calcule chaque fragment selon son titre, son format, l’expansion UTF-8 et JSON ainsi que le surcoût E2EE éventuel ; le nombre réel de caractères peut donc être inférieur.
 
 ## Syntaxe
 
