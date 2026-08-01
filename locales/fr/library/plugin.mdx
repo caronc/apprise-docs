@@ -1191,5 +1191,24 @@ s'il n'existe pas d'URL amont pertinente.
 
 ## Format et Dépassement
 
-Notez également que `NotifyBase` fournit des drapeaux de comportement au niveau
-de l'URL, comme `format`, `overflow`, `emojis` et le stockage persistant (`store`).
+`NotifyBase` fournit des options d'URL communes comme `format`, `overflow`,
+`emojis` et le stockage persistant (`store`). Un plugin doit normalement les
+réutiliser au lieu de définir ses propres variantes.
+
+Pendant l'envoi, `body_format` représente le format final que le plugin doit
+transmettre. `body_passthrough=True` signifie que l'appelant n'a déclaré aucun
+format source : Apprise ignore donc la conversion et la réparation du dialecte.
+Cela ne désactive pas les limites, le dépassement, l'échappement, l'encodage du
+transport ni la construction de la charge utile.
+
+Le framework gère les limites ordinaires en caractères ainsi que les modes
+`upstream`, `truncate` et `split`. Un plugin soumis à une limite en octets, à de
+l'échappement, à plusieurs représentations du corps ou au coût du chiffrement
+doit calculer son budget à partir de la charge utile finale et la vérifier après
+conversion.
+
+Ne supposez pas qu'un contenu pass-through quelconque peut être découpé sans
+risque. Un document JSON, du texte chiffré, une signature ou un balisage inconnu
+peut devenir invalide. Respectez le mode de dépassement demandé, mais considérez
+le découpage comme une solution au mieux et évitez les réparations propres à un
+format lorsque `body_passthrough` vaut `True`.
