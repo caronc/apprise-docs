@@ -37,6 +37,8 @@ limits:
 
 Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead.
 
+Declaring your input format lets Apprise convert supported content before sending it. Without one, Apprise assumes the body is already suitable for the selected Slack format. `overflow=split` is then best effort, so use `overflow=upstream` when markup or structured content must remain intact.
+
 ## Account Setup
 
 Slack is slightly more complicated then some of the other notification services, so here is quick breakdown of what you need to know and do in order to send Notifications through it using this tool:

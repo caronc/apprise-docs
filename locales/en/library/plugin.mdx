@@ -1109,4 +1109,10 @@ Both should always be set. Generic or local-only plugins (e.g. MQTT, Windows not
 
 ## Format and Overflow
 
-Also note that `NotifyBase` provides URL-level behaviour flags like `format`, `overflow`, `emojis`, and persistent storage (`store`).
+`NotifyBase` supplies shared URL options such as `format`, `overflow`, `emojis`, and persistent storage (`store`). A plugin should normally reuse these options instead of defining its own versions.
+
+During delivery, `body_format` is the resolved format the plugin must send. `body_passthrough=True` means the caller did not declare a source format, so Apprise skipped source-format conversion and dialect repair. It does not disable message limits, overflow handling, escaping, transport encoding, or payload assembly.
+
+The framework handles ordinary character limits and the `upstream`, `truncate`, and `split` modes. A plugin with byte-based limits, escaping, multiple body representations, or encryption overhead should calculate its final budget from the payload it will actually send and verify the result after conversion.
+
+Do not assume arbitrary pass-through content can be split safely. JSON documents, ciphertext, signatures, and unknown markup may become invalid when divided. Honour the requested overflow mode, but treat splitting as best effort and avoid format-specific repair when `body_passthrough` is true.

@@ -37,6 +37,8 @@ limits:
 
 Slack utilise `markdown` par défaut afin que les liens, le texte en gras et les listes simples s'affichent correctement. Définissez `?format=text` si vous voulez envoyer du texte brut à Slack.
 
+Déclarer votre format d'entrée permet à Apprise de convertir le contenu pris en charge avant l'envoi. Sans format d'entrée, Apprise suppose que le corps convient déjà au format Slack choisi. `overflow=split` reste alors une solution au mieux ; utilisez `overflow=upstream` si le balisage ou le contenu structuré doit rester intact.
+
 ## Configuration du compte
 
 Slack est un peu plus complexe que certains autres services de notification. Voici donc un résumé rapide de ce que vous devez savoir et faire pour envoyer des notifications avec cet outil.

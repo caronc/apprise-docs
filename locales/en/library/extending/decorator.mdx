@@ -108,7 +108,7 @@ Always include `*args` and `**kwargs` to remain compatible with future Apprise r
 
 ### Declaring a Format
 
-By default, your function receives the body **exactly as the caller sent it**.
+By default, your function receives the body without automatic format conversion.
 To have Apprise convert it first, add `body_format=` to `@notify()`:
 
 ```python
@@ -128,6 +128,11 @@ format in the tuple is the default. See
 Without `body_format=`, Apprise does not convert the body. Your function still
 receives `body_format` and `body_passthrough` in `kwargs`. `body_format` reports
 the caller's format, or `TEXT` when the caller did not provide one.
+
+Pass-through does not bypass the normal delivery pipeline. The body may already
+have been split or truncated according to the configured overflow mode, and the
+wrapper may still need to escape or package it safely for its destination. Use
+`body_passthrough` to avoid making source-format assumptions.
 
 A minimal wrapper may look like:
 
