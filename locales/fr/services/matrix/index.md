@@ -22,7 +22,16 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  max_chars: 65000
+  - name: "Corps en texte brut non chiffré"
+    max_chars: 60000
+  - name: "Corps HTML/Markdown non chiffré"
+    max_chars: 29000
+  - name: "Corps E2EE en texte brut"
+    max_chars: 40000
+  - name: "Corps E2EE en HTML/Markdown"
+    max_chars: 19000
+  - name: "Corps du webhook"
+    max_chars: 65000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -33,6 +42,20 @@ limits:
 Par défaut, Apprise communique directement avec votre serveur Matrix via l’API Client officielle.
 
 Vous pouvez aussi utiliser le mode webhook à la place de l’API Client Matrix. Ce mode est activé en précisant **?mode=matrix**, **?mode=slack** ou **?mode=hookshot**, selon le service webhook que vous avez configuré.
+
+## Taille et format des messages
+
+Matrix limite l’événement complet à 65 536 octets. Apprise v1 utilise des limites de caractères prudentes pour les messages directs, puis vérifie la taille en octets avant l’envoi.
+
+- Le texte brut comporte un seul corps ; HTML et Markdown ajoutent un corps de repli.
+- E2EE utilise des limites plus petites pour laisser de la place au chiffrement.
+- `overflow=split` place le contenu restant dans des messages supplémentaires.
+
+Apprise v1 accepte un seul format de sortie par URL Matrix : `text`, `html` ou `markdown`. Lorsqu’un appel direct au plugin omet le `body_format` d’entrée, Matrix considère le contenu comme déjà formaté et conserve son corps de repli tel quel.
+
+:::note
+Apprise v1 choisit la limite E2EE avant d’examiner chaque salon. Elle s’applique donc dès qu’E2EE est disponible et activé, même si un salon précis s’avère ensuite non chiffré.
+:::
 
 ## Syntaxe
 
@@ -196,6 +219,7 @@ Ou directement :
 | thumbnail           | Non    | Affiche une image avant chaque notification pour représenter le type de notification. La valeur par défaut est **False**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | mode                | Non    | Active le mode webhook. Les valeurs valides sont **matrix**, **slack**, **t2bot** et **hookshot**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | path                | Non    | Utilisé avec le mode **hookshot** pour définir le chemin webhook public. La valeur par défaut est **/webhook**. Par exemple, si votre instance hookshot est exposée à `https://hookshot.example/public-hooks/{token}`, alors utilisez `?mode=hookshot&path=/public-hooks`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| format              | Non    | Sélectionne le format de sortie Matrix : **text**, **html** ou **markdown**. Apprise v1 utilise un seul format de sortie par URL. La valeur par défaut est **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | msgtype             | Non    | Type de message Matrix : **text** ou **notice**. La valeur par défaut est **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | version             | Non    | Surcharge la version de l’API Client Matrix. Les valeurs prises en charge sont **2** et **3**. La valeur par défaut est **3**. Peut aussi être fournie avec `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | hsreq               | Non    | Lorsqu’il est activé, ce qui est le cas par défaut, Apprise ajoute automatiquement le homeserver authentifié aux identifiants de salon qui n’en contiennent pas déjà un. Par exemple, `#room` devient `#room:hostname`. Définissez `no` pour désactiver ce comportement et utiliser les identifiants exactement tels qu’ils sont fournis.                                                                                                                                                                                                                                                                                                                                                                                                                          |

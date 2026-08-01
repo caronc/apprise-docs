@@ -22,7 +22,16 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  max_chars: 65000
+  - name: "Unencrypted Plain Text Body"
+    max_chars: 60000
+  - name: "Unencrypted HTML/Markdown Body"
+    max_chars: 29000
+  - name: "E2EE Plain Text Body"
+    max_chars: 40000
+  - name: "E2EE HTML/Markdown Body"
+    max_chars: 19000
+  - name: "Webhook Body"
+    max_chars: 65000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -33,6 +42,20 @@ limits:
 By default, Apprise communicates directly with your Matrix server using the official Client API.
 
 Alternatively, you may use webhook mode instead of the Matrix Client API. Webhook usage is enabled by specifying **?mode=matrix**, **?mode=slack**, or **?mode=hookshot** depending on the webhook service you have configured.
+
+## Message Size and Format
+
+Matrix limits the complete event to 65,536 bytes. Apprise v1 uses conservative character limits for direct messages and applies a final byte check before sending.
+
+- Plain text carries one body; HTML and Markdown also carry a fallback body.
+- E2EE uses smaller limits to leave room for encryption.
+- `overflow=split` keeps the remaining content in additional messages.
+
+Apprise v1 supports one output format per Matrix URL: `text`, `html`, or `markdown`. When code calls the plugin without an input `body_format`, Matrix treats that content as already formatted and leaves its fallback unchanged.
+
+:::note
+Apprise v1 chooses the E2EE limit before checking each room. The E2EE limit therefore applies whenever E2EE is available and enabled, even if a specific room is later found to be unencrypted.
+:::
 
 ## Syntax
 
@@ -196,6 +219,7 @@ Or directly:
 | thumbnail           | No       | Displays an image before each notification identifying the notification type. Default is **False**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | mode                | No       | Enables webhook mode. Valid values are **matrix**, **slack**, **t2bot**, and **hookshot**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | path                | No       | Used with **hookshot** mode to define the public webhook path. Defaults to **/webhook**. For example, if your hookshot instance is exposed at `https://hookshot.example/public-hooks/{token}`, then set `?mode=hookshot&path=/public-hooks`.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| format              | No       | Selects the Matrix output format: **text**, **html**, or **markdown**. Apprise v1 uses one configured output format per URL. Default is **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | msgtype             | No       | Matrix message type: **text** or **notice**. Default is **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. May also be supplied as `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | hsreq               | No       | When enabled (the default), Apprise automatically appends the authenticated homeserver to room identifiers that do not already include one. For example, `#room` becomes `#room:hostname`. Set to **no** to disable this and use room identifiers exactly as provided.                                                                                                                                                                                                                                                                                                                                                                           |
