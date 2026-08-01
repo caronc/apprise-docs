@@ -60,21 +60,65 @@ For example:
 Note that the `format` handling is done by Apprise and affects how the
 notification is assembled and delivered to Bark.
 
+## Encryption
+
+Bark can end-to-end encrypt your notifications with AES-GCM so that
+neither the Bark server nor Apple's push service ever sees the
+plaintext title or body.
+
+1. Open the Bark app on your iPhone.
+2. Find **Encrypted Push** on the home screen and tap into its settings.
+3. Choose the **AES-GCM** algorithm and enter a key that is exactly
+   16, 24, or 32 characters long (these map to AES-128, AES-192, and
+   AES-256).
+4. Add that same key to your Apprise URL with `?key=`.
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?key=1234567890123456"
+```
+
+Every notification is encrypted with a fresh, randomly generated IV,
+so sending the same message twice never produces the same ciphertext.
+
+:::note
+Encryption requires the `cryptography` Python package:
+
+```bash
+pip install cryptography
+```
+
+Unlike the plain-text side of this plugin, encryption is not optional
+once a `key` is set. If `cryptography` is not installed, or the key is
+not exactly 16, 24, or 32 characters, Apprise refuses to load the URL
+rather than silently falling back to sending your message unencrypted.
+:::
+
+:::caution
+Anyone with your encryption key can read your notifications. Keep it
+as private as your device key or an API token, and use the same key
+you configured in the Bark app's Encrypted Push settings.
+:::
+
+See Bark's own [encryption documentation](https://github.com/Finb/Bark/blob/master/docs/encryption.md)
+for more background on how encrypted push works.
+
 ## Parameter Breakdown
 
-| Variable   | Required | Description                                                                                                                                              |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| device_key | Yes      | The device key you wish to notify                                                                                                                        |
-| sound      | No       | Optionally set a sound file to be played with notification sent. Supported sounds are identified [here](https://github.com/Finb/Bark/tree/master/Sounds) |
-| click      | No       | Provide a hyperlink that should be associated with the notification                                                                                      |
-| level      | No       | Specify the message level. Can be either **active**, **timeSensitive**, or **passive**.                                                                  |
-| volume     | No       | Specify a volume between 0 and 10 (inclusive).                                                                                                           |
-| badge      | No       | Provide a numerical value of 0 (zero) or greater to associate a badge with the bark icon on the iOS device.                                              |
-| category   | No       | Associate a category with your notification                                                                                                              |
-| group      | No       | Associate a group with your notification                                                                                                                 |
-| icon       | No       | Set a custom icon URL for the notification. If not specified, Apprise may use its default notify image (unless disabled).                                |
-| image      | No       | Set to `no` if you do not want the Apprise alert level being placed as the icon associated with the message.                                             |
-| call       | No       | Boolean-like input. Accepts `yes/no`, `true/false`, `1/0`, `+/-`. When enabled, payload includes `1`.                                                    |
+| Variable   | Required | Description                                                                                                                                                                                                |
+| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| device_key | Yes      | The device key you wish to notify                                                                                                                                                                          |
+| sound      | No       | Optionally set a sound file to be played with notification sent. Supported sounds are identified [here](https://github.com/Finb/Bark/tree/master/Sounds)                                                   |
+| click      | No       | Provide a hyperlink that should be associated with the notification                                                                                                                                        |
+| level      | No       | Specify the message level. Can be either **active**, **timeSensitive**, or **passive**.                                                                                                                    |
+| volume     | No       | Specify a volume between 0 and 10 (inclusive).                                                                                                                                                             |
+| badge      | No       | Provide a numerical value of 0 (zero) or greater to associate a badge with the bark icon on the iOS device.                                                                                                |
+| category   | No       | Associate a category with your notification                                                                                                                                                                |
+| group      | No       | Associate a group with your notification                                                                                                                                                                   |
+| icon       | No       | Set a custom icon URL for the notification. If not specified, Apprise may use its default notify image (unless disabled).                                                                                  |
+| image      | No       | Set to `no` if you do not want the Apprise alert level being placed as the icon associated with the message.                                                                                               |
+| call       | No       | Boolean-like input. Accepts `yes/no`, `true/false`, `1/0`, `+/-`. When enabled, payload includes `1`.                                                                                                      |
+| key        | No       | A 16-, 24-, or 32-character AES-GCM encryption key matching the one configured in the Bark app's Encrypted Push settings. Requires the `cryptography` Python package. See [Encryption](#encryption) above. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -105,4 +149,12 @@ to another format):
 ```bash
 apprise -vv -t "Plain Text" -b "**This will not be bold**" \
    bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?format=text
+```
+
+Send an end-to-end encrypted Bark notification (see
+[Encryption](#encryption) above):
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?key=1234567890123456"
 ```
