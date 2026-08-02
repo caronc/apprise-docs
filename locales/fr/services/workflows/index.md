@@ -47,12 +47,34 @@ Oui, l’URL est effectivement aussi longue... mais au final elle correspond à 
 Apprise prend également cette URL en charge _telle quelle_ ; vous n’avez donc plus besoin de la reparser. Il existe toutefois un léger surcoût interne si vous l’utilisez ainsi. Parfois, le copier-coller reste malgré tout la solution la plus simple.
 :::
 
+### URLs Power Automate
+
+Certains workflows (notamment ceux créés depuis MS Teams) génèrent plutôt une URL de type **Power Automate**, qui ressemble à ceci :
+
+```text
+https://prod-NO.LOCATION.logic.azure.com:443/powerautomate/automations/direct/workflows/WFID/triggers/manual/paths/invoke?api-version=2022-03-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SIGNATURE
+```
+
+Plus récemment, Microsoft a également commencé à générer ces URLs avec un segment de routage supplémentaire (`cu/{route}`) placé juste avant `/workflows/` :
+
+```text
+https://prod-NO.LOCATION.logic.azure.com:443/powerautomate/automations/direct/cu/24/workflows/WFID/triggers/manual/paths/invoke?api-version=2022-03-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SIGNATURE
+```
+
+Apprise prend en charge ces deux URLs _telles quelles_, tout comme le webhook classique ci-dessus. Si vous préférez la forme raccourcie `workflows://`, ajoutez `pa=yes` et, si votre webhook comportait un segment `cu/`, `route={route}` :
+
+- `workflows://{host}:{port}/{workflow}/{signature}?pa=yes`
+- `workflows://{host}:{port}/{workflow}/{signature}?pa=yes&route={route}`
+
 ## Syntaxe
 
 La syntaxe valide est la suivante :
 
 - `https://prod-site.logic.azure.com:443/workflows/{workflow}/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig={signature}`
+- `https://prod-site.logic.azure.com:443/powerautomate/automations/direct/workflows/{workflow}/triggers/manual/paths/invoke?api-version=2022-03-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig={signature}`
+- `https://prod-site.logic.azure.com:443/powerautomate/automations/direct/cu/{route}/workflows/{workflow}/triggers/manual/paths/invoke?api-version=2022-03-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig={signature}`
 - `workflows://{host}:{port}/{workflow}/{signature}`
+- `workflows://{host}:{port}/{workflow}/{signature}?pa=yes&route={route}`
 
 ## Détail des Paramètres
 
@@ -62,6 +84,8 @@ La syntaxe valide est la suivante :
 | signature | Oui    | L’identifiant de signature fourni dans le lien webhook Azure, c’est-à-dire `sig=`.                                                                                                                                                                                                            |
 | wrap      | Non    | Enveloppe le texte du corps dans la réponse.                                                                                                                                                                                                                                                  |
 | ver       | Non    | Version d’API Power Automate à utiliser ; la valeur par défaut est `2016-06-01`. Cette valeur peut aussi être lue via le mot-clé `api-version` présent dans le lien webhook Azure.                                                                                                            |
+| pa        | Non    | À définir sur `yes` si votre webhook utilise la nouvelle structure d’URL Power Automate (`/powerautomate/automations/direct/...`). Aussi accepté sous le nom `powerautomate`. La valeur par défaut est `no`.                                                                                  |
+| route     | Non    | L’identifiant de routage Power Automate ; il s’agit de la valeur numérique trouvée après `cu/` dans les URLs webhook Power Automate récentes. Utilisé uniquement lorsque `pa=yes`. Aussi accepté sous le nom `routeid`.                                                                       |
 | template  | Non    | Permet d’indiquer le chemin vers un template que vous préférez utiliser à la place de la carte Adaptive choisie par Apprise. Utilisez des doubles accolades `{{token}}` pour marquer les jetons à remplacer avant soumission au service amont, par exemple `{{app_body}}` ou `{{app_title}}`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
@@ -206,4 +230,11 @@ Mentionner plusieurs personnes dans un seul message :
 apprise -vv -t "Deploiement termine" \
    -b "<at>alice@example.com</at> et <at>bob@example.com</at> -- deploye en production." \
    workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
+```
+
+Envoyer une notification via un webhook Power Automate comportant un segment de routage `cu/` :
+
+```bash
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/?pa=yes&route=24"
 ```
