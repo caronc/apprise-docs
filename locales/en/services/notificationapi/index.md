@@ -13,6 +13,8 @@ schemas:
 has_sms: true
 has_image: true
 
+ended: 2026
+
 sample_urls:
   - napi://{ClientID}/{ClientSecret}/{Target}
   - napi://{Type}@{ClientID}/{ClientSecret}/{Target}
@@ -20,6 +22,15 @@ sample_urls:
 limits:
   max_chars: 160
 ---
+
+:::note
+
+## Service End Reason
+
+NotificationAPI rebranded to [Pingram](https://www.pingram.io) in 2026. This is not a shutdown — the underlying service is alive and well, just renamed. Apprise's `napi://`/`notificationapi://` integration has been retired in favor of a dedicated [`pingram://`](/services/pingram/) plugin built for the current API.
+
+If you still have a `clientId`/`clientSecret` pair issued before the rebrand, it may continue to work if you call the Pingram API directly, but it is no longer supported through this Apprise plugin. New Pingram accounts issue a single API key instead, which the `pingram://` plugin uses in place of the retired credential pair.
+:::
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
