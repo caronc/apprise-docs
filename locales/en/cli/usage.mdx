@@ -66,12 +66,13 @@ Apprise supports a persistent storage cache. You can tune it with the flags belo
 
 You can pre-set default behaviors using environment variables. This is useful for containerized environments or setting system-wide defaults.
 
-| Variable               | Description                                                                                                                                                                   |
-| :--------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `APPRISE_URLS`         | Default service URLs to notify if none are provided on the command line. Space and/or comma delimited. If `--config` is specified, it overrides any `APPRISE_URLS` reference. |
-| `APPRISE_CONFIG_PATH`  | Override the default configuration search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                      |
-| `APPRISE_PLUGIN_PATH`  | Override the default plugin search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                             |
-| `APPRISE_STORAGE_PATH` | Override the default persistent storage path.                                                                                                                                 |
+| Variable                                | Description                                                                                                                                                                                                                                                |
+| :-------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `APPRISE_URLS`                          | Default service URLs to notify if none are provided on the command line. Space and/or comma delimited. If `--config` is specified, it overrides any `APPRISE_URLS` reference.                                                                              |
+| `APPRISE_CONFIG_PATH`                   | Override the default configuration search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                   |
+| `APPRISE_PLUGIN_PATH`                   | Override the default plugin search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                          |
+| `APPRISE_STORAGE_PATH`                  | Override the default persistent storage path.                                                                                                                                                                                                              |
+| `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Standard proxy variables honored automatically (not Apprise-specific). Route outbound notifications through a proxy, or exempt specific hosts with `NO_PROXY`. See [Proxy Support](/library/advanced/#proxy-support) for details, including SOCKS proxies. |
 
 ## Default Configuration Locations
 

@@ -69,3 +69,27 @@ obj.send(
 :::caution
 Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::
+
+## Prise en charge des proxys
+
+Apprise envoie chaque notification via [requests](https://requests.readthedocs.io/), qui respecte automatiquement les variables d'environnement standard `HTTP_PROXY`, `HTTPS_PROXY` et `NO_PROXY`. Aucune configuration spécifique à Apprise n'est nécessaire : définissez la variable avant de démarrer votre processus (ou exportez-la dans l'environnement dans lequel Apprise s'exécute) et chaque requête sortante passera par le proxy :
+
+```bash
+export HTTPS_PROXY="http://127.0.0.1:3128"
+export HTTP_PROXY="http://127.0.0.1:3128"
+
+python3 my_script.py
+```
+
+Si vous souhaitez que seul Apprise passe par le proxy (et non le reste de votre application), limitez la variable au sous-processus ou à l'environnement qui exécute Apprise plutôt que de l'exporter globalement — par exemple en la définissant pour une seule commande, ou dans la directive `Environment=` d'une unité systemd pour un service de longue durée.
+
+`NO_PROXY` est également respectée, ce qui permet d'exempter certains hôtes :
+
+```bash
+export HTTPS_PROXY="http://127.0.0.1:3128"
+export NO_PROXY="localhost,127.0.0.1,internal.example.com"
+```
+
+:::note
+Les proxys SOCKS (`socks5h://...`) nécessitent le paquet optionnel [PySocks](https://pypi.org/project/PySocks/) (`pip install pysocks`) — `requests` en a besoin pour comprendre les URL de proxy SOCKS. Sans lui, une valeur `socks5h://` dans `HTTP_PROXY`/`HTTPS_PROXY` échouera.
+:::
