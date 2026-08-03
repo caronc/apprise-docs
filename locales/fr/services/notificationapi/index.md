@@ -13,6 +13,8 @@ schemas:
 has_sms: true
 has_image: true
 
+ended: 2026
+
 sample_urls:
   - napi://{ClientID}/{ClientSecret}/{Target}
   - napi://{Type}@{ClientID}/{ClientSecret}/{Target}
@@ -20,6 +22,15 @@ sample_urls:
 limits:
   max_chars: 160
 ---
+
+:::note
+
+## Motif de fin du service
+
+NotificationAPI est devenu [Pingram](https://www.pingram.io) en 2026. Il ne s'agit pas d'un arrêt de service : le service sous-jacent fonctionne toujours normalement, seul son nom a changé. L'intégration Apprise `napi://`/`notificationapi://` est retirée au profit d'un nouveau plugin dédié [`pingram://`](/services/pingram/), conçu pour l'API actuelle.
+
+Si vous disposez encore d'un couple `clientId`/`clientSecret` émis avant le changement de nom, il peut continuer à fonctionner si vous appelez directement l'API Pingram, mais il n'est plus pris en charge par ce plugin Apprise. Les nouveaux comptes Pingram reçoivent désormais une seule clé API, utilisée par le plugin `pingram://` à la place de l'ancien couple d'identifiants.
+:::
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
