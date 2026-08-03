@@ -161,3 +161,35 @@ apprise -vv -t -b "test" \
 
 Ce qui a produit :
 ![image](./images/168930313-05e2bfb2-48f3-4a0a-b0ef-e5c601c97703.png)
+
+## Dépannage
+
+### Signal API envoie mon SMS, mais Apprise signale un échec
+
+Le message a bien été envoyé, mais `signal-cli-rest-api` a dépassé le délai
+d'attente de 4 secondes d'Apprise avant de le confirmer. Avec l'API Apprise,
+le journal peut afficher `A Connection error occured sending ...`, et une
+chaîne de priorité peut alors passer au service suivant. Le problème peut être
+plus visible lors du premier message après le redémarrage d'un processus
+Gunicorn.
+
+Donnez plus de temps au serveur pour répondre en ajoutant `?rto=8` à l'URL
+Apprise :
+
+```text
+signal://localhost:9922/15555551234?rto=8
+```
+
+La valeur indique le nombre de secondes pendant lesquelles Apprise attendra.
+Si l'URL contient déjà des options après un `?`, ajoutez plutôt `&rto=8`.
+Utilisez une valeur plus élevée si nécessaire.
+
+Le mode natif peut également améliorer le temps de réponse sur certains
+systèmes. L'exemple Docker ci-dessus l'active déjà avec :
+
+```bash
+-e 'MODE=native'
+```
+
+Si le problème persiste, essayez de déplacer le conteneur Signal API vers une
+machine plus rapide ou moins sollicitée.

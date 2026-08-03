@@ -161,3 +161,32 @@ apprise -vv -t -b "test" \
 
 Which produced:
 ![image](./images/168930313-05e2bfb2-48f3-4a0a-b0ef-e5c601c97703.png)
+
+## Troubleshooting
+
+### Signal API sends my SMS message, but Apprise reports a failure
+
+The message was sent, but `signal-cli-rest-api` took longer than Apprise's
+default 4-second timeout to confirm it. When using the Apprise API, this may be
+logged as `A Connection error occured sending ...`, and a priority chain may
+continue to the next service. It can be more noticeable on the first message
+after a Gunicorn worker restarts.
+
+Give the server more time to respond by adding `?rto=8` to the Apprise URL:
+
+```text
+signal://localhost:9922/15555551234?rto=8
+```
+
+The value is the number of seconds Apprise will wait. If the URL already has
+options after a `?`, add `&rto=8` instead. Use a larger value if needed.
+
+Native mode may also improve response time on some systems. The Docker example
+above already enables it with:
+
+```bash
+-e 'MODE=native'
+```
+
+If the problem continues, try moving the Signal API container to a faster or
+less busy machine.
