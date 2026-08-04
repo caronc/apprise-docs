@@ -22,6 +22,8 @@ limits:
   max_chars: 4096
 ---
 
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
@@ -101,8 +103,133 @@ If you want to see the icon/image associated with the notification, you can have
 | preview   | No       | A `yes/no` flag allowing you to display webpage previews of your post. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | mdv       | No       | Optionally set the `markdown` version to use; can be set to either `v1` or `v2` and defaults to `v2` if not set. This value is only referenced when `?format=markdown` has also been set.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | topic     | No       | The Topic Thread ID you wish your message to be posted to. [Here is a StackOverflow post on acquiring the Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat)                                                                                                                                                                                                                                                                                                                                                                                    |
+| template  | No       | Path to a local Rich Message template file. When set, the file's contents are used to build a Telegram Rich Message (`sendRichMessage`) instead of the default text/Markdown/HTML message. The template must be a JSON file whose top-level object contains a non-empty `"blocks"` list. See **Templating** below.                                                                                                                                                                                                                                                                                      |
+| :token    | No       | Custom token(s) for template substitution. Prefix each token name with a colon in the URL (e.g. `?:mykey=myval`). Any token defined here is available as `{{mykey}}` inside the template file.                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Templating
+
+Telegram Bot API 10.1 introduced **Rich Messages**, a structured `blocks`-based way to format a message (headings, paragraphs, tables, quotes, and more) that goes well beyond the plain text/Markdown/HTML support above. Apprise doesn't try to auto-build these blocks for you -- instead, the `?template=` argument lets you supply your own pre-built Rich Message JSON file. Apprise reads it, substitutes any `{{token}}` placeholders, and posts the result directly, giving you full control over the structure.
+
+The template must be a valid JSON object with a non-empty `"blocks"` list. Each block must be a JSON object with its own `"type"` (e.g. `paragraph`, `section_heading`); Telegram itself validates the exact block structure, so an invalid block will result in a rejected notification. See [Telegram's Rich Messages documentation](https://core.telegram.org/bots/features#rich-messages) for the full, up to date list of supported block types and their fields -- Apprise only checks that each block is an object with a `"type"`, it does not validate the fields inside a specific block type.
+
+When a template is in use, the notification `title` and `body` are **not** merged together or format-converted the way they normally are for `tgram://` -- they're passed through untouched as the `{{app_title}}`/`{{app_body}}` substitution tokens below, since the template itself defines the message structure. Attachments (`attach=`) are unaffected either way: they always continue to send as their own separate follow-up messages, exactly as described above.
+
+:::note
+Streaming a message incrementally (Telegram's `sendRichMessageDraft`) is not supported. Apprise always sends a Rich Message as a single, complete post.
+:::
+
+### Built-in Tokens
+
+The following tokens are always available inside your template:
+
+| Token           | Description                                                                 |
+| --------------- | --------------------------------------------------------------------------- |
+| `app_id`        | The application identifier; defaults to `Apprise`.                          |
+| `app_desc`      | The application description; defaults to `Apprise Notification`.            |
+| `app_color`     | A hex colour string for the message type (e.g. `#3AA3E3` for info).         |
+| `app_color_hex` | Explicit alias for `app_color`; same hex string, self-documenting name.     |
+| `app_type`      | The message type: `info`, `warning`, `success`, or `failure`.               |
+| `app_title`     | The notification title passed via `--title` / `-t`.                         |
+| `app_body`      | The notification body passed via `--body` / `-b`.                           |
+| `app_image_url` | The image URL associated with the message type, if `?image=yes` is set.     |
+| `app_url`       | The Apprise instance URL (defaults to `https://github.com/caronc/apprise`). |
+
+### Custom Tokens
+
+Any token you invent beyond the built-in set can be supplied at send time using the `:key=value` prefix on the Apprise URL:
+
+```text
+tgram://{bot_token}/{chat_id}/?template=/path/to/template.json&:env=production
+```
+
+Inside the template, reference it as `{{env}}`.
+
+### Template Examples
+
+Save any of the following as a `.json` file and point `?template=` at it. Each one is ready to copy and paste as a starting point.
+
+<Tabs>
+
+<TabItem label="Basic">
+
+A heading built from the title, followed by a paragraph built from the body:
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "{{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+<TabItem label="With a Divider">
+
+The same heading and body, with a divider separating the message from a small signature line:
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "{{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sent by {{app_id}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+<TabItem label="Custom Tokens">
+
+A deployment-style notice that injects a custom `env` token. Send it with `&:env=production` on the URL:
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "Deployment: {{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "paragraph",
+      "text": "Environment: {{env}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+</Tabs>
 
 ## Examples
 
@@ -143,4 +270,12 @@ Topics can also be assigned per chat id:
 # Assuming the {topic_id} is 1234567
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    tgram://123456789:abcdefg_hijklmnop/12315544:1234567/
+```
+
+Send a notification using a custom Rich Message template (see **Templating** above), injecting a custom token with the `:key=value` prefix:
+
+```bash
+# Assuming the template is saved at /etc/apprise/telegram-blocks.json
+apprise -vv -t "Deploy" -b "v2.3.1 deployed" \
+   "tgram://123456789:abcdefg_hijklmnop/12315544/?template=/etc/apprise/telegram-blocks.json&:env=production"
 ```

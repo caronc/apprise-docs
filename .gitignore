@@ -6,6 +6,9 @@ dist/
 .*.swo
 .*.swp
 
+# git merge leftovers 
+*.orig
+
 # dependencies
 node_modules/
 

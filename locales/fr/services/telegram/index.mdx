@@ -22,6 +22,8 @@ limits:
   max_chars: 4096
 ---
 
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
@@ -101,8 +103,133 @@ Si vous souhaitez afficher l'icone ou l'image associee a la notification, vous p
 | preview   | Non         | Indicateur `yes/no` permettant d'afficher les apercus web de votre publication. La valeur par defaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | mdv       | Non         | Permet de definir la version de `markdown` a utiliser, soit `v1`, soit `v2`. La valeur par defaut est `v2` si rien n'est precise. Cette valeur n'est prise en compte que si `?format=markdown` a egalement ete defini.                                                                                                                                                                                                                                                                                                                                                      |
 | topic     | Non         | Identifiant du fil de sujet dans lequel vous souhaitez publier votre message. [Voici une publication StackOverflow expliquant comment recuperer le Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat).                                                                                                                                                                                                                                                                                                              |
+| template  | Non         | Chemin vers un fichier gabarit de Message Riche local. Lorsqu'il est defini, le contenu du fichier est utilise pour construire un Message Riche Telegram (`sendRichMessage`) a la place du message texte/Markdown/HTML par defaut. Le gabarit doit etre un fichier JSON dont l'objet racine contient une liste `"blocks"` non vide. Voir **Gabarits** ci-dessous.                                                                                                                                                                                                           |
+| :jeton    | Non         | Jeton(s) personnalise(s) pour la substitution dans le gabarit. Prefixez chaque nom de jeton par deux-points dans l'URL (par exemple `?:macle=mavaleur`). Tout jeton defini ici est disponible sous la forme `{{macle}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                                                            |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Gabarits
+
+L'API Bot Telegram 10.1 a introduit les **Messages Riches**, une facon structuree, basee sur des `blocks`, de mettre en forme un message (titres de section, paragraphes, tableaux, citations, et plus) qui va bien au-dela de la prise en charge texte/Markdown/HTML decrite ci-dessus. Apprise ne tente pas de construire automatiquement ces blocs a votre place -- l'argument `?template=` vous permet plutot de fournir votre propre fichier JSON de Message Riche preconstruit. Apprise lit ce fichier, substitue les espaces reserves `{{jeton}}`, puis envoie le resultat directement, vous donnant un controle total sur la structure.
+
+Le gabarit doit etre un objet JSON valide avec une liste `"blocks"` non vide. Chaque bloc doit etre un objet JSON avec son propre champ `"type"` (par exemple `paragraph`, `section_heading`) ; Telegram valide lui-meme la structure exacte des blocs, donc un bloc invalide entrainera le rejet de la notification. Consultez la [documentation Telegram sur les Messages Riches](https://core.telegram.org/bots/features#rich-messages) pour la liste complete et a jour des types de blocs pris en charge et de leurs champs -- Apprise verifie seulement que chaque bloc est un objet muni d'un `"type"`, il ne valide pas les champs internes d'un type de bloc particulier.
+
+Lorsqu'un gabarit est utilise, le `title` et le `body` de la notification ne sont **pas** fusionnes ni convertis de format comme c'est normalement le cas pour `tgram://` -- ils sont transmis tels quels sous forme de jetons de substitution `{{app_title}}`/`{{app_body}}` decrits ci-dessous, puisque c'est le gabarit lui-meme qui definit la structure du message. Les pieces jointes (`attach=`) ne sont quant a elles pas affectees : elles continuent toujours d'etre envoyees sous forme de messages de suivi separes, exactement comme decrit plus haut.
+
+:::note
+La diffusion progressive d'un message (le `sendRichMessageDraft` de Telegram) n'est pas prise en charge. Apprise envoie toujours un Message Riche sous la forme d'une seule publication complete.
+:::
+
+### Jetons integres
+
+Les jetons suivants sont toujours disponibles dans votre gabarit :
+
+| Jeton           | Description                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                        |
+| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                          |
+| `app_color`     | Une chaine de couleur hexadecimale pour le type de message (par exemple `#3AA3E3` pour info). |
+| `app_color_hex` | Alias explicite de `app_color` ; meme chaine hexadecimale, nom auto-documente.                |
+| `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                               |
+| `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                    |
+| `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                     |
+| `app_image_url` | L'URL de l'image associee au type de message, si `?image=yes` est defini.                     |
+| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                 |
+
+### Jetons personnalises
+
+Tout jeton que vous inventez au-dela de l'ensemble integre peut etre fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
+
+```text
+tgram://{bot_token}/{chat_id}/?template=/chemin/gabarit.json&:env=production
+```
+
+Dans le gabarit, referenciez-le sous la forme `{{env}}`.
+
+### Exemples de gabarit
+
+Enregistrez l'un des exemples suivants sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Chacun est pret a etre copie-colle comme point de depart.
+
+<Tabs>
+
+<TabItem label="De base">
+
+Un titre de section construit a partir du titre, suivi d'un paragraphe construit a partir du corps :
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "{{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+<TabItem label="Avec un separateur">
+
+Le meme titre et le meme corps, avec un separateur avant une petite ligne de signature :
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "{{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "paragraph",
+      "text": "Envoye par {{app_id}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+<TabItem label="Jetons personnalises">
+
+Un avis de deploiement qui injecte un jeton personnalise `env`. Envoyez-le avec `&:env=production` dans l'URL :
+
+```json
+{
+  "blocks": [
+    {
+      "type": "section_heading",
+      "text": "Deploiement : {{app_title}}"
+    },
+    {
+      "type": "paragraph",
+      "text": "{{app_body}}"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "paragraph",
+      "text": "Environnement : {{env}}"
+    }
+  ]
+}
+```
+
+</TabItem>
+
+</Tabs>
 
 ## Exemples
 
@@ -120,7 +247,7 @@ Vous voulez utiliser les fonctionnalites Markdown de Telegram ? Faites plutot ce
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
 # Supposons que le {chat_id} de lead2gold soit 12315544
-# Nous forçons le format de sortie en markdown dans cet exemple
+# Nous forçons le format de sortie en markdown dans cet exemple
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?format=markdown
 ```
@@ -143,4 +270,12 @@ Les sujets peuvent egalement etre definis pour chaque chat_id :
 # Supposons que le {topic_id} soit 1234567
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544:1234567/
+```
+
+Envoyer une notification a l'aide d'un gabarit de Message Riche personnalise (voir **Gabarits** ci-dessus), en injectant un jeton personnalise avec le prefixe `:cle=valeur` :
+
+```bash
+# Supposons que le gabarit soit enregistre a /etc/apprise/telegram-blocks.json
+apprise -vv -t "Deploiement" -b "v2.3.1 deploye" \
+   "tgram://123456789:abcdefg_hijklmnop/12315544/?template=/etc/apprise/telegram-blocks.json&:env=production"
 ```
