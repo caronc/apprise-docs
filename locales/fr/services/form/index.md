@@ -43,7 +43,7 @@ Le _type_ prendra l'une des valeurs suivantes :
 
 ### Format du message
 
-Le champ `message` est transmis exactement tel que vous le fournissez : ce service relaie le contenu sans le modifier et prend en charge `text`, `html` et `markdown`. Si vous ne precisez pas `?format=`, le texte brut est utilise par defaut.
+Le champ `message` est transmis exactement tel que vous le fournissez : ce service relaie le contenu sans le modifier et prend en charge `text`, `html` et `markdown`. Si vous ne précisez pas `?format=`, le texte brut est utilisé par défaut.
 
 ## Syntaxe
 
