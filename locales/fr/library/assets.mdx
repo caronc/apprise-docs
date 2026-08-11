@@ -88,12 +88,14 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 
 ### Concurrence et envoi
 
-| Champ                   | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
-| ----------------------- | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `async_mode`            | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                 |
-| `default_service_retry` | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                         |
-| `default_service_wait`  | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                       |
-| `service_timeout`       | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. `0` désactive la limite. Voir [Résultats de notification](/library/results/). |
+| Champ                    | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
+| ------------------------ | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `async_mode`             | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                 |
+| `default_service_retry`  | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                         |
+| `default_service_wait`   | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                       |
+| `service_timeout`        | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. `0` désactive la limite. Voir [Résultats de notification](/library/results/). |
+| `result_log_memory_size` | `int`           |    `0` | Journaux du résultat     | Octets conservés en mémoire avant de transférer les journaux vers un fichier temporaire. Utilisé seulement si `result_log_disk_size` est supérieur à `0`.                                                                  |
+| `result_log_disk_size`   | `int`           |    `0` | Journaux du résultat     | Espace disque temporaire maximal pour le résultat d'une notification. `0` conserve tous les journaux en mémoire.                                                                                                           |
 
 ### Découverte de plugins
 
@@ -206,6 +208,28 @@ apobj.add("slack://tokenA/tokenB/tokenC")
 # court l'emporte
 apobj.notify(body="Alerte urgente", timeout=30)
 ```
+
+</TabItem>
+
+<TabItem value="result-logs" label="Stockage des journaux du résultat">
+
+Conservez une petite partie des journaux en mémoire et placez les entrées
+suivantes dans un fichier temporaire supprimé automatiquement :
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(
+    result_log_memory_size=2 * 1024 * 1024,
+    result_log_disk_size=256 * 1024 * 1024,
+)
+apobj = Apprise(asset=asset)
+```
+
+Ces limites sont partagées par tous les services et toutes les tentatives d'une
+notification. Si l'espace disque est épuisé ou indisponible, l'envoi continue
+et le résultat contient un avertissement indiquant que les journaux suivants
+n'ont pas pu être conservés.
 
 </TabItem>
 

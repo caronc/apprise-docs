@@ -37,9 +37,59 @@ Ce guide couvre la fonctionnalité centrale de l'API Apprise : l'envoi de notifi
 
 ## Formats de Réponse
 
-Par défaut, les endpoints renvoient `text/plain`. Si vous préférez du JSON, envoyez `Accept: application/json`.
+Par défaut, les points de terminaison renvoient `text/plain`. Si vous préférez
+du JSON, envoyez `Accept: application/json`.
 
-Pour les endpoints de notification (`/notify` et `/notify/{KEY}`), vous pouvez aussi demander une vue HTML simple des logs avec `Accept: text/html`. C'est principalement utile pour des tests manuels dans un navigateur.
+Pour les points de terminaison de notification (`/notify` et `/notify/{KEY}`),
+vous pouvez aussi demander une vue HTML simple des journaux avec
+`Accept: text/html`. C'est principalement utile pour des tests manuels dans un
+navigateur.
+
+Ces réponses attendent la fin de l'envoi des notifications, puis transmettent
+les journaux une entrée à la fois. Un résultat volumineux stocké sur disque
+n'est donc pas reconstruit en mémoire et le format de la réponse ne change pas.
+
+### Diffusion en direct de la progression
+
+Les points de terminaison de notification peuvent indiquer leur progression à mesure que chaque service est notifié. Utilisez `?stream=yes` ou envoyez `Accept: text/event-stream`.
+
+Les éventuels événements `log` sont suivis d'un événement `result`. Une erreur inattendue produit plutôt un événement `error`.
+
+```bash
+curl -N -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Sauvegarde terminée avec succès.", "title": "État du système"}' \
+  "http://localhost:8000/notify?stream=yes"
+```
+
+```text
+event: log
+data: {"level": "INFO", "asctime": "2025-01-01 12:00:00,000", "message": "Sent to Telegram", "service": "Telegram"}
+
+event: result
+data: {"status": "SUCCESS"}
+```
+
+Le flux commence avec le code HTTP `200`, avant la fin de l'envoi. Consultez le statut du dernier événement `result` (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL` ou `TIMEOUT`) au lieu d'attendre le code HTTP `424`.
+
+Chaque connexion conserve jusqu'à 2 Mo de journaux en attente en mémoire. Si le
+client prend du retard, jusqu'à 256 Mo supplémentaires peuvent être conservés
+dans un stockage temporaire. Les événements restent ordonnés tant qu'aucune
+limite n'est atteinte.
+
+Si la limite est atteinte ou si le stockage temporaire échoue, l'envoi des
+notifications continue. Le flux émet un journal `ERROR` demandant de contacter
+l'administrateur du serveur. Le flux reprend les nouvelles entrées une fois les
+événements stockés envoyés.
+
+Les opérateurs peuvent modifier ces limites avec `APPRISE_STREAM_MEMORY_SIZE`
+et `APPRISE_STREAM_DISK_SIZE`. Les mêmes limites empêchent aussi les journaux
+du résultat final de croître sans limite en mémoire. Consultez
+[Variables d'environnement](/api/reference/environment/#stockage-et-limites) pour connaître les modes utilisant la valeur zéro.
+
+:::note
+`-N` (`--no-buffer`) indique à `curl` d'afficher chaque événement dès son arrivée plutôt que d'attendre la fermeture de la connexion.
+:::
 
 ## Notifications Sans État
 

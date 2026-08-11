@@ -24,3 +24,7 @@ L'API Apprise utilise les codes d'état HTTP standards. De nombreuses réponses 
 :::note
 Certains cas d'erreur dépendent de l'endpoint et peuvent renvoyer soit du `text/plain`, soit du JSON selon la valeur de `Accept`.
 :::
+
+:::note
+Un [flux de progression en direct](/api/usage/#diffusion-en-direct-de-la-progression) commence avec le code HTTP `200`. Consultez le statut de son événement `result` final au lieu d'attendre un code HTTP `424` ultérieur.
+:::

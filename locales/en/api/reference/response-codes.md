@@ -24,3 +24,7 @@ Apprise API uses standard HTTP status codes. Many error responses return a short
 :::note
 Some error cases are endpoint-specific and may return either `text/plain` or JSON depending on `Accept`.
 :::
+
+:::note
+A [live progress stream](/api/usage/#live-progress-streaming) starts with HTTP `200`. Check its final `result` status instead of expecting a later HTTP `424`.
+:::
