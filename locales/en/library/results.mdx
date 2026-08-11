@@ -215,7 +215,7 @@ for service in result:
 
 `service.logs()` is a convenience that walks every attempt for you. If you need
 to know which specific retry produced which message, read `attempt.logs`
-directly instead -- a plain list of `NotifyLogEntry` for just that one attempt.
+directly instead -- an iterable of `NotifyLogEntry` for just that one attempt.
 Each `NotifyLogEntry` has three fields: `level` (e.g. `"WARNING"`), `message`,
 and `time`; `print()`-ing one formats it like a normal log line (`str()` mirrors
 Python logging's own default format).
@@ -234,27 +234,119 @@ for entry in result.logs():
     print(entry)
 ```
 
+## Messages Not Tied to One Service (`call_logs`)
+
+Apprise also logs work that does not belong to one service, such as retries,
+timeouts, escalation, or having no matching services. These entries are in
+`result.call_logs()`:
+
+```python
+result = apobj.notify(body="Deploying new release")
+
+for entry in result.call_logs():
+    print(entry)
+```
+
+`result.logs()` already combines these entries with all service logs in time
+order. Use `call_logs` directly when you only need Apprise's own messages:
+
+```python
+from apprise import AppriseResultStatus
+
+result = apobj.notify(body="test", tag="nonexistent")
+
+if result.status == AppriseResultStatus.NOMATCH:
+    for entry in result.call_logs():
+        print(entry)  # e.g. "There are no service(s) to notify"
+```
+
+## Capturing More Than Warnings (`log_level`)
+
+Without a live callback, Apprise captures `WARNING` and higher by default. With
+`log_callback`, the default is `INFO` so successful deliveries also appear.
+Set `log_level` explicitly when you need a different amount of detail:
+
+```python
+import logging
+
+apobj = apprise.Apprise()
+apobj.add("mailto://user:pass@example.com")
+
+# Also capture INFO-level chatter for this one call
+result = apobj.notify(body="Deploying new release", log_level=logging.INFO)
+
+for entry in result.logs():
+    print(entry)
+```
+
+Set `log_level` on the `Apprise` object, or override it for one call:
+
+```python
+# Every notify()/async_notify() call made with this object captures INFO+
+apobj = apprise.Apprise(log_level=logging.INFO)
+
+# ...except this one call, which only wants WARNING+ (the default)
+apobj.notify(body="Quiet check-in", log_level=logging.WARNING)
+```
+
+By default, Apprise keeps all captured entries in memory. Applications that
+capture large volumes can set `result_log_memory_size` and
+`result_log_disk_size` on `AppriseAsset` to spill logs to temporary disk
+storage. The limits cover the complete notification, including every service
+and retry.
+
+```python
+asset = apprise.AppriseAsset(
+    result_log_memory_size=2 * 1024 * 1024,
+    result_log_disk_size=256 * 1024 * 1024,
+)
+apobj = apprise.Apprise(asset=asset)
+```
+
+Temporary files close automatically when the result is released. Call
+`result.close()` when keeping a result object for a long time, or use it as a
+context manager:
+
+```python
+with apobj.notify(body="Deploy complete") as result:
+    for entry in result.logs():
+        print(entry)
+```
+
+:::caution
+Python's `apprise` logger must also allow the requested level. If INFO or DEBUG
+entries are missing, check the logger configuration:
+
+```python
+import logging
+
+# Allow INFO records to reach Apprise's capture
+logging.getLogger("apprise").setLevel(logging.INFO)
+```
+
+Applications that accept a level per request should configure the logger once,
+then use `log_level` for each call. Changing the shared logger during a request
+can interfere with notifications running at the same time.
+:::
+
 ## Watching Logs Live
 
 Everything above reads logs _after_ `notify()` has already finished. If you're
-building something like a live console feed or a progress panel in your own app,
-you don't want to wait -- you want to know about each warning or error the moment
-it happens, even while several services are still being notified in the
-background.
+building a live console or progress panel, you can receive each captured entry
+while services are still being notified.
 
 Use `log_callback` for this. Give it a function, and Apprise calls it with
 `(entry, service)` for every `NotifyLogEntry` as it's captured, live:
 
 ```python
 def on_log(entry, service):
-    print(f"[{service.name}] {entry}")
+    print(f"[{service.service_name if service else 'apprise'}] {entry}")
 
 apobj = apprise.Apprise(log_callback=on_log)
 apobj.add("slack://tokenA/tokenB/tokenC")
 apobj.add("discord://webhook_id/webhook_token")
 
-# on_log() fires for each warning/error as it happens, potentially for
-# both services at once, not just once notify() has returned
+# on_log() receives each captured entry before notify() returns
 apobj.notify(body="Deploying new release")
 ```
 
@@ -270,7 +362,7 @@ def collect_log(entry, service):
     # Save just enough information for your app's own status page.
     recent_logs.append(
         {
-            "service": service.name,
+            "service": service.service_name if service else "apprise",
             "level": entry.level,
             "message": entry.message,
         }
@@ -286,17 +378,25 @@ result = apobj.notify(
 )
 ```
 
-If your app already uses `asyncio`, the callback may also return a coroutine.
-Use it with `async_notify()` so Apprise has an event loop to schedule it on:
+`log_callback` must be synchronous. If it returns a coroutine, Apprise closes
+it without running it and logs a warning. To publish asynchronously, schedule
+work on your application's event loop from a synchronous callback:
 
 ```python
-async def publish_log(entry, service):
-    await websocket.send_json(
-        {
-            "service": service.name,
-            "level": entry.level,
-            "message": entry.message,
-        }
+import asyncio
+
+loop = asyncio.get_event_loop()
+
+def publish_log(entry, service):
+    asyncio.run_coroutine_threadsafe(
+        websocket.send_json(
+            {
+                "service": service.service_name if service else "apprise",
+                "level": entry.level,
+                "message": entry.message,
+            }
+        ),
+        loop,
     )
 
 apobj = apprise.Apprise(log_callback=publish_log)
@@ -310,6 +410,12 @@ A few things worth knowing:
 - **It's entirely optional.** Leave it out (the default) and everything behaves
   exactly as before -- `log_callback` changes nothing about `notify()`'s return
   value or the logs you can already read from the result afterward.
+- **It only fires for what's actually being captured.** `log_callback` sees
+  the entries allowed by `log_level`. Its default is `INFO` when a callback is
+  active; set it explicitly for DEBUG, TRACE, or WARNING.
+- **`service` is `None` for a `call_logs` entry.** Not every message is tied
+  to one service, so handle that case, for example:
+  `service.service_name if service else "apprise"`.
 - **Set it once, or just for one call.** `Apprise(log_callback=...)` applies to
   every `notify()`/`async_notify()` call made with that object. Passing
   `log_callback=` directly to `notify()` itself overrides that default for just
@@ -325,11 +431,8 @@ A few things worth knowing:
   threads. Keep the callback short, and avoid touching shared state unless it's
   thread-safe (a `queue.Queue` is; a plain list you're appending to without a
   lock is not).
-- **It can be `async def` too.** An async callback is scheduled onto whichever
-  event loop is running `async_notify()` -- useful for pushing updates over a
-  websocket, for example. If you give an async callback to a plain (non-async)
-  `notify()` call with no event loop running anywhere, there's nowhere to
-  schedule it, so that entry is just skipped (with a warning logged about it).
+- **It must be synchronous.** Apprise does not run async callbacks. Schedule
+  async work from a synchronous callback, as shown above.
 - **If your callback raises, notify() keeps going.** The error is logged, not
   raised back at you -- a bug in `on_log()` should never be able to break a
   real notification.
@@ -347,25 +450,38 @@ print(result.timeout_count)   # how many specifically timed out
 
 ## Exporting as JSON
 
-Every level of the result -- the whole call, each service, each attempt, each log
-line -- can be turned into JSON for logging, forwarding to a log file, or passing
-to another program.
+The whole result, one service, or one attempt can be written as JSON without
+loading every captured log back into memory. Use `write_json()` when writing to
+a text file or another object with a `write()` method:
 
 ```python
 result = apobj.notify(body="Nightly backup finished")
 
-# The whole call, as one JSON string (every service/attempt/log nested inside)
-print(result.json())
+# Write every service, attempt, and log entry directly to a file.
+with open("result.json", "w", encoding="utf-8") as stream:
+    result.write_json(stream)
 
-# Or just one service's own detail
+# A service or attempt supports the same method.
 for service in result:
-    print(service.json())
+    with open("service.json", "w", encoding="utf-8") as stream:
+        service.write_json(stream)
 ```
 
-If you want a plain Python `dict` instead of a JSON string (e.g. to embed it in a
-larger structure before serializing everything together), call `.asdict()`
-instead of `.json()` -- available at every level (`result.asdict()`,
-`service.asdict()`, `attempt.asdict()`).
+Use `iter_json()` when a framework or network client accepts chunks:
+
+```python
+for chunk in result.iter_json():
+    send_to_client(chunk)
+```
+
+The iterator keeps disk-backed logs lazy and produces valid JSON from beginning
+to end. Keep the result open until the iterator finishes. Joining the chunks,
+such as `"".join(result.iter_json())`, is possible for small results but loads
+the complete JSON document into memory.
+
+Container results intentionally do not provide `asdict()` or a string-returning
+`json()` method because either form must load every nested log. Individual
+`NotifyLogEntry` objects remain small and still support both methods.
 
 ## Notes On `async_notify()`
 
@@ -391,10 +507,12 @@ if not result:
 | How many tries did a service take?                | `len(service)`                                           |
 | What actually happened on each try?               | `for attempt in service: ...`                            |
 | What warnings/errors did a service log?           | `service.logs()` / `attempt.logs`                        |
-| I want every service's logs, merged in time order | `result.logs()`                                          |
+| What did Apprise itself log (retries, deadlines)? | `result.call_logs()`                                     |
+| I want every service's logs, merged in time order | `result.logs()` (includes `call_logs` too)               |
+| I want to capture more (or less) than warnings    | `log_level=` on `Apprise()` or `notify()`                |
 | I want to see logs live, as they happen           | `log_callback=` on `Apprise()` or `notify()`             |
 | How long did it take?                             | `.elapsed` on `result`, `service`, or `attempt`          |
-| I need this as JSON, or a plain dict              | `.json()` / `.asdict()`                                  |
+| I need this as bounded JSON                       | `.write_json()` / `.iter_json()`                         |
 
 ## See Also
 
@@ -402,3 +520,5 @@ if not result:
   retry/wait, optional services, and the timeout settings that drive a `TIMEOUT` status.
 - [Assets & Branding](/library/assets/) -- where `service_timeout` and other
   session-wide defaults are configured.
+- [Live Progress Streaming](/api/usage/#live-progress-streaming) -- use
+  `log_callback` through Apprise API over HTTP.

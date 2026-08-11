@@ -50,6 +50,8 @@ Envoyez des notifications sans utiliser de stockage persistant.
 - `format` : facultatif. Format d'entrée : `text`, `markdown` ou `html`. S'il est complètement omis, la conversion automatique est ignorée, sauf si le serveur définit `APPRISE_DEFAULT_FORMAT`. Une valeur vide ou `null` force aussi le mode pass-through, même avec cette valeur par défaut. Les limites, la gestion du dépassement et l'emballage sûr pour le service s'appliquent toujours.
 - `attach` : facultatif. Une ou plusieurs pièces jointes. Voir [Pièces jointes](#pièces-jointes) ci-dessous.
 
+Les deux points de terminaison de notification peuvent diffuser leur progression. Utilisez `?stream=yes` ou `Accept: text/event-stream`; consultez [Diffusion en direct de la progression](/api/usage/#diffusion-en-direct-de-la-progression).
+
 ## Pièces jointes
 
 Les points de terminaison `/notify/` et `/notify/{KEY}` acceptent un champ `attach` facultatif. Les formes suivantes peuvent être combinées au sein d'une même requête.
