@@ -86,12 +86,14 @@ This table documents the **actual defaults** from the implementation, plus where
 
 ### Concurrency and Delivery
 
-| Field                   | Type            | Default | Used by                | Notes                                                                                                                                                                                                  |
-| ----------------------- | --------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `async_mode`            | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                            |
-| `default_service_retry` | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                     |
-| `default_service_wait`  | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                          |
-| `service_timeout`       | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. `0` disables the limit. See [Notification Results](/library/results/). |
+| Field                    | Type            | Default | Used by                | Notes                                                                                                                                                                                                  |
+| ------------------------ | --------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `async_mode`             | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                            |
+| `default_service_retry`  | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                     |
+| `default_service_wait`   | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                          |
+| `service_timeout`        | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. `0` disables the limit. See [Notification Results](/library/results/). |
+| `result_log_memory_size` | `int`           |     `0` | Result logs            | Bytes kept in memory before result logs spill to temporary disk storage. Used only when `result_log_disk_size` is greater than `0`.                                                                    |
+| `result_log_disk_size`   | `int`           |     `0` | Result logs            | Maximum temporary disk space for one notification result. `0` keeps all result logs in memory.                                                                                                         |
 
 ### Plugin Discovery
 
@@ -203,6 +205,27 @@ apobj.add("slack://tokenA/tokenB/tokenC")
 # asset's own 10-second-per-service budget -- whichever is sooner wins
 apobj.notify(body="Time-sensitive alert", timeout=30)
 ```
+
+</TabItem>
+
+<TabItem value="result-logs" label="Result Log Storage">
+
+Keep a small result-log buffer in memory and place later entries in an
+automatically removed temporary file:
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(
+    result_log_memory_size=2 * 1024 * 1024,
+    result_log_disk_size=256 * 1024 * 1024,
+)
+apobj = Apprise(asset=asset)
+```
+
+The limits are shared by all services and retries in one notification. If the
+disk allowance is exhausted or unavailable, delivery continues and the result
+contains a warning that later log entries could not be retained.
 
 </TabItem>
 
