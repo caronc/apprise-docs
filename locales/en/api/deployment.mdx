@@ -693,7 +693,7 @@ If you deploy in Kubernetes, see **Quick Start -> Kubernetes -> Hardened (rootle
 - uses a read only root filesystem
 - mounts `/tmp` as an in-memory `emptyDir`
 
-## Health checks
+## Health Checks
 
 Apprise API exposes a health endpoint:
 
@@ -732,13 +732,33 @@ This ensures:
 - correct web UI routing
 - correct OpenAPI links
 
-## Authentication and access control
+## Authentication and Access Control
 
-Apprise API does **not** implement authentication internally.
+Apprise API does not require authentication by default.
 
-This is by design.
+Set `APPRISE_PASSWORD` and, optionally, `APPRISE_USER` to protect every endpoint with HTTP Basic Auth. A username alone disables auth with a startup warning. See [Environment Variables](/api/reference/environment/).
 
-Recommended approaches:
+`APPRISE_BASIC_AUTH_REALM` controls the name shown in login prompts. It does not change the username or password. The default is `Apprise API`; give each instance a different name when you host more than one.
+
+**Use HTTPS/TLS.** Basic Auth does not encrypt credentials. HTTPS is required outside `localhost` or a trusted network.
+
+Per-key auth lets users share one server without sharing administrator credentials. Each user receives a protected configuration key, while the administrator can recover any key.
+
+Protect a saved configuration with `POST /auth/{KEY}`. Global auth must remain configured. The first lock requires global credentials; later changes accept global or current key credentials. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
+
+A key stays protected if global auth is later removed, but its lock cannot be managed until global auth returns. Keep global credentials configured while using per-key locks.
+
+Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). Locks with configuration remain. See [Pruning](#pruning).
+
+### Browser Origin Checks
+
+Browsers add an `Origin` header when a page changes data. Apprise API checks this header and rejects changes sent from another website. Requests from the same site are allowed.
+
+Apprise API does not require Django's browser cookie and CSRF token exchange. This keeps direct API calls from `curl`, mobile apps, and other programs simple; these clients normally omit `Origin` and continue to work as documented.
+
+For an HTTPS site behind a reverse proxy, set `APPRISE_TRUSTED_ORIGINS` to the full public address, such as `https://apprise.example.com`. Separate multiple addresses with commas.
+
+If you prefer not to use the built-in options, the same reverse-proxy approaches still work:
 
 - place the API behind a reverse proxy
 - use HTTP basic authentication
@@ -747,6 +767,22 @@ Recommended approaches:
 Nginx override files may be injected into the container to enforce access control.
 
 A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `ConfigMap` (nginx `location-override.conf`) is available under **Quick Start -> Kubernetes -> Full example**.
+
+## Pruning
+
+The packaged container runs two cleanup commands daily. They start 12 hours apart, use low CPU and disk priority, and have a time limit:
+
+| Command      | What it prunes                                                               | Retention setting                                            | Schedule setting                                                                 |
+| :----------- | :--------------------------------------------------------------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------------- |
+| `storeprune` | Apprise's own persistent notification-state storage (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)             | `APPRISE_STORAGE_PRUNE_INTERVAL_SECONDS` (default `86400`, once a day)           |
+| `authprune`  | Per-key Basic Auth locks without configuration.                              | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days) | `APPRISE_AUTH_PRUNE_INTERVAL_SECONDS` (default `86400`, starting 12 hours later) |
+
+Set `APPRISE_PRUNE_ENABLED=no` to disable scheduled cleanup. `APPRISE_PRUNE_TIMEOUT_SECONDS` changes the 8-hour time limit. Either command may still run manually:
+
+```bash
+docker exec -it apprise python manage.py storeprune --days 30
+docker exec -it apprise python manage.py authprune --seconds 2592000
+```
 
 ## Logging and Observability
 

@@ -24,6 +24,11 @@ You can perform status or health checks on your server configuration.
   {
     "attach_lock": false,
     "config_lock": false,
+    "stateful_enabled": true,
+    "stateless_enabled": true,
+    "degraded": false,
+    "max_attachments": 6,
+    "attach_size": 209715200,
     "status": {
       "persistent_storage": true,
       "can_write_config": true,
@@ -32,6 +37,8 @@ You can perform status or health checks on your server configuration.
     }
   }
   ```
+
+  `degraded` is `true` only when both `stateful_enabled` and `stateless_enabled` are `false`. The server cannot accept notifications until an admin enables at least one mode.
 
 ## Stateless Notifications
 
@@ -56,11 +63,11 @@ Both notification endpoints can stream progress. Use `?stream=yes` or `Accept: t
 
 The `/notify/` and `/notify/{KEY}` endpoints accept an optional `attach` field. You may mix the following forms within a single request.
 
-### Binary file upload
+### Binary File Upload
 
 When submitting the request as `multipart/form-data`, include the file directly in the `attach` field. The filename provided by the client is used as-is.
 
-### HTTP/HTTPS URL string
+### HTTP/HTTPS URL String
 
 Pass an `http://` or `https://` URL as a string. Apprise downloads the file at request time and derives the attachment filename automatically.
 
@@ -83,7 +90,7 @@ https://example.com/thumbnails/abc123?name=thumbnail.jpg
 
 An empty or whitespace-only `?name=` is treated as if the parameter were absent, so Apprise falls back to the URL path.
 
-### JSON object
+### JSON Object
 
 Pass an object with a `url` key and an optional `filename` key:
 
@@ -97,13 +104,22 @@ When `filename` is provided in the JSON object it takes the highest priority, ov
 
 Manage and use saved configurations associated with a `{KEY}`.
 
-| Path               | Method | Description                                                                                                             |
-| :----------------- | :----- | :---------------------------------------------------------------------------------------------------------------------- |
-| `/add/{KEY}`       | `POST` | Saves Apprise configuration to the persistent store. Payload: `urls`, `config`, `format`.                               |
-| `/del/{KEY}`       | `POST` | Removes Apprise configuration from the persistent store.                                                                |
-| `/get/{KEY}`       | `POST` | Returns the Apprise configuration. Alias: `/cfg/{KEY}` (web UI uses this).                                              |
-| `/notify/{KEY}`    | `POST` | Sends notifications to endpoints associated with `{KEY}`. Payload: `body` (required), `title`, `type`, `tag`, `format`. |
-| `/json/urls/{KEY}` | `GET`  | Returns a JSON object containing all URLs and tags associated with the key.                                             |
+| Path               | Method   | Description                                                                                                                      |
+| :----------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `/add/{KEY}`       | `POST`   | Saves a configuration. Payload: `urls`, `config`, `format`.                                                                      |
+| `/del/{KEY}`       | `POST`   | Removes a configuration and its per-key authentication.                                                                          |
+| `/get/{KEY}`       | `POST`   | Returns a configuration. Alias: `/cfg/{KEY}`.                                                                                    |
+| `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. Payload: `body` (required), `title`, `type`, `tag`, `format`.                             |
+| `/json/urls/{KEY}` | `GET`    | Returns the URLs and tags saved for the key.                                                                                     |
+| `/status/{KEY}`    | `GET`    | Returns server status after applying the key's authentication.                                                                   |
+| `/auth/{KEY}`      | `POST`   | Sets or replaces Basic Auth. The first lock requires global credentials; later changes accept global or current key credentials. |
+| `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration.                                                                           |
+
+These stateful endpoints also accept `X-Apprise-Config-ID`, such as `POST /get/` with `X-Apprise-Config-ID: mykey`. This keeps the key out of access logs. `/cfg` does not accept the header.
+
+`/auth/{KEY}` requires global auth to remain configured. `APPRISE_CONFIG_LOCK` does not block per-key credential changes. See [Authentication and Access Control](/api/deployment/#authentication-and-access-control).
+
+If the URL and header both contain a key, the header wins. An invalid header is rejected instead of falling back to the URL key. The web UI and Apprise Mobile continue to use URL-based keys.
 
 ## Observability
 
@@ -112,6 +128,6 @@ Manage and use saved configurations associated with a `{KEY}`.
 | `/details` | `GET`  | Retrieve a JSON object containing all supported Apprise URLs (send `Accept: application/json`). |
 | `/metrics` | `GET`  | Prometheus endpoint for basic metrics collection.                                               |
 
-## Response codes
+## Response Codes
 
 For a full list (including UI-only codes and common error responses), see [Response Codes](/api/reference/response-codes/).

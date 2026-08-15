@@ -27,7 +27,7 @@ L'API Apprise est un service **stateless-first** avec un **état persistant opti
 Le service peut être exécuté en toute sécurité :
 
 - localement ;
-- derrière un reverse proxy ;
+- derrière un proxy inverse ;
 - dans Docker ou Docker Compose ;
 - dans Kubernetes, y compris dans des environnements durcis et rootless.
 
@@ -718,7 +718,7 @@ Cet endpoint convient pour :
 
 ## Reverse Proxies et Chemins de Base
 
-Si l'API Apprise est hébergée derrière un reverse proxy ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
+Si l'API Apprise est hébergée derrière un proxy inverse ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
 
 Exemple :
 
@@ -734,19 +734,55 @@ Cela garantit :
 
 ## Authentification et Contrôle d'Accès
 
-L'API Apprise **n'implémente pas** d'authentification en interne.
+L'API Apprise ne requiert aucune authentification par défaut.
 
-C'est intentionnel.
+Définissez `APPRISE_PASSWORD` et, facultativement, `APPRISE_USER` pour protéger tous les points de terminaison avec HTTP Basic. Un nom d'utilisateur seul désactive l'authentification avec un avertissement. Consultez les [Variables d'Environnement](../reference/environment/).
 
-Approches recommandées :
+`APPRISE_BASIC_AUTH_REALM` définit le nom affiché dans les invites de connexion. Il ne modifie ni le nom d'utilisateur ni le mot de passe. La valeur par défaut est `Apprise API` ; donnez un nom différent à chaque instance si vous en hébergez plusieurs.
 
-- placer l'API derrière un reverse proxy ;
+**Utilisez HTTPS/TLS.** Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
+
+L'authentification par clé permet de partager un serveur sans partager les identifiants d'administration. Chaque utilisateur reçoit une clé protégée et l'administrateur peut récupérer toute clé.
+
+Protégez une configuration avec `POST /auth/{KEY}`. L'authentification globale doit rester configurée. Le premier verrou exige les identifiants globaux ; les modifications suivantes acceptent les identifiants globaux ou ceux de la clé. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
+
+Une clé reste protégée si l'authentification globale est retirée, mais son verrou ne peut plus être géré avant son rétablissement. Conservez les identifiants globaux tant que vous utilisez des verrous par clé.
+
+Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
+
+### Vérification de l'Origine du Navigateur
+
+Les navigateurs ajoutent un en-tête `Origin` lorsqu'une page modifie des données. L'API Apprise vérifie cet en-tête et refuse les modifications envoyées depuis un autre site. Les requêtes provenant du même site sont autorisées.
+
+L'API Apprise n'exige pas l'échange de cookie et de jeton CSRF de Django. Les appels directs depuis `curl`, les applications mobiles et les autres programmes restent ainsi simples ; ces clients omettent normalement `Origin` et continuent de fonctionner comme indiqué.
+
+Pour un site HTTPS derrière un proxy inverse, définissez `APPRISE_TRUSTED_ORIGINS` avec l'adresse publique complète, par exemple `https://apprise.example.com`. Séparez plusieurs adresses par des virgules.
+
+Si vous préférez ne pas utiliser ces options intégrées, les approches par proxy inverse restent valables :
+
+- placer l'API derrière un proxy inverse ;
 - utiliser une authentification HTTP basic ;
 - restreindre l'accès au niveau réseau ou ingress.
 
 Des fichiers de surcharge Nginx peuvent être injectés dans le conteneur pour imposer un contrôle d'accès.
 
 Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `ConfigMap` (nginx `location-override.conf`) est disponible dans **Démarrage Rapide -> Kubernetes -> Exemple Complet**.
+
+## Élagage
+
+Le conteneur exécute deux commandes de nettoyage chaque jour. Elles démarrent à 12 heures d'intervalle, utilisent une faible priorité CPU/disque et disposent d'une limite de temps :
+
+| Commande     | Ce qu'elle élague                                                                       | Paramètre de rétention                                         | Paramètre de planification                                                            |
+| :----------- | :-------------------------------------------------------------------------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
+| `storeprune` | Le stockage persistant d'état de notification propre à Apprise (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)               | `APPRISE_STORAGE_PRUNE_INTERVAL_SECONDS` (défaut `86400`, une fois par jour)          |
+| `authprune`  | Verrous Basic par clé sans configuration.                                               | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours) | `APPRISE_AUTH_PRUNE_INTERVAL_SECONDS` (défaut `86400`, démarrage 12 heures plus tard) |
+
+Réglez `APPRISE_PRUNE_ENABLED=no` pour désactiver le nettoyage planifié. `APPRISE_PRUNE_TIMEOUT_SECONDS` modifie la limite de 8 heures. Chaque commande reste exécutable manuellement :
+
+```bash
+docker exec -it apprise python manage.py storeprune --days 30
+docker exec -it apprise python manage.py authprune --seconds 2592000
+```
 
 ## Logging et Observabilité
 

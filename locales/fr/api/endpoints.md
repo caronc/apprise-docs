@@ -24,6 +24,11 @@ Vous pouvez effectuer des contrôles d'état ou de santé de la configuration de
   {
     "attach_lock": false,
     "config_lock": false,
+    "stateful_enabled": true,
+    "stateless_enabled": true,
+    "degraded": false,
+    "max_attachments": 6,
+    "attach_size": 209715200,
     "status": {
       "persistent_storage": true,
       "can_write_config": true,
@@ -32,6 +37,8 @@ Vous pouvez effectuer des contrôles d'état ou de santé de la configuration de
     }
   }
   ```
+
+  `degraded` vaut `true` uniquement lorsque `stateful_enabled` et `stateless_enabled` valent tous deux `false`. Le serveur ne peut accepter de notifications tant qu'un administrateur n'a pas activé au moins un mode.
 
 ## Notifications sans État
 
@@ -52,11 +59,11 @@ Envoyez des notifications sans utiliser de stockage persistant.
 
 Les deux points de terminaison de notification peuvent diffuser leur progression. Utilisez `?stream=yes` ou `Accept: text/event-stream`; consultez [Diffusion en direct de la progression](/api/usage/#diffusion-en-direct-de-la-progression).
 
-## Pièces jointes
+## Pièces Jointes
 
 Les points de terminaison `/notify/` et `/notify/{KEY}` acceptent un champ `attach` facultatif. Les formes suivantes peuvent être combinées au sein d'une même requête.
 
-### Envoi de fichier binaire
+### Envoi de Fichier Binaire
 
 Lors de la soumission de la requête en `multipart/form-data`, incluez directement le fichier dans le champ `attach`. Le nom de fichier fourni par le client est utilisé tel quel.
 
@@ -93,17 +100,26 @@ Passez un objet avec une clé `url` et une clé `filename` facultative :
 
 Lorsque `filename` est présent dans l'objet JSON, il est prioritaire sur tout le reste, y compris le chemin de l'URL et le paramètre `?name=`.
 
-## Points de terminaison Persistants avec État
+## Points de Terminaison Persistants avec État
 
 Gérez et utilisez des configurations enregistrées associées à une clé `{KEY}`.
 
-| Chemin             | Méthode | Description                                                                                                                           |
-| :----------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------ |
-| `/add/{KEY}`       | `POST`  | Enregistre la configuration Apprise dans le stockage persistant. Charge utile : `urls`, `config`, `format`.                           |
-| `/del/{KEY}`       | `POST`  | Supprime la configuration Apprise du stockage persistant.                                                                             |
-| `/get/{KEY}`       | `POST`  | Renvoie la configuration Apprise. Alias : `/cfg/{KEY}`, utilisé par l'interface Web.                                                  |
-| `/notify/{KEY}`    | `POST`  | Envoie des notifications aux destinations associées à `{KEY}`. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`. |
-| `/json/urls/{KEY}` | `GET`   | Renvoie un objet JSON contenant toutes les URL et tous les tags associés à cette clé.                                                 |
+| Chemin             | Méthode  | Description                                                                                                                                           |
+| :----------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                                              |
+| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                                           |
+| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                                      |
+| `/notify/{KEY}`    | `POST`   | Envoie une notification avec la configuration enregistrée. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`.                     |
+| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et les tags enregistrés pour la clé.                                                                                                  |
+| `/status/{KEY}`    | `GET`    | Renvoie l'état du serveur après vérification de l'authentification de la clé.                                                                         |
+| `/auth/{KEY}`      | `POST`   | Définit ou remplace Basic Auth. Le premier verrou exige les identifiants globaux ; les suivants acceptent les identifiants globaux ou ceux de la clé. |
+| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration.                                                                                          |
+
+Ces points de terminaison avec état acceptent aussi `X-Apprise-Config-ID`, par exemple `POST /get/` avec `X-Apprise-Config-ID: mykey`. Cela garde la clé hors des journaux d'accès. `/cfg` n'accepte pas cet en-tête.
+
+`/auth/{KEY}` exige que l'authentification globale reste configurée. `APPRISE_CONFIG_LOCK` ne bloque pas les changements d'identifiants par clé. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
+
+Si l'URL et l'en-tête contiennent tous deux une clé, l'en-tête est prioritaire. Un en-tête invalide est rejeté au lieu d'utiliser la clé de l'URL. L'interface Web et Apprise Mobile continuent d'utiliser les clés dans l'URL.
 
 ## Observabilité
 
