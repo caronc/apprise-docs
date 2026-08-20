@@ -13,6 +13,7 @@ L'**API Apprise** est une passerelle Web vers la bibliotheque Apprise. Elle four
 - **Microservices :** fournissez un point de terminaison unique pour toutes vos applications.
 - **Sans etat et avec etat :** envoyez des notifications a la volee ou referencez des configurations enregistrees par cle.
 - **Interface Web :** un tableau de bord integre permet de gerer les configurations et de tester les notifications. L'interface peut etre desactivee avec `APPRISE_API_ONLY=yes`.
+- **Accès par configuration :** attribuez un nom d'utilisateur et un mot de passe à une configuration enregistrée avec `/auth/{KEY}`.
 - **Extensible :** fonctionne comme un conteneur leger compatible avec Docker, Kubernetes, etc.
 - **Configuration centralisee :** utilisez un seul serveur comme source de configuration pour plusieurs applications et environnements.
 
@@ -29,5 +30,5 @@ curl -X POST -d "body=Test Message"   http://localhost:8000/notify/my-alerts
 ```
 
 :::tip
-Si votre serveur est accessible a plusieurs personnes, ou expose a Internet, genere une nouvelle cle obfusquee pour isoler votre environnement. Si vous utilisez l'interface Web, vous pouvez appuyer sur **New Configuration** dans le menu de gauche.
+Si votre serveur est public, [activez l'authentification](./deployment/#authentification-et-contrôle-daccès) et protégez les configurations enregistrées avec l'interface Web ou `/auth/{KEY}`. Une clé difficile à deviner reste utile, mais elle ne remplace pas un nom d'utilisateur et un mot de passe.
 :::

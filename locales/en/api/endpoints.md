@@ -104,20 +104,42 @@ When `filename` is provided in the JSON object it takes the highest priority, ov
 
 Manage and use saved configurations associated with a `{KEY}`.
 
-| Path               | Method   | Description                                                                                                                      |
-| :----------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `/add/{KEY}`       | `POST`   | Saves a configuration. Payload: `urls`, `config`, `format`.                                                                      |
-| `/del/{KEY}`       | `POST`   | Removes a configuration and its per-key authentication.                                                                          |
-| `/get/{KEY}`       | `POST`   | Returns a configuration. Alias: `/cfg/{KEY}`.                                                                                    |
-| `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. Payload: `body` (required), `title`, `type`, `tag`, `format`.                             |
-| `/json/urls/{KEY}` | `GET`    | Returns the URLs and tags saved for the key.                                                                                     |
-| `/status/{KEY}`    | `GET`    | Returns server status after applying the key's authentication.                                                                   |
-| `/auth/{KEY}`      | `POST`   | Sets or replaces Basic Auth. The first lock requires global credentials; later changes accept global or current key credentials. |
-| `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration.                                                                           |
+| Path               | Method   | Description                                                                                                              |
+| :----------------- | :------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `/cfg`             | `GET`    | Lists saved Config IDs. The JSON format depends on whether authentication is enabled, as shown below.                    |
+| `/add/{KEY}`       | `POST`   | Saves a configuration. Payload: `urls`, `config`, `format`.                                                              |
+| `/del/{KEY}`       | `POST`   | Removes a configuration and its per-key authentication.                                                                  |
+| `/move/{KEY}`      | `POST`   | Moves a configuration to a new Config ID. Payload: `to_config_id` (required).                                            |
+| `/get/{KEY}`       | `POST`   | Returns a configuration. Alias: `/cfg/{KEY}`.                                                                            |
+| `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. Payload: `body` (required), `title`, `type`, `tag`, `format`.                     |
+| `/json/urls/{KEY}` | `GET`    | Returns the URLs and tags saved for the key.                                                                             |
+| `/status/{KEY}`    | `GET`    | Returns server status after applying the key's authentication.                                                           |
+| `/auth/{KEY}`      | `GET`    | Opens the browser editor, or returns the current mode and username when JSON is requested. Passwords are never returned. |
+| `/auth/{KEY}`      | `POST`   | Sets or replaces Basic Auth. Administrators may change both fields; configuration users may change only their password.  |
+| `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration. Global administrator credentials are required.                    |
 
 These stateful endpoints also accept `X-Apprise-Config-ID`, such as `POST /get/` with `X-Apprise-Config-ID: mykey`. This keeps the key out of access logs. `/cfg` does not accept the header.
 
-`/auth/{KEY}` requires global auth to remain configured. `APPRISE_CONFIG_LOCK` does not block per-key credential changes. See [Authentication and Access Control](/api/deployment/#authentication-and-access-control).
+`GET /cfg` keeps the original v1 response when authentication is disabled:
+
+```json
+["alerts", "monitoring"]
+```
+
+When authentication is enabled, use the global administrator login. Each entry then includes its assigned username:
+
+```json
+[
+  { "key": "alerts", "user": "alice" },
+  { "key": "monitoring", "user": null }
+]
+```
+
+An empty `user` means password-only access. `null` means that no configuration username is available. Configuration users cannot list every saved Config ID.
+
+`/auth/{KEY}` requires `APPRISE_AUTH_REQUIRED=yes`. An administrator creates or removes logins; an existing configuration user can change their password without an administrator account. `APPRISE_CONFIG_LOCK` does not block these changes. See [Authentication and Access Control](/api/deployment/#authentication-and-access-control).
+
+`/move/{KEY}` moves a configuration to a new Config ID; the destination must not already have a configuration. A configuration user may only move their own key. `APPRISE_CONFIG_LOCK` blocks this endpoint.
 
 If the URL and header both contain a key, the header wins. An invalid header is rejected instead of falling back to the URL key. The web UI and Apprise Mobile continue to use URL-based keys.
 

@@ -734,19 +734,33 @@ Cela garantit :
 
 ## Authentification et Contrôle d'Accès
 
-L'API Apprise ne requiert aucune authentification par défaut.
+L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger tous les points de terminaison avec HTTP Basic.
 
-Définissez `APPRISE_PASSWORD` et, facultativement, `APPRISE_USER` pour protéger tous les points de terminaison avec HTTP Basic. Un nom d'utilisateur seul désactive l'authentification avec un avertissement. Consultez les [Variables d'Environnement](../reference/environment/).
+| Mode                     | Paramètres                                          | Résultat                                                                                                                                                                      |
+| :----------------------- | :-------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Désactivé                | `APPRISE_AUTH_REQUIRED=no`                          | Les requêtes restent ouvertes. Les paramètres d'administration et les connexions de configuration enregistrées sont ignorés.                                                  |
+| Administrateur activé    | `APPRISE_AUTH_REQUIRED=yes` avec `APPRISE_PASSWORD` | L'administrateur peut accéder à toutes les clés et gérer les connexions de configuration. `APPRISE_USER` est facultatif.                                                      |
+| Administrateur désactivé | `APPRISE_AUTH_REQUIRED=yes` sans `APPRISE_PASSWORD` | Les utilisateurs existants accèdent uniquement à leurs propres clés. Aucune nouvelle connexion ne peut être créée tant qu'un mot de passe administrateur n'est pas configuré. |
+
+`APPRISE_USER` sans `APPRISE_PASSWORD` produit un avertissement au démarrage et laisse le compte administrateur désactivé. Consultez les [Variables d'Environnement](../reference/environment/).
 
 `APPRISE_BASIC_AUTH_REALM` définit le nom affiché dans les invites de connexion. Il ne modifie ni le nom d'utilisateur ni le mot de passe. La valeur par défaut est `Apprise API` ; donnez un nom différent à chaque instance si vous en hébergez plusieurs.
 
 **Utilisez HTTPS/TLS.** Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
 
+Les clients API envoient Basic Auth avec chaque requête. Les requêtes qui acceptent explicitement `text/html` utilisent une connexion signée dans le navigateur. **Déconnexion** peut ainsi fermer l'accès Web sans modifier le fonctionnement JSON ou texte brut de l'API. Les appels API ordinaires ne peuvent pas utiliser ce cookie à la place de Basic Auth.
+
 L'authentification par clé permet de partager un serveur sans partager les identifiants d'administration. Chaque utilisateur reçoit une clé protégée et l'administrateur peut récupérer toute clé.
 
-Protégez une configuration avec `POST /auth/{KEY}`. L'authentification globale doit rester configurée. Le premier verrou exige les identifiants globaux ; les modifications suivantes acceptent les identifiants globaux ou ceux de la clé. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
+Dans l'interface Web, ouvrez une configuration, puis sélectionnez son cadenas ou **Authentification** dans le menu. Saisissez un nom d'utilisateur et un mot de passe, puis sélectionnez **Enregistrer**. Les administrateurs globaux peuvent utiliser **Générer Aléatoirement** pour créer les deux valeurs.
 
-Une clé reste protégée si l'authentification globale est retirée, mais son verrou ne peut plus être géré avant son rétablissement. Conservez les identifiants globaux tant que vous utilisez des verrous par clé.
+L'identifiant de configuration, le nom d'utilisateur et le mot de passe sont trois valeurs distinctes. Utilisez des valeurs aléatoires lorsque cela est possible et transmettez les trois à la personne qui a besoin de l'accès. Le mot de passe enregistré n'est plus affiché par la suite.
+
+Les clients API peuvent protéger une configuration avec `POST /auth/{KEY}`. Un administrateur est requis pour créer la première connexion ou en supprimer une. Les utilisateurs existants s'authentifient avec leur connexion actuelle, répètent le nom d'utilisateur enregistré et fournissent un nouveau mot de passe. Seul un administrateur peut changer le nom d'utilisateur. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
+
+Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
+
+L'interface Web comprend l'option **Déconnexion**, qui ferme immédiatement sa connexion signée. Le navigateur peut conserver Basic Auth en interne, mais ces identifiants en cache ne peuvent pas rétablir silencieusement une connexion HTML.
 
 Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
 

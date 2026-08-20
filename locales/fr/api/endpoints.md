@@ -104,20 +104,39 @@ Lorsque `filename` est présent dans l'objet JSON, il est prioritaire sur tout l
 
 Gérez et utilisez des configurations enregistrées associées à une clé `{KEY}`.
 
-| Chemin             | Méthode  | Description                                                                                                                                           |
-| :----------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                                              |
-| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                                           |
-| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                                      |
-| `/notify/{KEY}`    | `POST`   | Envoie une notification avec la configuration enregistrée. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`.                     |
-| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et les tags enregistrés pour la clé.                                                                                                  |
-| `/status/{KEY}`    | `GET`    | Renvoie l'état du serveur après vérification de l'authentification de la clé.                                                                         |
-| `/auth/{KEY}`      | `POST`   | Définit ou remplace Basic Auth. Le premier verrou exige les identifiants globaux ; les suivants acceptent les identifiants globaux ou ceux de la clé. |
-| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration.                                                                                          |
+| Chemin             | Méthode  | Description                                                                                                                                       |
+| :----------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/cfg`             | `GET`    | Liste les ID de configuration enregistrés. Le format JSON dépend de l'activation de l'authentification, comme indiqué ci-dessous.                 |
+| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                                          |
+| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                                       |
+| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                                  |
+| `/notify/{KEY}`    | `POST`   | Envoie une notification avec la configuration enregistrée. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`.                 |
+| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et les tags enregistrés pour la clé.                                                                                              |
+| `/status/{KEY}`    | `GET`    | Renvoie l'état du serveur après vérification de l'authentification de la clé.                                                                     |
+| `/auth/{KEY}`      | `GET`    | Ouvre l'éditeur Web ou renvoie le mode actuel et le nom d'utilisateur si JSON est demandé. Le mot de passe n'est jamais renvoyé.                  |
+| `/auth/{KEY}`      | `POST`   | Définit ou remplace Basic Auth. Les administrateurs modifient les deux champs ; les utilisateurs d'une configuration, uniquement le mot de passe. |
+| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration. Les identifiants de l'administrateur global sont requis.                             |
 
 Ces points de terminaison avec état acceptent aussi `X-Apprise-Config-ID`, par exemple `POST /get/` avec `X-Apprise-Config-ID: mykey`. Cela garde la clé hors des journaux d'accès. `/cfg` n'accepte pas cet en-tête.
 
-`/auth/{KEY}` exige que l'authentification globale reste configurée. `APPRISE_CONFIG_LOCK` ne bloque pas les changements d'identifiants par clé. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
+`GET /cfg` conserve la réponse v1 d'origine lorsque l'authentification est désactivée :
+
+```json
+["alerts", "monitoring"]
+```
+
+Lorsque l'authentification est activée, utilisez le compte administrateur global. Chaque entrée contient alors le nom d'utilisateur associé :
+
+```json
+[
+  { "key": "alerts", "user": "alice" },
+  { "key": "monitoring", "user": null }
+]
+```
+
+Une valeur `user` vide indique un accès par mot de passe uniquement. La valeur `null` signifie qu'aucun nom d'utilisateur de configuration n'est disponible. Les utilisateurs d'une configuration ne peuvent pas obtenir la liste de tous les ID de configuration enregistrés.
+
+`/auth/{KEY}` exige `APPRISE_AUTH_REQUIRED=yes`. Un administrateur crée ou supprime les connexions ; un utilisateur existant peut changer son mot de passe sans compte administrateur. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
 
 Si l'URL et l'en-tête contiennent tous deux une clé, l'en-tête est prioritaire. Un en-tête invalide est rejeté au lieu d'utiliser la clé de l'URL. L'interface Web et Apprise Mobile continuent d'utiliser les clés dans l'URL.
 

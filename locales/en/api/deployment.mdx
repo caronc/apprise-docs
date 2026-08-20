@@ -734,19 +734,33 @@ This ensures:
 
 ## Authentication and Access Control
 
-Apprise API does not require authentication by default.
+Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIRED=yes` to protect every endpoint with HTTP Basic Auth.
 
-Set `APPRISE_PASSWORD` and, optionally, `APPRISE_USER` to protect every endpoint with HTTP Basic Auth. A username alone disables auth with a startup warning. See [Environment Variables](/api/reference/environment/).
+| Mode                   | Settings                                               | Result                                                                                                                                   |
+| :--------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| Disabled               | `APPRISE_AUTH_REQUIRED=no`                             | Requests remain open. Administrator settings and saved configuration logins are ignored.                                                 |
+| Administrator enabled  | `APPRISE_AUTH_REQUIRED=yes` with `APPRISE_PASSWORD`    | The administrator can access every key and manage configuration logins. `APPRISE_USER` is optional.                                      |
+| Administrator disabled | `APPRISE_AUTH_REQUIRED=yes` without `APPRISE_PASSWORD` | Existing configuration users can access only their own keys. New logins cannot be created until an administrator password is configured. |
+
+`APPRISE_USER` without `APPRISE_PASSWORD` produces a startup warning and leaves the administrator account disabled. See [Environment Variables](/api/reference/environment/).
 
 `APPRISE_BASIC_AUTH_REALM` controls the name shown in login prompts. It does not change the username or password. The default is `Apprise API`; give each instance a different name when you host more than one.
 
 **Use HTTPS/TLS.** Basic Auth does not encrypt credentials. HTTPS is required outside `localhost` or a trusted network.
 
+API clients send Basic Auth with every request. Requests that explicitly accept `text/html` use a signed browser login, so **Logout** can end browser access without changing JSON or plain-text API behavior. Ordinary API calls cannot use this cookie instead of Basic Auth.
+
 Per-key auth lets users share one server without sharing administrator credentials. Each user receives a protected configuration key, while the administrator can recover any key.
 
-Protect a saved configuration with `POST /auth/{KEY}`. Global auth must remain configured. The first lock requires global credentials; later changes accept global or current key credentials. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
+In the web interface, open a configuration and select its lock icon or **Authentication** in the menu. Enter a username and password, then select **Save**. Global administrators can use **Randomize** to generate both values.
 
-A key stays protected if global auth is later removed, but its lock cannot be managed until global auth returns. Keep global credentials configured while using per-key locks.
+The configuration ID, username, and password are three separate values. Use random values when practical and share all three with the person who needs access. The saved password is never shown again.
+
+API clients can protect a saved configuration with `POST /auth/{KEY}`. An administrator is required to create the first login or remove one. Existing configuration users authenticate with their current login, repeat the saved username, and supply a new password. Only an administrator can change the username. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
+
+Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
+
+The web interface includes **Logout**, which ends its signed browser login immediately. A browser may retain Basic Auth internally, but those cached credentials cannot silently restore an HTML login.
 
 Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). Locks with configuration remain. See [Pruning](#pruning).
 
