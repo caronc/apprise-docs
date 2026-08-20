@@ -96,6 +96,16 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
+:::note
+Par défaut, les destinations de pièces jointes se résolvant vers une
+adresse interne ou privée (loopback, RFC1918, link-local, etc.) sont
+bloquées, ce qui protège contre les attaques de type falsification de
+requête côté serveur (SSRF) -- y compris les appareils du réseau local
+comme la caméra ci-dessus. Pour autoriser les pièces jointes du réseau
+local, retirez le jeton `internal` de `APPRISE_ATTACH_REJECT_URL`. Voir
+[Variables d'environnement](/api/reference/environment/).
+:::
+
 ## Notifications Avec État
 
 <picture class="theme-aware-sf-diagram">

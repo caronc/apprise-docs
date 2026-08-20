@@ -96,6 +96,15 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
+:::note
+By default, attachment destinations that resolve to an internal or private
+address (loopback, RFC1918, link-local, etc.) are blocked, guarding against
+server-side request forgery (SSRF) -- this includes LAN devices like the
+camera above. To allow LAN attachments, drop the `internal` token from
+`APPRISE_ATTACH_REJECT_URL`. See
+[Environment Variables](/api/reference/environment/).
+:::
+
 ## Stateful Notifications
 
 <picture class="theme-aware-sf-diagram">
