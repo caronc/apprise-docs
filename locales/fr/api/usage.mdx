@@ -96,6 +96,15 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
+:::note
+Les pièces jointes du réseau local, comme la caméra ci-dessus,
+fonctionnent par défaut. Si `/notify` n'est pas entièrement fiable,
+ajoutez le mot-clé `internal` à `APPRISE_ATTACH_REJECT_URL` pour bloquer
+les destinations se résolvant vers une adresse privée ou interne
+(protection SSRF) -- notez que cela bloque aussi les appareils du réseau
+local. Voir [Variables d'environnement](/api/reference/environment/).
+:::
+
 ## Notifications Avec État
 
 <picture class="theme-aware-sf-diagram">
