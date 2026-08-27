@@ -178,6 +178,17 @@ curl -X POST \
   http://localhost:8000/notify/my-alerts
 ```
 
+Lorsque l'authentification est activée, conservez la même URL avec la clé et ajoutez Basic Auth :
+
+```bash
+curl -u "user:password" -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Database connection failed", "type": "warning"}' \
+  http://localhost:8000/notify/my-alerts
+```
+
+Une connexion administrateur avec mot de passe uniquement utilise `-u ":password"`.
+
 ### Tags
 
 Les configurations stateful prennent en charge les tags, ce qui vous permet de notifier des sous-groupes spécifiques de vos URL enregistrées.

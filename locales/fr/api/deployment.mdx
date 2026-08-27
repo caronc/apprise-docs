@@ -640,6 +640,24 @@ Le conteneur attend les chemins inscriptibles suivants :
 
 Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** suffit.
 
+### Mode avec État
+
+Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la configuration et de la connexion actuelle :
+
+| État                                                     | Liste des Configurations                                                         | Déplacement / Suppression                              | Connexion de Configuration            | Contenu de Configuration                                      |
+| :------------------------------------------------------- | :------------------------------------------------------------------------------- | :----------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------ |
+| Mode avec état désactivé                                 | Indisponible                                                                     | Indisponible                                           | Indisponible                          | Indisponible                                                  |
+| Authentification désactivée, configuration déverrouillée | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé                                               | Indisponible                          | Disponible                                                    |
+| Authentification désactivée, configuration verrouillée   | Masquée et refusée                                                               | Refusé                                                 | Indisponible                          | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Utilisateur de configuration, déverrouillée              | Refusée                                                                          | Peut déplacer son propre ID ; ne peut pas le supprimer | Peut modifier son propre mot de passe | Disponible pour son ID                                        |
+| Utilisateur de configuration, verrouillée                | Refusée                                                                          | Refusé                                                 | Peut modifier son propre mot de passe | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Administrateur, déverrouillée                            | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+| Administrateur, verrouillée                              | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+
+Lorsque le contenu est verrouillé, le formulaire Web de notification exige au moins un tag, car il ne peut pas afficher les destinations enregistrées.
+
+Un administrateur authentifié conserve un accès complet aux configurations lorsque le verrouillage est activé. Les utilisateurs d'une configuration et les appelants non authentifiés ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Les requêtes `/notify` avec et sans état restent disponibles, et les requêtes avec état continuent d'accepter des tags facultatifs.
+
 ## Déploiements Durcis
 
 Pour des environnements publics ou multi-tenant, l'API Apprise prend en charge une exécution durcie.
@@ -744,23 +762,31 @@ L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPR
 
 `APPRISE_USER` sans `APPRISE_PASSWORD` produit un avertissement au démarrage et laisse le compte administrateur désactivé. Consultez les [Variables d'Environnement](../reference/environment/).
 
-`APPRISE_BASIC_AUTH_REALM` définit le nom affiché dans les invites de connexion. Il ne modifie ni le nom d'utilisateur ni le mot de passe. La valeur par défaut est `Apprise API` ; donnez un nom différent à chaque instance si vous en hébergez plusieurs.
+`APPRISE_BASIC_AUTH_REALM` nomme le serveur dans les invites de connexion. Il ne modifie aucun identifiant. La valeur par défaut est `Apprise API` ; utilisez un nom différent pour chaque instance.
 
 **Utilisez HTTPS/TLS.** Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
 
-Les clients API envoient Basic Auth avec chaque requête. Les requêtes qui acceptent explicitement `text/html` utilisent une connexion signée dans le navigateur. **Déconnexion** peut ainsi fermer l'accès Web sans modifier le fonctionnement JSON ou texte brut de l'API. Les appels API ordinaires ne peuvent pas utiliser ce cookie à la place de Basic Auth.
+Les clients API envoient Basic Auth avec chaque requête. Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse fermer la session. Les appels API JSON et texte brut ne peuvent pas utiliser cette connexion Web.
+
+Les clients avec état peuvent conserver des chemins comme `/notify/{KEY}`. Les points de terminaison compatibles acceptent aussi `X-Apprise-Config-ID`, ce qui garde la clé hors de l'URL.
+
+Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
+
+Les connexions Web ont leur propre clé de signature intégrée. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
+
+Le champ ID de configuration permet d'ouvrir une autre configuration sans afficher son ID dans la barre d'adresse. L'utilisateur doit se reconnecter si le nouvel ID utilise d'autres identifiants. Les administrateurs peuvent aussi choisir ou générer un ID avec **Nouvelle Configuration**.
 
 L'authentification par clé permet de partager un serveur sans partager les identifiants d'administration. Chaque utilisateur reçoit une clé protégée et l'administrateur peut récupérer toute clé.
 
-Dans l'interface Web, ouvrez une configuration, puis sélectionnez son cadenas ou **Authentification** dans le menu. Saisissez un nom d'utilisateur et un mot de passe, puis sélectionnez **Enregistrer**. Les administrateurs globaux peuvent utiliser **Générer Aléatoirement** pour créer les deux valeurs.
+Pour ajouter une connexion, ouvrez une configuration et sélectionnez son cadenas ou **Authentification**. Saisissez un nom d'utilisateur et un mot de passe, puis sélectionnez **Enregistrer**. Les administrateurs peuvent utiliser **Générer Aléatoirement** pour chaque valeur.
 
-L'identifiant de configuration, le nom d'utilisateur et le mot de passe sont trois valeurs distinctes. Utilisez des valeurs aléatoires lorsque cela est possible et transmettez les trois à la personne qui a besoin de l'accès. Le mot de passe enregistré n'est plus affiché par la suite.
+L'ID de configuration, le nom d'utilisateur et le mot de passe sont des valeurs distinctes. Transmettez les trois à l'utilisateur. Le mot de passe enregistré n'est plus affiché.
 
-Les clients API peuvent protéger une configuration avec `POST /auth/{KEY}`. Un administrateur est requis pour créer la première connexion ou en supprimer une. Les utilisateurs existants s'authentifient avec leur connexion actuelle, répètent le nom d'utilisateur enregistré et fournissent un nouveau mot de passe. Seul un administrateur peut changer le nom d'utilisateur. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
+Les clients API peuvent gérer une connexion avec `POST /auth/{KEY}`. Un administrateur crée la première connexion ou la supprime. Un utilisateur de configuration peut changer uniquement son mot de passe et doit répéter son nom d'utilisateur actuel. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
 
 Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
 
-L'interface Web comprend l'option **Déconnexion**, qui ferme immédiatement sa connexion signée. Le navigateur peut conserver Basic Auth en interne, mais ces identifiants en cache ne peuvent pas rétablir silencieusement une connexion HTML.
+**Déconnexion** ferme la connexion Web signée. Les identifiants en cache du navigateur ne peuvent pas la rétablir silencieusement.
 
 Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
 
@@ -768,7 +794,7 @@ Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUN
 
 Les navigateurs ajoutent un en-tête `Origin` lorsqu'une page modifie des données. L'API Apprise vérifie cet en-tête et refuse les modifications envoyées depuis un autre site. Les requêtes provenant du même site sont autorisées.
 
-L'API Apprise n'exige pas l'échange de cookie et de jeton CSRF de Django. Les appels directs depuis `curl`, les applications mobiles et les autres programmes restent ainsi simples ; ces clients omettent normalement `Origin` et continuent de fonctionner comme indiqué.
+L'API Apprise n'exige pas l'échange de jeton CSRF de Django. Les appels directs depuis `curl`, les applications mobiles et les autres programmes omettent normalement `Origin` et continuent de fonctionner.
 
 Pour un site HTTPS derrière un proxy inverse, définissez `APPRISE_TRUSTED_ORIGINS` avec l'adresse publique complète, par exemple `https://apprise.example.com`. Séparez plusieurs adresses par des virgules.
 
@@ -784,16 +810,17 @@ Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `Con
 
 ## Élagage
 
-Le conteneur exécute deux commandes de nettoyage chaque jour. Elles démarrent à 12 heures d'intervalle, utilisent une faible priorité CPU/disque et disposent d'une limite de temps :
+Le conteneur exécute chaque jour un cycle de nettoyage à faible priorité. Il couvre les deux domaines ci-dessous et dispose d'une limite de temps :
 
-| Commande     | Ce qu'elle élague                                                                       | Paramètre de rétention                                         | Paramètre de planification                                                            |
-| :----------- | :-------------------------------------------------------------------------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
-| `storeprune` | Le stockage persistant d'état de notification propre à Apprise (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)               | `APPRISE_STORAGE_PRUNE_INTERVAL_SECONDS` (défaut `86400`, une fois par jour)          |
-| `authprune`  | Verrous Basic par clé sans configuration.                                               | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours) | `APPRISE_AUTH_PRUNE_INTERVAL_SECONDS` (défaut `86400`, démarrage 12 heures plus tard) |
+| Domaine          | Ce qu'il élague                                                  | Paramètre de rétention                                         |
+| :--------------- | :--------------------------------------------------------------- | :------------------------------------------------------------- |
+| État persistant  | Stockage d'état de notification Apprise (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)               |
+| Authentification | Verrous Basic par clé sans configuration.                        | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours) |
 
-Réglez `APPRISE_PRUNE_ENABLED=no` pour désactiver le nettoyage planifié. `APPRISE_PRUNE_TIMEOUT_SECONDS` modifie la limite de 8 heures. Chaque commande reste exécutable manuellement :
+`APPRISE_PRUNE_INTERVAL_SECONDS` contrôle la planification. Réglez `APPRISE_PRUNE_ENABLED=no` pour désactiver le nettoyage planifié. `APPRISE_PRUNE_TIMEOUT_SECONDS` modifie la limite de 8 heures. La commande combinée et les commandes individuelles restent exécutables manuellement :
 
 ```bash
+docker exec -it apprise python manage.py prune
 docker exec -it apprise python manage.py storeprune --days 30
 docker exec -it apprise python manage.py authprune --seconds 2592000
 ```

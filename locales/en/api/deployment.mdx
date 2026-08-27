@@ -640,6 +640,24 @@ The container expects the following writable paths:
 
 For most deployments, mounting **only `/config` and `/attach`** is sufficient.
 
+### Stateful Mode
+
+Persistent features follow the server mode, configuration lock, and current login:
+
+| State                                      | Configuration List                                                         | Move / Delete                        | Configuration Login           | Configuration Content                  |
+| :----------------------------------------- | :------------------------------------------------------------------------- | :----------------------------------- | :---------------------------- | :------------------------------------- |
+| Stateful mode disabled                     | Unavailable                                                                | Unavailable                          | Unavailable                   | Unavailable                            |
+| Authentication off, configuration unlocked | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed                              | Unavailable                   | Available                              |
+| Authentication off, configuration locked   | Hidden and denied                                                          | Denied                               | Unavailable                   | Hidden; saved notifications still work |
+| Configuration user, unlocked               | Denied                                                                     | May move their own ID; cannot delete | May update their own password | Available for their ID                 |
+| Configuration user, locked                 | Denied                                                                     | Denied                               | May update their own password | Hidden; saved notifications still work |
+| Administrator, unlocked                    | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                   | May manage any login          | Available                              |
+| Administrator, locked                      | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                   | May manage any login          | Available                              |
+
+When configuration content is locked, the Web notification form asks for at least one tag because it cannot display the saved destinations.
+
+An authenticated administrator retains full configuration access while locking is enabled. Configuration users and unauthenticated callers cannot add, retrieve, inspect, list, move, or delete configuration. Stateful and stateless `/notify` requests remain available, and stateful requests continue to accept optional tags.
+
 ## Hardened Deployments
 
 For public or multi-tenant environments, Apprise API supports hardened execution.
@@ -744,23 +762,31 @@ Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIR
 
 `APPRISE_USER` without `APPRISE_PASSWORD` produces a startup warning and leaves the administrator account disabled. See [Environment Variables](/api/reference/environment/).
 
-`APPRISE_BASIC_AUTH_REALM` controls the name shown in login prompts. It does not change the username or password. The default is `Apprise API`; give each instance a different name when you host more than one.
+`APPRISE_BASIC_AUTH_REALM` names the server in login prompts. It does not change any credentials. The default is `Apprise API`; use a different name for each hosted instance.
 
 **Use HTTPS/TLS.** Basic Auth does not encrypt credentials. HTTPS is required outside `localhost` or a trusted network.
 
-API clients send Basic Auth with every request. Requests that explicitly accept `text/html` use a signed browser login, so **Logout** can end browser access without changing JSON or plain-text API behavior. Ordinary API calls cannot use this cookie instead of Basic Auth.
+API clients send Basic Auth with every request. Browser pages use a signed login so **Logout** can end the session. JSON and plain-text API calls cannot use this browser login.
+
+Stateful clients can keep using paths such as `/notify/{KEY}`. Supported endpoints also accept `X-Apprise-Config-ID`, which keeps the key out of the URL.
+
+The Apprise CLI's `apprise://` plugin sends this header in its default version 2 mode. Use `?v=1` only with older servers that require `/notify/{KEY}`.
+
+Browser logins have their own built-in signing key. Changing `APPRISE_WEB_AUTH_SECRET` signs out every browser but does not change hash-mode configuration paths.
+
+The Config ID field can open another configuration without showing its ID in the address bar. Users must log in when they switch to an ID with different credentials. Administrators can also choose or generate an ID from **New Configuration**.
 
 Per-key auth lets users share one server without sharing administrator credentials. Each user receives a protected configuration key, while the administrator can recover any key.
 
-In the web interface, open a configuration and select its lock icon or **Authentication** in the menu. Enter a username and password, then select **Save**. Global administrators can use **Randomize** to generate both values.
+To add a login, open a configuration and select its lock icon or **Authentication**. Enter a username and password, then select **Save**. Administrators can use **Randomize** for either value.
 
-The configuration ID, username, and password are three separate values. Use random values when practical and share all three with the person who needs access. The saved password is never shown again.
+The Config ID, username, and password are separate values. Share all three with the user. Saved passwords are not displayed again.
 
-API clients can protect a saved configuration with `POST /auth/{KEY}`. An administrator is required to create the first login or remove one. Existing configuration users authenticate with their current login, repeat the saved username, and supply a new password. Only an administrator can change the username. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
+API clients can manage a saved login with `POST /auth/{KEY}`. An administrator creates the first login or removes it. A configuration user may change only their password and must repeat their current username. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
 
 Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
 
-The web interface includes **Logout**, which ends its signed browser login immediately. A browser may retain Basic Auth internally, but those cached credentials cannot silently restore an HTML login.
+**Logout** ends the signed browser login. Credentials cached by the browser cannot silently restore it.
 
 Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). Locks with configuration remain. See [Pruning](#pruning).
 
@@ -768,7 +794,7 @@ Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (
 
 Browsers add an `Origin` header when a page changes data. Apprise API checks this header and rejects changes sent from another website. Requests from the same site are allowed.
 
-Apprise API does not require Django's browser cookie and CSRF token exchange. This keeps direct API calls from `curl`, mobile apps, and other programs simple; these clients normally omit `Origin` and continue to work as documented.
+Apprise API does not require Django's CSRF token exchange. Direct calls from `curl`, mobile apps, and other programs normally omit `Origin` and continue to work.
 
 For an HTTPS site behind a reverse proxy, set `APPRISE_TRUSTED_ORIGINS` to the full public address, such as `https://apprise.example.com`. Separate multiple addresses with commas.
 
@@ -784,16 +810,17 @@ A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `Config
 
 ## Pruning
 
-The packaged container runs two cleanup commands daily. They start 12 hours apart, use low CPU and disk priority, and have a time limit:
+The packaged container runs one low-priority cleanup cycle each day. It covers both areas below and has a time limit:
 
-| Command      | What it prunes                                                               | Retention setting                                            | Schedule setting                                                                 |
-| :----------- | :--------------------------------------------------------------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------------- |
-| `storeprune` | Apprise's own persistent notification-state storage (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)             | `APPRISE_STORAGE_PRUNE_INTERVAL_SECONDS` (default `86400`, once a day)           |
-| `authprune`  | Per-key Basic Auth locks without configuration.                              | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days) | `APPRISE_AUTH_PRUNE_INTERVAL_SECONDS` (default `86400`, starting 12 hours later) |
+| Area             | What it prunes                                                | Retention setting                                            |
+| :--------------- | :------------------------------------------------------------ | :----------------------------------------------------------- |
+| Persistent state | Apprise's notification-state storage (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)             |
+| Authentication   | Per-key Basic Auth locks without configuration.               | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days) |
 
-Set `APPRISE_PRUNE_ENABLED=no` to disable scheduled cleanup. `APPRISE_PRUNE_TIMEOUT_SECONDS` changes the 8-hour time limit. Either command may still run manually:
+`APPRISE_PRUNE_INTERVAL_SECONDS` controls the schedule. Set `APPRISE_PRUNE_ENABLED=no` to disable scheduled cleanup. `APPRISE_PRUNE_TIMEOUT_SECONDS` changes the 8-hour time limit. The combined or individual commands may still run manually:
 
 ```bash
+docker exec -it apprise python manage.py prune
 docker exec -it apprise python manage.py storeprune --days 30
 docker exec -it apprise python manage.py authprune --seconds 2592000
 ```

@@ -8,7 +8,7 @@ sidebar:
 
 The **Apprise API** is a web-based gateway to the Apprise library. It provides a RESTful interface to send notifications, allowing you to centralize your notification configuration and trigger alerts from systems that might not support Python or the CLI directly.
 
-## Why use the API?
+## Why Use the API?
 
 - **Microservices:** Provide a single notification endpoint for all your applications.
 - **Stateless and Stateful:** Send notifications on the fly or reference pre-saved configurations by key.

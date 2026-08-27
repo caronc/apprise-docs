@@ -354,12 +354,17 @@ apprise \
 
 If you are running a self-hosted [Apprise API](/api/) instance, you can use the CLI to trigger it using the `apprise://` schema. This allows you to centralize your configuration on the server and keep your local clients simple.
 
+The plugin uses version 2 by default. It sends the configuration key in `X-Apprise-Config-ID`, keeping it out of the HTTP request path. Add `?v=1` when connecting to an older Apprise API server that requires `/notify/{KEY}`.
+
 ### Syntax
 
 - **Insecure (HTTP):** `apprise://hostname/config_key`
 - **Secure (HTTPS):** `apprises://hostname/config_key`
 
 Examples:
+
+<Tabs>
+<TabItem label="No Authentication">
 
 ```bash
 # Trigger a configuration stored under the key 'my-alerts' on a local server
@@ -369,8 +374,24 @@ apprise -t "Job Finished" \
 # Trigger a secure remote instance, targeting only the 'devops' tag
 apprise -t "Production Issue" \
     --tag devops \
-    "apprises://apprise.example.com/production-key
+    "apprises://apprise.example.com/production-key"
 ```
+
+</TabItem>
+<TabItem label="With Authentication">
+
+```bash
+# Credentials in the URL are sent using Basic Auth.
+apprise -t "Job Finished" \
+    "apprises://user:password@apprise.example.com/my-alerts"
+
+# A password-only administrator login leaves the username blank.
+apprise -t "Job Finished" \
+    "apprises://:password@apprise.example.com/my-alerts"
+```
+
+</TabItem>
+</Tabs>
 
 ## Scripting & Piping
 

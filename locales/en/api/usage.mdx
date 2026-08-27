@@ -172,6 +172,17 @@ curl -X POST \
   http://localhost:8000/notify/my-alerts
 ```
 
+When authentication is enabled, keep the same keyed URL and add Basic Auth:
+
+```bash
+curl -u "user:password" -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Database connection failed", "type": "warning"}' \
+  http://localhost:8000/notify/my-alerts
+```
+
+A password-only administrator login uses `-u ":password"`.
+
 ### Tagging
 
 Stateful configurations support tagging, allowing you to notify specific subgroups of your saved URLs.
