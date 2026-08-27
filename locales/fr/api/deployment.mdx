@@ -764,15 +764,17 @@ L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPR
 
 `APPRISE_BASIC_AUTH_REALM` nomme le serveur dans les invites de connexion. Il ne modifie aucun identifiant. La valeur par défaut est `Apprise API` ; utilisez un nom différent pour chaque instance.
 
-**Utilisez HTTPS/TLS.** Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
+**Utilisez HTTPS/TLS.** L'authentification Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
 
-Les clients API envoient Basic Auth avec chaque requête. Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse fermer la session. Les appels API JSON et texte brut ne peuvent pas utiliser cette connexion Web.
+Les clients API envoient Basic Auth avec chaque requête. Les vérifications récentes et réussies par configuration utilisent un cache mémoire limité à cinq minutes. Cela évite de recalculer le hachage sans créer de session API ni conserver les identifiants. Les échecs sont mémorisés uniquement pendant la requête en cours.
+
+Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse fermer la session. Les appels API JSON et texte brut ne peuvent pas utiliser cette connexion Web.
 
 Les clients avec état peuvent conserver des chemins comme `/notify/{KEY}`. Les points de terminaison compatibles acceptent aussi `X-Apprise-Config-ID`, ce qui garde la clé hors de l'URL.
 
 Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
 
-Les connexions Web ont leur propre clé de signature intégrée. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
+Les connexions Web expirent après 24 heures d'inactivité. Chaque requête authentifiée renouvelle ce délai. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
 
 Le champ ID de configuration permet d'ouvrir une autre configuration sans afficher son ID dans la barre d'adresse. L'utilisateur doit se reconnecter si le nouvel ID utilise d'autres identifiants. Les administrateurs peuvent aussi choisir ou générer un ID avec **Nouvelle Configuration**.
 
@@ -801,7 +803,7 @@ Pour un site HTTPS derrière un proxy inverse, définissez `APPRISE_TRUSTED_ORIG
 Si vous préférez ne pas utiliser ces options intégrées, les approches par proxy inverse restent valables :
 
 - placer l'API derrière un proxy inverse ;
-- utiliser une authentification HTTP basic ;
+- utiliser une authentification HTTP Basic ;
 - restreindre l'accès au niveau réseau ou ingress.
 
 Des fichiers de surcharge Nginx peuvent être injectés dans le conteneur pour imposer un contrôle d'accès.

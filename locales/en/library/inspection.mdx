@@ -209,18 +209,34 @@ Apprise injects a `schema` token automatically, and it is always required. Its v
 
 After normalization, you can typically rely on these fields being present:
 
-| Key        | Description                                                           |
-| ---------- | --------------------------------------------------------------------- |
-| `name`     | A human friendly label (defaults to the token key if missing).        |
-| `map_to`   | The plugin argument this token maps to (defaults to the token key).   |
-| `type`     | Token type (defaults to `string`). Supports `list:*` and `choice:*`.  |
-| `required` | Defaults to `False` unless explicitly set.                            |
-| `private`  | Defaults to `False` unless explicitly set.                            |
-| `default`  | May be present (including auto-filled when only one choice exists).   |
-| `values`   | For `choice:*` tokens and some other constrained inputs.              |
-| `delim`    | For `list:*` tokens (defaults vary by context).                       |
-| `regex`    | Optional validation regex, normalized into a `(pattern, flags)` pair. |
-| `group`    | For list-alias tokens that map to multiple underlying fields.         |
+| Key        | Description                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| `name`     | A human friendly label (defaults to the token key if missing).          |
+| `map_to`   | The plugin argument this token maps to (defaults to the token key).     |
+| `type`     | Value type. Defaults to `string`; all supported forms are listed below. |
+| `required` | Defaults to `False` unless explicitly set.                              |
+| `private`  | Defaults to `False` unless explicitly set.                              |
+| `default`  | May be present (including auto-filled when only one choice exists).     |
+| `values`   | For `choice:*` tokens and some other constrained inputs.                |
+| `delim`    | For `list:*` tokens (defaults vary by context).                         |
+| `regex`    | Optional validation regex, normalized into a `(pattern, flags)` pair.   |
+| `group`    | For list-alias tokens that map to multiple underlying fields.           |
+
+##### Type Values
+
+The `type` field tells clients how to collect and encode a value:
+
+| Type            | Meaning                                                                                            |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `string`        | One text value.                                                                                    |
+| `email`         | One email address. Preserve its `@` when building the URL.                                         |
+| `bool`          | One true/false value; must include a `default`.                                                    |
+| `int`           | One integer, optionally bounded by `min` and `max`.                                                |
+| `float`         | One decimal number, optionally bounded by `min` and `max`.                                         |
+| `choice:<type>` | One entry from `values`. The item type may be `string`, `int`, `float`, or `email`.                |
+| `list:<type>`   | Multiple items separated using `delim`. Items may be `string`, `bool`, `int`, `float`, or `email`. |
+
+Use `bool` rather than `choice:bool`.
 
 ##### Delimiter Behavior
 
@@ -265,7 +281,9 @@ A practical approach that tends to work well:
 4. Offer optional query configuration based on `args` (and `kwargs` only if present).
 5. Respect `private=True` by masking input fields and never echoing the value back.
 6. Respect `type` to render correct widgets:
+   - `string`: text input
    - `bool`: checkbox
+   - `email`: email input; preserve `@` when building the URL
    - `choice:*`: dropdown using `values`
    - `int`/`float`: numeric input with min/max when present
    - `list:*`: multi-entry input and show the delimiter guidance from `delim`
