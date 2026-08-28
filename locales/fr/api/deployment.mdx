@@ -656,7 +656,9 @@ Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la 
 
 Lorsque le contenu est verrouillé, le formulaire Web de notification exige au moins un tag, car il ne peut pas afficher les destinations enregistrées.
 
-Un administrateur authentifié conserve un accès complet aux configurations lorsque le verrouillage est activé. Les utilisateurs d'une configuration et les appelants non authentifiés ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Les requêtes `/notify` avec et sans état restent disponibles, et les requêtes avec état continuent d'accepter des tags facultatifs.
+Un administrateur authentifié conserve un accès complet aux configurations lorsque le verrouillage est activé. Les utilisateurs d'une configuration et les appelants non authentifiés ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Un compte `user` peut toujours envoyer des notifications authentifiées avec ou sans état, tandis qu'un compte `locked` est limité aux notifications avec état et avec tag.
+
+Les modes globaux sont toujours prioritaires. Même un administrateur ne peut pas envoyer de notification avec ou sans état lorsque le mode correspondant est désactivé. Les identifiants administrateur contournent uniquement l'accès propre à la configuration et son verrouillage.
 
 ## Déploiements Durcis
 
@@ -752,7 +754,7 @@ Cela garantit :
 
 ## Authentification et Contrôle d'Accès
 
-L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger tous les points de terminaison avec HTTP Basic.
+L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger ses points de terminaison avec HTTP Basic. Seuls les ID de configuration rendus publics peuvent la contourner, uniquement pour les notifications avec tag.
 
 | Mode                     | Paramètres                                          | Résultat                                                                                                                                                                      |
 | :----------------------- | :-------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -778,13 +780,26 @@ Les connexions Web expirent après 24 heures d'inactivité. Chaque requête auth
 
 Le champ ID de configuration permet d'ouvrir une autre configuration sans afficher son ID dans la barre d'adresse. L'utilisateur doit se reconnecter si le nouvel ID utilise d'autres identifiants. Les administrateurs peuvent aussi choisir ou générer un ID avec **Nouvelle Configuration**.
 
-L'authentification par clé permet de partager un serveur sans partager les identifiants d'administration. Chaque utilisateur reçoit une clé protégée et l'administrateur peut récupérer toute clé.
+Chaque ID de configuration utilise un mode d'accès :
 
-Pour ajouter une connexion, ouvrez une configuration et sélectionnez son cadenas ou **Authentification**. Saisissez un nom d'utilisateur et un mot de passe, puis sélectionnez **Enregistrer**. Les administrateurs peuvent utiliser **Générer Aléatoirement** pour chaque valeur.
+| Accès      | Utilisation des notifications                                    | Utilisation de la configuration                                                                      |
+| :--------- | :--------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| `user`     | Exige le nom d'utilisateur et le mot de passe. Tags facultatifs. | Conserve l'accès utilisateur actuel.                                                                 |
+| `locked`   | Exige les identifiants et un tag précis, jamais `all`.           | Masque le contenu. L'utilisateur peut changer son mot de passe et déplacer l'ID de configuration.    |
+| `public`   | Exige uniquement l'ID de configuration et un tag précis.         | Masque le contenu. Les identifiants enregistrés conservent les droits `locked`, s'ils sont présents. |
+| `disabled` | Administrateur uniquement.                                       | Bloque l'utilisateur tout en conservant la configuration et les identifiants.                        |
+
+L'accès public s'applique uniquement aux appels avec état `POST /notify/{KEY}`. Les autres points de terminaison exigent toujours des identifiants valides. Les pièces jointes restent prises en charge.
+
+Pour `POST /notify` sans état, l'administrateur peut s'authentifier directement. Un utilisateur de configuration doit fournir des `urls` explicites, ses identifiants et l'en-tête `X-Apprise-Config-ID` correspondant ; l'accès doit être `user`. Sans `urls`, la forme v2 avec en-tête conserve l'envoi stateful avec la configuration enregistrée.
+
+Les comptes `user` et `locked` peuvent consulter `/status` et `/details` avec leurs identifiants et leur ID de configuration. Un compte désactivé ne le peut pas. L'administrateur peut fournir un en-tête `X-Apprise-Config-ID` valide pour simplifier le client, mais cet en-tête n'est pas obligatoire.
+
+Pour définir l'accès, ouvrez une configuration et sélectionnez son cadenas ou **Authentification**. Choisissez le mode d'accès, saisissez les identifiants lorsqu'ils sont requis, puis sélectionnez **Enregistrer**. Les administrateurs peuvent utiliser **Générer Aléatoirement** pour chaque identifiant.
 
 L'ID de configuration, le nom d'utilisateur et le mot de passe sont des valeurs distinctes. Transmettez les trois à l'utilisateur. Le mot de passe enregistré n'est plus affiché.
 
-Les clients API peuvent gérer une connexion avec `POST /auth/{KEY}`. Un administrateur crée la première connexion ou la supprime. Un utilisateur de configuration peut changer uniquement son mot de passe et doit répéter son nom d'utilisateur actuel. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez les [Points de Terminaison de l'API](../endpoints/).
+Les clients API gèrent l'accès avec `POST /auth/{KEY}`. Le champ `access` accepte `user`, `locked`, `public` ou `disabled` et utilise `user` par défaut pour un nouvel enregistrement. Un administrateur peut créer un accès public ou désactivé sans identifiants. Un utilisateur de configuration peut changer uniquement son mot de passe et doit répéter son nom d'utilisateur. Consultez les [Points de Terminaison de l'API](../endpoints/).
 
 Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
 

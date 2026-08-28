@@ -59,6 +59,12 @@ Envoyez des notifications sans utiliser de stockage persistant.
 
 Les deux points de terminaison de notification peuvent diffuser leur progression. Utilisez `?stream=yes` ou `Accept: text/event-stream`; consultez [Diffusion en direct de la progression](/api/usage/#diffusion-en-direct-de-la-progression).
 
+Lorsque l'authentification est activée, un administrateur peut appeler `/notify` directement. Un utilisateur de configuration doit fournir des `urls` explicites, Basic Auth et l'en-tête `X-Apprise-Config-ID` correspondant ; l'accès doit être `user`. Sans `urls`, la forme v2 avec en-tête conserve l'envoi stateful avec la configuration enregistrée.
+
+Avec `Content-Type: application/json`, la charge utile doit être un objet JSON.
+Les autres racines JSON valides, comme les tableaux, chaînes, nombres, booléens
+et `null`, sont rejetées avec le code HTTP `400`.
+
 ## Pièces Jointes
 
 Les points de terminaison `/notify/` et `/notify/{KEY}` acceptent un champ `attach` facultatif. Les formes suivantes peuvent être combinées au sein d'une même requête.
@@ -106,19 +112,19 @@ Gérez et utilisez des configurations enregistrées associées à une clé `{KEY
 
 Tous les points de terminaison de cette section sont indisponibles avec `APPRISE_STATEFUL_MODE=disabled`.
 
-| Chemin             | Méthode  | Description                                                                                                                                       |
-| :----------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/cfg`             | `GET`    | Liste les ID de configuration enregistrés. Le format JSON dépend de l'activation de l'authentification, comme indiqué ci-dessous.                 |
-| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                                          |
-| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                                       |
-| `/move/{KEY}`      | `POST`   | Déplace une configuration vers un nouvel ID. Charge utile : `to` (obligatoire).                                                                   |
-| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                                  |
-| `/notify/{KEY}`    | `POST`   | Envoie une notification avec la configuration enregistrée. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`.                 |
-| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et tags enregistrés. Avec `APPRISE_CONFIG_LOCK=yes`, les identifiants de l'administrateur global sont requis.                     |
-| `/status/{KEY}`    | `GET`    | Renvoie l'état du serveur après vérification de l'authentification de la clé.                                                                     |
-| `/auth/{KEY}`      | `GET`    | Ouvre l'éditeur Web ou renvoie le mode actuel et le nom d'utilisateur si JSON est demandé. Le mot de passe n'est jamais renvoyé.                  |
-| `/auth/{KEY}`      | `POST`   | Définit ou remplace Basic Auth. Les administrateurs modifient les deux champs ; les utilisateurs d'une configuration, uniquement le mot de passe. |
-| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration. Les identifiants de l'administrateur global sont requis.                             |
+| Chemin             | Méthode  | Description                                                                                                                       |
+| :----------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `/cfg`             | `GET`    | Liste les ID de configuration enregistrés. Le format JSON dépend de l'activation de l'authentification, comme indiqué ci-dessous. |
+| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                          |
+| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                       |
+| `/move/{KEY}`      | `POST`   | Déplace une configuration vers un nouvel ID. Charge utile : `to` (obligatoire).                                                   |
+| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                  |
+| `/notify/{KEY}`    | `POST`   | Envoie avec la configuration enregistrée. `locked` et `public` exigent un tag précis ; `disabled` est réservé à l'administrateur. |
+| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et tags enregistrés. Avec `APPRISE_CONFIG_LOCK=yes`, les identifiants de l'administrateur global sont requis.     |
+| `/status/{KEY}`    | `GET`    | Renvoie l'état après authentification. `config_lock` inclut l'accès effectif de la clé.                                           |
+| `/auth/{KEY}`      | `GET`    | Ouvre l'éditeur Web ou renvoie le mode, l'accès et le nom d'utilisateur en JSON. Le mot de passe n'est jamais renvoyé.            |
+| `/auth/{KEY}`      | `POST`   | Définit les identifiants et `access`. L'administrateur modifie l'accès ; l'utilisateur modifie uniquement son mot de passe.       |
+| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration. Les identifiants de l'administrateur global sont requis.             |
 
 Ces points de terminaison avec état acceptent aussi `X-Apprise-Config-ID`. Par exemple, envoyez `POST /get/` avec `X-Apprise-Config-ID: mykey`. Cela garde la clé hors de l'URL. `/cfg` n'accepte pas cet en-tête.
 
@@ -132,18 +138,18 @@ Lorsque l'authentification est activée, utilisez le compte administrateur globa
 
 ```json
 [
-  { "key": "alerts", "user": "alice" },
-  { "key": "monitoring", "user": null }
+  { "key": "alerts", "user": "alice", "access": "locked" },
+  { "key": "monitoring", "user": null, "access": "public" }
 ]
 ```
 
 Une valeur `user` vide indique un accès par mot de passe uniquement. La valeur `null` signifie qu'aucun nom d'utilisateur de configuration n'est disponible. Les utilisateurs d'une configuration ne peuvent pas obtenir la liste de tous les ID de configuration enregistrés.
 
-`/auth/{KEY}` exige `APPRISE_AUTH_REQUIRED=yes`. Les administrateurs créent ou suppriment les connexions. Les utilisateurs peuvent changer leur propre mot de passe. `APPRISE_CONFIG_LOCK` ne bloque pas ces modifications. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
+`access` accepte `user`, `locked`, `public` ou `disabled`. L'accès public concerne uniquement les notifications avec état et exige un tag précis. L'accès désactivé conserve le compte mais le réserve à l'administrateur. Seul un administrateur peut envoyer le champ `access`. Les utilisateurs peuvent changer leur mot de passe, mais doivent omettre entièrement `access`. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
 
 `/move/{KEY}` déplace une configuration vers un ID libre. Un utilisateur peut déplacer uniquement sa clé lorsque le verrouillage est désactivé. Avec `APPRISE_CONFIG_LOCK=yes`, seul un administrateur authentifié peut déplacer ou supprimer des entrées.
 
-Avec `APPRISE_CONFIG_LOCK=yes`, un administrateur authentifié conserve un accès complet aux configurations. Les utilisateurs d'une configuration et les appelants non authentifiés ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Les points de terminaison `/notify/{KEY}` avec état et `/notify` sans état restent disponibles ; les requêtes avec état continuent d'accepter le champ `tag` facultatif.
+Avec `APPRISE_CONFIG_LOCK=yes`, un administrateur authentifié conserve un accès complet aux configurations. Les autres appelants ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Les nouveaux comptes utilisent `locked` par défaut. Un administrateur peut enregistrer `user` ou `public`, mais ces modes se comportent comme `locked` jusqu'au retrait du verrou global. Le choix enregistré n'est pas réécrit.
 
 Si l'URL et l'en-tête contiennent une clé, l'en-tête est prioritaire. Les en-têtes invalides sont rejetés. L'interface Web et Apprise Mobile peuvent continuer à utiliser les clés dans l'URL.
 

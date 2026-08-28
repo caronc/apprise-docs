@@ -644,19 +644,21 @@ For most deployments, mounting **only `/config` and `/attach`** is sufficient.
 
 Persistent features follow the server mode, configuration lock, and current login:
 
-| State                                      | Configuration List                                                         | Move / Delete                        | Configuration Login           | Configuration Content                  |
-| :----------------------------------------- | :------------------------------------------------------------------------- | :----------------------------------- | :---------------------------- | :------------------------------------- |
-| Stateful mode disabled                     | Unavailable                                                                | Unavailable                          | Unavailable                   | Unavailable                            |
-| Authentication off, configuration unlocked | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed                              | Unavailable                   | Available                              |
-| Authentication off, configuration locked   | Hidden and denied                                                          | Denied                               | Unavailable                   | Hidden; saved notifications still work |
-| Configuration user, unlocked               | Denied                                                                     | May move their own ID; cannot delete | May update their own password | Available for their ID                 |
-| Configuration user, locked                 | Denied                                                                     | Denied                               | May update their own password | Hidden; saved notifications still work |
-| Administrator, unlocked                    | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                   | May manage any login          | Available                              |
-| Administrator, locked                      | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                   | May manage any login          | Available                              |
+| State                                      | Configuration List                                                         | Move / Delete                          | Configuration Login           | Configuration Content                  |
+| :----------------------------------------- | :------------------------------------------------------------------------- | :------------------------------------- | :---------------------------- | :------------------------------------- |
+| Stateful mode disabled                     | Unavailable                                                                | Unavailable                            | Unavailable                   | Unavailable                            |
+| Authentication off, configuration unlocked | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed                                | Unavailable                   | Available                              |
+| Authentication off, configuration locked   | Hidden and denied                                                          | Denied                                 | Unavailable                   | Hidden; saved notifications still work |
+| Configuration user, unlocked               | Denied                                                                     | May move their ID or clear its content | May update their own password | Available for their ID                 |
+| Configuration user, locked                 | Denied                                                                     | Denied                                 | May update their own password | Hidden; saved notifications still work |
+| Administrator, unlocked                    | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
+| Administrator, locked                      | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
 
 When configuration content is locked, the Web notification form asks for at least one tag because it cannot display the saved destinations.
 
-An authenticated administrator retains full configuration access while locking is enabled. Configuration users and unauthenticated callers cannot add, retrieve, inspect, list, move, or delete configuration. Stateful and stateless `/notify` requests remain available, and stateful requests continue to accept optional tags.
+An authenticated administrator retains full configuration access while locking is enabled. Configuration users and unauthenticated callers cannot add, retrieve, inspect, list, move, or delete configuration. A `user` account may still make authenticated stateful and stateless notifications, while a `locked` account is limited to tagged stateful notifications.
+
+Global mode switches always win. Even an administrator cannot send a stateful or stateless notification when its global mode is disabled. Administrator credentials bypass per-configuration access and the configuration lock only.
 
 ## Hardened Deployments
 
@@ -752,7 +754,7 @@ This ensures:
 
 ## Authentication and Access Control
 
-Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIRED=yes` to protect every endpoint with HTTP Basic Auth.
+Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIRED=yes` to protect its endpoints with HTTP Basic Auth. Only Config IDs explicitly made public can bypass it, and only for tagged notifications.
 
 | Mode                   | Settings                                               | Result                                                                                                                                   |
 | :--------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
@@ -778,19 +780,32 @@ Browser logins expire after 24 hours without activity. Each authenticated reques
 
 The Config ID field can open another configuration without showing its ID in the address bar. Users must log in when they switch to an ID with different credentials. Administrators can also choose or generate an ID from **New Configuration**.
 
-Per-key auth lets users share one server without sharing administrator credentials. Each user receives a protected configuration key, while the administrator can recover any key.
+Each Config ID uses one access mode:
 
-To add a login, open a configuration and select its lock icon or **Authentication**. Enter a username and password, then select **Save**. Administrators can use **Randomize** for either value.
+| Access     | Notification use                                      | Configuration use                                                            |
+| :--------- | :---------------------------------------------------- | :--------------------------------------------------------------------------- |
+| `user`     | Requires its credentials. Tags are optional.          | Keeps the existing user access.                                              |
+| `locked`   | Requires credentials and a specific tag, never `all`. | Hides content. The user may change their password and move the Config ID.    |
+| `public`   | Requires only the Config ID and a specific tag.       | Hides content. Saved credentials, when present, keep the `locked` abilities. |
+| `disabled` | Administrator only.                                   | Freezes user access while preserving configuration and credentials.          |
 
-The Config ID, username, and password are separate values. Share all three with the user. Saved passwords are not displayed again.
+Public access applies only to stateful `POST /notify/{KEY}` calls. Other endpoints still require valid credentials. Attachments remain supported.
 
-API clients can manage a saved login with `POST /auth/{KEY}`. An administrator creates the first login or removes it. A configuration user may change only their password and must repeat their current username. `APPRISE_CONFIG_LOCK` does not block these changes. See [API Endpoints](/api/endpoints/).
+For stateless `POST /notify`, administrators can authenticate directly. A configuration user must provide explicit `urls`, matching credentials, and `X-Apprise-Config-ID`; the configuration must use `user` access. Without `urls`, the v2 header form remains a stateful send through the saved configuration.
+
+The `user` and `locked` accounts may retrieve `/status` and `/details` with their credentials and Config ID. A disabled account cannot. Administrators may include a valid `X-Apprise-Config-ID` for client convenience, but do not need one.
+
+To set access, open a configuration and select its lock icon or **Authentication**. Choose the access mode, enter credentials when required, then select **Save**. Administrators can use **Randomize** for either credential.
+
+The Config ID and credentials are separate values. Share the Config ID and configured credentials with the user. A username is optional; saved passwords are not displayed again.
+
+API clients manage access with `POST /auth/{KEY}`. The `access` field accepts `user`, `locked`, `public`, or `disabled` and defaults to `user` for a new record. An administrator may create public or disabled access without credentials. A configuration user may change only their password and must repeat their username. See [API Endpoints](/api/endpoints/).
 
 Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
 
 **Logout** ends the signed browser login. Credentials cached by the browser cannot silently restore it.
 
-Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). Locks with configuration remain. See [Pruning](#pruning).
+Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). When a `user` clears their configuration, their credentials remain and this grace period restarts so they can save a replacement. Locks with configuration remain. See [Pruning](#pruning).
 
 ### Browser Origin Checks
 

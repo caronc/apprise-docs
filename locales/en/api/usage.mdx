@@ -81,6 +81,14 @@ Operators can change these limits with `APPRISE_STREAM_MEMORY_SIZE` and
 `APPRISE_STREAM_DISK_SIZE`. The same limits also keep the completed result's
 logs from growing without bound in memory. See [Environment Variables](/api/reference/environment/#storage--limits) for the zero-value modes.
 
+At most `APPRISE_STREAM_WORKER_COUNT` streamed notifications run concurrently
+in each Gunicorn worker process. The default is `4`, so the effective
+server-wide default is `APPRISE_WORKER_COUNT * 4`. Additional streams receive
+HTTP `200` and remain connected while queued; delivery starts automatically
+when an active worker finishes. Work continues to occupy its slot if a client
+disconnects during delivery. A reverse proxy may still enforce its own
+connection or request limits before a request reaches Apprise API.
+
 :::note
 `-N` (`--no-buffer`) tells `curl` to print each event as it arrives instead of waiting for the connection to close.
 :::
@@ -100,6 +108,8 @@ logs from growing without bound in memory. See [Environment Variables](/api/refe
 </picture>
 
 Stateless notifications are ideal for "sidecar" usage where you don't want to manage persistent configuration on the server. You must provide the `urls` parameter in every request.
+
+With authentication enabled, use administrator credentials, or send explicit `urls` with configuration-user credentials and the matching `X-Apprise-Config-ID` header. Configuration-user access must be `user`; `locked`, `public`, and `disabled` cannot send stateless notifications. For Apprise API v2 compatibility, the header without `urls` remains a stateful send through the saved configuration.
 
 ### Basic JSON Request
 
@@ -169,7 +179,7 @@ curl -X POST \
     "body": "Database connection failed",
     "type": "warning"
   }' \
-  http://localhost:8000/notify/my-alerts
+  http://localhost:8000/notify
 ```
 
 When authentication is enabled, keep the same keyed URL and add Basic Auth:
@@ -182,6 +192,10 @@ curl -u "user:password" -X POST \
 ```
 
 A password-only administrator login uses `-u ":password"`.
+
+An administrator may also set a Config ID to `public`. Public callers omit Basic Auth but must provide a specific tag other than `all`. Public access works only for stateful notification calls; other endpoints remain protected.
+
+The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it.
 
 ### Tagging
 
