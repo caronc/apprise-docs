@@ -155,10 +155,13 @@ Si l'URL et l'en-tête contiennent une clé, l'en-tête est prioritaire. Les en-
 
 ## Observabilité
 
-| Chemin     | Méthode | Description                                                                                                   |
-| :--------- | :------ | :------------------------------------------------------------------------------------------------------------ |
-| `/details` | `GET`   | Récupère un objet JSON contenant toutes les URL Apprise prises en charge. Envoyez `Accept: application/json`. |
-| `/metrics` | `GET`   | Point de terminaison Prometheus pour la collecte de métriques de base.                                        |
+| Chemin     | Méthode | Description                                                                                                    |
+| :--------- | :------ | :------------------------------------------------------------------------------------------------------------- |
+| `/details` | `GET`   | Récupère un objet JSON contenant toutes les URL Apprise prises en charge. Envoyez `Accept: application/json`.  |
+| `/metrics` | `GET`   | Récupère les métriques Prometheus. Les identifiants globaux sont requis lorsque l'authentification est active. |
+
+Les déploiements nginx fournis limitent les appels fréquents à `/status` et
+`/metrics`. Une requête limitée renvoie `429` avec `Retry-After: 60`.
 
 ## Codes de Réponse
 

@@ -158,7 +158,10 @@ If both the URL and header contain a key, the header wins. Invalid headers are r
 | Path       | Method | Description                                                                                     |
 | :--------- | :----- | :---------------------------------------------------------------------------------------------- |
 | `/details` | `GET`  | Retrieve a JSON object containing all supported Apprise URLs (send `Accept: application/json`). |
-| `/metrics` | `GET`  | Prometheus endpoint for basic metrics collection.                                               |
+| `/metrics` | `GET`  | Retrieve Prometheus metrics. Global credentials are required when authentication is enabled.    |
+
+Packaged nginx deployments rate-limit frequent `/status` and `/metrics`
+requests. A limited request returns `429` with `Retry-After: 60`.
 
 ## Response Codes
 
