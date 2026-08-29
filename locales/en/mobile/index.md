@@ -16,6 +16,6 @@ become available.
 ## Terms and Privacy
 
 Apprise Mobile is designed around the server you operate and the choices you
-make. Review the [Terms of Service](./terms/) and learn how the app handles
+make. Review the [Terms of Service](./tos/) and learn how the app handles
 information on your device and communicates with configured services in the
 [Privacy Policy](./privacy/).

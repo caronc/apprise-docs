@@ -16,7 +16,7 @@ supplémentaires y seront ajoutés au fur et à mesure de leur disponibilité.
 ## Conditions et confidentialité
 
 Apprise Mobile est conçue autour du serveur que vous exploitez et des choix que
-vous faites. Consultez les [Conditions d'utilisation](./terms/) et découvrez
+vous faites. Consultez les [Conditions d'utilisation](./tos/) et découvrez
 comment l'application traite les informations sur votre appareil et communique
 avec les services configurés dans la
 [Politique de confidentialité](./privacy/).
