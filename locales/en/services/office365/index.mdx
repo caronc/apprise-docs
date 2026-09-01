@@ -22,7 +22,9 @@ sample_urls:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-{/*SERVICE:DETAILS*/}
+<!-- markdownlint-disable MD037 -->
+
+{/* SERVICE:DETAILS */}
 
 ## Which Setup Should I Use?
 
@@ -306,7 +308,7 @@ variants). Use `?mode=personal` to force personal mode on any other domain.
 | mode          | No       | Force personal mode on a non-standard domain: `?mode=personal`.                                                                                                 |
 | savesent      | No       | Controls whether sent emails are saved to the Sent Items folder. Defaults to `yes`; set to `?savesent=no` to disable.                                           |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+{/* TEMPLATE:SERVICE-PARAMS */}
 
 :::note
 
@@ -512,7 +514,7 @@ Valid syntax is as follows (both `o365://` and `azure://` are accepted aliases):
 | reply_to      | No       | One or more **Reply-To** addresses. When a recipient replies, their reply goes here instead of to `source`. Accepts comma-separated values and named addresses. |
 | savesent      | No       | Controls whether sent emails are saved to the Sent Items folder. Defaults to `yes`; set to `?savesent=no` to disable.                                           |
 
-{/*TEMPLATE:SERVICE-PARAMS*/}
+{/* TEMPLATE:SERVICE-PARAMS */}
 
 :::note
 

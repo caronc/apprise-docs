@@ -24,6 +24,11 @@ Vous pouvez effectuer des contrôles d'état ou de santé de la configuration de
   {
     "attach_lock": false,
     "config_lock": false,
+    "stateful_enabled": true,
+    "stateless_enabled": true,
+    "degraded": false,
+    "max_attachments": 6,
+    "attach_size": 209715200,
     "status": {
       "persistent_storage": true,
       "can_write_config": true,
@@ -32,6 +37,8 @@ Vous pouvez effectuer des contrôles d'état ou de santé de la configuration de
     }
   }
   ```
+
+  `degraded` vaut `true` uniquement lorsque `stateful_enabled` et `stateless_enabled` valent tous deux `false`. Le serveur ne peut accepter de notifications tant qu'un administrateur n'a pas activé au moins un mode.
 
 ## Notifications sans État
 
@@ -52,11 +59,17 @@ Envoyez des notifications sans utiliser de stockage persistant.
 
 Les deux points de terminaison de notification peuvent diffuser leur progression. Utilisez `?stream=yes` ou `Accept: text/event-stream`; consultez [Diffusion en direct de la progression](/api/usage/#diffusion-en-direct-de-la-progression).
 
-## Pièces jointes
+Lorsque l'authentification est activée, un administrateur peut appeler `/notify` directement. Un utilisateur de configuration doit fournir des `urls` explicites, Basic Auth et l'en-tête `X-Apprise-Config-ID` correspondant ; l'accès doit être `user`. Sans `urls`, la forme v2 avec en-tête conserve l'envoi stateful avec la configuration enregistrée.
+
+Avec `Content-Type: application/json`, la charge utile doit être un objet JSON.
+Les autres racines JSON valides, comme les tableaux, chaînes, nombres, booléens
+et `null`, sont rejetées avec le code HTTP `400`.
+
+## Pièces Jointes
 
 Les points de terminaison `/notify/` et `/notify/{KEY}` acceptent un champ `attach` facultatif. Les formes suivantes peuvent être combinées au sein d'une même requête.
 
-### Envoi de fichier binaire
+### Envoi de Fichier Binaire
 
 Lors de la soumission de la requête en `multipart/form-data`, incluez directement le fichier dans le champ `attach`. Le nom de fichier fourni par le client est utilisé tel quel.
 
@@ -93,24 +106,62 @@ Passez un objet avec une clé `url` et une clé `filename` facultative :
 
 Lorsque `filename` est présent dans l'objet JSON, il est prioritaire sur tout le reste, y compris le chemin de l'URL et le paramètre `?name=`.
 
-## Points de terminaison Persistants avec État
+## Points de Terminaison Persistants avec État
 
 Gérez et utilisez des configurations enregistrées associées à une clé `{KEY}`.
 
-| Chemin             | Méthode | Description                                                                                                                           |
-| :----------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------ |
-| `/add/{KEY}`       | `POST`  | Enregistre la configuration Apprise dans le stockage persistant. Charge utile : `urls`, `config`, `format`.                           |
-| `/del/{KEY}`       | `POST`  | Supprime la configuration Apprise du stockage persistant.                                                                             |
-| `/get/{KEY}`       | `POST`  | Renvoie la configuration Apprise. Alias : `/cfg/{KEY}`, utilisé par l'interface Web.                                                  |
-| `/notify/{KEY}`    | `POST`  | Envoie des notifications aux destinations associées à `{KEY}`. Charge utile : `body` (obligatoire), `title`, `type`, `tag`, `format`. |
-| `/json/urls/{KEY}` | `GET`   | Renvoie un objet JSON contenant toutes les URL et tous les tags associés à cette clé.                                                 |
+Tous les points de terminaison de cette section sont indisponibles avec `APPRISE_STATEFUL_MODE=disabled`.
+
+| Chemin             | Méthode  | Description                                                                                                                       |
+| :----------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `/cfg`             | `GET`    | Liste les ID de configuration enregistrés. Le format JSON dépend de l'activation de l'authentification, comme indiqué ci-dessous. |
+| `/add/{KEY}`       | `POST`   | Enregistre une configuration. Charge utile : `urls`, `config`, `format`.                                                          |
+| `/del/{KEY}`       | `POST`   | Supprime une configuration et son authentification par clé.                                                                       |
+| `/move/{KEY}`      | `POST`   | Déplace une configuration vers un nouvel ID. Charge utile : `to` (obligatoire).                                                   |
+| `/get/{KEY}`       | `POST`   | Renvoie une configuration. Alias : `/cfg/{KEY}`.                                                                                  |
+| `/notify/{KEY}`    | `POST`   | Envoie avec la configuration enregistrée. `locked` et `public` exigent un tag précis ; `disabled` est réservé à l'administrateur. |
+| `/json/urls/{KEY}` | `GET`    | Renvoie les URL et tags enregistrés. Avec `APPRISE_CONFIG_LOCK=yes`, les identifiants de l'administrateur global sont requis.     |
+| `/status/{KEY}`    | `GET`    | Renvoie l'état après authentification. `config_lock` inclut l'accès effectif de la clé.                                           |
+| `/auth/{KEY}`      | `GET`    | Ouvre l'éditeur Web ou renvoie le mode, l'accès et le nom d'utilisateur en JSON. Le mot de passe n'est jamais renvoyé.            |
+| `/auth/{KEY}`      | `POST`   | Définit les identifiants et `access`. L'administrateur modifie l'accès ; l'utilisateur modifie uniquement son mot de passe.       |
+| `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration. Les identifiants de l'administrateur global sont requis.             |
+
+Ces points de terminaison avec état acceptent aussi `X-Apprise-Config-ID`. Par exemple, envoyez `POST /get/` avec `X-Apprise-Config-ID: mykey`. Cela garde la clé hors de l'URL. `/cfg` n'accepte pas cet en-tête.
+
+`GET /cfg` conserve la réponse v1 d'origine lorsque l'authentification est désactivée :
+
+```json
+["alerts", "monitoring"]
+```
+
+Lorsque l'authentification est activée, utilisez le compte administrateur global. Chaque entrée contient alors le nom d'utilisateur associé :
+
+```json
+[
+  { "key": "alerts", "user": "alice", "access": "locked" },
+  { "key": "monitoring", "user": null, "access": "public" }
+]
+```
+
+Une valeur `user` vide indique un accès par mot de passe uniquement. La valeur `null` signifie qu'aucun nom d'utilisateur de configuration n'est disponible. Les utilisateurs d'une configuration ne peuvent pas obtenir la liste de tous les ID de configuration enregistrés.
+
+`access` accepte `user`, `locked`, `public` ou `disabled`. L'accès public concerne uniquement les notifications avec état et exige un tag précis. L'accès désactivé conserve le compte mais le réserve à l'administrateur. Seul un administrateur peut envoyer le champ `access`. Les utilisateurs peuvent changer leur mot de passe, mais doivent omettre entièrement `access`. Consultez [Authentification et Contrôle d'Accès](../deployment/#authentification-et-contrôle-daccès).
+
+`/move/{KEY}` déplace une configuration vers un ID libre. Un utilisateur peut déplacer uniquement sa clé lorsque le verrouillage est désactivé. Avec `APPRISE_CONFIG_LOCK=yes`, seul un administrateur authentifié peut déplacer ou supprimer des entrées.
+
+Avec `APPRISE_CONFIG_LOCK=yes`, un administrateur authentifié conserve un accès complet aux configurations. Les autres appelants ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Les nouveaux comptes utilisent `locked` par défaut. Un administrateur peut enregistrer `user` ou `public`, mais ces modes se comportent comme `locked` jusqu'au retrait du verrou global. Le choix enregistré n'est pas réécrit.
+
+Si l'URL et l'en-tête contiennent une clé, l'en-tête est prioritaire. Les en-têtes invalides sont rejetés. L'interface Web et Apprise Mobile peuvent continuer à utiliser les clés dans l'URL.
 
 ## Observabilité
 
-| Chemin     | Méthode | Description                                                                                                   |
-| :--------- | :------ | :------------------------------------------------------------------------------------------------------------ |
-| `/details` | `GET`   | Récupère un objet JSON contenant toutes les URL Apprise prises en charge. Envoyez `Accept: application/json`. |
-| `/metrics` | `GET`   | Point de terminaison Prometheus pour la collecte de métriques de base.                                        |
+| Chemin     | Méthode | Description                                                                                                    |
+| :--------- | :------ | :------------------------------------------------------------------------------------------------------------- |
+| `/details` | `GET`   | Récupère un objet JSON contenant toutes les URL Apprise prises en charge. Envoyez `Accept: application/json`.  |
+| `/metrics` | `GET`   | Récupère les métriques Prometheus. Les identifiants globaux sont requis lorsque l'authentification est active. |
+
+Les déploiements nginx fournis limitent les appels fréquents à `/status` et
+`/metrics`. Une requête limitée renvoie `429` avec `Retry-After: 60`.
 
 ## Codes de Réponse
 

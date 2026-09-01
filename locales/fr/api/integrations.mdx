@@ -108,7 +108,7 @@ Construisez ensuite :
 - `NOTIFY = {BASE}/notify/{key}`
 
 :::note
-Si votre API Apprise est hébergée derrière un reverse proxy sous un sous-chemin, vous devrez peut-être préfixer votre URL de base avec ce chemin (par exemple, `https://example.com/apprise`).
+Si votre API Apprise est hébergée derrière un proxy inverse sous un sous-chemin, vous devrez peut-être préfixer votre URL de base avec ce chemin (par exemple, `https://example.com/apprise`).
 :::
 
 ## Champs de Payload Courants
@@ -166,7 +166,7 @@ Si un outil tiers ne peut pas modifier ses clés JSON, l'API Apprise peut faire 
 POST /notify/{KEY}?:message=body
 ```
 
-### Mapping de Champs Imbriqués / Sous-champs
+### Mapping de Champs Imbriqués / Sous-Champs
 
 Lorsqu'un payload tiers contient des objets imbriqués ou des tableaux, l'API Apprise peut les parcourir en utilisant la **notation pointée** pour les objets imbriqués et la **notation entre crochets** pour les éléments de tableau. Les deux syntaxes peuvent être librement mélangées du côté source de la règle de mapping.
 

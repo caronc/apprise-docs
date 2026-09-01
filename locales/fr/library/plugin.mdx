@@ -699,20 +699,24 @@ Votre plugin devrait hériter de `NotifyBase`, ce qui lui donne les valeurs par 
 ## Types de Templates
 
 Apprise valide les types à l'aide d'un motif strict :
-`((choice|list):)?(string|bool|int|float)`.
+`((choice|list):)?(string|bool|int|float|email)`.
 
-| Type            | Utilisé dans | Signification                      | Directives requises          | Notes                                                                                             |
-| :-------------- | :----------- | :--------------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------ |
-| `string`        | tokens, args | Une seule chaîne                   | aucune                       | Courant pour les noms d'hôte, jetons et noms.                                                     |
-| `int`           | tokens, args | Un seul entier                     | aucune                       | Utilisez `min` et `max` pour borner les ports, comptes, etc.                                      |
-| `float`         | tokens, args | Un seul flottant                   | aucune                       | Utilisez `min` et `max` pour fixer des bornes.                                                    |
-| `bool`          | tokens, args | Un booléen                         | `default` (requis pour args) | Les args booléens doivent fournir une valeur par défaut.                                          |
-| `choice:string` | tokens, args | Une valeur parmi un ensemble fixe  | `values`                     | Les entrées `choice` doivent fournir `values`, et `default` doit en faire partie s'il est défini. |
-| `choice:int`    | tokens, args | Un entier parmi un ensemble fixe   | `values`                     | Utile pour des sélecteurs de mode ou des énumérations.                                            |
-| `choice:float`  | tokens, args | Un flottant parmi un ensemble fixe | `values`                     | Rare, mais pris en charge.                                                                        |
-| `list:string`   | tokens, args | Une liste de chaînes               | `delim`                      | Les entrées de liste doivent fournir des délimiteurs.                                             |
-| `list:int`      | tokens, args | Une liste d'entiers                | `delim`                      | Découpe puis conversion en entier.                                                                |
-| `list:float`    | tokens, args | Une liste de flottants             | `delim`                      | Découpe puis conversion en flottant.                                                              |
+| Type            | Utilisé dans | Signification                      | Directives requises | Notes                                                                                             |
+| :-------------- | :----------- | :--------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------ |
+| `string`        | tokens, args | Une seule chaîne                   | aucune              | Courant pour les noms d'hôte, jetons et noms.                                                     |
+| `email`         | tokens, args | Une seule adresse e-mail           | aucune              | À utiliser lorsque `url()` conserve le caractère `@` de l'adresse.                                |
+| `int`           | tokens, args | Un seul entier                     | aucune              | Utilisez `min` et `max` pour borner les ports, comptes, etc.                                      |
+| `float`         | tokens, args | Un seul flottant                   | aucune              | Utilisez `min` et `max` pour fixer des bornes.                                                    |
+| `bool`          | tokens, args | Un booléen                         | `default`           | Les entrées booléennes doivent fournir une valeur par défaut.                                     |
+| `choice:string` | tokens, args | Une valeur parmi un ensemble fixe  | `values`            | Les entrées `choice` doivent fournir `values`, et `default` doit en faire partie s'il est défini. |
+| `choice:int`    | tokens, args | Un entier parmi un ensemble fixe   | `values`            | Utile pour des sélecteurs de mode ou des énumérations.                                            |
+| `choice:float`  | tokens, args | Un flottant parmi un ensemble fixe | `values`            | Rare, mais pris en charge.                                                                        |
+| `choice:email`  | tokens, args | Un e-mail parmi un ensemble fixe   | `values`            | Conservez le caractère `@` de l'adresse sélectionnée.                                             |
+| `list:string`   | tokens, args | Une liste de chaînes               | `delim`             | Les entrées de liste doivent fournir des délimiteurs.                                             |
+| `list:bool`     | tokens, args | Une liste de booléens              | `delim`             | Utilisez `bool` pour une seule valeur booléenne.                                                  |
+| `list:int`      | tokens, args | Une liste d'entiers                | `delim`             | Découpe puis conversion en entier.                                                                |
+| `list:float`    | tokens, args | Une liste de flottants             | `delim`             | Découpe puis conversion en flottant.                                                              |
+| `list:email`    | tokens, args | Une liste d'adresses e-mail        | `delim`             | Conservez le caractère `@` de chaque adresse.                                                     |
 
 Autres règles importantes :
 
@@ -1009,7 +1013,7 @@ Ce tableau documente les directives les plus courantes prises en charge par
 | Directive  | Utilisée dans        | Signification                                                                                                   |
 | :--------- | :------------------- | :-------------------------------------------------------------------------------------------------------------- |
 | `name`     | tokens, args, kwargs | Libellé lisible humainement, généralement enveloppé dans `gettext_lazy()`.                                      |
-| `type`     | tokens, args         | Type de valeur, comme `string`, `int`, `bool`, `choice:string`, `list:string`.                                  |
+| `type`     | tokens, args         | Type : `string`, `bool`, `int`, `float`, `email`, `choice:<type>` ou `list:<type>`.                             |
 | `required` | tokens, args         | Marque une entrée comme obligatoire pour l'initialisation ou la validation.                                     |
 | `default`  | args                 | Valeur par défaut utilisée quand l'URL ne précise rien. Requise pour les types `bool`.                          |
 | `private`  | tokens, args         | Marque une valeur comme sensible et destinée à être masquée dans les vues de confidentialité.                   |
