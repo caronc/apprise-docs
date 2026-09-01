@@ -87,6 +87,16 @@ et `APPRISE_STREAM_DISK_SIZE`. Les mêmes limites empêchent aussi les journaux
 du résultat final de croître sans limite en mémoire. Consultez
 [Variables d'environnement](/api/reference/environment/#stockage-et-limites) pour connaître les modes utilisant la valeur zéro.
 
+Au maximum, `APPRISE_STREAM_WORKER_COUNT` notifications diffusées s'exécutent
+simultanément dans chaque processus worker Gunicorn. La valeur par défaut est
+`4` ; la valeur effective par défaut pour tout le serveur est donc
+`APPRISE_WORKER_COUNT * 4`. Les flux supplémentaires reçoivent le code HTTP
+`200` et restent connectés dans une file d'attente ; l'envoi commence
+automatiquement lorsqu'un worker se libère. Un envoi continue d'occuper son
+emplacement si le client se déconnecte pendant son exécution. Un proxy inverse
+peut toujours appliquer ses propres limites de connexions ou de requêtes avant
+Apprise API.
+
 :::note
 `-N` (`--no-buffer`) indique à `curl` d'afficher chaque événement dès son arrivée plutôt que d'attendre la fermeture de la connexion.
 :::
@@ -106,6 +116,8 @@ du résultat final de croître sans limite en mémoire. Consultez
 </picture>
 
 Les notifications stateless sont idéales pour un usage de type « sidecar » lorsque vous ne voulez pas gérer de configuration persistante sur le serveur. Vous devez fournir le paramètre `urls` à chaque requête.
+
+Lorsque l'authentification est activée, utilisez les identifiants administrateur, ou envoyez des `urls` explicites avec les identifiants d'un utilisateur de configuration et l'en-tête `X-Apprise-Config-ID` correspondant. L'accès doit être `user` ; `locked`, `public` et `disabled` ne peuvent pas envoyer de notifications stateless. Pour rester compatible avec l'API Apprise v2, l'en-tête sans `urls` conserve l'envoi stateful avec la configuration enregistrée.
 
 ### Requête JSON de Base
 
@@ -184,8 +196,23 @@ curl -X POST \
     "body": "Database connection failed",
     "type": "warning"
   }' \
+  http://localhost:8000/notify
+```
+
+Lorsque l'authentification est activée, conservez la même URL avec la clé et ajoutez Basic Auth :
+
+```bash
+curl -u "user:password" -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Database connection failed", "type": "warning"}' \
   http://localhost:8000/notify/my-alerts
 ```
+
+Une connexion administrateur avec mot de passe uniquement utilise `-u ":password"`.
+
+Un administrateur peut aussi définir un ID de configuration comme `public`. Les appelants publics omettent Basic Auth, mais doivent fournir un tag précis autre que `all`. L'accès public fonctionne uniquement pour les notifications avec état ; les autres points de terminaison restent protégés.
+
+Le mode `disabled` bloque l'accès de l'utilisateur sans supprimer sa configuration ni ses identifiants. Un administrateur peut toujours la gérer et l'utiliser.
 
 ### Tags
 

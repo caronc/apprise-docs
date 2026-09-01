@@ -355,12 +355,17 @@ apprise \
 
 Si vous exécutez une instance auto-hébergée de [Apprise API](../api/), vous pouvez utiliser la CLI pour la déclencher avec le schéma `apprise://`. Cela vous permet de centraliser votre configuration côté serveur et de garder vos clients locaux très simples.
 
+Le plugin utilise la version 2 par défaut. Il envoie la clé de configuration dans `X-Apprise-Config-ID`, ce qui la retire du chemin de la requête HTTP. Ajoutez `?v=1` pour un ancien serveur Apprise API qui exige `/notify/{KEY}`.
+
 ### Syntaxe
 
 - **Non sécurisé (HTTP) :** `apprise://hostname/config_key`
 - **Sécurisé (HTTPS) :** `apprises://hostname/config_key`
 
 Exemples :
+
+<Tabs>
+<TabItem label="Sans Authentification">
 
 ```bash
 # Déclencher une configuration stockée sous la clé 'my-alerts' sur un serveur local
@@ -372,6 +377,22 @@ apprise -t "Production Issue" \
     --tag devops \
     "apprises://apprise.example.com/production-key"
 ```
+
+</TabItem>
+<TabItem label="Avec Authentification">
+
+```bash
+# Les identifiants de l'URL sont envoyés avec Basic Auth.
+apprise -t "Job Finished" \
+    "apprises://user:password@apprise.example.com/my-alerts"
+
+# Une connexion administrateur avec mot de passe uniquement laisse le nom vide.
+apprise -t "Job Finished" \
+    "apprises://:password@apprise.example.com/my-alerts"
+```
+
+</TabItem>
+</Tabs>
 
 ## Scripting et Pipes
 
