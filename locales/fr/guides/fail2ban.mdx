@@ -1,6 +1,6 @@
 ---
 title: Fail2Ban
-description: Utiliser Apprise avec Fail2ban pour les notifications d'événements de sécurité
+description: Envoyer les alertes Fail2ban avec Apprise et protéger l'API Apprise
 ---
 
 import MyIPAddr from "~/components/MyIPAddr.astro";
@@ -62,8 +62,6 @@ Assurez-vous d'être à l'aise avec les [fichiers de configuration Apprise](../g
 fail2ban=discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js
 
 ```
-
-:::
 
 ## Configurer Apprise pour Fail2ban
 
@@ -135,6 +133,11 @@ Vous pouvez facilement utiliser une instance API Apprise en définissant :
 action = apprise[config="http://api.example.ca:8000/cfg/apprise-key", args="--tag fail2ban"]
 ```
 
+Cette forme suppose que l'authentification de l'API Apprise est désactivée. Si
+l'authentification est activée, utilisez une URL de configuration HTTPS avec
+des identifiants adaptés et limitez la lecture du fichier qui la contient au
+compte exécutant Fail2ban.
+
 :::
 
 Redémarrez Fail2ban :
@@ -158,6 +161,146 @@ sudo fail2ban-client set sshd banip 203.0.113.10
 ```
 
 Vous devriez recevoir une notification Apprise immédiatement.
+
+## Protéger l'API Apprise
+
+Fail2ban peut également surveiller le journal d'accès nginx placé devant l'API Apprise et bloquer les clients qui échouent plusieurs fois à s'authentifier, ignorent les limites de débit ou testent des routes non prises en charge.
+
+L'API Apprise utilise des lignes de journal nginx ordinaires en mode normal comme en mode strict. Le mode strict limite aussi le trafic d'authentification et n'accepte que les routes connues. Il renvoie des états HTTP standards qu'un proxy inverse peut transmettre et journaliser :
+
+- `401` indique que les identifiants sont absents ou incorrects.
+- `404` indique que la route n'existe pas.
+- `405` indique que la route existe, mais refuse cette méthode HTTP.
+- `429` indique que nginx limite temporairement le client.
+
+Ne considérez pas chaque réponse `403` comme un échec d'authentification. Apprise peut renvoyer `403` lorsque les identifiants sont valides, mais que le compte n'est pas autorisé à effectuer l'opération demandée.
+
+### Choisir le Journal d'Accès
+
+Lorsqu'un nginx hôte sert de proxy inverse au conteneur, attribuez un journal dédié à l'hôte virtuel Apprise :
+
+```nginx
+access_log /var/log/nginx/apprise_access.log combined;
+```
+
+C'est la solution la plus simple, car le journal externe contient déjà l'adresse du client qui se connecte.
+
+Si le conteneur est exposé directement, vous pouvez monter `/var/log/apprise` depuis l'hôte et ajouter les deux destinations dans `/etc/nginx/server-override.conf` :
+
+```nginx
+access_log /dev/stdout combined if=$apprise_access_loggable;
+access_log /var/log/apprise/access.log combined if=$apprise_access_loggable;
+```
+
+Vérifiez que le répertoire est accessible en écriture par le `PUID` du conteneur, puis utilisez `/var/log/apprise/access.log` dans les prisons ci-dessous.
+
+### Créer les Filtres
+
+Créez `/etc/fail2ban/filter.d/nginx-apprise-auth.conf` :
+
+```ini
+[Definition]
+# Identifiants absents ou incorrects. Un utilisateur valide mais non autorisé
+# reçoit plutôt une réponse 403.
+failregex = ^<HOST> - \S+ \[[^]]+\] "[^"]*" 401 \d+
+ignoreregex =
+```
+
+Créez `/etc/fail2ban/filter.d/nginx-apprise-rate-limit.conf` :
+
+```ini
+[Definition]
+# Le client continue après que nginx a commencé à renvoyer Too Many Requests.
+failregex = ^<HOST> - \S+ \[[^]]+\] "[^"]*" 429 \d+
+ignoreregex =
+```
+
+Créez `/etc/fail2ban/filter.d/nginx-apprise-probe.conf` :
+
+```ini
+[Definition]
+# Requêtes mal formées répétées, routes absentes, méthodes non prises en charge,
+# corps trop volumineux, URI trop longues ou mauvais hôte virtuel.
+failregex = ^<HOST> - \S+ \[[^]]+\] "[^"]*" (?:400|404|405|413|414|421|431) \d+
+ignoreregex =
+```
+
+Si vous possédez déjà un filtre nginx générique pour les réponses `429`, ajoutez-y le journal Apprise au lieu d'en créer une copie.
+
+### Créer les Prisons
+
+Ajoutez les entrées suivantes à `/etc/fail2ban/jail.local`. Ces valeurs constituent un point de départ prudent ; ajustez-les après avoir observé votre trafic normal :
+
+```ini
+[nginx-apprise-auth]
+enabled  = true
+filter   = nginx-apprise-auth
+port     = http,https
+logpath  = /var/log/nginx/apprise_access.log
+findtime = 10m
+maxretry = 6
+bantime  = 1h
+
+[nginx-apprise-rate-limit]
+enabled  = true
+filter   = nginx-apprise-rate-limit
+port     = http,https
+logpath  = /var/log/nginx/apprise_access.log
+findtime = 5m
+maxretry = 10
+bantime  = 1h
+
+[nginx-apprise-probe]
+enabled  = true
+filter   = nginx-apprise-probe
+port     = http,https
+logpath  = /var/log/nginx/apprise_access.log
+findtime = 10m
+maxretry = 10
+bantime  = 1d
+```
+
+### Conserver l'Adresse Réelle du Client
+
+Fail2ban ne doit jamais bloquer le proxy inverse à la place du client. Le proxy hôte doit remplacer l'adresse transmise au lieu de l'ajouter :
+
+```nginx
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $remote_addr;
+```
+
+Le conteneur Apprise a également besoin de l'adresse réelle pour les limites de débit du mode strict. N'autorisez que l'adresse exacte du proxy ou de la passerelle Docker dans `/etc/nginx/server-override.conf` :
+
+```nginx
+set_real_ip_from 172.17.0.1; # Remplacez par l'adresse exacte du proxy fiable.
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+```
+
+N'ajoutez pas un réseau Docker ou privé entier à `set_real_ip_from`, sauf si tous ses appareils sont fiables.
+
+### Valider Avant le Redémarrage
+
+Testez chaque filtre avec de vraies lignes du journal :
+
+```bash
+sudo fail2ban-regex /var/log/nginx/apprise_access.log \
+  /etc/fail2ban/filter.d/nginx-apprise-auth.conf
+sudo fail2ban-regex /var/log/nginx/apprise_access.log \
+  /etc/fail2ban/filter.d/nginx-apprise-rate-limit.conf
+sudo fail2ban-regex /var/log/nginx/apprise_access.log \
+  /etc/fail2ban/filter.d/nginx-apprise-probe.conf
+```
+
+Validez ensuite la configuration et rechargez Fail2ban :
+
+```bash
+sudo fail2ban-client -t
+sudo systemctl restart fail2ban
+sudo fail2ban-client status nginx-apprise-auth
+sudo fail2ban-client status nginx-apprise-rate-limit
+sudo fail2ban-client status nginx-apprise-probe
+```
 
 ## Dépannage
 

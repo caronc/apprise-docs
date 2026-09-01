@@ -27,7 +27,7 @@ L'API Apprise est un service **stateless-first** avec un **état persistant opti
 Le service peut être exécuté en toute sécurité :
 
 - localement ;
-- derrière un reverse proxy ;
+- derrière un proxy inverse ;
 - dans Docker ou Docker Compose ;
 - dans Kubernetes, y compris dans des environnements durcis et rootless.
 
@@ -35,8 +35,15 @@ Le service peut être exécuté en toute sécurité :
 
 Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.
 
+Les exemples auto-hébergés publient normalement le port `8000` afin que les
+appareils de confiance de votre réseau domestique ou interne puissent se
+connecter sans proxy supplémentaire. Ils utilisent le mode normal. Ne les
+exposez pas directement à Internet. Utilisez l'onglet **Déploiement derrière un
+proxy** pour un serveur public avec HTTPS, authentification, routage strict et
+port de conteneur limité à l'adresse locale.
+
 <Tabs>
-  <TabItem label="Docker">
+  <TabItem label="Docker auto-hébergé">
 ```bash
 docker run --name apprise \
   -p 8000:8000 \
@@ -69,7 +76,195 @@ docker run --name apprise \
 ```
 
 </TabItem>
-<TabItem label="Docker Compose">
+<TabItem label="Déploiement derrière un proxy">
+
+Ce modèle rend le conteneur accessible uniquement depuis l'hôte Docker. Une
+instance Nginx distincte fournit le HTTPS public, les journaux et la politique
+de sécurité.
+
+### Préparer les fichiers du conteneur
+
+Créez les répertoires persistants, un fichier d'environnement et un fichier
+hôte vide pour la surcharge du serveur Nginx. Remplacez le mot de passe
+d'exemple avant de démarrer le conteneur. La surcharge sera remplie après que
+Docker aura indiqué la passerelle du conteneur actif.
+
+```bash
+mkdir -p apprise/config apprise/attach
+chmod 700 apprise
+
+web_secret="$(openssl rand -hex 32)"
+cat > apprise/apprise.env <<EOF
+STRICT_MODE=yes
+APPRISE_STATEFUL_MODE=simple
+APPRISE_ADMIN=yes
+APPRISE_WORKER_COUNT=1
+APPRISE_AUTH_REQUIRED=yes
+APPRISE_WEB_AUTH_SECRET=${web_secret}
+APPRISE_USER=admin
+APPRISE_PASSWORD=replace-with-a-strong-password
+APPRISE_TRUSTED_ORIGINS=https://apprise.example.com
+ALLOWED_HOSTS=apprise.example.com
+TZ=Etc/UTC
+EOF
+chmod 600 apprise/apprise.env
+touch apprise/nginx-server-override.conf
+chmod 644 apprise/nginx-server-override.conf
+```
+
+Le fichier hôte vide doit exister avant `docker run`, car la commande ci-dessous
+le monte à la place du fichier vide du conteneur. Son contenu sera ajouté après
+le démarrage du conteneur.
+
+`STRICT_MODE=yes` conserve le code `404` pour les routes inconnues, renvoie
+`405` pour les méthodes non prises en charge et limite le trafic
+d'authentification avec `429` et `Retry-After: 60`. Le conteneur applique ces
+contrôles stricts. Le serveur Nginx public ci-dessous reste un simple relais
+HTTPS et journalise les réponses pour des outils comme Fail2ban.
+
+### Démarrer le conteneur limité à l'adresse locale
+
+```bash
+docker run -d \
+  --name apprise \
+  --publish 127.0.0.1:8010:8000 \
+  --user "$(id -u):$(id -g)" \
+  --env-file "$PWD/apprise/apprise.env" \
+  --volume "$PWD/apprise/config:/config" \
+  --volume "$PWD/apprise/attach:/attach" \
+  --volume "$PWD/apprise/nginx-server-override.conf:/etc/nginx/server-override.conf:ro" \
+  --health-cmd='curl -fsS -u "$APPRISE_USER:$APPRISE_PASSWORD" http://127.0.0.1:8000/status >/dev/null || exit 1' \
+  --health-interval=30s \
+  --health-timeout=5s \
+  --health-retries=3 \
+  --health-start-period=20s \
+  --restart unless-stopped \
+  caronc/apprise:latest
+```
+
+La publication du port sur `127.0.0.1` empêche tout accès réseau direct au
+conteneur. Seuls les services exécutés sur l'hôte Docker, comme le proxy Nginx
+public ci-dessous, peuvent joindre le port `8010`.
+
+### Configurer la passerelle Docker fiable
+
+Inspectez maintenant ce conteneur une seule fois, écrivez la passerelle obtenue
+dans la surcharge montée, puis redémarrez Apprise pour que Nginx la charge :
+
+```bash
+docker_gateway="$(docker inspect \
+  --format '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' \
+  apprise)"
+
+if [ -z "$docker_gateway" ]; then
+  echo "Impossible de déterminer la passerelle Docker d'Apprise."
+  exit 1
+fi
+
+cat > apprise/nginx-server-override.conf <<EOF
+# Adresse obtenue depuis le conteneur Apprise actif avec docker inspect.
+set_real_ip_from ${docker_gateway};
+
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+EOF
+
+docker restart apprise
+```
+
+Cette méthode fonctionne avec le bridge par défaut et les réseaux personnalisés,
+car la passerelle provient du conteneur actif. Répétez cette étape après un
+changement de réseau Docker. Ne faites pas confiance à tout un réseau Docker ou
+privé, sauf si chacun de ses appareils est fiable. Apprise utilise l'adresse
+client obtenue pour l'audit et les limites de débit du mode strict.
+
+### Configurer le proxy Nginx public
+
+La directive `map` doit se trouver dans le contexte `http` de Nginx. Les fichiers
+placés sous `/etc/nginx/conf.d/` y sont généralement chargés. Cette règle masque
+les contrôles d'état réussis et conserve les erreurs ainsi que les réponses de
+limitation de débit.
+
+```nginx
+map "$uri:$status" $apprise_access_loggable {
+    default 1;
+    ~^/(?:status(?:/.*)?|metrics|favicon\.ico|robots\.txt)/?:[23] 0;
+}
+
+server {
+    listen 80;
+    server_name apprise.example.com;
+
+    return 301 https://apprise.example.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name apprise.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/apprise.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/apprise.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    access_log /var/log/nginx/apprise_access.log combined
+               if=$apprise_access_loggable;
+    error_log  /var/log/nginx/apprise_error.log warn;
+
+    # Le proxy public contrôle la limite effective des téléversements.
+    client_max_body_size 100m;
+
+    location / {
+        proxy_pass http://127.0.0.1:8010;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-Host  $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port  $server_port;
+        proxy_set_header X-Real-IP         $remote_addr;
+
+        # Remplacer toute chaîne de transfert fournie par le client public.
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Expect          $http_expect;
+
+        proxy_connect_timeout 5s;
+        proxy_send_timeout    310s;
+        proxy_read_timeout    310s;
+
+        # Transmettre directement les téléversements et réponses événementielles.
+        proxy_request_buffering off;
+        proxy_buffering         off;
+        proxy_cache             off;
+
+        # Préserver les réponses d'authentification, de limitation et d'erreur.
+        proxy_intercept_errors off;
+        proxy_redirect         off;
+    }
+}
+```
+
+Utilisez votre automatisation de certificats et votre politique de sécurité
+existantes à la place des chemins d'exemple. N'activez HSTS qu'après avoir
+confirmé que le domaine et ses éventuels sous-domaines resteront exclusivement
+accessibles en HTTPS.
+
+### Vérifier la chaîne de proxy
+
+```bash
+nginx -t
+systemctl reload nginx
+
+curl --user admin https://apprise.example.com/status
+docker inspect --format '{{json .State.Health}}' apprise
+```
+
+Le proxy externe doit remplacer `X-Forwarded-For`, et le conteneur ne doit faire
+confiance qu'à la passerelle Docker de ce proxy. Ensemble, ces réglages
+conservent l'adresse publique du client sans permettre sa falsification.
+
+</TabItem>
+<TabItem label="Docker Compose auto-hébergé">
 
 ```yaml
 services:
@@ -93,7 +288,7 @@ La configuration suivante met en place le même conteneur, mais avec surveillanc
 ```yaml
 services:
   apprise:
-    image: caronc/apprise-api:latest
+    image: caronc/apprise:latest
     container_name: apprise
     ports:
       - "8000:8000"
@@ -298,7 +493,7 @@ spec:
               value: "1000"
             - name: PUID
               value: "1000"
-          image: caronc/apprise:1.1
+          image: caronc/apprise:latest
           name: apprise
           ports:
             - containerPort: 8000
@@ -372,7 +567,7 @@ spec:
               value: "1000"
             - name: PUID
               value: "1000"
-          image: caronc/apprise:1.1
+          image: caronc/apprise:latest
           name: apprise
           ports:
             - containerPort: 8000
@@ -640,9 +835,32 @@ Le conteneur attend les chemins inscriptibles suivants :
 
 Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** suffit.
 
+### Mode avec État
+
+Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la configuration et de la connexion actuelle :
+
+| État                                                     | Liste des Configurations                                                         | Déplacement / Suppression                              | Connexion de Configuration            | Contenu de Configuration                                      |
+| :------------------------------------------------------- | :------------------------------------------------------------------------------- | :----------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------ |
+| Mode avec état désactivé                                 | Indisponible                                                                     | Indisponible                                           | Indisponible                          | Indisponible                                                  |
+| Authentification désactivée, configuration déverrouillée | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé                                               | Indisponible                          | Disponible                                                    |
+| Authentification désactivée, configuration verrouillée   | Masquée et refusée                                                               | Refusé                                                 | Indisponible                          | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Utilisateur de configuration, déverrouillée              | Refusée                                                                          | Peut déplacer son propre ID ; ne peut pas le supprimer | Peut modifier son propre mot de passe | Disponible pour son ID                                        |
+| Utilisateur de configuration, verrouillée                | Refusée                                                                          | Refusé                                                 | Peut modifier son propre mot de passe | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Administrateur, déverrouillée                            | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+| Administrateur, verrouillée                              | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+
+Lorsque le contenu est verrouillé, le formulaire Web de notification exige au moins un tag, car il ne peut pas afficher les destinations enregistrées.
+
+Un administrateur authentifié conserve un accès complet aux configurations lorsque le verrouillage est activé. Les utilisateurs d'une configuration et les appelants non authentifiés ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration. Un compte `user` peut toujours envoyer des notifications authentifiées avec ou sans état, tandis qu'un compte `locked` est limité aux notifications avec état et avec tag.
+
+Les modes globaux sont toujours prioritaires. Même un administrateur ne peut pas envoyer de notification avec ou sans état lorsque le mode correspondant est désactivé. Les identifiants administrateur contournent uniquement l'accès propre à la configuration et son verrouillage.
+
 ## Déploiements Durcis
 
-Pour des environnements publics ou multi-tenant, l'API Apprise prend en charge une exécution durcie.
+L'API Apprise permet également de durcir les processus et le système de
+fichiers. Ces mesures protègent le conteneur, mais n'ajoutent ni HTTPS, ni
+authentification, ni routage strict. Pour un serveur public ou multi-tenant,
+combinez-les avec le **Déploiement derrière un proxy** présenté ci-dessus.
 
 Exemple de configuration conteneur durci :
 
@@ -718,7 +936,11 @@ Cet endpoint convient pour :
 
 ## Reverse Proxies et Chemins de Base
 
-Si l'API Apprise est hébergée derrière un reverse proxy ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
+Si l'API Apprise est hébergée derrière un proxy inverse ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
+
+Pour un exemple complet de proxy HTTPS avec un accès au conteneur limité à
+l'adresse locale, consultez **Démarrage Rapide -> Docker + Nginx externe**
+ci-dessus.
 
 Exemple :
 
@@ -734,25 +956,109 @@ Cela garantit :
 
 ## Authentification et Contrôle d'Accès
 
-L'API Apprise **n'implémente pas** d'authentification en interne.
+L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger ses points de terminaison avec HTTP Basic. Seuls les ID de configuration rendus publics peuvent la contourner, uniquement pour les notifications avec tag.
 
-C'est intentionnel.
+| Mode                     | Paramètres                                          | Résultat                                                                                                                                                                      |
+| :----------------------- | :-------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Désactivé                | `APPRISE_AUTH_REQUIRED=no`                          | Les requêtes restent ouvertes. Les paramètres d'administration et les connexions de configuration enregistrées sont ignorés.                                                  |
+| Administrateur activé    | `APPRISE_AUTH_REQUIRED=yes` avec `APPRISE_PASSWORD` | L'administrateur peut accéder à toutes les clés et gérer les connexions de configuration. `APPRISE_USER` est facultatif.                                                      |
+| Administrateur désactivé | `APPRISE_AUTH_REQUIRED=yes` sans `APPRISE_PASSWORD` | Les utilisateurs existants accèdent uniquement à leurs propres clés. Aucune nouvelle connexion ne peut être créée tant qu'un mot de passe administrateur n'est pas configuré. |
 
-Approches recommandées :
+`APPRISE_USER` sans `APPRISE_PASSWORD` produit un avertissement au démarrage et laisse le compte administrateur désactivé. Consultez les [Variables d'Environnement](../reference/environment/).
 
-- placer l'API derrière un reverse proxy ;
-- utiliser une authentification HTTP basic ;
-- restreindre l'accès au niveau réseau ou ingress.
+`APPRISE_BASIC_AUTH_REALM` nomme le serveur dans les invites de connexion. Il ne modifie aucun identifiant. La valeur par défaut est `Apprise API` ; utilisez un nom différent pour chaque instance.
 
-Des fichiers de surcharge Nginx peuvent être injectés dans le conteneur pour imposer un contrôle d'accès.
+**Utilisez HTTPS/TLS.** L'authentification Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
+
+Les clients API envoient Basic Auth avec chaque requête. Les vérifications récentes et réussies par configuration utilisent un cache mémoire limité à cinq minutes. Cela évite de recalculer le hachage sans créer de session API ni conserver les identifiants. Les échecs sont mémorisés uniquement pendant la requête en cours.
+
+Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse fermer la session. Les appels API JSON et texte brut ne peuvent pas utiliser cette connexion Web.
+
+Les clients avec état peuvent conserver des chemins comme `/notify/{KEY}`. Les points de terminaison compatibles acceptent aussi `X-Apprise-Config-ID`, ce qui garde la clé hors de l'URL.
+
+Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
+
+Les connexions Web expirent après 24 heures d'inactivité. Chaque requête authentifiée renouvelle ce délai. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
+
+Le champ ID de configuration permet d'ouvrir une autre configuration sans afficher son ID dans la barre d'adresse. L'utilisateur doit se reconnecter si le nouvel ID utilise d'autres identifiants. Les administrateurs peuvent aussi choisir ou générer un ID avec **Nouvelle Configuration**.
+
+Chaque ID de configuration utilise un mode d'accès :
+
+| Accès      | Utilisation des notifications                               | Utilisation de la configuration                                                                      |
+| :--------- | :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| `user`     | Exige ses identifiants. Les tags sont facultatifs.          | L'utilisateur peut consulter, modifier, effacer et remplacer sa configuration.                       |
+| `locked`   | Exige les identifiants et un tag précis, jamais `all`.      | Masque le contenu. L'utilisateur peut changer son mot de passe et déplacer l'ID de configuration.    |
+| `public`   | Exige uniquement l'ID de configuration et un tag précis.    | Masque le contenu. Les identifiants enregistrés conservent les droits `locked`, s'ils sont présents. |
+| `disabled` | Refuse les notifications de l'utilisateur de configuration. | Bloque l'utilisateur tout en conservant la configuration et les identifiants.                        |
+
+L'accès public s'applique uniquement aux appels avec état `POST /notify/{KEY}`. Les autres points de terminaison exigent toujours des identifiants valides. Les pièces jointes restent prises en charge.
+
+Pour `POST /notify` sans état, l'administrateur peut s'authentifier directement. Un utilisateur de configuration doit fournir des `urls` explicites, ses identifiants et l'en-tête `X-Apprise-Config-ID` correspondant ; l'accès doit être `user`. Sans `urls`, la forme v2 avec en-tête conserve l'envoi stateful avec la configuration enregistrée.
+
+Les comptes `user` et `locked` peuvent consulter `/status` et `/details` avec leurs identifiants et leur ID de configuration. Un compte désactivé ne le peut pas. L'administrateur peut fournir un en-tête `X-Apprise-Config-ID` valide pour simplifier le client, mais cet en-tête n'est pas obligatoire.
+
+Pour définir l'accès, ouvrez une configuration et sélectionnez son cadenas ou **Authentification**. Choisissez le mode d'accès, saisissez les identifiants lorsqu'ils sont requis, puis sélectionnez **Enregistrer**. Les administrateurs peuvent utiliser **Générer Aléatoirement** pour chaque identifiant.
+
+L'ID de configuration et les identifiants sont des valeurs distinctes. Transmettez l'ID et les identifiants configurés à l'utilisateur. Le nom d'utilisateur est facultatif et le mot de passe enregistré n'est plus affiché.
+
+Les clients API gèrent l'accès avec `POST /auth/{KEY}`. Le champ `access`
+accepte `user`, `locked`, `public` ou `disabled`. Un nouvel enregistrement
+utilise `user` par défaut, ou `locked` lorsque `APPRISE_CONFIG_LOCK=yes`. Un
+administrateur peut enregistrer `user` ou `public` lorsque le verrou global est
+activé, mais cet accès se comporte comme `locked` jusqu'à la suppression du
+verrou global. Un utilisateur de configuration peut changer uniquement son mot
+de passe et doit répéter son nom d'utilisateur. Consultez les
+[Points de Terminaison de l'API](../endpoints/).
+
+Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
+
+**Déconnexion** ferme la connexion Web signée. Les identifiants en cache du navigateur ne peuvent pas la rétablir silencieusement.
+
+Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Lorsqu'un utilisateur `user` efface sa configuration, ses identifiants sont conservés et ce délai recommence afin qu'il puisse enregistrer une nouvelle configuration. Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
+
+### Vérification de l'Origine du Navigateur
+
+Les navigateurs ajoutent un en-tête `Origin` lorsqu'une page modifie des données. L'API Apprise vérifie cet en-tête et refuse les modifications envoyées depuis un autre site. Les requêtes provenant du même site sont autorisées.
+
+L'API Apprise n'exige pas l'échange de jeton CSRF de Django. Les appels directs depuis `curl`, les applications mobiles et les autres programmes omettent normalement `Origin` et continuent de fonctionner.
+
+Pour un site HTTPS derrière un proxy inverse, définissez `APPRISE_TRUSTED_ORIGINS` avec l'adresse publique complète, par exemple `https://apprise.example.com`. Séparez plusieurs adresses par des virgules.
+
+Pour une défense en profondeur, vous pouvez ajouter des protections en dehors de l'application :
+
+- exposer le conteneur uniquement par un proxy inverse de confiance ;
+- ajouter une authentification au niveau du proxy ou de l'ingress ;
+- restreindre l'accès avec un pare-feu ou une politique réseau.
+
+Des fichiers de surcharge Nginx peuvent également être montés dans le conteneur
+pour répondre à des besoins particuliers de contrôle d'accès.
 
 Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `ConfigMap` (nginx `location-override.conf`) est disponible dans **Démarrage Rapide -> Kubernetes -> Exemple Complet**.
+
+## Élagage
+
+Le conteneur exécute chaque jour un cycle de nettoyage à faible priorité. Il couvre les deux domaines ci-dessous et dispose d'une limite de temps :
+
+| Domaine          | Ce qu'il élague                                                  | Paramètre de rétention                                         |
+| :--------------- | :--------------------------------------------------------------- | :------------------------------------------------------------- |
+| État persistant  | Stockage d'état de notification Apprise (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)               |
+| Authentification | Verrous Basic par clé sans configuration.                        | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours) |
+
+`APPRISE_PRUNE_INTERVAL_SECONDS` contrôle la planification. Réglez `APPRISE_PRUNE_ENABLED=no` pour désactiver le nettoyage planifié. `APPRISE_PRUNE_TIMEOUT_SECONDS` modifie la limite de 8 heures. La commande combinée et les commandes individuelles restent exécutables manuellement :
+
+```bash
+docker exec -it apprise python manage.py prune
+docker exec -it apprise python manage.py storeprune --days 30
+docker exec -it apprise python manage.py authprune --seconds 2592000
+```
 
 ## Logging et Observabilité
 
 - Tous les logs sont émis vers stdout et stderr
 - Aucun fichier log n'est écrit sur disque
 - Des métriques Prometheus sont disponibles sur `/metrics`
+- Les appels réussis à `/status`, `/metrics`, au favicon et à `robots.txt` sont
+  omis des journaux d'accès ; les échecs et limitations restent visibles
 
 ## Déploiements de Développement
 

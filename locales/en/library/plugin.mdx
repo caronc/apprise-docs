@@ -658,20 +658,24 @@ Your plugin should be configured to inherit from `NotifyBase` granting you these
 
 ## Template Types
 
-Apprise validates types using a strict pattern: `((choice|list):)?(string|bool|int|float)`.
+Apprise validates types using a strict pattern: `((choice|list):)?(string|bool|int|float|email)`.
 
-| Type            | Where used   | Meaning                      | Required directives           | Notes                                                                                 |
-| :-------------- | :----------- | :--------------------------- | :---------------------------- | :------------------------------------------------------------------------------------ |
-| `string`        | tokens, args | A single string              | none                          | Common for hostnames, tokens, and names.                                              |
-| `int`           | tokens, args | A single integer             | none                          | Use `min` and `max` to bound port values, counts, etc.                                |
-| `float`         | tokens, args | A single float               | none                          | Use `min` and `max` for bounds.                                                       |
-| `bool`          | tokens, args | A boolean flag               | `default` (required for args) | Boolean args must provide a default.                                                  |
-| `choice:string` | tokens, args | One value from a fixed set   | `values`                      | Choice entries must provide `values`, and `default` must be one of them if specified. |
-| `choice:int`    | tokens, args | One integer from a fixed set | `values`                      | Use for mode selectors or enumerations.                                               |
-| `choice:float`  | tokens, args | One float from a fixed set   | `values`                      | Rare, but supported.                                                                  |
-| `list:string`   | tokens, args | A list of strings            | `delim`                       | List entries must provide delimiters.                                                 |
-| `list:int`      | tokens, args | A list of integers           | `delim`                       | Split and then coerce to int.                                                         |
-| `list:float`    | tokens, args | A list of floats             | `delim`                       | Split and then coerce to float.                                                       |
+| Type            | Where used   | Meaning                      | Required directives | Notes                                                                                 |
+| :-------------- | :----------- | :--------------------------- | :------------------ | :------------------------------------------------------------------------------------ |
+| `string`        | tokens, args | A single string              | none                | Common for hostnames, tokens, and names.                                              |
+| `email`         | tokens, args | A single email address       | none                | Use when `url()` preserves the address's `@` character.                               |
+| `int`           | tokens, args | A single integer             | none                | Use `min` and `max` to bound port values, counts, etc.                                |
+| `float`         | tokens, args | A single float               | none                | Use `min` and `max` for bounds.                                                       |
+| `bool`          | tokens, args | A boolean flag               | `default`           | Boolean entries must provide a default.                                               |
+| `choice:string` | tokens, args | One value from a fixed set   | `values`            | Choice entries must provide `values`, and `default` must be one of them if specified. |
+| `choice:int`    | tokens, args | One integer from a fixed set | `values`            | Use for mode selectors or enumerations.                                               |
+| `choice:float`  | tokens, args | One float from a fixed set   | `values`            | Rare, but supported.                                                                  |
+| `choice:email`  | tokens, args | One email from a fixed set   | `values`            | Preserve the selected address's `@` character.                                        |
+| `list:string`   | tokens, args | A list of strings            | `delim`             | List entries must provide delimiters.                                                 |
+| `list:bool`     | tokens, args | A list of boolean values     | `delim`             | Use `bool` for a single boolean value.                                                |
+| `list:int`      | tokens, args | A list of integers           | `delim`             | Split and then coerce to int.                                                         |
+| `list:float`    | tokens, args | A list of floats             | `delim`             | Split and then coerce to float.                                                       |
+| `list:email`    | tokens, args | A list of email addresses    | `delim`             | Preserve each address's `@` character.                                                |
 
 Additional rules that matter:
 
@@ -947,7 +951,7 @@ This table documents the most common directives supported by `template_tokens`, 
 | Directive  | Where used           | Meaning                                                                                             |
 | :--------- | :------------------- | :-------------------------------------------------------------------------------------------------- |
 | `name`     | tokens, args, kwargs | Human-friendly label, usually wrapped in `gettext_lazy()`.                                          |
-| `type`     | tokens, args         | Value type, such as `string`, `int`, `bool`, `choice:string`, `list:string`.                        |
+| `type`     | tokens, args         | Value type: `string`, `bool`, `int`, `float`, `email`, `choice:<type>`, or `list:<type>`.           |
 | `required` | tokens, args         | Marks an entry as mandatory for initialization or validation.                                       |
 | `default`  | args                 | Default used when the URL does not specify a value. Required for `bool` types.                      |
 | `private`  | tokens, args         | Marks a value as sensitive and should be hidden or masked in privacy views.                         |
