@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-L'API Apprise utilise les codes d'état HTTP standards. De nombreuses réponses d'erreur renvoient un court message en `text/plain`. Si vous demandez du JSON (en envoyant `Accept: application/json`), les réponses d'erreur incluent un champ `error`.
+L'API Apprise utilise les codes d'état HTTP standard. De nombreuses réponses d'erreur renvoient un court message en `text/plain`. Si vous demandez du JSON (en envoyant `Accept: application/json`), les réponses d'erreur incluent un champ `error`.
 
 | Code  | Signification                   | Où vous le verrez                                                                                                                                                                                                                                                                               |
 | :---- | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -28,7 +28,7 @@ L'API Apprise utilise les codes d'état HTTP standards. De nombreuses réponses 
 | `431` | Request Header Fields Too Large | La requête a dépassé la limite de téléversement en mémoire configurée et Django l'a rejetée.                                                                                                                                                                                                    |
 | `500` | Internal Server Error           | Erreur côté serveur lors de l'enregistrement ou du chargement d'une configuration, ou erreur d'E/S inattendue.                                                                                                                                                                                  |
 | `502` | Bad Gateway                     | Nginx n'a pas pu obtenir de réponse valide du worker de l'application.                                                                                                                                                                                                                          |
-| `503` | Service Unavailable             | Le worker de l'application est temporairement indisponible.                                                                                                                                                                                                                                     |
+| `503` | Service Unavailable             | L'application est temporairement indisponible, ou tous les emplacements de flux en direct sont occupés. Lorsque ces emplacements sont occupés, la réponse inclut `Retry-After: 15`.                                                                                                             |
 | `504` | Gateway Timeout                 | Le worker de l'application n'a pas répondu avant l'expiration du délai du proxy.                                                                                                                                                                                                                |
 
 :::note

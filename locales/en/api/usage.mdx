@@ -83,11 +83,20 @@ logs from growing without bound in memory. See [Environment Variables](/api/refe
 
 At most `APPRISE_STREAM_WORKER_COUNT` streamed notifications run concurrently
 in each Gunicorn worker process. The default is `4`, so the effective
-server-wide default is `APPRISE_WORKER_COUNT * 4`. Additional streams receive
-HTTP `200` and remain connected while queued; delivery starts automatically
-when an active worker finishes. Work continues to occupy its slot if a client
-disconnects during delivery. A reverse proxy may still enforce its own
-connection or request limits before a request reaches Apprise API.
+server-wide default is `APPRISE_WORKER_COUNT * 4`.
+
+`APPRISE_STREAM_QUEUE_SIZE` allows up to `8` additional streams to remain
+connected in each worker process while waiting for an active slot or
+finishing their responses. When both the active and queued slots are full, a
+new stream receives HTTP `503` with a `Retry-After` header. Non-streaming
+notifications are unaffected.
+
+Work still occupies its slot if the client disconnects during delivery. A
+reverse proxy may also enforce its own limits before a request reaches
+Apprise API.
+
+In the packaged container, `APPRISE_CONNECTION_TIMEOUT` controls how long a
+proxy waits for live-stream activity and defaults to 10 minutes.
 
 :::note
 `-N` (`--no-buffer`) tells `curl` to print each event as it arrives instead of waiting for the connection to close.
