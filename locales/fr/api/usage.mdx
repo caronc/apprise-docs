@@ -90,12 +90,22 @@ du résultat final de croître sans limite en mémoire. Consultez
 Au maximum, `APPRISE_STREAM_WORKER_COUNT` notifications diffusées s'exécutent
 simultanément dans chaque processus worker Gunicorn. La valeur par défaut est
 `4` ; la valeur effective par défaut pour tout le serveur est donc
-`APPRISE_WORKER_COUNT * 4`. Les flux supplémentaires reçoivent le code HTTP
-`200` et restent connectés dans une file d'attente ; l'envoi commence
-automatiquement lorsqu'un worker se libère. Un envoi continue d'occuper son
-emplacement si le client se déconnecte pendant son exécution. Un proxy inverse
-peut toujours appliquer ses propres limites de connexions ou de requêtes avant
-Apprise API.
+`APPRISE_WORKER_COUNT * 4`.
+
+`APPRISE_STREAM_QUEUE_SIZE` permet à `8` flux supplémentaires de rester
+connectés dans chaque processus worker pendant l'attente d'un emplacement
+actif ou la fin de leur réponse. Lorsque tous les emplacements actifs et la
+file d'attente sont occupés, un nouveau flux reçoit le code HTTP `503` avec
+un en-tête `Retry-After`. Les notifications qui ne diffusent pas leur
+progression ne sont pas concernées.
+
+Un envoi continue d'occuper son emplacement si le client se déconnecte pendant
+son exécution. Un proxy inverse peut aussi appliquer ses propres limites avant
+qu'une requête atteigne l'API Apprise.
+
+Dans le conteneur fourni, `APPRISE_CONNECTION_TIMEOUT` définit la durée pendant
+laquelle le proxy attend une activité du flux. La valeur par défaut est de
+10 minutes.
 
 :::note
 `-N` (`--no-buffer`) indique à `curl` d'afficher chaque événement dès son arrivée plutôt que d'attendre la fermeture de la connexion.

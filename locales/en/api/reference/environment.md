@@ -69,18 +69,20 @@ For a full guide on reducing container memory and RAM usage, see [Resource Usage
 | `APPRISE_CONFIG_MAX_LENGTH`      | `512`   | Maximum configuration payload size in KB. Cannot exceed `APPRISE_UPLOAD_MAX_MEMORY_SIZE`. |
 | `APPRISE_STREAM_MEMORY_SIZE`     | `2`     | Stream and result logs kept in memory before temporary disk storage, in MB.               |
 | `APPRISE_STREAM_DISK_SIZE`       | `256`   | Temporary disk allowance for each live stream and result, in MB.                          |
-| `APPRISE_STREAM_WORKER_COUNT`    | `4`     | Active streams per Gunicorn worker process. Additional streams queue.                     |
+| `APPRISE_STREAM_WORKER_COUNT`    | `4`     | Active streams per Gunicorn worker process. The effective server-wide total is `APPRISE_WORKER_COUNT * 4`. |
+| `APPRISE_STREAM_QUEUE_SIZE`      | `8`     | Additional live streams allowed to queue per Gunicorn worker process.                     |
 | `APPRISE_RECURSION_MAX`          | `1`     | Max recursion depth for `apprise://` calls to other servers.                              |
 
 ## Network
 
-| Variable    | Default | Description                     |
-| :---------- | :------ | :------------------------------ |
-| `HTTP_PORT` | `8000`  | Internal container port.        |
-| `PUID`      | `1000`  | User ID to run the service as.  |
-| `PGID`      | `1000`  | Group ID to run the service as. |
-| `IPV4_ONLY` | `no`    | Force IPv4 only.                |
-| `IPV6_ONLY` | `no`    | Force IPv6 only.                |
+| Variable                     | Default | Description                                                                      |
+| :--------------------------- | :------ | :------------------------------------------------------------------------------- |
+| `HTTP_PORT`                  | `8000`  | Internal container port.                                                         |
+| `APPRISE_CONNECTION_TIMEOUT` | `600`   | How long the container waits for live-stream activity, in seconds (`30`–`3600`). |
+| `PUID`                       | `1000`  | User ID to run the service as.                                                   |
+| `PGID`                       | `1000`  | Group ID to run the service as.                                                  |
+| `IPV4_ONLY`                  | `no`    | Force IPv4 only.                                                                 |
+| `IPV6_ONLY`                  | `no`    | Force IPv6 only.                                                                 |
 
 ## Additional Apprise API Settings
 
@@ -108,7 +110,8 @@ The container also supports the following variables, which map directly to the s
 | `APPRISE_CONFIG_MAX_LENGTH`         | `512`                        | Maximum configuration payload size in KB accepted by form and API configuration updates. Independent of the upload body limit. Cannot exceed `APPRISE_UPLOAD_MAX_MEMORY_SIZE`.                                                                                                                                                                                                                                                                                                          |
 | `APPRISE_STREAM_MEMORY_SIZE`        | `2`                          | Stream and result logs kept in memory before temporary disk storage is used, in MB. Set to `0` to write directly to disk.                                                                                                                                                                                                                                                                                                                                                               |
 | `APPRISE_STREAM_DISK_SIZE`          | `256`                        | Maximum temporary disk space used by each live stream and notification result, in MB. Set to `0` for unbounded memory-only storage. Setting both stream sizes to `0` disables live-stream backlog retention.                                                                                                                                                                                                                                                                            |
-| `APPRISE_STREAM_WORKER_COUNT`       | `4`                          | Active streamed notifications per Gunicorn worker process. The effective server-wide default is `APPRISE_WORKER_COUNT * 4`. Additional streams remain connected and queue until a worker becomes available. Work continuing after a client disconnects still occupies its slot.                                                                                                                                                                                                         |
+| `APPRISE_STREAM_WORKER_COUNT`       | `4`                          | Active streamed notifications per Gunicorn worker process. The effective server-wide default is `APPRISE_WORKER_COUNT * 4`. Work continuing after a client disconnects still occupies its slot.                                                                                                                                                                                                                                                                                         |
+| `APPRISE_STREAM_QUEUE_SIZE`         | `8`                          | Additional live streams allowed to remain connected per Gunicorn worker process while waiting for an active slot or finishing their responses. Further streams receive `503` with a `Retry-After` header. Set to `0` to allow no additional streams.                                                                                                                                                                                                                                    |
 | `APPRISE_MAX_ATTACHMENTS`           | `6`                          | Maximum number of attachments per request. Set to `0` to disable the limit.                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` | `5`                          | Maximum traversal depth for nested field mapping rules. Depth counts every individual step — each dict-key lookup and each array-index dereference (`[N]`). For example, `items[0].objectURI` is 3 steps and `a[0][1][2].value[3]` is 6 steps. See [Payload Mapping Hooks](/api/usage/#payload-mapping-hooks).                                                                                                                                                                          |
 | `APPRISE_ATTACH_ALLOW_URL`          | `*`                          | Allow list for remote attachment URLs.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
