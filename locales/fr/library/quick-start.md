@@ -27,6 +27,12 @@ apobj.add([
 ])
 ```
 
+Vous pouvez aussi fournir les services lors de la création de l'instance :
+
+```python
+apobj = apprise.Apprise(services='json://localhost')
+```
+
 ### Envoyer des notifications (`notify`)
 
 La méthode `notify()` envoie des messages à tous les services enregistrés.
