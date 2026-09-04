@@ -2,7 +2,8 @@
 title: Apprise Mobile Terms of Service
 description: Terms governing the use of Apprise Mobile.
 sidebar:
-  hidden: true
+  label: Terms of Service
+  order: 3
 ---
 
 **Last updated: August 29, 2026**

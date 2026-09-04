@@ -8,6 +8,10 @@ sidebar:
 
 L'**API Apprise** est une passerelle Web vers la bibliotheque Apprise. Elle fournit une interface REST pour envoyer des notifications, ce qui vous permet de centraliser votre configuration et de declencher des alertes depuis des systemes qui ne prennent pas directement en charge Python ou la CLI.
 
+:::tip
+Vous souhaitez utiliser votre API Apprise depuis votre téléphone ? [Apprise Mobile](../mobile/) est l'application Android complémentaire officielle. Elle permet de consulter vos serveurs enregistrés, de créer des URL de notification et d'envoyer des notifications.
+:::
+
 ## Pourquoi utiliser l'API ?
 
 - **Microservices :** fournissez un point de terminaison unique pour toutes vos applications.

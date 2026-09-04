@@ -2,7 +2,8 @@
 title: Apprise Mobile Privacy Policy
 description: How Apprise Mobile handles information on your device and with servers you configure.
 sidebar:
-  hidden: true
+  label: Privacy Policy
+  order: 2
 ---
 
 **Last updated: August 29, 2026**

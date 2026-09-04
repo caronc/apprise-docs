@@ -8,6 +8,10 @@ sidebar:
 
 The **Apprise API** is a web-based gateway to the Apprise library. It provides a RESTful interface to send notifications, allowing you to centralize your notification configuration and trigger alerts from systems that might not support Python or the CLI directly.
 
+:::tip
+Want to use your Apprise API from your phone? [Apprise Mobile](/mobile/) is the official Android companion for viewing saved servers, creating notification URLs, and sending notifications.
+:::
+
 ## Why use the API?
 
 - **Microservices:** Provide a single notification endpoint for all your applications.

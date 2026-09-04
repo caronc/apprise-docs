@@ -11,6 +11,7 @@ Thank you for your interest in Apprise!
 
 - **[Code & Plugins](./core/)**: Help develop the Python core library.
 - **[Apprise API](./api/)**: Help improve the web application, API, and UI.
+- **[Apprise Mobile](/mobile/)**: Help test the Android companion app.
 - **[Documentation](./documentation/)**: Help improve these guides.
 - **[Sponsors](./sponsors/)**: Support the project financially.
 

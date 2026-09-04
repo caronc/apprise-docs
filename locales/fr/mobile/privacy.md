@@ -1,8 +1,9 @@
 ---
-title: Politique de confidentialité d'Apprise Mobile
+title: Politique de Confidentialité d'Apprise Mobile
 description: Comment Apprise Mobile traite les informations sur votre appareil et avec les serveurs que vous configurez.
 sidebar:
-  hidden: true
+  label: Politique de Confidentialité
+  order: 2
 ---
 
 **Dernière mise à jour : 29 août 2026**
@@ -17,7 +18,7 @@ central pour l'application, n'exigeons aucun compte et n'intégrons aucun outil
 de publicité, d'analyse, de suivi ou de rapport de plantage. L'application se
 connecte directement aux serveurs Apprise API que vous choisissez de configurer.
 
-## Informations stockées sur votre appareil
+## Informations Stockées sur Votre Appareil
 
 L'application peut stocker :
 
@@ -43,7 +44,7 @@ sauvegardes, utilisez des identifiants forts et uniques ainsi qu'un identifiant
 de configuration difficile à deviner, et remplacez-les ou révoquez-les si vous
 pensez qu'ils ont été exposés.
 
-## Transmission des données et confidentialité
+## Transmission des Données et Confidentialité
 
 Apprise Mobile n'envoie ni vos données personnelles, ni vos identifiants de
 connexion, ni le contenu de vos notifications, ni vos pièces jointes, ni les
@@ -76,7 +77,7 @@ Utilisez HTTPS lorsque cela est possible. Avec HTTP, les données échangées en
 l'application et votre serveur ne sont pas protégées par le chiffrement du
 transport.
 
-## Informations que nous ne recevons ni n'utilisons
+## Informations que Nous ne Recevons ni n'Utilisons
 
 Nous ne recevons ni activité dans l'application, ni contenu des notifications,
 ni détails des serveurs, ni identifiants de connexion, ni identifiants
@@ -92,7 +93,7 @@ informations d'achat nécessaires pour fournir et restaurer l'accès Premium.
 Votre utilisation de Google Play est régie par les
 [pratiques de Google en matière de confidentialité et de sécurité](https://play.google.com/about/privacy-and-security.html).
 
-## Sauvegardes et exports de diagnostic
+## Sauvegardes et Exports de Diagnostic
 
 Les sauvegardes et exports de diagnostic sont facultatifs et ne commencent que
 sur votre demande. Une sauvegarde place les identifiants de connexion, les URL
@@ -103,7 +104,7 @@ serveurs, noms d'utilisateur, détails d'affichage et autres paramètres non
 secrets peuvent rester lisibles. Les fichiers sont enregistrés à l'emplacement
 choisi et ne nous sont jamais envoyés.
 
-## Conservation et suppression
+## Conservation et Suppression
 
 Les données restent sur votre appareil jusqu'à ce que vous les supprimiez,
 qu'un paramètre de conservation de l'application les efface ou que vous
@@ -113,13 +114,13 @@ contrôlées par son exploitant et les services destinataires. Comme l'applicati
 n'a ni compte ni serveur exploité par son éditeur, nous ne détenons aucune donnée
 de compte à supprimer.
 
-## Confidentialité des enfants
+## Confidentialité des Enfants
 
 L'application ne s'adresse pas aux enfants de moins de 13 ans. Nous ne recevons
 sciemment aucune information personnelle provenant d'enfants ou d'autres
 utilisateurs.
 
-## Modifications de cette politique
+## Modifications de Cette Politique
 
 Nous pouvons modifier cette politique en fonction de l'évolution de
 l'application. Lorsqu'une modification exige une nouvelle acceptation,
