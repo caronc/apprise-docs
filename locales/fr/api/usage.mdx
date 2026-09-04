@@ -49,7 +49,7 @@ Ces réponses attendent la fin de l'envoi des notifications, puis transmettent
 les journaux une entrée à la fois. Un résultat volumineux stocké sur disque
 n'est donc pas reconstruit en mémoire et le format de la réponse ne change pas.
 
-### Diffusion en direct de la progression
+### Diffusion en Direct de la Progression
 
 Les points de terminaison de notification peuvent indiquer leur progression à mesure que chaque service est notifié. Utilisez `?stream=yes` ou envoyez `Accept: text/event-stream`.
 
@@ -293,7 +293,7 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
 ```
 
-#### Éléments de Tableau (Notation entre Crochets)
+#### Éléments de Tableau (Notation Entre Crochets)
 
 Ajoutez `[N]` juste après le nom de clé pour déréférencer l'index `N` dans ce tableau. Les indices multiples et le mélange avec la notation pointée sont pris en charge :
 
