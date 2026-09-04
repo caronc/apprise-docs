@@ -54,6 +54,17 @@ Raccourci pratique :
 - `a.path` déclenche un téléchargement ou une validation si nécessaire ;
 - `len(a)` renvoie la taille de la pièce jointe en octets, lorsqu'elle est connue.
 
+### `send()` Peut Être Appelé Plusieurs Fois
+
+Un long message peut être réparti sur plusieurs appels à `send()`. Apprise ne
+transmet `attach` qu'à un seul de ces appels. Le test `if attach:` évite donc
+d'envoyer les mêmes fichiers avec chaque partie du message.
+
+Par défaut, la pièce jointe accompagne la première partie. Pour l'envoyer avec
+une autre partie, surchargez `_attachment_send_index()`. Consultez
+[Connaître Sa Position Parmi Plusieurs Appels à `send()`](../extending/message-format-conversion/#connaitre-sa-position-parmi-plusieurs-appels-a-send)
+pour voir un exemple.
+
 ## Sources des Pièces Jointes
 
 Apprise prend en charge plusieurs sources de pièces jointes. Elles sont toutes
@@ -215,7 +226,7 @@ les pièces jointes basées sur HTTPS.
 - `verify=yes` (par défaut) : les certificats TLS sont validés à l'aide du magasin de confiance du système.
 - `verify=no` : la vérification des certificats TLS est désactivée. Cela ne doit être utilisé que pour les tests ou lors d'interactions avec des endpoints internes de confiance.
 
-### Timeouts
+### Délais d'Attente
 
 Les pièces jointes HTTP prennent en charge une configuration explicite des timeouts :
 
@@ -247,7 +258,7 @@ Le cache est toujours supprimé du système de fichiers dès que l'instance
 1. nom de fichier extrait du chemin URL
 1. valeurs de repli générées
 
-### Streaming et Limites
+### Lecture en Continu et Limites
 
 Les pièces jointes HTTP sont diffusées vers le disque et validées
 progressivement. Lorsque `Content-Length` est absent ou invalide, les limites
@@ -412,7 +423,7 @@ for attachment in attach:
 
 Une pièce jointe peut échouer parce qu'elle est absente, dépasse les limites de taille, est inaccessible depuis l'emplacement d'exécution courant, ou n'a pas pu être téléchargée.
 
-### Préférez `attachment.open()` pour les API d'Upload
+### Préférez `attachment.open()` pour les API de Téléversement
 
 De nombreux services exigent des uploads multipart. Utilisez `attachment.open()`
 pour obtenir un objet de type fichier : cela fonctionne correctement pour
@@ -465,7 +476,7 @@ Interceptez-la et échouez proprement.
 
 Cela est fréquemment utilisé par les API qui ne prennent pas en charge les uploads multipart.
 
-### Streamer par Blocs si Nécessaire
+### Lire par Blocs si Nécessaire
 
 Si vous devez éviter de charger un fichier entier en mémoire, utilisez `attachment.chunk()` :
 
@@ -495,7 +506,7 @@ de bien comprendre leur cycle de vie. En règle générale, traitez-les comme de
 Les plugins devraient valider tôt la taille et le nombre des pièces jointes,
 et gérer proprement les pièces jointes inaccessibles.
 
-## Exemples Pratiques dans les Plugins du Cœur
+## Exemples Pratiques dans les Plugins Principaux
 
 Le projet principal contient des modèles courants que vous pouvez reprendre.
 

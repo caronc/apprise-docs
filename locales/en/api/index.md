@@ -12,11 +12,12 @@ The **Apprise API** is a web-based gateway to the Apprise library. It provides a
 Want to use your Apprise API from your phone? [Apprise Mobile](/mobile/) is the official Android companion for viewing saved servers, creating notification URLs, and sending notifications.
 :::
 
-## Why use the API?
+## Why Use the API?
 
 - **Microservices:** Provide a single notification endpoint for all your applications.
 - **Stateless and Stateful:** Send notifications on the fly or reference pre-saved configurations by key.
 - **Web interface:** Includes a built-in dashboard to manage configurations and test notifications. The UI can be disabled with `APPRISE_API_ONLY=yes`.
+- **Per-configuration access:** Assign credentials to a saved configuration through `/auth/{KEY}`.
 - **Extensible:** Runs as a lightweight container compatible with Docker, Kubernetes, and more.
 - **Centralized configuration:** Use one server as the configuration source for multiple apps and environments.
 
@@ -34,5 +35,5 @@ curl -X POST -d "body=Test Message" \
 ```
 
 :::tip
-If your server can be accessed by more than one person, or it is exposed to the internet, generate a new obfuscated key that isolates your environment from others. If you are using the web UI, you can press **New Configuration** in the left menu.
+If your server is public, [enable authentication](/api/deployment/#authentication-and-access-control) and protect saved configurations through the Web interface or `/auth/{KEY}`. A hard-to-guess key is still useful, but it is not a replacement for credentials.
 :::

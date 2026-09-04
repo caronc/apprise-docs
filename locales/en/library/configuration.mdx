@@ -242,9 +242,9 @@ An Apprise-API server may enable configuration locking to prevent remote clients
 
 When configuration locking is enabled:
 
-- Remote configuration includes targeting the Apprise-API are rejected
-- Configuration endpoints cannot be consumed by external clients
-- Only locally-defined configuration is permitted
+- An authenticated global administrator retains full configuration access
+- Other callers cannot add, retrieve, inspect, list, move, or delete configuration
+- Only locally-defined configuration is available to those callers
 
 This behaviour is enforced **by the Apprise-API server**, not by `AppriseConfig` itself.
 
@@ -256,6 +256,8 @@ Configuration locking exists to prevent:
 
 Configuration locking does **not** affect:
 
+- Stateful notifications sent through an existing Config ID, including optional tag filtering
+- Stateless notifications that provide their own notification URLs
 - Local configuration files
 - In-memory configuration
 - Custom configuration sources hosted outside of Apprise-API

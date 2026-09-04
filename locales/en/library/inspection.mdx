@@ -209,18 +209,34 @@ Apprise injects a `schema` token automatically, and it is always required. Its v
 
 After normalization, you can typically rely on these fields being present:
 
-| Key        | Description                                                           |
-| ---------- | --------------------------------------------------------------------- |
-| `name`     | A human friendly label (defaults to the token key if missing).        |
-| `map_to`   | The plugin argument this token maps to (defaults to the token key).   |
-| `type`     | Token type (defaults to `string`). Supports `list:*` and `choice:*`.  |
-| `required` | Defaults to `False` unless explicitly set.                            |
-| `private`  | Defaults to `False` unless explicitly set.                            |
-| `default`  | May be present (including auto-filled when only one choice exists).   |
-| `values`   | For `choice:*` tokens and some other constrained inputs.              |
-| `delim`    | For `list:*` tokens (defaults vary by context).                       |
-| `regex`    | Optional validation regex, normalized into a `(pattern, flags)` pair. |
-| `group`    | For list-alias tokens that map to multiple underlying fields.         |
+| Key        | Description                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| `name`     | A human friendly label (defaults to the token key if missing).          |
+| `map_to`   | The plugin argument this token maps to (defaults to the token key).     |
+| `type`     | Value type. Defaults to `string`; all supported forms are listed below. |
+| `required` | Defaults to `False` unless explicitly set.                              |
+| `private`  | Defaults to `False` unless explicitly set.                              |
+| `default`  | May be present (including auto-filled when only one choice exists).     |
+| `values`   | For `choice:*` tokens and some other constrained inputs.                |
+| `delim`    | For `list:*` tokens (defaults vary by context).                         |
+| `regex`    | Optional validation regex, normalized into a `(pattern, flags)` pair.   |
+| `group`    | For list-alias tokens that map to multiple underlying fields.           |
+
+##### Type Values
+
+The `type` field tells clients how to collect and encode a value:
+
+| Type            | Meaning                                                                                            |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `string`        | One text value.                                                                                    |
+| `email`         | One email address. Preserve its `@` when building the URL.                                         |
+| `bool`          | One true/false value; must include a `default`.                                                    |
+| `int`           | One integer, optionally bounded by `min` and `max`.                                                |
+| `float`         | One decimal number, optionally bounded by `min` and `max`.                                         |
+| `choice:<type>` | One entry from `values`. The item type may be `string`, `int`, `float`, or `email`.                |
+| `list:<type>`   | Multiple items separated using `delim`. Items may be `string`, `bool`, `int`, `float`, or `email`. |
+
+Use `bool` rather than `choice:bool`.
 
 ##### Delimiter Behavior
 
@@ -234,6 +250,14 @@ This matters when your UI needs to present how to enter multiple recipients, cha
 ##### Aliases and Grouping
 
 If multiple token names map to the same underlying argument via `map_to`, Apprise can expose a `group` field for list types, so tooling can show that one list token acts as an alias for multiple related inputs.
+
+##### The `format` Argument
+
+Every service exposes an `args.format` entry (`text`, `html`, `markdown`). `values` is always all three — `?format=` is accepted for any of them on every service — and `default` is the service's native format.
+
+Since some services natively render more than one format, `args.format` also carries a `supported` list: the subset this specific service actually renders as, in priority order (`supported[0]` matches `default`). For most services `supported` is a single entry equal to `default`. Requesting a `?format=` value that isn't in `supported` still works — the service logs a warning and falls back to its default rather than rejecting the URL.
+
+Use `supported` when you want to show every format option but de-emphasize (not remove) the ones a service doesn't specifically support — `values` stays the full, always-safe set to fall back on if you don't need that distinction.
 
 ### Dependencies and install hints (`requirements`)
 
@@ -257,7 +281,9 @@ A practical approach that tends to work well:
 4. Offer optional query configuration based on `args` (and `kwargs` only if present).
 5. Respect `private=True` by masking input fields and never echoing the value back.
 6. Respect `type` to render correct widgets:
+   - `string`: text input
    - `bool`: checkbox
+   - `email`: email input; preserve `@` when building the URL
    - `choice:*`: dropdown using `values`
    - `int`/`float`: numeric input with min/max when present
    - `list:*`: multi-entry input and show the delimiter guidance from `delim`

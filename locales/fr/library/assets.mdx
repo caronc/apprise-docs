@@ -37,19 +37,22 @@ Modifier un asset après l'avoir lié à `Apprise` peut produire des résultats 
 
 ## Initialisation de l'objet
 
-`AppriseAsset.__init__()` accepte un petit nombre d'arguments explicites, ainsi que `**kwargs`.
+`AppriseAsset.__init__()` fournit des arguments nommés pour le stockage, les
+délais d'attente, les limites de messages et d'autres réglages partagés.
+Utilisez toujours le nom documenté du constructeur, comme `timezone=`,
+`service_timeout=` ou `payload_max_size=`. Ces arguments valident les valeurs
+avant de les appliquer.
 
-- Les arguments explicites (`plugin_paths`, `storage_*`, `timezone`) sont validés et normalisés.
-- `**kwargs` peut surcharger n'importe quel attribut d'asset _existant_ et lèvera une erreur si une clé invalide est fournie.
-
-Ce comportement est intentionnel. Il empêche qu'un fichier de configuration définisse silencieusement des champs inconnus et maintient une surface de configuration stricte.
+Les arguments du constructeur Python et les clés YAML `asset:` sont des
+interfaces distinctes. Certains réglages sont accessibles aux applications
+par `AppriseAsset(...)`, mais volontairement indisponibles dans la
+configuration YAML.
 
 ---
 
 ## Valeurs par défaut et référence des champs
 
 Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentation, ainsi que l'endroit où chaque champ est utilisé.
-Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurables via un fichier de configuration.
 
 ### Identité et présentation
 
@@ -76,20 +79,23 @@ Les champs préfixés par `_` ou `__` ne sont volontairement **pas** configurabl
 
 ### Interprétation du contenu
 
-| Champ               | Type           |  Défaut | Utilisé par            | Notes                                                                                                                                      |
-| ------------------- | -------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `body_format`       | `NotifyFormat` |  `None` | `None`                 | Pipeline de formatage. Si `None`, aucun pré-formatage n'est appliqué par défaut.                                                           |
-| `interpret_emojis`  | `bool`         |  `None` | `None`                 | Pré-traitement des messages. Si `None`, cela s'en remet à la configuration par service (par exemple `emojis=yes` dans l'URL).              |
-| `interpret_escapes` | `bool`         | `False` | Pré-traitement message | Active `\n`, `\t`, etc. avant l'envoi.                                                                                                     |
-| `encoding`          | `str`          | `utf-8` | Encodage               | Utilisé lors de l'encodage des chaînes internes. Joue aussi un rôle dans la manière dont certains services envoient leur contenu en amont. |
+| Champ               | Type           |  Défaut | Utilisé par            | Notes                                                                                                                                    |
+| ------------------- | -------------- | ------: | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `body_format`       | `NotifyFormat` |  `None` | Pré-traitement message | Sélectionne le format d'entrée par défaut. Si `None`, aucun pré-formatage n'est appliqué.                                                |
+| `interpret_emojis`  | `bool`         |  `None` | Pré-traitement message | Contrôle la conversion des emojis. Si `None`, le réglage de chaque service s'applique (par exemple `emojis=yes` dans l'URL).             |
+| `interpret_escapes` | `bool`         | `False` | Pré-traitement message | Active `\n`, `\t`, etc. avant l'envoi.                                                                                                   |
+| `encoding`          | `str`          | `utf-8` | Encodage               | Utilisé lors du traitement des chaînes et par certains services pendant l'envoi. Conservez la valeur par défaut sauf besoin particulier. |
 
 ### Concurrence et envoi
 
-| Champ                   | Type    | Défaut | Utilisé par              | Notes                                                                                                |
-| ----------------------- | ------- | -----: | ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `async_mode`            | `bool`  | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                           |
-| `default_service_retry` | `int`   |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.   |
-| `default_service_wait`  | `float` |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`. |
+| Champ                    | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
+| ------------------------ | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `async_mode`             | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                 |
+| `default_service_retry`  | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                         |
+| `default_service_wait`   | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                       |
+| `service_timeout`        | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. `0` désactive la limite. Voir [Résultats de notification](/library/results/). |
+| `result_log_memory_size` | `int`           |    `0` | Journaux du résultat     | Octets conservés en mémoire avant de transférer les journaux vers un fichier temporaire. Utilisé seulement si `result_log_disk_size` est supérieur à `0`.                                                                  |
+| `result_log_disk_size`   | `int`           |    `0` | Journaux du résultat     | Espace disque temporaire maximal pour le résultat d'une notification. `0` conserve tous les journaux en mémoire.                                                                                                           |
 
 ### Découverte de plugins
 
@@ -139,13 +145,14 @@ Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement.
 
 ### Limites de sécurité
 
-| Champ            | Type     |          Défaut | Utilisé par                | Notes                                                                                                                                                                                                                                       |
-| ---------------- | -------- | --------------: | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `http_redirects` | `bool`   |          `True` | Tous les plugins HTTP      | Quand `True` (par défaut), les plugins suivent les redirections 3xx, conformément au comportement de la bibliothèque requests. Définir à `False` pour désactiver le suivi des redirections globalement sans toucher aux URLs individuelles. |
-| `secure_logging` | `bool`   |          `True` | Pipeline de journalisation | Ajoute un coût pour masquer les secrets dans les logs ; recommandé de le laisser activé.                                                                                                                                                    |
-| `_recursion`     | `int`    |             `0` | Garde-fou de récursion API | Empêche les boucles lorsqu'une instance Apprise API en appelle une autre.                                                                                                                                                                   |
-| `_uid`           | `str`    | UUID4 aléatoire | Corrélation / identité     | Identifiant interne destiné à la corrélation interne.                                                                                                                                                                                       |
-| `_tzinfo`        | `tzinfo` |  fuseau système | Comportement temporel      | Objet fuseau horaire résolu utilisé par les plugins ayant besoin d'horodatages localisés.                                                                                                                                                   |
+| Champ                      | Type             |         Défaut | Utilisé par                      | Notes                                                                                                                                                                                                                                       |
+| -------------------------- | ---------------- | -------------: | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_redirects`           | `bool`           |         `True` | Tous les plugins HTTP            | Quand `True` (par défaut), les plugins suivent les redirections 3xx, conformément au comportement de la bibliothèque requests. Définir à `False` pour désactiver le suivi des redirections globalement sans toucher aux URLs individuelles. |
+| `secure_logging`           | `bool`           |         `True` | Pipeline de journalisation       | Ajoute un coût pour masquer les secrets dans les logs ; recommandé de le laisser activé.                                                                                                                                                    |
+| `payload_max_size`         | `int`            |            `0` | Formatage/découpage des messages | Limite facultative sur la taille combinée du titre et du corps avant formatage. `0` la désactive. S'applique à tous les modes `overflow=`.                                                                                                  |
+| `payload_buffer_threshold` | `int`            |           `10` | Formatage/découpage des messages | Un titre ou un corps de cette longueur ou moins peut rester entier ; voir [Plafond de taille des messages](#plafond-de-taille-des-messages).                                                                                                |
+| `payload_min_buffer`       | `int`            |           `25` | Formatage/découpage des messages | Caractères réservés à l'autre côté avant de conserver le côté court en entier ; voir [Plafond de taille des messages](#plafond-de-taille-des-messages).                                                                                     |
+| `timezone`                 | `str` / `tzinfo` | fuseau système | Comportement temporel            | Définit le fuseau horaire utilisé par les plugins qui génèrent des horodatages. Accepte un nom IANA comme `"America/Toronto"` ou un objet `tzinfo`. YAML accepte `timezone` ou son alias `tz`.                                              |
 
 ## Schémas d'utilisation courants
 
@@ -177,6 +184,52 @@ from apprise import AppriseAsset
 # Forcer l'envoi séquentiel (pas de concurrence)
 asset = AppriseAsset(async_mode=False)
 ```
+
+</TabItem>
+
+<TabItem value="timeout" label="Délai par Service">
+
+Donne à chaque service de la session le même budget de temps, au lieu des 60
+secondes par défaut. Voir [Résultats de notification](/library/results/) pour
+savoir comment un service qui dépasse son délai vous est signalé en retour.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Donne 10 secondes à chaque service (toutes tentatives comprises)
+# avant qu'Apprise n'abandonne et ne signale un TIMEOUT
+asset = AppriseAsset(service_timeout=10)
+
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+# Cet appel a également son propre plafond de 30 secondes, en plus du
+# budget de 10 secondes par service de l'asset -- le délai le plus
+# court l'emporte
+apobj.notify(body="Alerte urgente", timeout=30)
+```
+
+</TabItem>
+
+<TabItem value="result-logs" label="Stockage des journaux du résultat">
+
+Conservez une petite partie des journaux en mémoire et placez les entrées
+suivantes dans un fichier temporaire supprimé automatiquement :
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(
+    result_log_memory_size=2 * 1024 * 1024,
+    result_log_disk_size=256 * 1024 * 1024,
+)
+apobj = Apprise(asset=asset)
+```
+
+Ces limites sont partagées par tous les services et toutes les tentatives d'une
+notification. Si l'espace disque est épuisé ou indisponible, l'envoi continue
+et le résultat contient un avertissement indiquant que les journaux suivants
+n'ont pas pu être conservés.
 
 </TabItem>
 
@@ -219,7 +272,8 @@ asset = AppriseAsset(
 
 <TabItem value="timezone" label="Contrôle du fuseau horaire" >
 
-Les plugins qui génèrent des horodatages (par exemple les en-têtes `Date` des emails) utilisent le `tzinfo` résolu.
+Les plugins qui génèrent des horodatages (par exemple les en-têtes `Date` des
+emails) utilisent le fuseau horaire configuré.
 
 ```python
 from apprise import AppriseAsset
@@ -284,20 +338,77 @@ asset = AppriseAsset(secure_logging=True)
 
 La désactiver est fortement déconseillé en dehors d'environnements isolés.
 
-### Protection contre la récursion
+### Plafond de taille des messages
 
-L'asset suit en interne la profondeur de récursion afin d'éviter les boucles de notification, en particulier lorsque plusieurs instances Apprise interagissent entre elles.
+`payload_max_size` définit la limite du message, c'est-à-dire le budget total
+de caractères (`N`) pour le titre et le corps avant le formatage ou le
+découpage. La valeur `0` désactive cette limite. Si le titre et le corps
+tiennent déjà dans `N`, Apprise les laisse inchangés.
+
+```python
+asset = AppriseAsset(payload_max_size=100000)
+```
+
+Trois réglages fonctionnent ensemble lorsque le contenu dépasse `N` :
+
+| Réglage                    | Défaut | Rôle                                                                            |
+| -------------------------- | ------ | ------------------------------------------------------------------------------- |
+| `payload_max_size`         | `0`    | Définit `N`, le budget total. `0` désactive la limite.                          |
+| `payload_buffer_threshold` | `10`   | Un titre ou un corps aussi court peut être conservé en entier.                  |
+| `payload_min_buffer`       | `25`   | Espace que l'autre côté doit conserver avant de garder le côté court en entier. |
+
+Avec les valeurs par défaut, un message trop volumineux est résolu dans cet
+ordre :
+
+1. **Un côté est vide :** l'autre reçoit tout le budget.
+2. **Un côté est court :** un titre de 10 caractères ou moins reste entier
+   si le corps peut conserver 25 caractères, ou toute sa longueur s'il est
+   plus court. La même règle vérifie ensuite si le corps est court. Si les
+   deux sont admissibles, le titre est vérifié en premier.
+3. **Sinon :** le titre et le corps se partagent `N` selon leurs longueurs
+   d'origine. Lorsque `N` permet de représenter les deux, chacun conserve au
+   moins un caractère.
+
+Par exemple, un titre de 20 caractères et un corps de 18 caractères avec
+`N=20` se répartissent environ 10/10. Une limite plus petite peut encore
+produire un fragment court, mais elle ne favorise pas un côté lorsque les
+deux peuvent être représentés.
+
+Les utilisateurs de la bibliothèque peuvent modifier les deux réglages lors
+de la création de l'asset :
+
+```python
+asset = AppriseAsset(
+    payload_max_size=100000,
+    payload_buffer_threshold=10,
+    payload_min_buffer=25,
+)
+```
+
+Avec `payload_min_buffer=0`, aucune place n'est réservée : un côté court
+admissible peut donc utiliser toute la limite.
+
+Le formatage et l'échappement peuvent ensuite ajouter quelques caractères.
+La limite s'applique à tous les modes `overflow=`, y compris `upstream`.
 
 ## Limites des fichiers de configuration
 
-Les champs suivants **ne peuvent pas** être définis via des fichiers de configuration :
+YAML prend volontairement en charge moins de réglages d'asset que le
+constructeur Python. Les contrôles numériques comme `service_timeout`,
+`payload_max_size`, `payload_buffer_threshold` et `payload_min_buffer`
+doivent être fournis par leurs arguments nommés dans `AppriseAsset(...)`.
+Les chemins de plugins et les réglages de stockage sont également contrôlés
+par l'application afin qu'un fichier de configuration ne puisse ni charger
+du code ni rediriger le stockage persistant.
 
-- `plugin_paths`
-- `storage_*`
-- les indicateurs internes préfixés par `_`
+`timezone` est pris en charge dans YAML et peut aussi utiliser l'alias `tz` :
 
-Ils doivent être fournis par code afin d'empêcher l'exécution de code non fiable.
+```yaml
+asset:
+  timezone: America/Toronto # ou : tz: America/Toronto
+```
 
 ## Voir aussi
 
-- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/délai par service et les remplacements par appel dans les fichiers de configuration.
+- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/attente par service, les délais maximum par service et les remplacements par appel dans les fichiers de configuration.
+- [Résultats de notification](./results/) -- comment un service en échec ou dont le délai a expiré vous est signalé depuis `notify()`.

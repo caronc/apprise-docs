@@ -37,19 +37,20 @@ Mutating an asset after it has been bound to `Apprise` can produce inconsistent 
 
 ## Object Initialization
 
-`AppriseAsset.__init__()` accepts a small number of explicit arguments, plus `**kwargs`.
+`AppriseAsset.__init__()` provides named arguments for storage, timeouts,
+payload limits, and other shared settings. Always use the documented
+constructor name, such as `timezone=`, `service_timeout=`, or
+`payload_max_size=`. These arguments validate values before applying them.
 
-- The explicit arguments (`plugin_paths`, `storage_*`, `timezone`) are validated and normalised.
-- `**kwargs` can override any _existing_ asset attribute, and will raise if an invalid key is provided.
-
-This is intentional. It prevents configuration files from quietly setting unknown fields and it keeps the surface area strict.
+Python constructor arguments and YAML `asset:` keys are separate interfaces.
+Some settings are available to applications through `AppriseAsset(...)` but
+are intentionally unavailable to YAML configuration.
 
 ---
 
 ## Defaults and Field Reference
 
 This table documents the **actual defaults** from the implementation, plus where each field is used.
-Fields prefixed with `_` or `__` are intentionally **not** configuration-file addressable.
 
 ### Identity and Presentation
 
@@ -76,20 +77,23 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 ### Content Interpretation
 
-| Field               | Type           | Default | Used by                | Notes                                                                                                                                                       |
-| ------------------- | -------------- | ------: | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `body_format`       | `NotifyFormat` |  `None` | `None`                 | Formatting pipeline If `None`, no pre-formatting is applied by default.                                                                                     |
-| `interpret_emojis`  | `bool`         |  `None` | `None`                 | Message pre-processing. If `None`, it defers to per-service configuration (for example, `emojis=yes` at the URL level).                                     |
-| `interpret_escapes` | `bool`         | `False` | Message pre-processing | Enables `\n`, `\t`, etc. prior to sending.                                                                                                                  |
-| `encoding`          | `str`          | `utf-8` | Encoding               | Used when encoding internal strings for processing. Plays a roll in how some services output their content upstream. It is advised to leave this at `utf-8` |
+| Field               | Type           | Default | Used by                | Notes                                                                                                                                             |
+| ------------------- | -------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body_format`       | `NotifyFormat` |  `None` | Message pre-processing | Selects the default input format. If `None`, no pre-formatting is applied.                                                                        |
+| `interpret_emojis`  | `bool`         |  `None` | Message pre-processing | Controls emoji conversion. If `None`, it defers to each service (for example, `emojis=yes` at the URL level).                                     |
+| `interpret_escapes` | `bool`         | `False` | Message pre-processing | Enables `\n`, `\t`, etc. prior to sending.                                                                                                        |
+| `encoding`          | `str`          | `utf-8` | Encoding               | Used when encoding strings for processing and by some services when sending content. Keep the default unless a service requires another encoding. |
 
 ### Concurrency and Delivery
 
-| Field                   | Type    | Default | Used by                | Notes                                                                                              |
-| ----------------------- | ------- | ------: | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `async_mode`            | `bool`  |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                        |
-| `default_service_retry` | `int`   |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`. |
-| `default_service_wait`  | `float` |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.      |
+| Field                    | Type            | Default | Used by                | Notes                                                                                                                                                                                                  |
+| ------------------------ | --------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `async_mode`             | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                            |
+| `default_service_retry`  | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                     |
+| `default_service_wait`   | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                          |
+| `service_timeout`        | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. `0` disables the limit. See [Notification Results](/library/results/). |
+| `result_log_memory_size` | `int`           |     `0` | Result logs            | Bytes kept in memory before result logs spill to temporary disk storage. Used only when `result_log_disk_size` is greater than `0`.                                                                    |
+| `result_log_disk_size`   | `int`           |     `0` | Result logs            | Maximum temporary disk space for one notification result. `0` keeps all result logs in memory.                                                                                                         |
 
 ### Plugin Discovery
 
@@ -101,7 +105,7 @@ Fields prefixed with `_` or `__` are intentionally **not** configuration-file ad
 
 | Field           | Type                  | Default | Used by                   | Notes                                                                                           |
 | --------------- | --------------------- | ------: | ------------------------- | ----------------------------------------------------------------------------------------------- |
-| `storage_path`  | `str                  |   None` | `None`                    | PersistentStore root. If unset, Apprise operates memory-only for storage-backed features.       |
+| `storage_path`  | `str`                 |  `None` | PersistentStore           | PersistentStore root. If unset, Apprise operates memory-only for storage-backed features.       |
 | `storage_mode`  | `PersistentStoreMode` |  `auto` | PersistentStore behaviour | `auto`, `flush`, `memory`.                                                                      |
 | `storage_idlen` | `int`                 |     `8` | Namespace generation      | Controls how long generated namespace directories are.                                          |
 | `storage_salt`  | `bytes`               |   `b""` | Namespace generation      | Provides optional salting for namespace generation, string values are encoded using `encoding`. |
@@ -139,13 +143,14 @@ With `pgp_autogen = False`, no key pair is created automatically. Apprise falls 
 
 ### Safety Boundaries
 
-| Field            | Type     |      Default | Used by                     | Notes                                                                                                                                                                                                       |
-| ---------------- | -------- | -----------: | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `http_redirects` | `bool`   |       `True` | All HTTP plugins            | When `True` (the default), plugins follow 3xx redirects, matching the behaviour of the underlying requests library. Set to `False` to disable redirect following globally without touching individual URLs. |
-| `secure_logging` | `bool`   |       `True` | Logging pipeline            | Adds overhead to redact secrets from logs, recommended to keep enabled.                                                                                                                                     |
-| `_recursion`     | `int`    |          `0` | Apprise API recursion guard | Prevents loops when one Apprise API instance calls another.                                                                                                                                                 |
-| `_uid`           | `str`    | random UUID4 | Correlation / identity      | Internal identifier, intended for internal correlation.                                                                                                                                                     |
-| `_tzinfo`        | `tzinfo` |    system tz | Time-based behaviour        | The resolved timezone object used by plugins that need localised timestamps.                                                                                                                                |
+| Field                      | Type             |   Default | Used by                      | Notes                                                                                                                                                                                                       |
+| -------------------------- | ---------------- | --------: | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_redirects`           | `bool`           |    `True` | All HTTP plugins             | When `True` (the default), plugins follow 3xx redirects, matching the behaviour of the underlying requests library. Set to `False` to disable redirect following globally without touching individual URLs. |
+| `secure_logging`           | `bool`           |    `True` | Logging pipeline             | Adds overhead to redact secrets from logs, recommended to keep enabled.                                                                                                                                     |
+| `payload_max_size`         | `int`            |       `0` | Message formatting/splitting | Optional input ceiling for the combined title and body. `0` disables it. Applies to every `overflow=` mode.                                                                                                 |
+| `payload_buffer_threshold` | `int`            |      `10` | Message formatting/splitting | A title or body at or below this length may remain whole; see [Payload Size Cap](#payload-size-cap).                                                                                                        |
+| `payload_min_buffer`       | `int`            |      `25` | Message formatting/splitting | Characters reserved for the other side before keeping a short side whole; see [Payload Size Cap](#payload-size-cap).                                                                                        |
+| `timezone`                 | `str` / `tzinfo` | system tz | Time-based behaviour         | Sets the timezone used by plugins that generate timestamps. Accepts an IANA name such as `"America/Toronto"` or a `tzinfo` object. YAML accepts `timezone` or its `tz` alias.                               |
 
 ## Common Usage Patterns
 
@@ -177,6 +182,50 @@ from apprise import AppriseAsset
 # Force sequential sending (no concurrency)
 asset = AppriseAsset(async_mode=False)
 ```
+
+</TabItem>
+
+<TabItem value="timeout" label="Service Timeout">
+
+Give every service in the session the same time budget, instead of the default
+60 seconds. See [Notification Results](/library/results/) for how a service
+that runs out of time is reported back to you.
+
+```python
+from apprise import Apprise, AppriseAsset
+
+# Give each service 10 seconds (including all of its own retries)
+# before Apprise gives up on it and reports a TIMEOUT
+asset = AppriseAsset(service_timeout=10)
+
+apobj = Apprise(asset=asset)
+apobj.add("slack://tokenA/tokenB/tokenC")
+
+# This one call also gets its own 30-second ceiling, on top of the
+# asset's own 10-second-per-service budget -- whichever is sooner wins
+apobj.notify(body="Time-sensitive alert", timeout=30)
+```
+
+</TabItem>
+
+<TabItem value="result-logs" label="Result Log Storage">
+
+Keep a small result-log buffer in memory and place later entries in an
+automatically removed temporary file:
+
+```python
+from apprise import Apprise, AppriseAsset
+
+asset = AppriseAsset(
+    result_log_memory_size=2 * 1024 * 1024,
+    result_log_disk_size=256 * 1024 * 1024,
+)
+apobj = Apprise(asset=asset)
+```
+
+The limits are shared by all services and retries in one notification. If the
+disk allowance is exhausted or unavailable, delivery continues and the result
+contains a warning that later log entries could not be retained.
 
 </TabItem>
 
@@ -219,7 +268,8 @@ asset = AppriseAsset(
 
 <TabItem value="timezone" label="Timezone Control" >
 
-Plugins that generate timestamps (for example email Date headers) use the resolved `tzinfo`.
+Plugins that generate timestamps (for example email Date headers) use the
+configured timezone.
 
 ```python
 from apprise import AppriseAsset
@@ -283,21 +333,73 @@ asset = AppriseAsset(secure_logging=True)
 
 Disabling this is strongly discouraged outside isolated environments.
 
-### Recursion Protection
+### Payload Size Cap
 
-The asset internally tracks recursion depth to prevent notification loops,
-particularly when Apprise instances interact with one another.
+`payload_max_size` is the payload limit, or total character budget (`N`), for
+the title and body before formatting or splitting begins. A value of `0`
+disables the limit. If the title and body already fit within `N`, Apprise
+leaves both unchanged.
+
+```python
+asset = AppriseAsset(payload_max_size=100000)
+```
+
+Three settings work together when the content is larger than `N`:
+
+| Setting                    | Default | Purpose                                                                   |
+| -------------------------- | ------- | ------------------------------------------------------------------------- |
+| `payload_max_size`         | `0`     | Sets `N`, the total budget. `0` disables the limit.                       |
+| `payload_buffer_threshold` | `10`    | A title or body of this length or shorter may be kept whole.              |
+| `payload_min_buffer`       | `25`    | Space the other side must retain before the short side can be kept whole. |
+
+With the default values, an oversized payload is resolved in this order:
+
+1. **One side is empty:** The other side receives the full budget.
+2. **One side is short:** A title of 10 characters or fewer stays whole if
+   the body can keep 25 characters, or its full length when shorter. The
+   same rule then checks for a short body. If both qualify, the title is
+   checked first.
+3. **Otherwise:** The title and body share `N` in proportion to their
+   original lengths. When `N` has room for both, each keeps at least one
+   character.
+
+For example, a 20-character title and an 18-character body with `N=20`
+split approximately 10/10. A smaller cap may still leave a short fragment,
+but it does not favor one side when both can be represented.
+
+Library users can change both settings when constructing the asset:
+
+```python
+asset = AppriseAsset(
+    payload_max_size=100000,
+    payload_buffer_threshold=10,
+    payload_min_buffer=25,
+)
+```
+
+Setting `payload_min_buffer=0` removes the reservation, so a qualifying
+short side may use the entire cap.
+
+Formatting and escaping can add a few characters afterward. The limit
+applies to every `overflow=` mode, including `upstream`.
 
 ## Configuration File Boundaries
 
-The following fields **cannot** be set via configuration files:
+YAML deliberately supports a smaller set of asset settings than the Python
+constructor. Numeric controls such as `service_timeout`, `payload_max_size`,
+`payload_buffer_threshold`, and `payload_min_buffer` must be supplied
+through their named `AppriseAsset(...)` arguments. Plugin paths and storage
+settings are also application-controlled so configuration files cannot load
+code or redirect persistent storage.
 
-- `plugin_paths`
-- `storage_*`
-- Internal flags prefixed with `_`
+`timezone` is supported in YAML and may also use the `tz` alias:
 
-These must be provided programmatically to prevent untrusted code execution.
+```yaml
+asset:
+  timezone: America/Toronto # or: tz: America/Toronto
+```
 
 ## See Also
 
-- [Tag Routing & Retry](./tag-routing/) -- how to configure priority tags, per-service retry/wait, and per-call overrides in configuration files.
+- [Tag Routing & Retry](./tag-routing/) -- how to configure priority tags, per-service retry/wait, per-service timeouts, and per-call overrides in configuration files.
+- [Notification Results](./results/) -- how a timed-out or failed service is reported back to you from `notify()`.

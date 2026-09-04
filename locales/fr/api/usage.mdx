@@ -37,9 +37,79 @@ Ce guide couvre la fonctionnalité centrale de l'API Apprise : l'envoi de notifi
 
 ## Formats de Réponse
 
-Par défaut, les endpoints renvoient `text/plain`. Si vous préférez du JSON, envoyez `Accept: application/json`.
+Par défaut, les points de terminaison renvoient `text/plain`. Si vous préférez
+du JSON, envoyez `Accept: application/json`.
 
-Pour les endpoints de notification (`/notify` et `/notify/{KEY}`), vous pouvez aussi demander une vue HTML simple des logs avec `Accept: text/html`. C'est principalement utile pour des tests manuels dans un navigateur.
+Pour les points de terminaison de notification (`/notify` et `/notify/{KEY}`),
+vous pouvez aussi demander une vue HTML simple des journaux avec
+`Accept: text/html`. C'est principalement utile pour des tests manuels dans un
+navigateur.
+
+Ces réponses attendent la fin de l'envoi des notifications, puis transmettent
+les journaux une entrée à la fois. Un résultat volumineux stocké sur disque
+n'est donc pas reconstruit en mémoire et le format de la réponse ne change pas.
+
+### Diffusion en Direct de la Progression
+
+Les points de terminaison de notification peuvent indiquer leur progression à mesure que chaque service est notifié. Utilisez `?stream=yes` ou envoyez `Accept: text/event-stream`.
+
+Les éventuels événements `log` sont suivis d'un événement `result`. Une erreur inattendue produit plutôt un événement `error`.
+
+```bash
+curl -N -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Sauvegarde terminée avec succès.", "title": "État du système"}' \
+  "http://localhost:8000/notify?stream=yes"
+```
+
+```text
+event: log
+data: {"level": "INFO", "asctime": "2025-01-01 12:00:00,000", "message": "Sent to Telegram", "service": "Telegram"}
+
+event: result
+data: {"status": "SUCCESS"}
+```
+
+Le flux commence avec le code HTTP `200`, avant la fin de l'envoi. Consultez le statut du dernier événement `result` (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL` ou `TIMEOUT`) au lieu d'attendre le code HTTP `424`.
+
+Chaque connexion conserve jusqu'à 2 Mo de journaux en attente en mémoire. Si le
+client prend du retard, jusqu'à 256 Mo supplémentaires peuvent être conservés
+dans un stockage temporaire. Les événements restent ordonnés tant qu'aucune
+limite n'est atteinte.
+
+Si la limite est atteinte ou si le stockage temporaire échoue, l'envoi des
+notifications continue. Le flux émet un journal `ERROR` demandant de contacter
+l'administrateur du serveur. Le flux reprend les nouvelles entrées une fois les
+événements stockés envoyés.
+
+Les opérateurs peuvent modifier ces limites avec `APPRISE_STREAM_MEMORY_SIZE`
+et `APPRISE_STREAM_DISK_SIZE`. Les mêmes limites empêchent aussi les journaux
+du résultat final de croître sans limite en mémoire. Consultez
+[Variables d'environnement](/api/reference/environment/#stockage-et-limites) pour connaître les modes utilisant la valeur zéro.
+
+Au maximum, `APPRISE_STREAM_WORKER_COUNT` notifications diffusées s'exécutent
+simultanément dans chaque processus worker Gunicorn. La valeur par défaut est
+`4` ; la valeur effective par défaut pour tout le serveur est donc
+`APPRISE_WORKER_COUNT * 4`.
+
+`APPRISE_STREAM_QUEUE_SIZE` permet à `8` flux supplémentaires de rester
+connectés dans chaque processus worker pendant l'attente d'un emplacement
+actif ou la fin de leur réponse. Lorsque tous les emplacements actifs et la
+file d'attente sont occupés, un nouveau flux reçoit le code HTTP `503` avec
+un en-tête `Retry-After`. Les notifications qui ne diffusent pas leur
+progression ne sont pas concernées.
+
+Un envoi continue d'occuper son emplacement si le client se déconnecte pendant
+son exécution. Un proxy inverse peut aussi appliquer ses propres limites avant
+qu'une requête atteigne l'API Apprise.
+
+Dans le conteneur fourni, `APPRISE_CONNECTION_TIMEOUT` définit la durée pendant
+laquelle le proxy attend une activité du flux. La valeur par défaut est de
+10 minutes.
+
+:::note
+`-N` (`--no-buffer`) indique à `curl` d'afficher chaque événement dès son arrivée plutôt que d'attendre la fermeture de la connexion.
+:::
 
 ## Notifications Sans État
 
@@ -56,6 +126,8 @@ Pour les endpoints de notification (`/notify` et `/notify/{KEY}`), vous pouvez a
 </picture>
 
 Les notifications stateless sont idéales pour un usage de type « sidecar » lorsque vous ne voulez pas gérer de configuration persistante sur le serveur. Vous devez fournir le paramètre `urls` à chaque requête.
+
+Lorsque l'authentification est activée, utilisez les identifiants administrateur, ou envoyez des `urls` explicites avec les identifiants d'un utilisateur de configuration et l'en-tête `X-Apprise-Config-ID` correspondant. L'accès doit être `user` ; `locked`, `public` et `disabled` ne peuvent pas envoyer de notifications stateless. Pour rester compatible avec l'API Apprise v2, l'en-tête sans `urls` conserve l'envoi stateful avec la configuration enregistrée.
 
 ### Requête JSON de Base
 
@@ -134,8 +206,23 @@ curl -X POST \
     "body": "Database connection failed",
     "type": "warning"
   }' \
+  http://localhost:8000/notify
+```
+
+Lorsque l'authentification est activée, conservez la même URL avec la clé et ajoutez Basic Auth :
+
+```bash
+curl -u "user:password" -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Database connection failed", "type": "warning"}' \
   http://localhost:8000/notify/my-alerts
 ```
+
+Une connexion administrateur avec mot de passe uniquement utilise `-u ":password"`.
+
+Un administrateur peut aussi définir un ID de configuration comme `public`. Les appelants publics omettent Basic Auth, mais doivent fournir un tag précis autre que `all`. L'accès public fonctionne uniquement pour les notifications avec état ; les autres points de terminaison restent protégés.
+
+Le mode `disabled` bloque l'accès de l'utilisateur sans supprimer sa configuration ni ses identifiants. Un administrateur peut toujours la gérer et l'utiliser.
 
 ### Tags
 
@@ -206,7 +293,7 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
 ```
 
-#### Éléments de Tableau (Notation entre Crochets)
+#### Éléments de Tableau (Notation Entre Crochets)
 
 Ajoutez `[N]` juste après le nom de clé pour déréférencer l'index `N` dans ce tableau. Les indices multiples et le mélange avec la notation pointée sont pris en charge :
 

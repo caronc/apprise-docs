@@ -1,71 +1,88 @@
 ---
-title: "Pipeline des formats de message"
-description: Fonctionnement conjoint des formats source, des formats de destination des plugins, des remplacements par URL et des adaptateurs de dialecte.
+title: "Conversion du Format des Messages"
+description: Découvrez comment Apprise prépare un message dans un format accepté par le service.
 sidebar:
   order: 5
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Lors de l'écriture d'un plugin, vous déclarez `notify_format` pour indiquer à Apprise le format attendu par votre service en amont. Lorsqu'une notification arrive, Apprise résout le format déclaré par l'appelant (`body_format`), convertit le corps si nécessaire, puis le transmet -- déjà dans `notify_format` -- à votre plugin. Au moment où `send()` s'exécute, le corps est pré-formaté. Votre code n'a pas besoin de le reconvertir.
+Lorsque vous ajoutez un plugin, posez-vous deux questions :
 
-| Valeur          | Signification                           | Définie par                                              |
-| --------------- | --------------------------------------- | -------------------------------------------------------- |
-| `body_format`   | Format du message source                | `notify()`, `AppriseAsset`, CLI ou appelant API          |
-| `notify_format` | Format préparé pour le service en amont | Classe du plugin, éventuellement remplacé par `?format=` |
+1. Quel format l'appelant a-t-il fourni ?
+2. Quel format le service accepte-t-il ?
 
-Ces valeurs sont indépendantes. Une même source HTML peut devenir du texte brut pour un plugin, du Markdown pour un autre et rester en HTML pour un troisième -- le tout dans un seul appel à `notify()`.
+L'appelant décrit le premier avec `body_format`. Votre plugin décrit le second avec `notify_format`. Apprise effectue la conversion avant d'appeler `send()`.
 
-## Comment `body_format` est Résolu
+Dans `send()`, `body_format` correspond au format du corps reçu. Ce n'est plus la valeur d'origine de l'appelant. Par exemple, un même message HTML peut parvenir sous forme de texte brut à un plugin, de Markdown à un autre et rester en HTML pour un troisième.
 
-Le format source n'est pas toujours `None`. Il dépend de l'interface qui déclenche la notification :
+## Trouver le Format d'Entrée
 
-| Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                    |
-| -------------------------- | -------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)          | `text` — la CLI définit toujours un format source ; remplacez-le avec `--input-format` |
-| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset` |
-| [Apprise API](../../api/)  | `none` — sauf si `format` est inclus dans la charge utile de la requête                |
+Le format d'entrée dépend de la façon dont la notification a été envoyée :
 
-Consultez [Formatage](../../getting-started/formatting/) pour la perspective utilisateur sur ces valeurs par défaut et leur impact sur la livraison vers des destinations mixtes.
+| Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)          | `text` — la CLI définit toujours un format d'entrée ; remplacez-le avec `--input-format`                                              |
+| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset`                                                |
+| [Apprise API](../../api/)  | `none` — le formatage est entièrement optionnel ; définissez `format` dans la charge utile de la requête pour changer ce comportement |
+
+Consultez [Formatage](../../getting-started/formatting/) pour le comportement visible par l'utilisateur.
 
 ## Flux de Conversion
 
-Pour chaque plugin sélectionné, Apprise :
+Pour chaque plugin, Apprise :
 
-1. Résout `body_format` depuis l'appel à `notify()`. Lorsque la bibliothèque Python ou l'API sont utilisées sans format, cette valeur est `None`. Lorsque la CLI est utilisée sans `--input-format`, cette valeur est `TEXT`. Si `body_format` n'est pas fourni à `notify()`, il utilise `AppriseAsset.body_format`, dont la valeur par défaut est `None`.
-2. Lit `notify_format` depuis l'instance du plugin (valeur de la classe ou remplacement par `?format=`).
-3. Lorsque `body_format` n'est pas `None`, appelle `convert_between(body_format, notify_format, body)` et remplace le corps par le résultat. Les résultats sont mis en cache par format de destination unique afin que la même conversion ne soit pas répétée pour plusieurs plugins partageant un format.
-4. Appelle `plugin.notify(body=<converted>, body_format=<original_format>)`. Le corps qui parvient au plugin est déjà dans `notify_format`. Le contenu avant conversion n'est pas conservé ni transmis séparément. `body_format` ne transporte que l'**identifiant de format** (par exemple `NotifyFormat.HTML`) -- pas une copie du texte original du corps.
+1. Lit le format d'entrée déclaré par l'appelant.
+2. Choisit un format accepté par le plugin.
+3. Convertit le corps lorsque le format d'entrée diffère de celui du plugin.
+4. Appelle le plugin avec le corps converti et le format choisi.
+
+Si l'appelant n'a déclaré aucun format source, Apprise laisse le corps inchangé. Dans ce cas, `body_passthrough` vaut `True`. Sinon, il vaut `False`.
 
 ```text
 Apprise.notify(body=..., body_format=HTML)
          |
-         |  convert_between(HTML, plugin.notify_format, body)
-         |  (ignoré lorsque body_format vaut None)
+         |  cible = plugin.resolve_format(HTML)
+         |  convert_between(HTML, cible, body)
+         |  (ignoré lorsque le body_format de l'appelant vaut None)
          v
 plugin.notify(
-    body=<déjà converti vers notify_format>,
-    body_format=HTML,    # le tag de format d'origine -- pas le corps original
+    body=<déjà converti vers le format résolu>,
+    body_format=cible,          # format choisi ; jamais None ici
+    body_passthrough=False,     # l'appelant a déclaré HTML ci-dessus
 )
 ```
 
-La conversion du titre suit le même chemin, mais uniquement lorsque le plugin ne possède pas de champ titre natif (`title_maxlen <= 0`). Lorsque `title_maxlen > 0`, le titre est transmis tel quel et le plugin est responsable de tout formatage supplémentaire.
+Lorsqu'un service ne possède pas de champ distinct pour le titre (`title_maxlen <= 0`), Apprise ajoute le titre au corps avant l'envoi. Sinon, le titre est transmis séparément.
 
-## Lorsque le Format Source N'est Pas Déclaré
+### Lire `body_format` et `body_passthrough` dans `send()`
 
-Lorsque `body_format` vaut `None` (bibliothèque Python ou appel API sans format), Apprise ignore entièrement la conversion :
+Acceptez `body_format` et `body_passthrough` dans `send()`. Apprise a déjà calculé ces deux valeurs :
+
+```python
+def send(self, body, title="", notify_type=..., body_format=None,
+         body_passthrough=None, **kwargs):
+    if body_format == NotifyFormat.MARKDOWN:
+        ...
+```
+
+Vous n'avez normalement pas besoin d'appeler `resolve_format()` vous-même. Les appels directs à `plugin.notify()` ou `plugin.send()` constituent l'exception : ils ne passent pas par l'étape de conversion d'Apprise. Si vous appelez un plugin directement, préparez le corps dans le format attendu par ce plugin.
+
+## Lorsqu'Aucun Format d'Entrée N'est Déclaré
+
+Lorsque le `body_format` de l'appelant de la bibliothèque Python vaut `None`, Apprise ignore entièrement la conversion :
 
 ```python
 apobj.notify(body="<b>Bonjour</b>")
 ```
 
-Le plugin reçoit `"<b>Bonjour</b>"` inchangé ainsi que `body_format=None`. Déclarer un `notify_format` sur la classe du plugin ne modifie pas ce comportement -- la conversion automatique n'a lieu que lorsque l'appelant déclare un format source.
+Le plugin reçoit `<b>Bonjour</b>` sans modification et `body_passthrough=True`. Apprise applique tout de même le traitement normal du titre et du dépassement.
 
 La CLI ne produit pas cet état. Elle fournit toujours `body_format=TEXT` sauf si l'appelant utilise `--input-format` pour le remplacer.
 
-## Sélection de la Destination du Plugin
+## Choisir le Format du Plugin
 
-`NotifyBase` utilise le texte brut par défaut. Remplacez `notify_format` lorsque le service en amont accepte nativement une autre représentation :
+`NotifyBase` utilise le texte brut par défaut. Définissez `notify_format` lorsque le service accepte un autre format :
 
 ```python
 from apprise import NotifyFormat
@@ -76,7 +93,7 @@ class NotifyExample(NotifyBase):
     notify_format = NotifyFormat.MARKDOWN
 ```
 
-La valeur effective est toujours accessible via `self.notify_format`.
+La plupart des plugins prennent en charge un seul format. Dans ce cas, `self.notify_format` suffit. Si un service accepte plusieurs formats, utilisez `body_format` dans `send()` pour connaître celui choisi par Apprise.
 
 <Tabs syncKey="destination-format">
 <TabItem value="text" label="TEXT">
@@ -90,26 +107,26 @@ La valeur effective est toujours accessible via `self.notify_format`.
 | `HTML`               | Balises supprimées ; structure de bloc réduite en texte brut |
 | `None`               | Corps inchangé ; aucune conversion effectuée                 |
 
-La conversion Markdown vers texte ne comporte actuellement aucune étape destructive ; la syntaxe Markdown arrive telle quelle. Si le service en amont interprète encore des caractères Markdown sur sa route texte, échappez-les dans `send()`.
+La conversion Markdown vers texte ne modifie pas les caractères Markdown. Si le service les interprète, échappez-les dans `send()`.
 
 </TabItem>
 <TabItem value="markdown" label="MARKDOWN">
 
-Définissez `notify_format = NotifyFormat.MARKDOWN` lorsque le service en amont accepte Markdown.
+Définissez `notify_format = NotifyFormat.MARKDOWN` lorsque le service accepte Markdown.
 
-| Source `body_format` | Corps transmis au plugin                                   |
-| -------------------- | ---------------------------------------------------------- |
-| `TEXT`               | Texte inchangé (le texte brut est déjà du Markdown valide) |
-| `MARKDOWN`           | Markdown inchangé                                          |
-| `HTML`               | Converti en Markdown standard                              |
-| `None`               | Corps inchangé ; aucune conversion effectuée               |
+| Source `body_format` | Corps transmis au plugin                                                                                                                           |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TEXT`               | Les caractères significatifs pour CommonMark (`*`, `_`, `` ` ``, `#`, etc.) sont échappés par une barre oblique inverse pour se lire littéralement |
+| `MARKDOWN`           | Markdown inchangé                                                                                                                                  |
+| `HTML`               | Converti en Markdown standard                                                                                                                      |
+| `None`               | Corps inchangé ; aucune conversion effectuée                                                                                                       |
 
-La conversion HTML produit toujours du **Markdown standard**. Les services utilisant leur propre syntaxe Markdown personnalisée (Telegram MarkdownV2, Slack mrkdwn, WhatsApp, Google Chat) doivent traduire ce Markdown standard vers leur propre format à l'intérieur du plugin -- l'étape de conversion intégrée d'Apprise est intentionnellement générique.
+Le HTML et le texte brut sont convertis en **Markdown standard**. Telegram, Slack, WhatsApp et Google Chat utilisent une syntaxe différente. Leurs plugins doivent donc effectuer une conversion supplémentaire propre au service ; consultez [Adaptation propre au service](#adaptation-propre-au-service-dans-les-plugins).
 
 </TabItem>
 <TabItem value="html" label="HTML">
 
-Définissez `notify_format = NotifyFormat.HTML` lorsque le service en amont accepte HTML.
+Définissez `notify_format = NotifyFormat.HTML` lorsque le service accepte HTML.
 
 | Source `body_format` | Corps transmis au plugin                                        |
 | -------------------- | --------------------------------------------------------------- |
@@ -118,20 +135,65 @@ Définissez `notify_format = NotifyFormat.HTML` lorsque le service en amont acce
 | `HTML`               | HTML inchangé                                                   |
 | `None`               | Corps inchangé ; aucune conversion effectuée                    |
 
-Le plugin est responsable de tout assainissement supplémentaire, du filtrage des balises autorisées et de l'encapsulation de la charge utile exigés par l'API en amont.
+Le plugin doit effectuer les autres modifications exigées par le service, par exemple supprimer les balises non prises en charge ou placer le HTML dans la requête API.
 
 </TabItem>
 </Tabs>
 
+## Plugins Multi-Format
+
+Si un service accepte plusieurs formats, déclarez-les dans l'ordre. Le premier élément est la valeur par défaut. Un tuple est le choix le plus clair pour un paramètre de classe :
+
+```python
+from apprise import NotifyFormat
+from apprise.plugins.base import NotifyBase
+
+
+class NotifyExample(NotifyBase):
+    # Le premier élément est la valeur par défaut -- utilisée si rien
+    # d'autre n'en choisit une autre.
+    notify_format = (NotifyFormat.HTML, NotifyFormat.MARKDOWN)
+```
+
+Lisez `body_format` dans `send()` pour connaître le format choisi par Apprise :
+
+```python
+def send(self, body, title="", notify_type=..., body_format=None,
+         body_passthrough=None, **kwargs):
+    if body_format == NotifyFormat.MARKDOWN:
+        ...
+    else:
+        ...
+```
+
+Vous pouvez aussi définir `send_text()`, `send_html()` ou `send_markdown()` au lieu d'utiliser une condition dans une seule méthode `send()`. Apprise appelle la méthode correspondant au format choisi et se replie sur `send()` lorsqu'aucune méthode ne correspond :
+
+```python
+class NotifyExample(NotifyBase):
+    notify_format = (NotifyFormat.HTML, NotifyFormat.MARKDOWN)
+
+    def send_html(self, body, title="", notify_type=..., index=0, total=1, **kwargs):
+        ...
+
+    def send_markdown(self, body, title="", notify_type=..., index=0, total=1, **kwargs):
+        ...
+
+    # send() peut toujours servir de méthode de repli.
+```
+
+La plupart des plugins n'ont besoin que d'un format et peuvent ignorer cette section. Les plugins de relais, comme Custom JSON/XML/Form et Apprise API, peuvent prendre en charge les trois formats. Un relais ne doit transmettre le champ `format` que si `body_passthrough` vaut `False` ; sinon, il choisirait un format à la place de l'appelant.
+
+Un outil qui explore `Apprise().details()` (un générateur d'URL, par exemple) peut lire les formats déclarés d'un service via `args.format.supported` -- voir [L'argument `format`](../inspection/#largument-format) pour le détail complet du schéma.
+
 ## Remplacement Facultatif avec `?format=`
 
-Sans remplacement, le `notify_format` de la classe du plugin est utilisé :
+Sans remplacement, Apprise utilise `notify_format`, ou son premier élément pour un plugin multi-format :
 
 ```text
 example://host/token
 ```
 
-Un paramètre `format=` dans la requête change la destination pour cette instance uniquement :
+Le paramètre `format=` change le format pour une seule URL de plugin :
 
 ```text
 example://host/token?format=text
@@ -139,7 +201,7 @@ example://host/token?format=markdown
 example://host/token?format=html
 ```
 
-La destination effective est toujours `self.notify_format`, qu'elle provienne de la classe ou d'un remplacement URL. La conversion automatique exige toujours un `body_format` source différent de `None`.
+Pour un plugin à format unique, le remplacement devient le format de cette instance. Pour un plugin multi-format, la valeur demandée doit apparaître dans `notify_format`. Une valeur non prise en charge produit un avertissement, puis Apprise applique ses règles de sélection habituelles.
 
 Lorsque la logique du plugin doit distinguer un remplacement URL de la valeur par défaut de la classe, capturez la présence de `format` avant d'appeler `NotifyBase.__init__` :
 
@@ -150,84 +212,89 @@ def __init__(self, **kwargs):
     super().__init__(**kwargs)
 ```
 
-La plupart des plugins ont seulement besoin de `self.notify_format` et n'ont pas besoin de suivre le remplacement séparément.
+La plupart des plugins n'ont pas besoin de suivre cette information séparément.
 
 ## Ce que Reçoit le Plugin
 
-Au moment où `send()` s'exécute, la conversion et le dimensionnement sont déjà effectués. Ce que reçoit votre plugin :
+Au moment où `send()` s'exécute, Apprise a préparé les valeurs suivantes :
 
-- **`body`** — déjà converti vers `self.notify_format` et dimensionné selon `overflow_mode`. Avec `SPLIT`, chaque appel à `send()` reçoit un bloc d'au plus `body_maxlen` caractères. Avec `TRUNCATE`, le corps est limité à `body_maxlen`. Avec `UPSTREAM` (valeur par défaut), le corps arrive inchangé et peut dépasser la limite déclarée.
+- **`body`** — converti et dimensionné selon `overflow_mode`. Apprise peut ajouter des caractères Markdown de fermeture lorsqu'il découpe du texte mis en forme.
 - **`title`** — tronqué à `title_maxlen` caractères. Lorsque `title_maxlen <= 0`, le titre a été fusionné dans `body` par la classe de base et arrive sous forme de chaîne vide.
-- **`body_format`** — le format de départ du contenu (par exemple `NotifyFormat.HTML`) ; pas le texte original du corps lui-même
+- **`body_format`** — le format de `body`, par exemple `NotifyFormat.HTML` ; il n'est jamais `None` à ce stade.
+- **`body_passthrough`** — `True` lorsqu'aucun format d'entrée n'a été déclaré et que la conversion automatique a été ignorée. Le traitement normal du titre et du dépassement s'applique toujours.
 
-Les plugins lisent `body_format` pour décider si un travail supplémentaire est nécessaire. Si `body_format` est `HTML` et `notify_format` est `MARKDOWN`, le corps a été converti de HTML en Markdown standard par Apprise -- et le plugin peut avoir besoin de traduire ce Markdown vers la syntaxe propre au service. Si `body_format` était déjà `MARKDOWN` lors de l'envoi par l'appelant, le corps est le Markdown de l'appelant et peut généralement être transmis tel quel.
+Utilisez `body_format` pour choisir le bon mode d'envoi. N'utilisez `body_passthrough` que si votre plugin doit distinguer une entrée intacte d'un contenu préparé par Apprise.
 
 ## Adaptation Propre au Service dans les Plugins
 
-Apprise convertit le corps en Markdown standard. Ce que le plugin fait ensuite de ce Markdown est entièrement de sa responsabilité. Plusieurs services réels nécessitent des transformations supplémentaires au-delà de ce que fournit la conversion intégrée d'Apprise :
+Apprise convertit le contenu en Markdown standard. Certains services utilisent une autre syntaxe :
 
 - **Slack** utilise `mrkdwn` plutôt que le Markdown standard
 - **Telegram** utilise MarkdownV2, sa propre syntaxe personnalisée
 - **WhatsApp** (via Evolution) et **Google Chat** ont chacun leur propre format
 - **Email** peut inclure à la fois du HTML et du texte brut dans le même message
 
-Garder l'étape de conversion générique signifie qu'un plugin peut être supprimé et tout le comportement propre au service disparaît avec lui. Les exemples ci-dessous montrent les schémas les plus pratiques.
+Conservez ces règles dans le plugin du service. Le code de conversion partagé ne doit rien connaître de Slack, Telegram ou d'un autre service précis.
 
 <Tabs syncKey="plugin-hook-pattern">
-<TabItem value="adapt-in-send" label="Adapter dans send()">
+<TabItem value="dialect-convert" label="Surcharger dialect_convert()">
 
-Gérez la traduction directement dans `send()`. Le corps est déjà converti au moment où `send()` s'exécute -- vérifiez simplement les deux valeurs de format pour décider si un travail supplémentaire est nécessaire. Si `notify_format` est `MARKDOWN` et `body_format` est `HTML`, Apprise a converti le corps de HTML en Markdown standard avant d'appeler votre plugin, et vous pouvez maintenant le traduire vers la syntaxe propre au service. Slack utilise cette approche :
+Surchargez `dialect_convert()` pour traduire le Markdown standard vers la syntaxe du service avant l'exécution de `send()` :
 
 ```python
-def send(self, body, title="", notify_type=..., body_format=None, **kwargs):
-    if (
-        self.notify_format == NotifyFormat.MARKDOWN
-        and body_format == NotifyFormat.HTML
-    ):
-        # Apprise a converti ce contenu de HTML en Markdown standard.
-        # Traduire maintenant vers le dialecte attendu par ce service.
-        body = self._commonmark_to_service_dialect(body)
-
-    # ... reste de send() ...
+class NotifyExample(NotifyBase):
+    def dialect_convert(self, body, body_format=None, *args, **kwargs):
+        """Adapte une partie préparée à la syntaxe du service."""
+        if body_format != NotifyFormat.MARKDOWN:
+            # Ce service n'a un dialecte propre que pour Markdown ;
+            # tout le reste passe inchangé.
+            return body
+        return self._commonmark_to_example_dialect(body)
 ```
 
-Pour un exemple complet en situation réelle, consultez le code source du plugin Slack.
+Apprise ignore cette méthode lorsque `body_passthrough` vaut `True`. Retournez les formats non gérés sans les modifier. N'enregistrez aucun état et n'envoyez aucune notification ici. Apprise peut appeler cette méthode plusieurs fois pendant la préparation du message.
+
+L'échappement propre au service peut allonger le texte. Pour `SPLIT` et `TRUNCATE`, Apprise vérifie de nouveau la taille après `dialect_convert()`. Le plugin n'a donc pas besoin de découper lui-même le corps.
+
+Les services de discussion sans syntaxe de titre peuvent réutiliser `commonmark_headings_to_bold()`. Cet utilitaire transforme `# Alerte` en `**Alerte**` avant l'adaptation au dialecte et ne modifie pas le code en ligne ou délimité.
+
+Les analyses de destination des liens nommés partagent un budget de travail pour l'ensemble du message. Une fois ce budget épuisé, chaque destination suivante fait l'objet d'une vérification courte et limitée ; les liens incorrects plus longs restent en texte brut afin d'éviter des analyses excessives.
 
 </TabItem>
 <TabItem value="multi-format" label="Envoyer les Deux Formats">
 
-Certains services acceptent plusieurs formats dans la même requête. L'email en est l'exemple le plus clair : le plugin définit `notify_format = NotifyFormat.HTML`, donc le corps arrive en HTML. Comme de nombreux clients email affichent aussi une version en texte brut, le plugin en dérive une à partir du corps qu'il possède déjà :
+Certains services envoient plusieurs représentations dans la même requête. L'email et Brevo peuvent envoyer du HTML avec une version en texte brut. Utilisez `body_format` pour identifier le corps reçu, puis créez l'autre représentation si le service en a besoin :
 
 ```python
 from ..conversion import convert_between
 
 def send(self, body, title="", notify_type=..., body_format=None, **kwargs):
-    # body est déjà dans self.notify_format (HTML).
-    # Construire une version texte brut pour les clients ne pouvant pas
-    # afficher HTML.
-    text_body = convert_between(NotifyFormat.HTML, NotifyFormat.TEXT, body)
-
-    payload = {
-        "html": body,
-        "text": text_body,
-    }
+    # body est déjà dans le format résolu (HTML ou TEXT).
+    if body_format == NotifyFormat.HTML:
+        # Construire une version texte brut pour les clients ne pouvant
+        # pas afficher HTML.
+        text_body = convert_between(NotifyFormat.HTML, NotifyFormat.TEXT, body)
+        payload = {"html": body, "text": text_body}
+    else:
+        html_body = convert_between(NotifyFormat.TEXT, NotifyFormat.HTML, body)
+        payload = {"html": html_body, "text": body}
     # ... envoyer la charge utile ...
 ```
 
-Le même schéma s'applique à tout service acceptant plusieurs représentations. Pushover et Brevo l'utilisent tous les deux.
+Ce choix dépend du service. Apprise sélectionne le format principal ; le plugin décide si sa charge utile nécessite aussi une autre représentation.
 
 </TabItem>
 </Tabs>
 
-## Gestion du Débordement après Adaptation
+## Gestion du Débordement avant l'Adaptation au Service
 
-Définissez `overflow_mode` sur la classe pour déclarer comment la classe de base gère le contenu qui dépasse `body_maxlen` ou `title_maxlen`. Chaque appel à `send()` reçoit du contenu déjà dimensionné en conséquence -- ne redécoupez pas ni ne retronquez dans `send()` :
+Définissez `overflow_mode` pour choisir le comportement appliqué lorsque le contenu dépasse `body_maxlen` ou `title_maxlen`. Apprise s'en charge avant l'exécution de `send()`.
 
 | Mode                | Appels à `send()` | Garantie sur le corps                  |
 | ------------------- | ----------------- | -------------------------------------- |
 | `UPSTREAM` (défaut) | Un seul           | Inchangé ; peut dépasser `body_maxlen` |
-| `TRUNCATE`          | Un seul           | Limité à `body_maxlen`                 |
-| `SPLIT`             | Un par bloc       | Chaque bloc ≤ `body_maxlen`            |
+| `TRUNCATE`          | Un seul           | Au mieux près de `body_maxlen`         |
+| `SPLIT`             | Un par bloc       | Au mieux près de `body_maxlen`         |
 
 ```python
 from apprise.common import OverflowMode
@@ -238,23 +305,36 @@ class NotifyExample(NotifyBase):
     overflow_mode = OverflowMode.SPLIT
 ```
 
-Le paramètre URL `?overflow=` permet aux utilisateurs de remplacer le mode par instance, mais la valeur par défaut de la classe doit correspondre à ce que l'API en amont peut réellement accepter.
+Apprise essaie de préserver la lisibilité du Markdown déclaré lorsqu'une découpe traverse sa mise en forme. L'échappement propre au service peut ensuite ajouter des caractères ; `SPLIT` et `TRUNCATE` vérifient donc de nouveau la taille après `dialect_convert()`. `UPSTREAM` n'impose pas la limite : le service reçoit le corps complet et le gère lui-même.
+
+Le paramètre URL `?overflow=` permet de changer le mode pour une seule URL de plugin. La valeur par défaut de la classe doit correspondre aux capacités du service.
+
+### Connaître Sa Position Parmi Plusieurs Appels à `send()`
+
+Un appel à `notify()` peut produire plusieurs appels à `send()`. Acceptez `index` et `total` si votre plugin doit savoir si un bloc est le premier ou le dernier :
+
+```python
+def send(self, body, title="", notify_type=..., index=0, total=1, **kwargs):
+    is_first = index == 0
+    is_last = index == total - 1
+    # ... reste de send() ...
+```
+
+Un message non découpé utilise `index=0` et `total=1`. La plupart des plugins n'ont besoin d'aucun traitement particulier.
+
+Le placement des pièces jointes n'utilise ni `index` ni `total`. Apprise transmet les pièces jointes à un seul appel à `send()` et choisit le premier par défaut. Pour les placer sur le dernier appel, surchargez `_attachment_send_index()` :
+
+```python
+def _attachment_send_index(self, total: int) -> int:
+    # Place la pièce jointe sur le dernier appel plutôt que le premier.
+    return total - 1
+```
+
+Telegram utilise cette surcharge lorsqu'une pièce jointe doit suivre tous les blocs de texte.
 
 ## Frontières des Plugins
 
-- `apprise/conversion.py` convertit entre texte, HTML et Markdown standard. Il ne doit contenir aucune règle de syntaxe propre à un service.
-- La syntaxe propre au service, les règles d'échappement, les champs de charge utile et les modes API appartiennent exclusivement au fichier plugin.
-- Supprimer un fichier plugin doit supprimer tout le comportement de ce service sans aucune modification requise dans le code de conversion partagé.
-- Les utilitaires génériques sans connaissance propre à un service peuvent résider dans `conversion.py`. Exports actuels : `build_backtick_run_index`, `find_unescaped_run`, `commonmark_escape_link_url`, `commonmark_scan_angle_dest`, `commonmark_emphasis_run`, `commonmark_force_close_spans`, `commonmark_prepend_title`.
-
-## Liste de Contrôle d'Implémentation
-
-Les sections précédentes couvrent l'ensemble du sujet. Cette liste résume les décisions clés pour référence rapide :
-
-1. **Déclarez `notify_format` sur la classe** pour indiquer à Apprise vers quel format convertir avant que votre plugin s'exécute. Omettez-le pour accepter du texte brut (`TEXT`).
-2. **Ne reconvertissez pas le corps** dans `send()`. Il est déjà dans `self.notify_format`. Utilisez `body_format` pour vérifier ce qu'était le contenu à l'origine, pas pour déclencher une nouvelle passe de conversion.
-3. **Vérifiez `body_format` pour décider si une mise en forme propre au service est nécessaire.** Si votre service utilise sa propre syntaxe Markdown (Slack mrkdwn, Telegram MarkdownV2, WhatsApp), appliquez cette traduction uniquement lorsque `body_format` est `HTML` -- c'est-à-dire que le corps était initialement du HTML et qu'Apprise l'a converti en Markdown standard.
-4. **Pour les charges utiles multi-format** (comme l'email avec des parties HTML et texte séparées), appelez `convert_between()` dans `send()` pour dériver les représentations supplémentaires à partir du corps déjà converti.
-5. **Traitez `?format=` comme un remplacement facultatif par instance.** La destination effective est toujours `self.notify_format` quelle que soit son origine. La plupart des plugins n'ont pas besoin de distinguer si la valeur provient de la classe ou d'un paramètre URL.
-6. **Définissez `overflow_mode`, `body_maxlen` et `title_maxlen` sur la classe** pour déclarer les limites et la stratégie de découpage de votre service en amont. Chaque appel à `send()` reçoit du contenu déjà dimensionné selon ces limites -- aucune modification supplémentaire de la charge utile n'est requise dans `send()`.
-7. **Testez la matrice complète** : `body_format=None`, chaque format source pris en charge, les remplacements `?format=` par URL et les messages découpés ou tronqués.
+- `apprise.conversion` gère la conversion générale entre texte, HTML et Markdown.
+- La syntaxe, l'échappement et les charges utiles propres à un service appartiennent au plugin.
+- Surchargez `dialect_convert()` pour un format propre au service. Ne découpez pas le texte converti dans le plugin ; Apprise s'en charge déjà.
+- La suppression d'un plugin doit supprimer tout le comportement de ce service sans modifier le code de conversion partagé.

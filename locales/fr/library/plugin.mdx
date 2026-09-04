@@ -671,48 +671,52 @@ automatiquement dans votre plugin, sauf surcharge explicite.
 
 Votre plugin devrait hériter de `NotifyBase`, ce qui lui donne les valeurs par défaut suivantes :
 
-| Attribut                            | Défaut     | Rôle                                                                                        | Quand le Surcharger                                                           |
-| :---------------------------------- | :--------- | :------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
-| `enabled`                           | `True`     | Si `False`, le plugin n'est pas utilisé.                                                    | À désactiver pour des raisons spécifiques à la plateforme ou aux dépendances. |
-| `category`                          | `"native"` | Classe l'origine du plugin (`native` vs `custom`).                                          | En général, laissez tel quel.                                                 |
-| `requirements.details`              | `None`     | Texte de requirements lisible humainement.                                                  | Si vous devez expliquer des paquets optionnels ou requis.                     |
-| `requirements.packages_required`    | `[]`       | Paquets requis pour le fonctionnement complet.                                              | Si votre plugin nécessite des bibliothèques supplémentaires.                  |
-| `requirements.packages_recommended` | `[]`       | Paquets optionnels qui améliorent le fonctionnement.                                        | Si le plugin peut tourner sans eux, mais en tire bénéfice.                    |
-| `service_url`                       | `None`     | URL du fournisseur ou du produit amont.                                                     | Pour les services publics, définissez-la.                                     |
-| `setup_url`                         | `None`     | Page de configuration Apprise pour votre service.                                           | Définissez-la vers votre page `appriseit.com/services/<service>/`.            |
-| `request_rate_per_sec`              | `5.5`      | Intervalle de limitation de débit par défaut (secondes).                                    | Ajustez-le selon les limites du fournisseur, ou mettez `0` en local.          |
-| `image_size`                        | `None`     | Taille d'image préférée, pour le pré-redimensionnement.                                     | À définir si votre service attend une taille précise.                         |
-| `body_maxlen`                       | `32768`    | Nombre maximal de caractères du corps avant troncature.                                     | À régler selon les contraintes amont.                                         |
-| `title_maxlen`                      | `250`      | Nombre maximal de caractères du titre. Mettez `0` si les titres ne sont pas pris en charge. | Mettez `0` pour les endpoints sans titre, ou ajustez selon le fournisseur.    |
-| `body_max_line_count`               | `0`        | Nombre maximal de lignes conservées. `0` désactive la troncature par lignes.                | Si le service amont est sensible au nombre de lignes.                         |
-| `persistent_storage`                | `True`     | Autorise l'utilisation du stockage persistant.                                              | Si votre plugin ne doit jamais stocker d'identifiants ni d'état.              |
-| `storage_mode`                      | `memory`   | Mode de stockage persistant par défaut.                                                     | Rare, mais ajustable pour des comportements particuliers.                     |
-| `timezone`                          | `None`     | Utilise le fuseau détecté par le serveur quand `None`.                                      | Si votre service doit toujours fonctionner dans un fuseau précis.             |
-| `notify_format`                     | `text`     | Format de message par défaut.                                                               | Si votre service privilégie Markdown ou HTML.                                 |
-| `overflow_mode`                     | `upstream` | Stratégie de dépassement par défaut.                                                        | Si vous voulez qu'Apprise découpe, tronque ou modifie le dépassement.         |
-| `interpret_emojis`                  | `False`    | Interprétation des emojis.                                                                  | Si le service amont bénéficie d'une conversion des emojis.                    |
-| `attachment_support`                | `False`    | Activation des pièces jointes.                                                              | Définissez `True` si vous acceptez les pièces jointes.                        |
-| `default_html_tag_id`               | `"b"`      | Utilisé pour injecter le titre dans le corps pour les services sans titre.                  | Rare, sauf si vous souhaitez un formatage différent.                          |
+| Attribut                            | Défaut     | Rôle                                                                                        | Quand le Surcharger                                                                 |
+| :---------------------------------- | :--------- | :------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------- |
+| `enabled`                           | `True`     | Si `False`, le plugin n'est pas utilisé.                                                    | À désactiver pour des raisons spécifiques à la plateforme ou aux dépendances.       |
+| `category`                          | `"native"` | Classe l'origine du plugin (`native` vs `custom`).                                          | En général, laissez tel quel.                                                       |
+| `requirements.details`              | `None`     | Texte de requirements lisible humainement.                                                  | Si vous devez expliquer des paquets optionnels ou requis.                           |
+| `requirements.packages_required`    | `[]`       | Paquets requis pour le fonctionnement complet.                                              | Si votre plugin nécessite des bibliothèques supplémentaires.                        |
+| `requirements.packages_recommended` | `[]`       | Paquets optionnels qui améliorent le fonctionnement.                                        | Si le plugin peut tourner sans eux, mais en tire bénéfice.                          |
+| `service_url`                       | `None`     | URL du fournisseur ou du produit amont.                                                     | Pour les services publics, définissez-la.                                           |
+| `setup_url`                         | `None`     | Page de configuration Apprise pour votre service.                                           | Définissez-la vers votre page `appriseit.com/services/<service>/`.                  |
+| `request_rate_per_sec`              | `5.5`      | Intervalle de limitation de débit par défaut (secondes).                                    | Ajustez-le selon les limites du fournisseur, ou mettez `0` en local.                |
+| `image_size`                        | `None`     | Taille d'image préférée, pour le pré-redimensionnement.                                     | À définir si votre service attend une taille précise.                               |
+| `body_maxlen`                       | `32768`    | Nombre maximal de caractères du corps avant troncature.                                     | À régler selon les contraintes amont.                                               |
+| `title_maxlen`                      | `250`      | Nombre maximal de caractères du titre. Mettez `0` si les titres ne sont pas pris en charge. | Mettez `0` pour les endpoints sans titre, ou ajustez selon le fournisseur.          |
+| `body_max_line_count`               | `0`        | Nombre maximal de lignes conservées. `0` désactive la troncature par lignes.                | Si le service amont est sensible au nombre de lignes.                               |
+| `persistent_storage`                | `True`     | Autorise l'utilisation du stockage persistant.                                              | Si votre plugin ne doit jamais stocker d'identifiants ni d'état.                    |
+| `storage_mode`                      | `memory`   | Mode de stockage persistant par défaut.                                                     | Rare, mais ajustable pour des comportements particuliers.                           |
+| `timezone`                          | `None`     | Utilise le fuseau détecté par le serveur quand `None`.                                      | Si votre service doit toujours fonctionner dans un fuseau précis.                   |
+| `notify_format`                     | `text`     | Format(s) par défaut ; une valeur ou un tuple/liste ordonné.                                | Si votre service privilégie Markdown ou HTML, ou rend nativement plusieurs formats. |
+| `overflow_mode`                     | `upstream` | Stratégie de dépassement par défaut.                                                        | Si vous voulez qu'Apprise découpe, tronque ou modifie le dépassement.               |
+| `interpret_emojis`                  | `False`    | Interprétation des emojis.                                                                  | Si le service amont bénéficie d'une conversion des emojis.                          |
+| `attachment_support`                | `False`    | Activation des pièces jointes.                                                              | Définissez `True` si vous acceptez les pièces jointes.                              |
+| `default_html_tag_id`               | `"b"`      | Utilisé pour injecter le titre dans le corps pour les services sans titre.                  | Rare, sauf si vous souhaitez un formatage différent.                                |
 
 ## Templates et Métadonnées
 
 ## Types de Templates
 
 Apprise valide les types à l'aide d'un motif strict :
-`((choice|list):)?(string|bool|int|float)`.
+`((choice|list):)?(string|bool|int|float|email)`.
 
-| Type            | Utilisé dans | Signification                      | Directives requises          | Notes                                                                                             |
-| :-------------- | :----------- | :--------------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------ |
-| `string`        | tokens, args | Une seule chaîne                   | aucune                       | Courant pour les noms d'hôte, jetons et noms.                                                     |
-| `int`           | tokens, args | Un seul entier                     | aucune                       | Utilisez `min` et `max` pour borner les ports, comptes, etc.                                      |
-| `float`         | tokens, args | Un seul flottant                   | aucune                       | Utilisez `min` et `max` pour fixer des bornes.                                                    |
-| `bool`          | tokens, args | Un booléen                         | `default` (requis pour args) | Les args booléens doivent fournir une valeur par défaut.                                          |
-| `choice:string` | tokens, args | Une valeur parmi un ensemble fixe  | `values`                     | Les entrées `choice` doivent fournir `values`, et `default` doit en faire partie s'il est défini. |
-| `choice:int`    | tokens, args | Un entier parmi un ensemble fixe   | `values`                     | Utile pour des sélecteurs de mode ou des énumérations.                                            |
-| `choice:float`  | tokens, args | Un flottant parmi un ensemble fixe | `values`                     | Rare, mais pris en charge.                                                                        |
-| `list:string`   | tokens, args | Une liste de chaînes               | `delim`                      | Les entrées de liste doivent fournir des délimiteurs.                                             |
-| `list:int`      | tokens, args | Une liste d'entiers                | `delim`                      | Découpe puis conversion en entier.                                                                |
-| `list:float`    | tokens, args | Une liste de flottants             | `delim`                      | Découpe puis conversion en flottant.                                                              |
+| Type            | Utilisé dans | Signification                      | Directives requises | Notes                                                                                             |
+| :-------------- | :----------- | :--------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------ |
+| `string`        | tokens, args | Une seule chaîne                   | aucune              | Courant pour les noms d'hôte, jetons et noms.                                                     |
+| `email`         | tokens, args | Une seule adresse e-mail           | aucune              | À utiliser lorsque `url()` conserve le caractère `@` de l'adresse.                                |
+| `int`           | tokens, args | Un seul entier                     | aucune              | Utilisez `min` et `max` pour borner les ports, comptes, etc.                                      |
+| `float`         | tokens, args | Un seul flottant                   | aucune              | Utilisez `min` et `max` pour fixer des bornes.                                                    |
+| `bool`          | tokens, args | Un booléen                         | `default`           | Les entrées booléennes doivent fournir une valeur par défaut.                                     |
+| `choice:string` | tokens, args | Une valeur parmi un ensemble fixe  | `values`            | Les entrées `choice` doivent fournir `values`, et `default` doit en faire partie s'il est défini. |
+| `choice:int`    | tokens, args | Un entier parmi un ensemble fixe   | `values`            | Utile pour des sélecteurs de mode ou des énumérations.                                            |
+| `choice:float`  | tokens, args | Un flottant parmi un ensemble fixe | `values`            | Rare, mais pris en charge.                                                                        |
+| `choice:email`  | tokens, args | Un e-mail parmi un ensemble fixe   | `values`            | Conservez le caractère `@` de l'adresse sélectionnée.                                             |
+| `list:string`   | tokens, args | Une liste de chaînes               | `delim`             | Les entrées de liste doivent fournir des délimiteurs.                                             |
+| `list:bool`     | tokens, args | Une liste de booléens              | `delim`             | Utilisez `bool` pour une seule valeur booléenne.                                                  |
+| `list:int`      | tokens, args | Une liste d'entiers                | `delim`             | Découpe puis conversion en entier.                                                                |
+| `list:float`    | tokens, args | Une liste de flottants             | `delim`             | Découpe puis conversion en flottant.                                                              |
+| `list:email`    | tokens, args | Une liste d'adresses e-mail        | `delim`             | Conservez le caractère `@` de chaque adresse.                                                     |
 
 Autres règles importantes :
 
@@ -1009,7 +1013,7 @@ Ce tableau documente les directives les plus courantes prises en charge par
 | Directive  | Utilisée dans        | Signification                                                                                                   |
 | :--------- | :------------------- | :-------------------------------------------------------------------------------------------------------------- |
 | `name`     | tokens, args, kwargs | Libellé lisible humainement, généralement enveloppé dans `gettext_lazy()`.                                      |
-| `type`     | tokens, args         | Type de valeur, comme `string`, `int`, `bool`, `choice:string`, `list:string`.                                  |
+| `type`     | tokens, args         | Type : `string`, `bool`, `int`, `float`, `email`, `choice:<type>` ou `list:<type>`.                             |
 | `required` | tokens, args         | Marque une entrée comme obligatoire pour l'initialisation ou la validation.                                     |
 | `default`  | args                 | Valeur par défaut utilisée quand l'URL ne précise rien. Requise pour les types `bool`.                          |
 | `private`  | tokens, args         | Marque une valeur comme sensible et destinée à être masquée dans les vues de confidentialité.                   |
@@ -1180,10 +1184,10 @@ ne le redéclarez pas sur l'alias.
 
 ### `service_url` vs `setup_url`
 
-| Attribut      | Rôle                                                                                                                                                                       |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `service_url` | Lien vers la page d'accueil du fournisseur ou du produit amont (par exemple `https://discord.com/`). Affiché comme "Site du service" dans le générateur d'URL.             |
-| `setup_url`   | Lien vers le guide d'intégration spécifique à Apprise sur `appriseit.com` (par exemple `https://appriseit.com/services/discord/`). Affiché comme "Guide de configuration". |
+| Attribut      | Rôle                                                                                                                                                                                                                                                                                                                |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `service_url` | Lien vers la page d'accueil du fournisseur ou du produit amont (par exemple `https://discord.com/`). Affiché comme "Site du service" dans le générateur d'URL.                                                                                                                                                      |
+| `setup_url`   | Lien vers le guide d'intégration spécifique à Apprise sur `appriseit.com` (par exemple `https://appriseit.com/services/discord/`). Affiché comme "Guide de configuration". Vous pouvez créer ou mettre à jour cette documentation dans le [dépôt de documentation Apprise](https://github.com/caronc/apprise-docs). |
 
 Les deux devraient toujours être définis. Les plugins génériques ou purement
 locaux (par exemple MQTT, notifications Windows) peuvent omettre `service_url`
@@ -1191,5 +1195,24 @@ s'il n'existe pas d'URL amont pertinente.
 
 ## Format et Dépassement
 
-Notez également que `NotifyBase` fournit des drapeaux de comportement au niveau
-de l'URL, comme `format`, `overflow`, `emojis` et le stockage persistant (`store`).
+`NotifyBase` fournit des options d'URL communes comme `format`, `overflow`,
+`emojis` et le stockage persistant (`store`). Un plugin doit normalement les
+réutiliser au lieu de définir ses propres variantes.
+
+Pendant l'envoi, `body_format` représente le format final que le plugin doit
+transmettre. `body_passthrough=True` signifie que l'appelant n'a déclaré aucun
+format source : Apprise ignore donc la conversion et la réparation du dialecte.
+Cela ne désactive pas les limites, le dépassement, l'échappement, l'encodage du
+transport ni la construction de la charge utile.
+
+Le framework gère les limites ordinaires en caractères ainsi que les modes
+`upstream`, `truncate` et `split`. Un plugin soumis à une limite en octets, à de
+l'échappement, à plusieurs représentations du corps ou au coût du chiffrement
+doit calculer son budget à partir de la charge utile finale et la vérifier après
+conversion.
+
+Ne supposez pas qu'un contenu pass-through quelconque peut être découpé sans
+risque. Un document JSON, du texte chiffré, une signature ou un balisage inconnu
+peut devenir invalide. Respectez le mode de dépassement demandé, mais considérez
+le découpage comme une solution au mieux et évitez les réparations propres à un
+format lorsque `body_passthrough` vaut `True`.

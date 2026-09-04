@@ -35,8 +35,14 @@ The service is safe to run:
 
 Choose one deployment method below to get Apprise API running quickly.
 
+The self-hosted examples publish port `8000` normally so trusted devices on
+your home or internal network can connect without extra proxy configuration.
+They use normal mode. Do not expose them directly to the Internet. Use the
+**Deployment Behind a Proxy** tab for a public server with HTTPS,
+authentication, strict routing, and a loopback-only container port.
+
 <Tabs>
-  <TabItem label="Docker">
+  <TabItem label="Self-Hosted Docker">
 ```bash
 docker run --name apprise \
   -p 8000:8000 \
@@ -45,6 +51,7 @@ docker run --name apprise \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
   -e APPRISE_ADMIN=y \
+  -e APPRISE_DEFAULT_FORMAT=text \
   -d caronc/apprise:latest
 ```
 
@@ -58,6 +65,7 @@ docker run --name apprise \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
   -e APPRISE_ADMIN=y \
+  -e APPRISE_DEFAULT_FORMAT=text \
   --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
   --health-interval=30s \
   --health-timeout=5s \
@@ -67,7 +75,7 @@ docker run --name apprise \
 ```
 
 </TabItem>
-<TabItem label="Docker Compose">
+<TabItem label="Self-Hosted Docker Compose">
 
 ```yaml
 services:
@@ -80,6 +88,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
       - ./attach:/attach
@@ -90,7 +99,7 @@ The following will set the same container up but leverage health check monitorin
 ```yaml
 services:
   apprise:
-    image: caronc/apprise-api:latest
+    image: caronc/apprise:latest
     container_name: apprise
     ports:
       - "8000:8000"
@@ -98,6 +107,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
       - ./attach:/attach
@@ -112,6 +122,191 @@ services:
       retries: 3
       start_period: 20s
 ```
+
+</TabItem>
+<TabItem label="Deployment Behind a Proxy">
+
+This pattern keeps the container reachable only from the Docker host. A separate
+Nginx instance provides public HTTPS, logging, and the security policy.
+
+### Prepare the Container Files
+
+Create persistent directories, an environment file, and an empty host file for
+the Nginx server override. Replace the example password before starting the
+container. The override is populated after Docker reports the running
+container's gateway.
+
+```bash
+mkdir -p apprise/config apprise/attach
+chmod 700 apprise
+
+web_secret="$(openssl rand -hex 32)"
+cat > apprise/apprise.env <<EOF
+STRICT_MODE=yes
+APPRISE_STATEFUL_MODE=simple
+APPRISE_ADMIN=yes
+APPRISE_WORKER_COUNT=1
+APPRISE_AUTH_REQUIRED=yes
+APPRISE_WEB_AUTH_SECRET=${web_secret}
+APPRISE_USER=admin
+APPRISE_PASSWORD=replace-with-a-strong-password
+APPRISE_TRUSTED_ORIGINS=https://apprise.example.com
+ALLOWED_HOSTS=apprise.example.com
+TZ=Etc/UTC
+EOF
+chmod 600 apprise/apprise.env
+touch apprise/nginx-server-override.conf
+chmod 644 apprise/nginx-server-override.conf
+```
+
+The empty host file must exist before `docker run` because the command below
+bind-mounts it over the container's empty default. Its contents are added after
+the container starts.
+
+`STRICT_MODE=yes` keeps unknown routes at `404`, reports unsupported methods as
+`405`, and rate-limits authentication traffic with `429` and `Retry-After: 60`.
+The container owns these strict controls. The public Nginx server below remains
+a small HTTPS relay and records the resulting responses for tools such as
+Fail2Ban.
+
+### Start the Loopback-Only Container
+
+```bash
+docker run -d \
+  --name apprise \
+  --publish 127.0.0.1:8010:8000 \
+  --user "$(id -u):$(id -g)" \
+  --env-file "$PWD/apprise/apprise.env" \
+  --volume "$PWD/apprise/config:/config" \
+  --volume "$PWD/apprise/attach:/attach" \
+  --volume "$PWD/apprise/nginx-server-override.conf:/etc/nginx/server-override.conf:ro" \
+  --health-cmd='curl -fsS -u "$APPRISE_USER:$APPRISE_PASSWORD" http://127.0.0.1:8000/status >/dev/null || exit 1' \
+  --health-interval=30s \
+  --health-timeout=5s \
+  --health-retries=3 \
+  --health-start-period=20s \
+  --restart unless-stopped \
+  caronc/apprise:latest
+```
+
+Binding the published port to `127.0.0.1` prevents direct network access to the
+container. Only services running on the Docker host, such as the public Nginx
+proxy below, can reach port `8010`.
+
+### Configure the Trusted Docker Gateway
+
+Now inspect this container once, write the reported gateway into the mounted
+override, and restart Apprise so Nginx loads it:
+
+```bash
+docker_gateway="$(docker inspect \
+  --format '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' \
+  apprise)"
+
+if [ -z "$docker_gateway" ]; then
+  echo "Could not determine the Apprise Docker gateway."
+  exit 1
+fi
+
+cat > apprise/nginx-server-override.conf <<EOF
+# Obtained from the running Apprise container with docker inspect.
+set_real_ip_from ${docker_gateway};
+
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+EOF
+
+docker restart apprise
+```
+
+This works with Docker's default bridge and custom networks because the gateway
+comes from the running container. Repeat this step after changing its Docker
+network. Do not trust an entire Docker or private network unless every device
+on it is trusted. Apprise uses the resulting client address for auditing and
+strict-mode rate limits.
+
+### Configure the Public Nginx Proxy
+
+The `map` directive belongs in Nginx's `http` context. Files under
+`/etc/nginx/conf.d/` are normally loaded there. It hides routine successful
+health checks while retaining failures and rate-limit responses.
+
+```nginx
+map "$uri:$status" $apprise_access_loggable {
+    default 1;
+    ~^/(?:status(?:/.*)?|metrics|favicon\.ico|robots\.txt)/?:[23] 0;
+}
+
+server {
+    listen 80;
+    server_name apprise.example.com;
+
+    return 301 https://apprise.example.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name apprise.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/apprise.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/apprise.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    access_log /var/log/nginx/apprise_access.log combined
+               if=$apprise_access_loggable;
+    error_log  /var/log/nginx/apprise_error.log warn;
+
+    # The public proxy controls the effective upload limit.
+    client_max_body_size 100m;
+
+    location / {
+        proxy_pass http://127.0.0.1:8010;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-Host  $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port  $server_port;
+        proxy_set_header X-Real-IP         $remote_addr;
+
+        # Overwrite any client-supplied forwarding chain at the public edge.
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Expect          $http_expect;
+
+        proxy_connect_timeout 5s;
+        proxy_send_timeout    310s;
+        proxy_read_timeout    310s;
+
+        # Allow streamed uploads and event responses to pass through directly.
+        proxy_request_buffering off;
+        proxy_buffering         off;
+        proxy_cache             off;
+
+        # Preserve authentication, rate-limit, and application error responses.
+        proxy_intercept_errors off;
+        proxy_redirect         off;
+    }
+}
+```
+
+Use your existing certificate automation and edge-security policy in place of
+the example certificate paths. Enable HSTS only after confirming the domain and
+any subdomains will remain HTTPS-only.
+
+### Verify the Proxy Chain
+
+```bash
+nginx -t
+systemctl reload nginx
+
+curl --user admin https://apprise.example.com/status
+docker inspect --format '{{json .State.Health}}' apprise
+```
+
+The outer proxy must overwrite `X-Forwarded-For`, and the container must trust
+only that proxy's Docker gateway. Together, these settings preserve the public
+client address without allowing callers to forge it.
 
 </TabItem>
 <TabItem label="Kubernetes">
@@ -144,6 +339,8 @@ spec:
               value: 1
             - name: APPRISE_ADMIN
               value: y
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
 ```
 
 The following example expands on the above and offers a **liveness** and **readiness** probe:
@@ -175,6 +372,8 @@ spec:
               value: 1
             - name: APPRISE_ADMIN
               value: y
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
 
           # Ready only when /status returns 200
           readinessProbe:
@@ -290,7 +489,7 @@ spec:
               value: "1000"
             - name: PUID
               value: "1000"
-          image: caronc/apprise:1.1
+          image: caronc/apprise:latest
           name: apprise
           ports:
             - containerPort: 8000
@@ -364,7 +563,7 @@ spec:
               value: "1000"
             - name: PUID
               value: "1000"
-          image: caronc/apprise:1.1
+          image: caronc/apprise:latest
           name: apprise
           ports:
             - containerPort: 8000
@@ -468,6 +667,8 @@ spec:
               value: "1"
             - name: APPRISE_ADMIN
               value: "y"
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
           ports:
             - containerPort: 8000
               name: http
@@ -543,6 +744,8 @@ spec:
               value: "1"
             - name: APPRISE_ADMIN
               value: "y"
+            - name: APPRISE_DEFAULT_FORMAT
+              value: "text"
           ports:
             - containerPort: 8000
               name: http
@@ -628,9 +831,32 @@ The container expects the following writable paths:
 
 For most deployments, mounting **only `/config` and `/attach`** is sufficient.
 
+### Stateful Mode
+
+Persistent features follow the server mode, configuration lock, and current login:
+
+| State                                      | Configuration List                                                         | Move / Delete                          | Configuration Login           | Configuration Content                  |
+| :----------------------------------------- | :------------------------------------------------------------------------- | :------------------------------------- | :---------------------------- | :------------------------------------- |
+| Stateful mode disabled                     | Unavailable                                                                | Unavailable                            | Unavailable                   | Unavailable                            |
+| Authentication off, configuration unlocked | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed                                | Unavailable                   | Available                              |
+| Authentication off, configuration locked   | Hidden and denied                                                          | Denied                                 | Unavailable                   | Hidden; saved notifications still work |
+| Configuration user, unlocked               | Denied                                                                     | May move their ID or clear its content | May update their own password | Available for their ID                 |
+| Configuration user, locked                 | Denied                                                                     | Denied                                 | May update their own password | Hidden; saved notifications still work |
+| Administrator, unlocked                    | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
+| Administrator, locked                      | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
+
+When configuration content is locked, the Web notification form asks for at least one tag because it cannot display the saved destinations.
+
+An authenticated administrator retains full configuration access while locking is enabled. Configuration users and unauthenticated callers cannot add, retrieve, inspect, list, move, or delete configuration. A `user` account may still make authenticated stateful and stateless notifications, while a `locked` account is limited to tagged stateful notifications.
+
+Global mode switches always win. Even an administrator cannot send a stateful or stateless notification when its global mode is disabled. Administrator credentials bypass per-configuration access and the configuration lock only.
+
 ## Hardened Deployments
 
-For public or multi-tenant environments, Apprise API supports hardened execution.
+Apprise API also supports process and filesystem hardening. This protects the
+container itself, but it does not add HTTPS, authentication, or strict routing.
+For a public or multi-tenant server, combine these controls with the
+**Deployment Behind a Proxy** setup above.
 
 Example hardened container configuration:
 
@@ -655,6 +881,7 @@ services:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
       APPRISE_ADMIN: "y"
+      APPRISE_DEFAULT_FORMAT: "text"
 
     volumes:
       - ./config:/config
@@ -680,7 +907,7 @@ If you deploy in Kubernetes, see **Quick Start -> Kubernetes -> Hardened (rootle
 - uses a read only root filesystem
 - mounts `/tmp` as an in-memory `emptyDir`
 
-## Health checks
+## Health Checks
 
 Apprise API exposes a health endpoint:
 
@@ -707,6 +934,9 @@ This endpoint is suitable for:
 
 If Apprise API is hosted behind a reverse proxy or served under a subpath, set `APPRISE_BASE_URL` to accommodate this.
 
+For a complete HTTPS proxy example with loopback-only container access, see
+**Quick Start -> Docker + External Nginx** above.
+
 Example:
 
 ```bash
@@ -719,27 +949,109 @@ This ensures:
 - correct web UI routing
 - correct OpenAPI links
 
-## Authentication and access control
+## Authentication and Access Control
 
-Apprise API does **not** implement authentication internally.
+Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIRED=yes` to protect its endpoints with HTTP Basic Auth. Only Config IDs explicitly made public can bypass it, and only for tagged notifications.
 
-This is by design.
+| Mode                   | Settings                                               | Result                                                                                                                                   |
+| :--------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| Disabled               | `APPRISE_AUTH_REQUIRED=no`                             | Requests remain open. Administrator settings and saved configuration logins are ignored.                                                 |
+| Administrator enabled  | `APPRISE_AUTH_REQUIRED=yes` with `APPRISE_PASSWORD`    | The administrator can access every key and manage configuration logins. `APPRISE_USER` is optional.                                      |
+| Administrator disabled | `APPRISE_AUTH_REQUIRED=yes` without `APPRISE_PASSWORD` | Existing configuration users can access only their own keys. New logins cannot be created until an administrator password is configured. |
 
-Recommended approaches:
+`APPRISE_USER` without `APPRISE_PASSWORD` produces a startup warning and leaves the administrator account disabled. See [Environment Variables](/api/reference/environment/).
 
-- place the API behind a reverse proxy
-- use HTTP basic authentication
-- restrict access at the network or ingress level
+`APPRISE_BASIC_AUTH_REALM` names the server in login prompts. It does not change any credentials. The default is `Apprise API`; use a different name for each hosted instance.
 
-Nginx override files may be injected into the container to enforce access control.
+**Use HTTPS/TLS.** Basic Auth does not encrypt credentials. HTTPS is required outside `localhost` or a trusted network.
+
+API clients send Basic Auth with every request. Recent successful per-configuration checks use a bounded five-minute memory cache, avoiding repeated password hashing without creating an API session or retaining credentials. Failed checks are remembered only within their current request.
+
+Browser pages use a signed login so **Logout** can end the session. JSON and plain-text API calls cannot use this browser login.
+
+Stateful clients can keep using paths such as `/notify/{KEY}`. Supported endpoints also accept `X-Apprise-Config-ID`, which keeps the key out of the URL.
+
+The Apprise CLI's `apprise://` plugin sends this header in its default version 2 mode. Use `?v=1` only with older servers that require `/notify/{KEY}`.
+
+Browser logins expire after 24 hours without activity. Each authenticated request renews that window. Changing `APPRISE_WEB_AUTH_SECRET` signs out every browser but does not change hash-mode configuration paths.
+
+The Config ID field can open another configuration without showing its ID in the address bar. Users must log in when they switch to an ID with different credentials. Administrators can also choose or generate an ID from **New Configuration**.
+
+Each Config ID uses one access mode:
+
+| Access     | Notification use                                      | Configuration use                                                            |
+| :--------- | :---------------------------------------------------- | :--------------------------------------------------------------------------- |
+| `user`     | Requires its credentials. Tags are optional.          | The user may view, edit, clear, and replace their configuration.             |
+| `locked`   | Requires credentials and a specific tag, never `all`. | Hides content. The user may change their password and move the Config ID.    |
+| `public`   | Requires only the Config ID and a specific tag.       | Hides content. Saved credentials, when present, keep the `locked` abilities. |
+| `disabled` | Rejects configuration-user notifications.             | Freezes user access while preserving configuration and credentials.          |
+
+Public access applies only to stateful `POST /notify/{KEY}` calls. Other endpoints still require valid credentials. Attachments remain supported.
+
+For stateless `POST /notify`, administrators can authenticate directly. A configuration user must provide explicit `urls`, matching credentials, and `X-Apprise-Config-ID`; the configuration must use `user` access. Without `urls`, the v2 header form remains a stateful send through the saved configuration.
+
+The `user` and `locked` accounts may retrieve `/status` and `/details` with their credentials and Config ID. A disabled account cannot. Administrators may include a valid `X-Apprise-Config-ID` for client convenience, but do not need one.
+
+To set access, open a configuration and select its lock icon or **Authentication**. Choose the access mode, enter credentials when required, then select **Save**. Administrators can use **Randomize** for either credential.
+
+The Config ID and credentials are separate values. Share the Config ID and configured credentials with the user. A username is optional; saved passwords are not displayed again.
+
+API clients manage access with `POST /auth/{KEY}`. The `access` field accepts
+`user`, `locked`, `public`, or `disabled`. A new record defaults to `user`, or
+to `locked` while `APPRISE_CONFIG_LOCK=yes`. An administrator may save `user`
+or `public` while the global lock is enabled, but it behaves as `locked` until
+the global lock is removed. A configuration user may change only their
+password and must repeat their username. See [API Endpoints](/api/endpoints/).
+
+Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
+
+**Logout** ends the signed browser login. Credentials cached by the browser cannot silently restore it.
+
+Old locks without configuration are removed after `APPRISE_AUTH_PRUNE_SECONDS` (30 days by default). When a `user` clears their configuration, their credentials remain and this grace period restarts so they can save a replacement. Locks with configuration remain. See [Pruning](#pruning).
+
+### Browser Origin Checks
+
+Browsers add an `Origin` header when a page changes data. Apprise API checks this header and rejects changes sent from another website. Requests from the same site are allowed.
+
+Apprise API does not require Django's CSRF token exchange. Direct calls from `curl`, mobile apps, and other programs normally omit `Origin` and continue to work.
+
+For an HTTPS site behind a reverse proxy, set `APPRISE_TRUSTED_ORIGINS` to the full public address, such as `https://apprise.example.com`. Separate multiple addresses with commas.
+
+For defense in depth, you can add controls outside the application:
+
+- exposing the container only through a trusted reverse proxy
+- adding authentication at the proxy or ingress layer
+- restricting access with firewall or network policy rules
+
+Nginx override files may also be mounted into the container for specialized
+access-control requirements.
 
 A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `ConfigMap` (nginx `location-override.conf`) is available under **Quick Start -> Kubernetes -> Full example**.
+
+## Pruning
+
+The packaged container runs one low-priority cleanup cycle each day. It covers both areas below and has a time limit:
+
+| Area             | What it prunes                                                | Retention setting                                            |
+| :--------------- | :------------------------------------------------------------ | :----------------------------------------------------------- |
+| Persistent state | Apprise's notification-state storage (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)             |
+| Authentication   | Per-key Basic Auth locks without configuration.               | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days) |
+
+`APPRISE_PRUNE_INTERVAL_SECONDS` controls the schedule. Set `APPRISE_PRUNE_ENABLED=no` to disable scheduled cleanup. `APPRISE_PRUNE_TIMEOUT_SECONDS` changes the 8-hour time limit. The combined or individual commands may still run manually:
+
+```bash
+docker exec -it apprise python manage.py prune
+docker exec -it apprise python manage.py storeprune --days 30
+docker exec -it apprise python manage.py authprune --seconds 2592000
+```
 
 ## Logging and Observability
 
 - All logs are emitted to stdout and stderr
 - No log files are written to disk
 - Prometheus metrics are available at `/metrics`
+- Successful `/status`, `/metrics`, favicon, and robots probes are omitted from
+  access logs; failures and rate-limit responses remain visible
 
 ## Development Deployments
 

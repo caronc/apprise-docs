@@ -17,14 +17,21 @@ async def main():
     apobj = apprise.Apprise()
     apobj.add('mailto://user:pass@example.com')
 
-    # Await the notification delivery
-    await apobj.async_notify(
+    # Await the notification delivery -- like notify(), this returns an
+    # AppriseResult, so capture it if you care whether delivery succeeded
+    result = await apobj.async_notify(
         title='Async Test',
         body='This was sent asynchronously',
     )
 
+    if not result:
+        print("Delivery failed:", result.status.name)
+
 asyncio.run(main())
 ```
+
+See [Notification Results](/library/results/) for everything `result` can tell you
+(per-service detail, timing, captured logs, and more).
 
 ## Serialization (Pickle)
 

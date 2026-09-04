@@ -154,7 +154,7 @@ mailtos://local-user@example.com
 
 </Tabs>
 :::note
-La directive `include` ne fonctionne que si votre serveur Apprise API n'a pas `APPRISE_CONFIG_LOCK` défini à `yes`.
+La directive `include` exige les identifiants de l'administrateur global lorsque votre serveur Apprise API utilise `APPRISE_CONFIG_LOCK=yes`.
 :::
 
 </TabItem>
@@ -176,7 +176,7 @@ notify:
 ```
 
 :::caution[Restriction d'Accès]
-Si votre serveur Apprise API fonctionne avec `APPRISE_CONFIG_LOCK` activé, cette méthode ne fonctionnera pas.
+Si votre serveur Apprise API utilise `APPRISE_CONFIG_LOCK=yes`, cette méthode exige les identifiants de l'administrateur global.
 :::
 
 </TabItem>

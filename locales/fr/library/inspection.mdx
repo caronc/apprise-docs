@@ -209,18 +209,34 @@ Apprise injecte automatiquement un jeton `schema`, toujours requis. Ses valeurs 
 
 Après normalisation, vous pouvez généralement compter sur la présence des champs suivants :
 
-| Clé        | Description                                                                    |
-| ---------- | ------------------------------------------------------------------------------ |
-| `name`     | Libellé lisible (prend le nom du jeton par défaut s'il manque).                |
-| `map_to`   | Argument du plugin ciblé par ce jeton (prend le nom du jeton par défaut).      |
-| `type`     | Type de jeton (par défaut `string`). Prend aussi `list:*` et `choice:*`.       |
-| `required` | Vaut `False` par défaut si non précisé.                                        |
-| `private`  | Vaut `False` par défaut si non précisé.                                        |
-| `default`  | Peut être présent, y compris rempli automatiquement s'il n'existe qu'un choix. |
-| `values`   | Pour les jetons `choice:*` et certains autres champs contraints.               |
-| `delim`    | Pour les jetons `list:*` (la valeur par défaut varie selon le contexte).       |
-| `regex`    | Regex de validation facultative, normalisée en paire `(pattern, flags)`.       |
-| `group`    | Pour les alias de liste qui mappent plusieurs champs sous-jacents.             |
+| Clé        | Description                                                                      |
+| ---------- | -------------------------------------------------------------------------------- |
+| `name`     | Libellé lisible (prend le nom du jeton par défaut s'il manque).                  |
+| `map_to`   | Argument du plugin ciblé par ce jeton (prend le nom du jeton par défaut).        |
+| `type`     | Type de valeur. `string` par défaut ; toutes les formes sont listées ci-dessous. |
+| `required` | Vaut `False` par défaut si non précisé.                                          |
+| `private`  | Vaut `False` par défaut si non précisé.                                          |
+| `default`  | Peut être présent, y compris rempli automatiquement s'il n'existe qu'un choix.   |
+| `values`   | Pour les jetons `choice:*` et certains autres champs contraints.                 |
+| `delim`    | Pour les jetons `list:*` (la valeur par défaut varie selon le contexte).         |
+| `regex`    | Regex de validation facultative, normalisée en paire `(pattern, flags)`.         |
+| `group`    | Pour les alias de liste qui mappent plusieurs champs sous-jacents.               |
+
+##### Valeurs de `type`
+
+Le champ `type` indique aux clients comment saisir et encoder une valeur :
+
+| Type            | Signification                                                                           |
+| --------------- | --------------------------------------------------------------------------------------- |
+| `string`        | Une valeur texte.                                                                       |
+| `email`         | Une adresse e-mail. Conserver son `@` lors de la construction de l'URL.                 |
+| `bool`          | Une valeur vrai/faux ; doit comprendre un `default`.                                    |
+| `int`           | Un entier, éventuellement limité par `min` et `max`.                                    |
+| `float`         | Un nombre décimal, éventuellement limité par `min` et `max`.                            |
+| `choice:<type>` | Une entrée de `values`. Le type peut être `string`, `int`, `float` ou `email`.          |
+| `list:<type>`   | Plusieurs éléments séparés selon `delim` : `string`, `bool`, `int`, `float` ou `email`. |
+
+Utilisez `bool` plutôt que `choice:bool`.
 
 ##### Comportement des délimiteurs
 
@@ -234,6 +250,14 @@ Cela compte lorsque votre interface doit expliquer comment saisir plusieurs dest
 ##### Alias et groupement
 
 Si plusieurs noms de jetons pointent vers le même argument via `map_to`, Apprise peut exposer un champ `group` pour les types liste, afin qu'un outil puisse montrer qu'un jeton liste agit comme alias pour plusieurs entrées liées.
+
+##### L'argument `format`
+
+Chaque service expose une entrée `args.format` (`text`, `html`, `markdown`). `values` contient toujours les trois valeurs -- `?format=` est accepté pour n'importe laquelle d'entre elles sur tous les services -- et `default` est le format natif du service.
+
+Certains services sachant nativement rendre plus d'un format, `args.format` porte aussi une liste `supported` : le sous-ensemble que ce service précis rend réellement, par ordre de priorité (`supported[0]` correspond à `default`). Pour la plupart des services, `supported` ne contient qu'une seule entrée, identique à `default`. Demander une valeur `?format=` absente de `supported` fonctionne quand même -- le service enregistre un avertissement et revient à son format par défaut plutôt que de rejeter l'URL.
+
+Utilisez `supported` si vous voulez afficher toutes les options de format tout en atténuant (sans les retirer) celles qu'un service ne prend pas spécifiquement en charge -- `values` reste l'ensemble complet, toujours sûr, sur lequel se rabattre si cette distinction ne vous est pas nécessaire.
 
 ### Dépendances et indices d'installation (`requirements`)
 
@@ -257,7 +281,9 @@ Une approche pratique qui fonctionne bien :
 1. Proposer la configuration facultative via `args` (et `kwargs` seulement si présent).
 1. Respecter `private=True` en masquant les champs et sans jamais réafficher leur valeur en clair.
 1. Respecter `type` pour rendre les bons widgets :
+   - `string` : champ texte
    - `bool` : case à cocher
+   - `email` : champ e-mail ; conserver `@` lors de la construction de l'URL
    - `choice:*` : liste déroulante basée sur `values`
    - `int`/`float` : champ numérique avec min/max si présents
    - `list:*` : saisie multiple avec aide sur le délimiteur tirée de `delim`

@@ -12,6 +12,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - mailersend://APIToken:FromEmail/ToEmail
   - mailersend://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
@@ -50,16 +54,16 @@ La syntaxe valide est la suivante :
 
 ## Detail des Parametres
 
-| Variable    | Requis | Description                                                                          |
-| ----------- | ------ | ------------------------------------------------------------------------------------ |
-| `APIToken`  | Oui    | Votre token API MailerSend avec au moins la permission d'envoi Email.                |
-| `FromEmail` | Oui    | Adresse d'expediteur verifiee. Doit appartenir a un domaine verifie dans MailerSend. |
-| `ToEmail`   | Non    | Une ou plusieurs adresses e-mail destinataires dans le chemin URL.                   |
-| `to`        | Non    | Destinataires supplementaires sous forme de liste separee par des virgules.          |
-| `cc`        | Non    | Destinataires en copie, separes par des virgules.                                    |
-| `bcc`       | Non    | Destinataires en copie cachee, separes par des virgules.                             |
-| `reply`     | Non    | Adresse e-mail de reponse (Reply-To).                                                |
-| `format`    | Non    | Substitution du format de notification (`html` ou `text`).                           |
+| Variable    | Requis | Description                                                                                                     |
+| ----------- | ------ | --------------------------------------------------------------------------------------------------------------- |
+| `APIToken`  | Oui    | Votre token API MailerSend avec au moins la permission d'envoi Email.                                           |
+| `FromEmail` | Oui    | Adresse d'expediteur verifiee. Doit appartenir a un domaine verifie dans MailerSend.                            |
+| `ToEmail`   | Non    | Une ou plusieurs adresses e-mail destinataires dans le chemin URL.                                              |
+| `to`        | Non    | Destinataires supplementaires sous forme de liste separee par des virgules.                                     |
+| `cc`        | Non    | Destinataires en copie, separes par des virgules.                                                               |
+| `bcc`       | Non    | Destinataires en copie cachee, separes par des virgules.                                                        |
+| `reply`     | Non    | Adresse e-mail de reponse (Reply-To).                                                                           |
+| `format`    | Non    | MailerSend envoie du HTML par défaut. Définissez cette valeur sur `text` pour envoyer un message en texte brut. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

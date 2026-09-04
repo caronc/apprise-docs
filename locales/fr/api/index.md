@@ -17,6 +17,7 @@ Vous souhaitez utiliser votre API Apprise depuis votre téléphone ? [Apprise Mo
 - **Microservices :** fournissez un point de terminaison unique pour toutes vos applications.
 - **Sans état et avec état :** envoyez des notifications à la volée ou référencez des configurations enregistrées par clé.
 - **Interface Web :** un tableau de bord intégré permet de gérer les configurations et de tester les notifications. L'interface peut être désactivée avec `APPRISE_API_ONLY=yes`.
+- **Accès par configuration :** attribuez un nom d'utilisateur et un mot de passe à une configuration enregistrée avec `/auth/{KEY}`.
 - **Extensible :** fonctionne comme un conteneur léger compatible avec Docker, Kubernetes, etc.
 - **Configuration centralisée :** utilisez un seul serveur comme source de configuration pour plusieurs applications et environnements.
 
@@ -34,5 +35,5 @@ curl -X POST -d "body=Test Message" \
 ```
 
 :::tip
-Si votre serveur est accessible à plusieurs personnes, ou exposé à Internet, générez une nouvelle clé obfusquée pour isoler votre environnement. Si vous utilisez l'interface Web, vous pouvez appuyer sur **New Configuration** dans le menu de gauche.
+Si votre serveur est public, [activez l'authentification](./deployment/#authentification-et-contrôle-daccès) et protégez les configurations enregistrées avec l'interface Web ou `/auth/{KEY}`. Une clé difficile à deviner reste utile, mais elle ne remplace pas un nom d'utilisateur et un mot de passe.
 :::

@@ -11,6 +11,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - mailto://userid:pass@domain.com
   - mailtos://domain.com?user=userid&pass=password
@@ -21,6 +25,10 @@ sample_urls:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Message Format
+
+Email sends HTML by default and includes a plain-text alternative for mail clients that need it. Set `?format=text` if you want to send a plain-text email only.
 
 ## Syntax
 

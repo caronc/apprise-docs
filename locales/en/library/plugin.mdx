@@ -631,47 +631,51 @@ The following identifies the default values of variables defined in your plugin 
 
 Your plugin should be configured to inherit from `NotifyBase` granting you these defaults
 
-| Attribute                           | Default    | Purpose                                                    | When To Override                                                     |
-| :---------------------------------- | :--------- | :--------------------------------------------------------- | :------------------------------------------------------------------- |
-| `enabled`                           | `True`     | If `False`, the plugin is not used.                        | Disable for platform-specific or dependency-specific reasons.        |
-| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).           | Usually leave as-is.                                                 |
-| `requirements.details`              | `None`     | Human-friendly requirements text.                          | If you need to explain optional or required packages.                |
-| `requirements.packages_required`    | `[]`       | Required packages for full function.                       | If your plugin requires extra libraries.                             |
-| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                   | If you can run without them, but benefit from them.                  |
-| `service_url`                       | `None`     | Vendor or upstream product URL.                            | For public services, set this.                                       |
-| `setup_url`                         | `None`     | Apprise setup page for your service.                       | Set this to your `appriseit.com/services/<service>/` page.           |
-| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                       | Tune for vendor rate limits, or set to `0` for local-only.           |
-| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.          | Set when your service expects a specific size.                       |
-| `body_maxlen`                       | `32768`    | Max body characters before truncation.                     | Set based on upstream constraints.                                   |
-| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported. | Set to `0` for title-less endpoints, or tune to vendor constraints.  |
-| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation. | If upstream is line-sensitive.                                       |
-| `persistent_storage`                | `True`     | Allows the persistent store to be used.                    | If your plugin must never store identifiers or state.                |
-| `storage_mode`                      | `memory`   | Default persistent store mode.                             | Rare, but can be tuned for special behaviours.                       |
-| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                 | If your service must always operate in a specific timezone.          |
-| `notify_format`                     | `text`     | Default message format.                                    | If your service is Markdown or HTML-first.                           |
-| `overflow_mode`                     | `upstream` | Default overflow strategy.                                 | If you want Apprise to split, truncate, or alter overflow behaviour. |
-| `interpret_emojis`                  | `False`    | Emoji interpretation.                                      | If the upstream service benefits from emoji conversion.              |
-| `attachment_support`                | `False`    | Attachment enablement.                                     | Set to `True` if you accept attachments.                             |
-| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.    | Rare, unless you want different formatting.                          |
+| Attribute                           | Default    | Purpose                                                        | When To Override                                                                     |
+| :---------------------------------- | :--------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| `enabled`                           | `True`     | If `False`, the plugin is not used.                            | Disable for platform-specific or dependency-specific reasons.                        |
+| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).               | Usually leave as-is.                                                                 |
+| `requirements.details`              | `None`     | Human-friendly requirements text.                              | If you need to explain optional or required packages.                                |
+| `requirements.packages_required`    | `[]`       | Required packages for full function.                           | If your plugin requires extra libraries.                                             |
+| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                       | If you can run without them, but benefit from them.                                  |
+| `service_url`                       | `None`     | Vendor or upstream product URL.                                | For public services, set this.                                                       |
+| `setup_url`                         | `None`     | Apprise setup page for your service.                           | Set this to your `appriseit.com/services/<service>/` page.                           |
+| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                           | Tune for vendor rate limits, or set to `0` for local-only.                           |
+| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.              | Set when your service expects a specific size.                                       |
+| `body_maxlen`                       | `32768`    | Max body characters before truncation.                         | Set based on upstream constraints.                                                   |
+| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported.     | Set to `0` for title-less endpoints, or tune to vendor constraints.                  |
+| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation.     | If upstream is line-sensitive.                                                       |
+| `persistent_storage`                | `True`     | Allows the persistent store to be used.                        | If your plugin must never store identifiers or state.                                |
+| `storage_mode`                      | `memory`   | Default persistent store mode.                                 | Rare, but can be tuned for special behaviours.                                       |
+| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                     | If your service must always operate in a specific timezone.                          |
+| `notify_format`                     | `text`     | Default message format(s); one value or an ordered tuple/list. | If your service is Markdown or HTML-first, or natively renders more than one format. |
+| `overflow_mode`                     | `upstream` | Default overflow strategy.                                     | If you want Apprise to split, truncate, or alter overflow behaviour.                 |
+| `interpret_emojis`                  | `False`    | Emoji interpretation.                                          | If the upstream service benefits from emoji conversion.                              |
+| `attachment_support`                | `False`    | Attachment enablement.                                         | Set to `True` if you accept attachments.                                             |
+| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.        | Rare, unless you want different formatting.                                          |
 
 ## Templates and Metadata
 
-## Template types
+## Template Types
 
-Apprise validates types using a strict pattern: `((choice|list):)?(string|bool|int|float)`.
+Apprise validates types using a strict pattern: `((choice|list):)?(string|bool|int|float|email)`.
 
-| Type            | Where used   | Meaning                      | Required directives           | Notes                                                                                 |
-| :-------------- | :----------- | :--------------------------- | :---------------------------- | :------------------------------------------------------------------------------------ |
-| `string`        | tokens, args | A single string              | none                          | Common for hostnames, tokens, and names.                                              |
-| `int`           | tokens, args | A single integer             | none                          | Use `min` and `max` to bound port values, counts, etc.                                |
-| `float`         | tokens, args | A single float               | none                          | Use `min` and `max` for bounds.                                                       |
-| `bool`          | tokens, args | A boolean flag               | `default` (required for args) | Boolean args must provide a default.                                                  |
-| `choice:string` | tokens, args | One value from a fixed set   | `values`                      | Choice entries must provide `values`, and `default` must be one of them if specified. |
-| `choice:int`    | tokens, args | One integer from a fixed set | `values`                      | Use for mode selectors or enumerations.                                               |
-| `choice:float`  | tokens, args | One float from a fixed set   | `values`                      | Rare, but supported.                                                                  |
-| `list:string`   | tokens, args | A list of strings            | `delim`                       | List entries must provide delimiters.                                                 |
-| `list:int`      | tokens, args | A list of integers           | `delim`                       | Split and then coerce to int.                                                         |
-| `list:float`    | tokens, args | A list of floats             | `delim`                       | Split and then coerce to float.                                                       |
+| Type            | Where used   | Meaning                      | Required directives | Notes                                                                                 |
+| :-------------- | :----------- | :--------------------------- | :------------------ | :------------------------------------------------------------------------------------ |
+| `string`        | tokens, args | A single string              | none                | Common for hostnames, tokens, and names.                                              |
+| `email`         | tokens, args | A single email address       | none                | Use when `url()` preserves the address's `@` character.                               |
+| `int`           | tokens, args | A single integer             | none                | Use `min` and `max` to bound port values, counts, etc.                                |
+| `float`         | tokens, args | A single float               | none                | Use `min` and `max` for bounds.                                                       |
+| `bool`          | tokens, args | A boolean flag               | `default`           | Boolean entries must provide a default.                                               |
+| `choice:string` | tokens, args | One value from a fixed set   | `values`            | Choice entries must provide `values`, and `default` must be one of them if specified. |
+| `choice:int`    | tokens, args | One integer from a fixed set | `values`            | Use for mode selectors or enumerations.                                               |
+| `choice:float`  | tokens, args | One float from a fixed set   | `values`            | Rare, but supported.                                                                  |
+| `choice:email`  | tokens, args | One email from a fixed set   | `values`            | Preserve the selected address's `@` character.                                        |
+| `list:string`   | tokens, args | A list of strings            | `delim`             | List entries must provide delimiters.                                                 |
+| `list:bool`     | tokens, args | A list of boolean values     | `delim`             | Use `bool` for a single boolean value.                                                |
+| `list:int`      | tokens, args | A list of integers           | `delim`             | Split and then coerce to int.                                                         |
+| `list:float`    | tokens, args | A list of floats             | `delim`             | Split and then coerce to float.                                                       |
+| `list:email`    | tokens, args | A list of email addresses    | `delim`             | Preserve each address's `@` character.                                                |
 
 Additional rules that matter:
 
@@ -947,7 +951,7 @@ This table documents the most common directives supported by `template_tokens`, 
 | Directive  | Where used           | Meaning                                                                                             |
 | :--------- | :------------------- | :-------------------------------------------------------------------------------------------------- |
 | `name`     | tokens, args, kwargs | Human-friendly label, usually wrapped in `gettext_lazy()`.                                          |
-| `type`     | tokens, args         | Value type, such as `string`, `int`, `bool`, `choice:string`, `list:string`.                        |
+| `type`     | tokens, args         | Value type: `string`, `bool`, `int`, `float`, `email`, `choice:<type>`, or `list:<type>`.           |
 | `required` | tokens, args         | Marks an entry as mandatory for initialization or validation.                                       |
 | `default`  | args                 | Default used when the URL does not specify a value. Required for `bool` types.                      |
 | `private`  | tokens, args         | Marks a value as sensitive and should be hidden or masked in privacy views.                         |
@@ -1100,13 +1104,19 @@ Alias entries (`alias_of`) **inherit** the `private` flag from their target — 
 
 ### service_url vs setup_url
 
-| Attribute     | Purpose                                                                                                                                      |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| `service_url` | Links to the upstream vendor or product landing page (e.g. `https://discord.com/`). Shown in the URL Builder as "Service website".           |
-| `setup_url`   | Links to the Apprise-specific integration guide on `appriseit.com` (e.g. `https://appriseit.com/services/discord/`). Shown as "Setup guide". |
+| Attribute     | Purpose                                                                                                                                                                                                                                                                     |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `service_url` | Links to the upstream vendor or product landing page (e.g. `https://discord.com/`). Shown in the URL Builder as "Service website".                                                                                                                                          |
+| `setup_url`   | Links to the Apprise-specific integration guide on `appriseit.com` (e.g. `https://appriseit.com/services/discord/`). Shown as "Setup guide". You can create or update this documentation in the [Apprise documentation repository](https://github.com/caronc/apprise-docs). |
 
 Both should always be set. Generic or local-only plugins (e.g. MQTT, Windows notifications) may omit `service_url` if there is no applicable upstream URL.
 
 ## Format and Overflow
 
-Also note that `NotifyBase` provides URL-level behaviour flags like `format`, `overflow`, `emojis`, and persistent storage (`store`).
+`NotifyBase` supplies shared URL options such as `format`, `overflow`, `emojis`, and persistent storage (`store`). A plugin should normally reuse these options instead of defining its own versions.
+
+During delivery, `body_format` is the resolved format the plugin must send. `body_passthrough=True` means the caller did not declare a source format, so Apprise skipped source-format conversion and dialect repair. It does not disable message limits, overflow handling, escaping, transport encoding, or payload assembly.
+
+The framework handles ordinary character limits and the `upstream`, `truncate`, and `split` modes. A plugin with byte-based limits, escaping, multiple body representations, or encryption overhead should calculate its final budget from the payload it will actually send and verify the result after conversion.
+
+Do not assume arbitrary pass-through content can be split safely. JSON documents, ciphertext, signatures, and unknown markup may become invalid when divided. Honour the requested overflow mode, but treat splitting as best effort and avoid format-specific repair when `body_passthrough` is true.
