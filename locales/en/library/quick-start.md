@@ -27,6 +27,12 @@ apobj.add([
 ])
 ```
 
+You can also pass services when creating the instance:
+
+```python
+apobj = apprise.Apprise(services='json://localhost')
+```
+
 ### Sending Notifications (`notify`)
 
 The `notify()` method sends messages to all registered services.
