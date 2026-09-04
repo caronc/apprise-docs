@@ -10,6 +10,7 @@
       "guides": "Intégrations et Guides",
       "cli": "CLI Apprise",
       "api": "API Apprise",
+      "mobile": "Apprise Mobile",
       "library": "Bibliothèque Python",
       "services": "Services Pris en Charge",
       "qa": "Dépannage",
@@ -26,7 +27,8 @@
     "social": {
       "github": "GitHub",
       "reddit": "Sous-reddit Apprise",
-      "discord": "Discussion Discord Apprise"
+      "discord": "Discussion Discord Apprise",
+      "mobile": "Apprise Mobile"
     },
     "url_builder": {
       "title": "Générateur d’URL"

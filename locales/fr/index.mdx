@@ -1,7 +1,7 @@
 ---
 title: Bienvenue dans Apprise
 description: >
-  Apprise vous permet d'envoyer une notification vers presque n'importe quel service populaire grace a un format d'URL unique et coherent.
+  Apprise vous permet d'envoyer une notification vers presque n'importe quel service populaire grâce à un format d'URL unique et cohérent.
 tableOfContents: false
 ---
 
@@ -38,7 +38,7 @@ import "~/styles/landing.css";
     </div>
 
     <p class="apprise-tagline">
-      <em>Apprise</em> vous permet d'envoyer des notifications vers la plupart des services populaires via un format d'URL unique et coherent, pour vos applications, automatisations et infrastructures.
+      <em>Apprise</em> vous permet d'envoyer des notifications vers la plupart des services populaires via un format d'URL unique et cohérent, pour vos applications, automatisations et infrastructures.
     </p>
 
     <div class="apprise-cta">
@@ -50,14 +50,14 @@ import "~/styles/landing.css";
       </LinkButton>
     </div>
 
-    <div class="apprise-badges" aria-label="Fonctionnalites cles">
+    <div class="apprise-badges" aria-label="Fonctionnalités clés">
       <span class="apprise-badge">
         <strong class="apprise-badge-count"><!-- SERVICES:COUNT --></strong>
         <span>services pris en charge</span>
       </span>
-      <span class="apprise-badge">Bibliotheque Python et CLI</span>
-      <span class="apprise-badge">Passerelle API auto-hebergee</span>
-      <span class="apprise-badge">Pieces jointes et texte enrichi</span>
+      <span class="apprise-badge">Bibliothèque Python et CLI</span>
+      <span class="apprise-badge">Passerelle API auto-hébergée</span>
+      <span class="apprise-badge">Pièces jointes et texte enrichi</span>
     </div>
 
   </div>
@@ -66,13 +66,13 @@ import "~/styles/landing.css";
     <Card>
       <div class="apprise-card-title">
         <span class="apprise-card-icon"><SyntaxIcon /></span>
-        <span class="apprise-card-title-text">Syntaxe universelle</span>
+        <span class="apprise-card-title-text">Syntaxe Universelle</span>
       </div>
 
-      <p class="apprise-card-body">
-      Cessez d'apprendre des dizaines d'API differentes.
-      Utilisez un format d'URL unique et coherent pour tous les services.
-      </p>
+      <div class="apprise-card-body">
+      Cessez d'apprendre des dizaines d'API différentes.
+      Utilisez un format d'URL unique et cohérent pour tous les services.
+      </div>
 
       <code class="apprise-code-sample">service://credentials/direction/?parameter=value</code>
 
@@ -87,7 +87,7 @@ import "~/styles/landing.css";
         </LinkButton>
         <LinkButton href="./url-builder/" variant="minimal">
           <span class="apprise-card-action">
-            <span class="apprise-card-action-label">Generateur d'URL</span>
+            <span class="apprise-card-action-label">Générateur d'URL</span>
             <span class="apprise-card-action-icon">
              <DocsIcon />
             </span>
@@ -99,17 +99,17 @@ import "~/styles/landing.css";
     <Card>
       <div class="apprise-card-title">
         <span class="apprise-card-icon"><CoreLibraryIcon /></span>
-        <span class="apprise-card-title-text">Bibliotheque principale et CLI</span>
+        <span class="apprise-card-title-text">Bibliothèque Principale et CLI</span>
       </div>
 
-      <p class="apprise-card-body">
-      Integrez Apprise dans vos applications, ou utilisez la CLI pour l'administration et l'automatisation.
-      </p>
+      <div class="apprise-card-body">
+      Intégrez Apprise dans vos applications, ou utilisez la CLI pour l'administration et l'automatisation.
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="./library/" variant="minimal">
           <span class="apprise-card-action">
-            <span class="apprise-card-action-label">Documentation bibliotheque</span>
+            <span class="apprise-card-action-label">Documentation bibliothèque</span>
             <span class="apprise-card-action-icon">
               <DocsIcon />
             </span>
@@ -142,9 +142,9 @@ import "~/styles/landing.css";
         <span class="apprise-card-title-text">Serveur API Apprise</span>
       </div>
 
-      <p class="apprise-card-body">
-        Auto-hebergez une passerelle de notifications sans etat avec interface Web, ideale comme service compagnon.
-      </p>
+      <div class="apprise-card-body">
+        Auto-hébergez une passerelle de notifications sans état avec interface Web, idéale comme service compagnon.
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="./api/" variant="minimal">
@@ -168,13 +168,38 @@ import "~/styles/landing.css";
 
     <Card>
       <div class="apprise-card-title">
-        <span class="apprise-card-icon"><DocsIcon /></span>
-        <span class="apprise-card-title-text">Documentation et contributions</span>
+        <span class="apprise-card-icon">
+          <img src="/assets/google-play.svg" alt="" width="97" height="96" />
+        </span>
+        <span class="apprise-card-title-text">Apprise Mobile</span>
       </div>
 
-      <p class="apprise-card-body">
-      Aidez a ameliorer ces guides, corriger des problemes et ajouter la prise en charge de nouveaux services.
-      </p>
+      <div class="apprise-card-body">
+        Connectez-vous à votre serveur API Apprise auto-hébergé depuis Android. Envoyez des notifications,
+        gérez vos services et consultez les résultats où que vous soyez.
+      </div>
+
+      <div class="apprise-card-actions">
+        <LinkButton href="./mobile/" variant="minimal">
+          <span class="apprise-card-action">
+            <span class="apprise-card-action-label">Rejoindre la bêta</span>
+            <span class="apprise-card-action-icon">
+              <DocsIcon />
+            </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
+
+    <Card>
+      <div class="apprise-card-title">
+        <span class="apprise-card-icon"><DocsIcon /></span>
+        <span class="apprise-card-title-text">Documentation et Contributions</span>
+      </div>
+
+      <div class="apprise-card-body">
+      Aidez à améliorer ces guides, corriger des problèmes et ajouter la prise en charge de nouveaux services.
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="./contributing/" variant="minimal">
@@ -221,14 +246,14 @@ import "~/styles/landing.css";
     <div class="apprise-why-content">
       <h2>Pourquoi Apprise ?</h2>
 
-      <p>Une seule bibliotheque de notifications pour tout gerer.</p>
+      <p>Une seule bibliothèque de notifications pour tout gérer.</p>
 
       <ul>
         <li><strong>Universel :</strong> un format d'URL unique et intuitif pour de nombreux fournisseurs de notification.</li>
-        <li><strong>Contenu riche :</strong> prise en charge des pieces jointes et des images lorsque le service amont le permet.</li>
-        <li><strong>Leger :</strong> concu pour les flux d'automatisation avec un minimum de surcharge.</li>
-        <li><strong>Reactif :</strong> excellents temps de reponse grace a l'envoi asynchrone de tous les messages.</li>
-        <li><strong>Flexible :</strong> fonctionne comme bibliotheque, outil CLI ou service API auto-heberge.</li>
+        <li><strong>Contenu riche :</strong> prise en charge des pièces jointes et des images lorsque le service amont le permet.</li>
+        <li><strong>Léger :</strong> conçu pour les flux d'automatisation avec un minimum de surcharge.</li>
+        <li><strong>Réactif :</strong> excellents temps de réponse grâce à l'envoi asynchrone de tous les messages.</li>
+        <li><strong>Flexible :</strong> fonctionne comme bibliothèque, outil CLI ou service API auto-hébergé.</li>
       </ul>
     </div>
 

@@ -1,20 +1,20 @@
 ---
 title: Communauté et Contributions
-description: Rejoignez la communaute Apprise.
+description: Rejoignez la communauté Apprise.
 sidebar:
   order: 1
 ---
 
-Merci de votre interet pour Apprise !
+Merci de votre intérêt pour Apprise !
 
-## Moyens de contribuer
+## Moyens de Contribuer
 
-- **[Code & Plugins](./core/)** : aidez a developper la bibliotheque Python principale.
-- **[Apprise API](./api/)** : aidez a ameliorer l'application Web, l'API et l'interface.
+- **[Code & Plugins](./core/)** : aidez à développer la bibliothèque Python principale.
+- **[Apprise API](./api/)** : aidez à améliorer l'application Web, l'API et l'interface.
 - **[Apprise Mobile](../mobile/)** : aidez à tester l'application Android complémentaire.
-- **[Documentation](./documentation/)** : aidez a ameliorer ces guides.
-- **[Sponsors](./sponsors/)** : soutenez financierement le projet.
+- **[Documentation](./documentation/)** : aidez à améliorer ces guides.
+- **[Sponsors](./sponsors/)** : soutenez financièrement le projet.
 
 ## Vitrine
 
-Decouvrez qui utilise aussi Apprise dans la **[vitrine](./showcase/)**.
+Découvrez qui utilise aussi Apprise dans la **[vitrine](./showcase/)**.

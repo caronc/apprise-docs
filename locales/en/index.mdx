@@ -71,10 +71,10 @@ import "~/styles/landing.css";
         <span class="apprise-card-title-text">Universal Syntax</span>
       </div>
 
-      <p class="apprise-card-body">
+      <div class="apprise-card-body">
       Stop learning dozens of different APIs.
       Use one consistent URL format across services.
-      </p>
+      </div>
 
       <code class="apprise-code-sample">service://credentials/direction/?parameter=value</code>
 
@@ -104,9 +104,9 @@ import "~/styles/landing.css";
         <span class="apprise-card-title-text">Core Library and CLI</span>
       </div>
 
-      <p class="apprise-card-body">
+      <div class="apprise-card-body">
       Integrate Apprise in your applications, or use the CLI for administration and automation.
-      </p>
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="/library/" variant="minimal">
@@ -144,10 +144,10 @@ import "~/styles/landing.css";
         <span class="apprise-card-title-text">Apprise API Server</span>
       </div>
 
-      <p class="apprise-card-body">
+      <div class="apprise-card-body">
         Self-host a stateless notification gateway
         with a web interface, ideal as a sidecar service.
-      </p>
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="/api/" variant="minimal">
@@ -171,13 +171,38 @@ import "~/styles/landing.css";
 
     <Card>
       <div class="apprise-card-title">
+        <span class="apprise-card-icon">
+          <img src="/assets/google-play.svg" alt="" width="97" height="96" />
+        </span>
+        <span class="apprise-card-title-text">Apprise Mobile</span>
+      </div>
+
+      <div class="apprise-card-body">
+        Connect to your self-hosted Apprise API Server from Android. Send notifications, manage services,
+        and review delivery results wherever you are.
+      </div>
+
+      <div class="apprise-card-actions">
+        <LinkButton href="/mobile/" variant="minimal">
+          <span class="apprise-card-action">
+            <span class="apprise-card-action-label">Join the Beta</span>
+            <span class="apprise-card-action-icon">
+              <DocsIcon />
+            </span>
+          </span>
+        </LinkButton>
+      </div>
+    </Card>
+
+    <Card>
+      <div class="apprise-card-title">
         <span class="apprise-card-icon"><DocsIcon /></span>
         <span class="apprise-card-title-text">Documentation and Contributions</span>
       </div>
 
-      <p class="apprise-card-body">
+      <div class="apprise-card-body">
       Help improve these guides, fix issues, and add support for new services.
-      </p>
+      </div>
 
       <div class="apprise-card-actions">
         <LinkButton href="/contributing/" variant="minimal">
