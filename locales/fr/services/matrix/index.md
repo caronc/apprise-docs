@@ -224,6 +224,7 @@ Ou directement :
 | version             | Non    | Surcharge la version de l’API Client Matrix. Les valeurs prises en charge sont **2** et **3**. La valeur par défaut est **3**. Peut aussi être fournie avec `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | hsreq               | Non    | Lorsqu’il est activé, ce qui est le cas par défaut, Apprise ajoute automatiquement le homeserver authentifié aux identifiants de salon qui n’en contiennent pas déjà un. Par exemple, `#room` devient `#room:hostname`. Définissez `no` pour désactiver ce comportement et utiliser les identifiants exactement tels qu’ils sont fournis.                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | e2ee                | Non    | Contrôle le chiffrement de bout en bout via le protocole Matrix Olm/MegOLM. Lorsqu’il est activé, ce qui est le cas par défaut, Apprise détecte automatiquement si chaque salon est configuré pour le chiffrement et chiffre alors les messages comme les pièces jointes pour ceux qui le prennent en charge, tout en envoyant les autres en texte brut. Lorsqu’Apprise crée un nouveau salon avec `e2ee=yes`, il définit l’état `m.room.encryption` dès la création afin que le salon soit chiffré dès le premier message. Cela exige le paquet Python `cryptography` et une connexion **matrixs://**. Non pris en charge en mode webhook. Définissez `no` pour toujours envoyer en clair et éviter la création de salons E2EE. La valeur par défaut est **yes**. |
+| autoverify          | Non    | Active la vérification automatique de l’appareil avec le protocole SAS de Matrix. Lors de la première utilisation, Apprise attend jusqu’à deux minutes une demande provenant d’une autre session connectée au même compte. Une vérification réussie est mémorisée. Définir `autoverify=yes` active automatiquement `e2ee=yes` aussi ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez tout de même désactiver le chiffrement. Nécessite également une connexion **matrixs://**. La valeur par défaut est **no**.                                                                                                                                                                                                                     |
 | target_user         | Non    | Identifiant utilisateur Matrix à notifier en message direct. Doit être préfixé par **@**, par exemple **@alice** ou **@alice:homeserver**. Apprise cherche, ou crée, automatiquement un salon DM avec cet utilisateur. Non pris en charge en mode webhook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | discovery           | Non    | Lorsqu’elle est activée, ce qui est le cas par défaut, Apprise effectue une recherche `.well-known/matrix/client` au premier usage pour résoudre l’URL de base réelle du homeserver. Définissez `no` pour désactiver cette découverte et vous connecter directement au nom d’hôte fourni. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                             |
 
@@ -235,6 +236,15 @@ Lors d’un envoi vers un **`{target_user}`**, Apprise recherche un salon DM exi
 :::
 :::note
 E2EE exige à la fois une URL **matrixs://**, donc HTTPS, et le paquet Python `cryptography`, installé par exemple via `pip install cryptography`. Avec une connexion **matrix://** en HTTP simple, E2EE est silencieusement ignoré et les messages sont envoyés en clair, quelle que soit la valeur de `e2ee`.
+:::
+:::caution[La vérification automatique peut retarder votre première notification]
+`autoverify=yes` active automatiquement `e2ee=yes` ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez conserver le chiffrement désactivé malgré tout.
+
+Avec `autoverify=yes`, la première notification attend jusqu’à deux minutes une demande de vérification. Dans un autre client Matrix connecté au même compte, choisissez **Vérifier la session**, puis sélectionnez l’appareil Apprise.
+
+Apprise inscrit un code à trois nombres dans ses journaux. Vérifiez qu’il correspond au code de votre autre client avant d’y approuver la vérification.
+
+Si la vérification n’aboutit pas à temps, la notification chiffrée est tout de même envoyée. Apprise attend environ 15 minutes avant de réessayer. Après une vérification réussie, les notifications suivantes n’attendent pas.
 :::
 :::tip
 Apprise met en cache les clés de session E2EE ainsi que l’état de chiffrement des salons dans son stockage persistant afin d’éviter des allers-retours réseau inutiles. Si la configuration de chiffrement d’un salon change après le premier envoi, par exemple si le chiffrement est activé sur un salon auparavant non chiffré, Apprise continuera à utiliser l’état mis en cache jusqu’à réinitialisation du stockage. Pour forcer un nouvel échange de clés et une nouvelle lecture de l’état du salon, effacez le stockage persistant Apprise de cette instance du plugin.
@@ -298,6 +308,16 @@ E2EE est activé par défaut lorsque le paquet `cryptography` est installé et q
 ```bash
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://nuxref:abc123@matrix.example.com/#general?e2ee=no"
+```
+
+Activer la vérification automatique de l’appareil par SAS (ceci active aussi
+le chiffrement E2EE, inutile de passer également `e2ee=yes`). Lors du premier
+envoi, lancez **Vérifier cet appareil** pour la session Apprise depuis un autre
+client connecté au même compte :
+
+```bash
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "matrixs://nuxref:abc123@matrix.example.com/#general?autoverify=yes"
 ```
 
 Envoyer un message direct a un utilisateur Matrix :

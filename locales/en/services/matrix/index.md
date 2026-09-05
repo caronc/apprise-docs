@@ -224,6 +224,7 @@ Or directly:
 | version             | No       | Overrides the Matrix Client API version. Supported values are **2** and **3**. Default is **3**. May also be supplied as `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | hsreq               | No       | When enabled (the default), Apprise automatically appends the authenticated homeserver to room identifiers that do not already include one. For example, `#room` becomes `#room:hostname`. Set to **no** to disable this and use room identifiers exactly as provided.                                                                                                                                                                                                                                                                                                                                                                           |
 | e2ee                | No       | Controls end-to-end encryption using the Matrix Olm/MegOLM protocol. When enabled (the default), Apprise automatically detects whether each room has encryption configured and encrypts both messages and attachments for those that do, while sending others as plain text. When Apprise creates a new room with `e2ee=yes`, it sets `m.room.encryption` at creation time so the room is encrypted from the very first message. Requires the `cryptography` Python package and a **matrixs://** (HTTPS) connection. Not supported in webhook mode. Set to **no** to always send unencrypted and to skip E2EE room creation. Default is **yes**. |
+| autoverify          | No       | Enables automatic Matrix SAS device verification. On first use, Apprise waits up to two minutes for a verification request from another session signed in to the same account. Successful verification is remembered. Setting `autoverify=yes` automatically turns on `e2ee=yes` too, so you do not need to set both; pass `e2ee=no` explicitly if you want to disable encryption anyway. Also requires a **matrixs://** (HTTPS) connection. Default is **no**.                                                                                                                                                                                  |
 | target_user         | No       | A Matrix user ID to notify via direct message. Must be prefixed with **@**, for example **@alice** or **@alice:homeserver**. Apprise looks up (or creates) a DM room with that user automatically. Not supported in webhook mode.                                                                                                                                                                                                                                                                                                                                                                                                                |
 | discovery           | No       | When enabled (the default), Apprise performs a `.well-known/matrix/client` server-discovery lookup on first use to resolve the actual homeserver base URL. Set to **no** to skip discovery and connect directly to the specified hostname. Automatically disabled in webhook mode. Default is **yes**.                                                                                                                                                                                                                                                                                                                                           |
 
@@ -237,6 +238,16 @@ When sending to a **`{target_user}`**, Apprise looks up an existing DM room via 
 
 :::note
 E2EE requires both a **matrixs://** (HTTPS) URL and the `cryptography` Python package (`pip install cryptography`). On plain **matrix://** (HTTP) connections E2EE is silently skipped and messages are sent unencrypted, regardless of the `e2ee` setting.
+:::
+
+:::caution[Automatic verification can delay your first notification]
+`autoverify=yes` implies `e2ee=yes` -- you do not need to set both. Pass `e2ee=no` explicitly if you want to keep encryption off regardless.
+
+With `autoverify=yes`, the first notification waits up to two minutes for a verification request. In another Matrix client signed in to the same account, choose **Verify session** and select the Apprise device.
+
+Apprise logs a three-number code. Confirm that it matches the code in your other client before approving the verification there.
+
+If verification does not finish in time, the encrypted notification is still sent. Apprise waits about 15 minutes before trying again. After a successful verification, later notifications do not wait.
 :::
 
 :::tip
@@ -302,6 +313,16 @@ E2EE is enabled by default when the `cryptography` package is installed and the 
 ```bash
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "matrixs://nuxref:abc123@matrix.example.com/#general?e2ee=no"
+```
+
+Enable automatic SAS device verification (this also turns on E2EE, so
+there is no need to also pass `e2ee=yes`). During the first send, start
+**Verify this device** for the Apprise session from another client signed in
+to the same account:
+
+```bash
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   "matrixs://nuxref:abc123@matrix.example.com/#general?autoverify=yes"
 ```
 
 Send a direct message to a Matrix user:
