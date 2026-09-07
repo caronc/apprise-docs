@@ -14,6 +14,23 @@ héritent de `NotifyBase`. La façon la plus rapide d'en créer un nouveau consi
 à partir d'un plugin fonctionnel proche de votre intégration cible, puis à
 adapter sa forme d'URL, son parsing et sa logique d'envoi.
 
+## Exceptions
+
+Utilisez les exceptions Apprise afin que les applications puissent traiter les
+erreurs de manière cohérente.
+
+| Exception                     | Description                                                                                                                 |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `AppriseException`            | La base de toutes les exceptions Apprise. Interceptez-la pour traiter toutes les erreurs Apprise ensemble.                  |
+| `AppriseImproperlyConfigured` | Un paramètre obligatoire manque ou n'est pas valide. Utilisez cette exception pour les contrôles du constructeur du plugin. |
+| `ApprisePluginException`      | Le plugin a échoué pour une raison sans rapport avec ses paramètres.                                                        |
+| `AppriseInvalidData`          | Les données enregistrées ou reçues ne peuvent pas être utilisées en toute sécurité.                                         |
+| `AppriseDiskIOError`          | Une opération sur un fichier ou un disque a échoué. Cette exception peut aussi être interceptée avec `OSError`.             |
+
+Importez les exceptions depuis `apprise.exception`. Les applications existantes
+qui interceptent `TypeError`, `ValueError` ou `AttributeError` restent
+compatibles avec `AppriseImproperlyConfigured`.
+
 <Tabs>
 <TabItem value="basic" label="Plugin basique">
 Ce modèle est idéal pour :
@@ -75,6 +92,7 @@ import json
 import requests
 
 from ..common import NotifyType
+from ..exception import AppriseImproperlyConfigured
 from ..url import PrivacyMode
 from ..utils import parse_bool
 from ..locale import gettext_lazy as _
@@ -132,7 +150,9 @@ class NotifyDemoHTTP(NotifyBase):
 
         self.apikey = apikey
         if not self.apikey:
-            raise TypeError(f"An invalid API key ({apikey}) was specified.")
+            raise AppriseImproperlyConfigured(
+                f"An invalid API key ({apikey}) was specified."
+            )
 
     @property
     def url_identifier(self):
@@ -250,6 +270,7 @@ import re
 from typing import Any
 
 from ..common import NotifyType
+from ..exception import AppriseImproperlyConfigured
 from ..locale import gettext_lazy as _
 from ..url import PrivacyMode
 from .base import NotifyBase
@@ -330,7 +351,9 @@ class NotifyMyService(NotifyBase):
         # TODO: Store required token(s)
         self.token = token
         if not self.token:
-            raise TypeError(_("An invalid access token was specified."))
+            raise AppriseImproperlyConfigured(
+                _("An invalid access token was specified.")
+            )
 
         # TODO: Apply defaults using template_args where reasonable
         self.mode = (
@@ -339,7 +362,7 @@ class NotifyMyService(NotifyBase):
             else str(mode).lower()
         )
         if self.mode not in self.template_args["mode"]["values"]:
-            raise TypeError(_("Invalid mode specified."))
+            raise AppriseImproperlyConfigured(_("Invalid mode specified."))
 
         self.batch = (
             self.template_args["batch"]["default"]
