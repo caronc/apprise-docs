@@ -808,6 +808,422 @@ spec:
 </TabItem>
 </Tabs>
 </TabItem>
+<TabItem label="Sans conteneur">
+
+Suivez ces instructions pour exécuter l'API Apprise directement sur un hôte,
+sans Docker. Chaque installation utilise un environnement virtuel Python, le
+gestionnaire de services du système d'exploitation et Nginx. Dans ces exemples,
+Gunicorn n'écoute que sur l'adresse locale et Nginx expose le service en HTTP
+simple sur un réseau local ou de confiance. Pour une installation accessible
+depuis Internet, ajoutez HTTPS et l'authentification comme décrit dans
+**Déploiement derrière un proxy**.
+
+  <Tabs>
+<TabItem label="Ubuntu 24.04">
+
+**Installez les paquets requis :**
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv git nginx
+```
+
+**Clonez l'API Apprise et installez ses dépendances Python :**
+
+```bash
+cd /opt
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m venv /opt/apprise-api/venv
+sudo /opt/apprise-api/venv/bin/pip install --upgrade pip
+sudo /opt/apprise-api/venv/bin/pip install -r /opt/apprise-api/requirements.txt
+sudo install -d -o www-data -g www-data \
+  /var/lib/apprise/config /var/lib/apprise/attach
+```
+
+**Créez l'unité systemd à `/etc/systemd/system/apprise.service` :**
+
+```ini
+[Unit]
+Description=Apprise API Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/apprise-api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_ADMIN=y
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/gunicorn \
+    --no-control-socket \
+    --workers 1 \
+    --worker-class gevent \
+    --timeout 300 \
+    --bind 127.0.0.1:8000 \
+    --chdir /opt/apprise-api/apprise_api \
+    core.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Activez-la et démarrez-la :**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise
+```
+
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
+lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
+processus Gunicorn limite l'utilisation des ressources pour un usage personnel
+ou une petite équipe.
+
+**Créez `/etc/nginx/sites-available/appriseapi`** pour servir les fichiers
+statiques et transmettre le reste à Gunicorn :
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 500M;
+
+    location /s/ {
+        alias /opt/apprise-api/apprise_api/static/;
+    }
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $http_host;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
+```
+
+**Activez le site et rechargez NGINX :**
+
+```bash
+sudo ln -s /etc/nginx/sites-available/appriseapi /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl enable --now nginx
+```
+
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local) — l'API
+Apprise devrait se charger.
+
+**Journaux et fichiers**
+
+- Fichiers de l'application : `/opt/apprise-api`
+- Configurations enregistrées : `/var/lib/apprise/config`
+- Pièces jointes temporaires : `/var/lib/apprise/attach`
+- Journaux de Gunicorn : `sudo journalctl -u apprise`
+- Journaux de NGINX : `/var/log/nginx/`
+
+**Gérer le service**
+
+```bash
+sudo systemctl status apprise
+sudo systemctl restart apprise
+sudo systemctl stop apprise
+```
+
+</TabItem>
+<TabItem label="Rocky Linux / RHEL 10">
+
+Les mêmes étapes fonctionnent sur Red Hat Enterprise Linux 10, Rocky Linux 10,
+et Oracle Linux 10.
+
+**Installez les paquets requis et démarrez NGINX :**
+
+```bash
+sudo dnf install -y python3 python3-pip git nginx
+sudo systemctl enable --now nginx
+```
+
+**Si firewalld est actif, autorisez le trafic HTTP :**
+
+```bash
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --reload
+```
+
+**Clonez l'API Apprise et installez ses dépendances Python :**
+
+```bash
+cd /opt
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m venv /opt/apprise-api/venv
+sudo /opt/apprise-api/venv/bin/pip install --upgrade pip
+sudo /opt/apprise-api/venv/bin/pip install -r /opt/apprise-api/requirements.txt
+sudo install -d -o nginx -g nginx \
+  /var/lib/apprise/config /var/lib/apprise/attach
+```
+
+**Créez l'unité systemd à `/etc/systemd/system/apprise.service` :**
+
+```ini
+[Unit]
+Description=Apprise API Service
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory=/opt/apprise-api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_ADMIN=y
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/gunicorn \
+    --no-control-socket \
+    --workers 1 \
+    --worker-class gevent \
+    --timeout 300 \
+    --bind 127.0.0.1:8000 \
+    --chdir /opt/apprise-api/apprise_api \
+    core.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Activez-la et démarrez-la :**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise
+```
+
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
+lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
+processus Gunicorn limite l'utilisation des ressources pour un usage personnel
+ou une petite équipe.
+
+**Copiez les fichiers statiques dans l'arborescence web de Nginx :**
+
+```bash
+sudo install -d /usr/share/nginx/html/apprise
+sudo cp -R /opt/apprise-api/apprise_api/static/. \
+  /usr/share/nginx/html/apprise/
+```
+
+Ces fichiers restent ainsi sous `/usr/share/nginx/html`, où la politique SELinux
+standard autorise Nginx à les servir sans modifier le contexte de sécurité du
+code source de l'application.
+
+**Créez `/etc/nginx/default.d/apprise.conf` :**
+
+La configuration Nginx fournie par Rocky charge ce fichier dans son bloc
+serveur par défaut. L'adresse IP du serveur fonctionne donc sans nom de domaine.
+
+```nginx
+client_max_body_size 500M;
+
+location /s/ {
+    alias /usr/share/nginx/html/apprise/;
+}
+
+location / {
+    proxy_pass         http://127.0.0.1:8000;
+    proxy_redirect     off;
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Host $http_host;
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+}
+```
+
+**Laissez NGINX joindre Gunicorn.** SELinux bloque par défaut ses connexions
+vers les autres ports locaux :
+
+```bash
+sudo setsebool -P httpd_can_network_connect 1
+```
+
+**Testez et rechargez NGINX :**
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local) — l'API
+Apprise devrait se charger.
+
+**Journaux et fichiers**
+
+- Fichiers de l'application : `/opt/apprise-api`
+- Configurations enregistrées : `/var/lib/apprise/config`
+- Pièces jointes temporaires : `/var/lib/apprise/attach`
+- Journaux de Gunicorn : `sudo journalctl -u apprise`
+- Journaux de NGINX : `/var/log/nginx/`
+
+**Gérer le service**
+
+```bash
+sudo systemctl status apprise
+sudo systemctl restart apprise
+sudo systemctl stop apprise
+```
+
+</TabItem>
+<TabItem label="FreeBSD">
+
+FreeBSD n'a pas systemd ; cette méthode utilise donc son propre gestionnaire
+de services `rc.d`. Les commandes supposent que `sudo` est installé et que
+votre compte est autorisé à l'utiliser. Sinon, ouvrez une session superutilisateur
+avec `su -` et omettez `sudo` dans chaque commande.
+
+**Installez les paquets requis :**
+
+```bash
+sudo pkg install -y python3 git nginx rust pkgconf
+python_version="$(python3 -c \
+  'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+sudo pkg install -y "py${python_version}-virtualenv"
+```
+
+Sous FreeBSD, Python est compilé sans `ensurepip`. Le paquet `virtualenv`
+correspondant à la version de Python est donc nécessaire pour créer un
+environnement qui contient Pip. Rust et `pkgconf` permettent à Pip de compiler
+des dépendances telles que `cryptography`, pour lesquelles aucun paquet binaire
+Python n'est nécessairement disponible sous FreeBSD.
+
+**Clonez l'API Apprise et installez ses dépendances Python :**
+
+```bash
+cd /usr/local
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m virtualenv /usr/local/apprise-api/venv
+sudo /usr/local/apprise-api/venv/bin/pip install --upgrade pip
+sudo /usr/local/apprise-api/venv/bin/pip install \
+  -r /usr/local/apprise-api/requirements.txt
+sudo install -d -o www -g www \
+  /var/db/apprise/config /var/db/apprise/attach
+```
+
+**Créez le script de démarrage à `/usr/local/etc/rc.d/apprise` :**
+
+```sh
+#!/bin/sh
+
+# PROVIDE: apprise
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=apprise
+rcvar=apprise_enable
+
+load_rc_config $name
+
+: ${apprise_enable:="NO"}
+: ${apprise_user:="www"}
+: ${apprise_dir:="/usr/local/apprise-api"}
+: ${apprise_venv:="${apprise_dir}/venv"}
+: ${apprise_pidfile:="/var/run/${name}.pid"}
+: ${apprise_logfile:="/var/log/${name}.log"}
+
+pidfile=${apprise_pidfile}
+command="/usr/sbin/daemon"
+command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_ADMIN=y APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
+
+run_rc_command "$1"
+```
+
+**Rendez-le exécutable, activez-le au démarrage, et lancez-le :**
+
+```bash
+sudo chmod +x /usr/local/etc/rc.d/apprise
+sudo sysrc apprise_enable=YES
+sudo service apprise start
+```
+
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
+lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
+processus Gunicorn limite l'utilisation des ressources pour un usage personnel
+ou une petite équipe. L'option `-P` enregistre le processus superviseur de
+`daemon` ; `service apprise stop` peut ainsi arrêter le service sans que Gunicorn
+soit aussitôt redémarré.
+
+**Remplacez le bloc serveur d'exemple dans la section `http { }` existante** de
+`/usr/local/etc/nginx/nginx.conf` par celui-ci :
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 500M;
+
+    location /s/ {
+        alias /usr/local/apprise-api/apprise_api/static/;
+    }
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $http_host;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
+```
+
+**Activez et démarrez NGINX :**
+
+```bash
+sudo sysrc nginx_enable=YES
+sudo nginx -t
+sudo service nginx start
+```
+
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local) — l'API
+Apprise devrait se charger.
+
+**Journaux et fichiers**
+
+- Journal Apprise : `/var/log/apprise.log`
+- Fichiers de l'application : `/usr/local/apprise-api`
+- Configurations enregistrées : `/var/db/apprise/config`
+- Pièces jointes temporaires : `/var/db/apprise/attach`
+- Fichier PID : `/var/run/apprise.pid`
+
+**Gérer le service**
+
+```bash
+sudo service apprise start
+sudo service apprise stop
+sudo service apprise restart
+sudo service nginx restart
+```
+
+</TabItem>
+  </Tabs>
+
+</TabItem>
 </Tabs>
 
 Une fois déployés, l'API et l'interface web optionnelle sont disponibles à l'adresse :

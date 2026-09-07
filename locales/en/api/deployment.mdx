@@ -804,6 +804,415 @@ spec:
 </TabItem>
 </Tabs>
 </TabItem>
+<TabItem label="Bare Metal">
+
+Use these instructions to run Apprise API directly on a host, without Docker.
+Each installation uses a Python virtual environment, the operating system's
+service manager, and Nginx. The examples keep Gunicorn on the loopback address
+and expose Nginx over plain HTTP for a local or trusted network. For an
+Internet-facing installation, add HTTPS and authentication as described in
+**Deployment Behind a Proxy**.
+
+  <Tabs>
+<TabItem label="Ubuntu 24.04">
+
+**Install the required packages:**
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv git nginx
+```
+
+**Clone Apprise API and install its Python dependencies:**
+
+```bash
+cd /opt
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m venv /opt/apprise-api/venv
+sudo /opt/apprise-api/venv/bin/pip install --upgrade pip
+sudo /opt/apprise-api/venv/bin/pip install -r /opt/apprise-api/requirements.txt
+sudo install -d -o www-data -g www-data \
+  /var/lib/apprise/config /var/lib/apprise/attach
+```
+
+**Create the systemd unit at `/etc/systemd/system/apprise.service`:**
+
+```ini
+[Unit]
+Description=Apprise API Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/apprise-api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_ADMIN=y
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/gunicorn \
+    --no-control-socket \
+    --workers 1 \
+    --worker-class gevent \
+    --timeout 300 \
+    --bind 127.0.0.1:8000 \
+    --chdir /opt/apprise-api/apprise_api \
+    core.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Enable and start it:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise
+```
+
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
+`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+keeps resource use modest for a home or small-team installation.
+
+**Create `/etc/nginx/sites-available/appriseapi`** to serve static files and
+proxy everything else to Gunicorn:
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 500M;
+
+    location /s/ {
+        alias /opt/apprise-api/apprise_api/static/;
+    }
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $http_host;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
+```
+
+**Enable the site and reload NGINX:**
+
+```bash
+sudo ln -s /etc/nginx/sites-available/appriseapi /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl enable --now nginx
+```
+
+Visit `http://your-server-ip/` (or `http://127.0.0.1/` if you're testing
+locally) — Apprise API should load.
+
+**Logs and files**
+
+- Application files: `/opt/apprise-api`
+- Saved configurations: `/var/lib/apprise/config`
+- Temporary attachments: `/var/lib/apprise/attach`
+- Gunicorn logs: `sudo journalctl -u apprise`
+- NGINX logs: `/var/log/nginx/`
+
+**Managing the service**
+
+```bash
+sudo systemctl status apprise
+sudo systemctl restart apprise
+sudo systemctl stop apprise
+```
+
+</TabItem>
+<TabItem label="Rocky Linux / RHEL 10">
+
+The same steps work on Red Hat Enterprise Linux 10, Rocky Linux 10, and
+Oracle Linux 10.
+
+**Install the required packages and start NGINX:**
+
+```bash
+sudo dnf install -y python3 python3-pip git nginx
+sudo systemctl enable --now nginx
+```
+
+**If firewalld is active, allow HTTP traffic:**
+
+```bash
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --reload
+```
+
+**Clone Apprise API and install its Python dependencies:**
+
+```bash
+cd /opt
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m venv /opt/apprise-api/venv
+sudo /opt/apprise-api/venv/bin/pip install --upgrade pip
+sudo /opt/apprise-api/venv/bin/pip install -r /opt/apprise-api/requirements.txt
+sudo install -d -o nginx -g nginx \
+  /var/lib/apprise/config /var/lib/apprise/attach
+```
+
+**Create the systemd unit at `/etc/systemd/system/apprise.service`:**
+
+```ini
+[Unit]
+Description=Apprise API Service
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory=/opt/apprise-api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_ADMIN=y
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/gunicorn \
+    --no-control-socket \
+    --workers 1 \
+    --worker-class gevent \
+    --timeout 300 \
+    --bind 127.0.0.1:8000 \
+    --chdir /opt/apprise-api/apprise_api \
+    core.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Enable and start it:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise
+```
+
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
+`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+keeps resource use modest for a home or small-team installation.
+
+**Copy the static files into Nginx's document tree:**
+
+```bash
+sudo install -d /usr/share/nginx/html/apprise
+sudo cp -R /opt/apprise-api/apprise_api/static/. \
+  /usr/share/nginx/html/apprise/
+```
+
+Keeping these files under `/usr/share/nginx/html` lets the standard SELinux
+policy serve them without relabeling the application source tree.
+
+**Create `/etc/nginx/default.d/apprise.conf`:**
+
+Rocky's packaged Nginx configuration loads this file inside its existing
+default server block, so the server's IP address works without a domain name.
+
+```nginx
+client_max_body_size 500M;
+
+location /s/ {
+    alias /usr/share/nginx/html/apprise/;
+}
+
+location / {
+    proxy_pass         http://127.0.0.1:8000;
+    proxy_redirect     off;
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Host $http_host;
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+}
+```
+
+**Let NGINX reach Gunicorn.** SELinux blocks it from connecting to other
+local ports by default:
+
+```bash
+sudo setsebool -P httpd_can_network_connect 1
+```
+
+**Test and reload NGINX:**
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Visit `http://your-server-ip/` (or `http://127.0.0.1/` if you're testing
+locally) — Apprise API should load.
+
+**Logs and files**
+
+- Application files: `/opt/apprise-api`
+- Saved configurations: `/var/lib/apprise/config`
+- Temporary attachments: `/var/lib/apprise/attach`
+- Gunicorn logs: `sudo journalctl -u apprise`
+- NGINX logs: `/var/log/nginx/`
+
+**Managing the service**
+
+```bash
+sudo systemctl status apprise
+sudo systemctl restart apprise
+sudo systemctl stop apprise
+```
+
+</TabItem>
+<TabItem label="FreeBSD">
+
+FreeBSD has no systemd, so this uses its own `rc.d` service manager instead.
+The commands assume that `sudo` is installed and your account may use it. If
+not, open a root shell with `su -` and omit `sudo` from each command.
+
+**Install the required packages:**
+
+```bash
+sudo pkg install -y python3 git nginx rust pkgconf
+python_version="$(python3 -c \
+  'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+sudo pkg install -y "py${python_version}-virtualenv"
+```
+
+FreeBSD builds Python without `ensurepip`, so the version-matched `virtualenv`
+package is required to create an environment that contains Pip. Rust and
+`pkgconf` allow Pip to build dependencies such as `cryptography`, for which
+FreeBSD wheels may not be available.
+
+**Clone Apprise API and install its Python dependencies:**
+
+```bash
+cd /usr/local
+sudo git clone https://github.com/caronc/apprise-api.git
+sudo python3 -m virtualenv /usr/local/apprise-api/venv
+sudo /usr/local/apprise-api/venv/bin/pip install --upgrade pip
+sudo /usr/local/apprise-api/venv/bin/pip install \
+  -r /usr/local/apprise-api/requirements.txt
+sudo install -d -o www -g www \
+  /var/db/apprise/config /var/db/apprise/attach
+```
+
+**Create the startup script at `/usr/local/etc/rc.d/apprise`:**
+
+```sh
+#!/bin/sh
+
+# PROVIDE: apprise
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=apprise
+rcvar=apprise_enable
+
+load_rc_config $name
+
+: ${apprise_enable:="NO"}
+: ${apprise_user:="www"}
+: ${apprise_dir:="/usr/local/apprise-api"}
+: ${apprise_venv:="${apprise_dir}/venv"}
+: ${apprise_pidfile:="/var/run/${name}.pid"}
+: ${apprise_logfile:="/var/log/${name}.log"}
+
+pidfile=${apprise_pidfile}
+command="/usr/sbin/daemon"
+command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_ADMIN=y APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
+
+run_rc_command "$1"
+```
+
+**Make it executable, enable it at boot, and start it:**
+
+```bash
+sudo chmod +x /usr/local/etc/rc.d/apprise
+sudo sysrc apprise_enable=YES
+sudo service apprise start
+```
+
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
+`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+keeps resource use modest for a home or small-team installation. The `-P`
+option records the supervising `daemon` process, allowing `service apprise
+stop` to stop the service instead of immediately restarting Gunicorn.
+
+**Replace the example server block inside the existing `http { }` section** of
+`/usr/local/etc/nginx/nginx.conf` with this one:
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 500M;
+
+    location /s/ {
+        alias /usr/local/apprise-api/apprise_api/static/;
+    }
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $http_host;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
+```
+
+**Enable and start NGINX:**
+
+```bash
+sudo sysrc nginx_enable=YES
+sudo nginx -t
+sudo service nginx start
+```
+
+Visit `http://your-server-ip/` (or `http://127.0.0.1/` if you're testing
+locally) — Apprise API should load.
+
+**Logs and files**
+
+- Apprise log: `/var/log/apprise.log`
+- Application files: `/usr/local/apprise-api`
+- Saved configurations: `/var/db/apprise/config`
+- Temporary attachments: `/var/db/apprise/attach`
+- PID file: `/var/run/apprise.pid`
+
+**Managing the service**
+
+```bash
+sudo service apprise start
+sudo service apprise stop
+sudo service apprise restart
+sudo service nginx restart
+```
+
+</TabItem>
+  </Tabs>
+
+</TabItem>
 </Tabs>
 
 Once deployed, the API and optional web interface are available at:
