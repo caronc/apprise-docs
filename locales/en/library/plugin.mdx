@@ -11,6 +11,22 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 Apprise plugins, also called **services**, are Python classes that inherit from `NotifyBase`. The fastest way to build a new one is to start from a working plugin that resembles your target integration, then adapt its URL shape, parsing, and send logic.
 
+## Exceptions
+
+Use Apprise exceptions so applications can handle failures consistently.
+
+| Exception                     | Description                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------- |
+| `AppriseException`            | The base for every Apprise exception. Catch it to handle all Apprise errors together. |
+| `AppriseImproperlyConfigured` | A required setting is missing or invalid. Use this for plugin constructor checks.     |
+| `ApprisePluginException`      | The plugin failed for a reason unrelated to its settings.                             |
+| `AppriseInvalidData`          | Stored or received data cannot be used safely.                                        |
+| `AppriseDiskIOError`          | A file or disk operation failed. It can also be caught as `OSError`.                  |
+
+Import exceptions from `apprise.exception`. Existing applications that catch
+`TypeError`, `ValueError`, or `AttributeError` remain compatible with
+`AppriseImproperlyConfigured`.
+
 <Tabs>
 <TabItem value="basic" label="Basic plugin">
 This pattern is ideal for:
@@ -71,6 +87,7 @@ import json
 import requests
 
 from ..common import NotifyType
+from ..exception import AppriseImproperlyConfigured
 from ..url import PrivacyMode
 from ..utils import parse_bool
 from ..locale import gettext_lazy as _
@@ -128,7 +145,9 @@ class NotifyDemoHTTP(NotifyBase):
 
         self.apikey = apikey
         if not self.apikey:
-            raise TypeError(f"An invalid API key ({apikey}) was specified.")
+            raise AppriseImproperlyConfigured(
+                f"An invalid API key ({apikey}) was specified."
+            )
 
     @property
     def url_identifier(self):
@@ -246,6 +265,7 @@ import re
 from typing import Any
 
 from ..common import NotifyType
+from ..exception import AppriseImproperlyConfigured
 from ..locale import gettext_lazy as _
 from ..url import PrivacyMode
 from .base import NotifyBase
@@ -326,7 +346,9 @@ class NotifyMyService(NotifyBase):
         # TODO: Store required token(s)
         self.token = token
         if not self.token:
-            raise TypeError(_("An invalid access token was specified."))
+            raise AppriseImproperlyConfigured(
+                _("An invalid access token was specified.")
+            )
 
         # TODO: Apply defaults using template_args where reasonable
         self.mode = (
@@ -335,7 +357,7 @@ class NotifyMyService(NotifyBase):
             else str(mode).lower()
         )
         if self.mode not in self.template_args["mode"]["values"]:
-            raise TypeError(_("Invalid mode specified."))
+            raise AppriseImproperlyConfigured(_("Invalid mode specified."))
 
         self.batch = (
             self.template_args["batch"]["default"]

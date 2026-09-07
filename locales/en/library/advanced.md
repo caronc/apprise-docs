@@ -77,6 +77,32 @@ obj.send(
 Using `send()` directly bypasses many of the safeguards and features (like tagging and attachment processing) provided by the main `notify()` method.
 :::
 
+## Handling Configuration Errors
+
+Apprise raises `AppriseImproperlyConfigured` when a library call receives
+missing, invalid, or conflicting settings. Catch it when your application needs
+to report a configuration problem:
+
+```python
+from apprise import AppriseAsset
+from apprise.exception import AppriseImproperlyConfigured
+
+try:
+    asset = AppriseAsset(service_timeout=-1)
+except AppriseImproperlyConfigured as error:
+    print(f"Invalid Apprise settings: {error}")
+```
+
+Existing handlers for `TypeError`, `ValueError`, or `AttributeError` continue to
+work. New code should catch `AppriseImproperlyConfigured` so configuration
+problems are easier to identify.
+
+All Apprise-specific exceptions inherit from `AppriseException`, which provides
+one catch-all when your application does not need to distinguish the cause.
+Disk failures reported as `AppriseDiskIOError` can also be caught as
+`OSError`. Plugin-specific failures based on `ApprisePluginException` can be
+handled together when their individual details are not needed.
+
 ## Proxy Support
 
 Apprise sends every notification over [requests](https://requests.readthedocs.io/), which honours the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables automatically. No Apprise-specific configuration is required — set the variable before your process starts (or export it in the environment Apprise runs under) and every outbound request routes through the proxy:
