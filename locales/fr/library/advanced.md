@@ -78,6 +78,35 @@ obj.send(
 Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::
 
+## Gestion des erreurs de configuration
+
+Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque
+reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette
+exception lorsque votre application doit signaler un problème de configuration :
+
+```python
+from apprise import AppriseAsset
+from apprise.exception import AppriseImproperlyConfigured
+
+try:
+    asset = AppriseAsset(service_timeout=-1)
+except AppriseImproperlyConfigured as error:
+    print(f"Paramètres Apprise non valides : {error}")
+```
+
+Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError`
+continuent de fonctionner. Dans le nouveau code, interceptez plutôt
+`AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de
+configuration.
+
+Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous
+pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin
+de distinguer la cause.
+Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être
+interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent
+sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs
+détails individuels ne sont pas nécessaires.
+
 ## Prise en charge des proxys
 
 Apprise envoie chaque notification via [requests](https://requests.readthedocs.io/), qui respecte automatiquement les variables d'environnement standard `HTTP_PROXY`, `HTTPS_PROXY` et `NO_PROXY`. Aucune configuration spécifique à Apprise n'est nécessaire : définissez la variable avant de démarrer votre processus (ou exportez-la dans l'environnement dans lequel Apprise s'exécute) et chaque requête sortante passera par le proxy :
