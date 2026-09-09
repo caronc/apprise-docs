@@ -66,6 +66,7 @@ Si vous avez défini un modèle avec OneSignal, vous pouvez également l'utilise
 | email           | Non    | Une adresse e-mail à notifier.                                                                                                                                |
 | subtitle        | Non    | Le sous-titre de votre notification push. Apparaît uniquement sur les appareils iOS.                                                                          |
 | language        | Non    | Le code langue à 2 caractères pour l'envoi du message. Par défaut, cette valeur est `en` si non spécifiée.                                                    |
+| lang            | Non    | Alias de `language`.                                                                                                                                          |
 | image           | Non    | Permet d'inclure l'icône/image associée au message. Par défaut, cette valeur est `yes`.                                                                       |
 | batch           | Non    | Définissez à **Oui** si vous souhaitez que toutes les cibles identifiées soient notifiées par lots (plutôt qu'individuellement). Par défaut : **Non**.        |
 
