@@ -45,13 +45,20 @@ Les notifications s'identifient aupres de `terminal-notifier` avec un `sender`, 
 
 - `macosx://myapp/`
 
+`terminal-notifier` existe en deux versions, `2` et `3`. Apprise utilise `2` par defaut, sauf s'il detecte que vous utilisez macOS 26 (Tahoe) ou une version superieure, auquel cas `3` est utilise a la place. Vous pouvez aussi forcer une version en particulier :
+
+- `macosx://_/?version=3`
+
+Les options `sender` et `image` ne sont prises en charge que par `terminal-notifier` en version `2` ; elles sont ignorees lorsque `version=3` est utilise.
+
 ## Détail des Paramètres
 
-| Variable | Obligatoire | Description                                                                                                                                                                                                                             |
-| -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sound    | Non         | La valeur `sound` peut correspondre a n'importe quel nom de son liste dans les _Preferences Son_ de votre Mac OS.                                                                                                                       |
-| image    | Non         | Associe une image au message. Cette option est activee par defaut.                                                                                                                                                                      |
-| sender   | Non         | Identifie votre script aupres de `terminal-notifier`. Peut etre defini directement dans l'URL (`macosx://myapp/`) ou avec `?sender=`. Par defaut, votre `app_id` Apprise est utilise (`Apprise`, sauf si vous en avez defini un autre). |
+| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                    |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sound    | Non         | La valeur `sound` peut correspondre a n'importe quel nom de son liste dans les _Preferences Son_ de votre Mac OS.                                                                                                                                                                              |
+| image    | Non         | Associe une image au message. Cette option est activee par defaut. Ne s'applique qu'a `terminal-notifier` en `version=2`.                                                                                                                                                                      |
+| sender   | Non         | Identifie votre script aupres de `terminal-notifier`. Peut etre defini directement dans l'URL (`macosx://myapp/`) ou avec `?sender=`. Par defaut, votre `app_id` Apprise est utilise (`Apprise`, sauf si vous en avez defini un autre). Ne s'applique qu'a `terminal-notifier` en `version=2`. |
+| version  | Non         | La version de `terminal-notifier` que vous avez installee : `2` ou `3`. Par defaut `2`, ou `3` si Apprise detecte que vous etes sur macOS 26 (Tahoe) ou une version superieure.                                                                                                                |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -71,5 +78,9 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 # Nous envoyer une notification en nous identifiant comme "myapp"
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://myapp/"
+
+# Nous envoyer une notification en forcant la version 3 de terminal-notifier
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   "macosx://_/?version=3"
 
 ```
