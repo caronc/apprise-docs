@@ -1392,6 +1392,12 @@ Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse f
 
 Les clients avec état peuvent conserver des chemins comme `/notify/{KEY}`. Les points de terminaison compatibles acceptent aussi `X-Apprise-Config-ID`, ce qui garde la clé hors de l'URL.
 
+Les configurations Nginx fournies exposent explicitement `GET /qr`,
+`/qr/{KEY}` et `/qr/@` pour configurer Apprise Mobile. Elles refusent les autres
+méthodes, ignorent le corps de la requête, désactivent la mise en tampon du proxy
+et marquent les réponses `no-store`. Le mode strict leur applique aussi la
+limite de débit réservée aux routes protégées.
+
 Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
 
 Les connexions Web expirent après 24 heures d'inactivité. Chaque requête authentifiée renouvelle ce délai. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
