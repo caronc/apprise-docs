@@ -122,11 +122,21 @@ Tous les points de terminaison de cette section sont indisponibles avec `APPRISE
 | `/notify/{KEY}`    | `POST`   | Envoie avec la configuration enregistrée. `locked` et `public` exigent un tag précis ; `disabled` est réservé à l'administrateur. |
 | `/json/urls/{KEY}` | `GET`    | Renvoie les URL et tags enregistrés. Avec `APPRISE_CONFIG_LOCK=yes`, les identifiants de l'administrateur global sont requis.     |
 | `/status/{KEY}`    | `GET`    | Renvoie l'état après authentification. `config_lock` inclut l'accès effectif de la clé.                                           |
+| `/qr/{KEY}`        | `GET`    | Renvoie l'URL `apprise://` ou `apprises://`, sans mot de passe, pour ajouter la configuration à Apprise Mobile.                   |
 | `/auth/{KEY}`      | `GET`    | Ouvre l'éditeur Web ou renvoie le mode, l'accès et le nom d'utilisateur en JSON. Le mot de passe n'est jamais renvoyé.            |
 | `/auth/{KEY}`      | `POST`   | Définit les identifiants et `access`. L'administrateur modifie l'accès ; l'utilisateur modifie uniquement son mot de passe.       |
 | `/auth/{KEY}`      | `DELETE` | Supprime l'authentification sans supprimer la configuration. Les identifiants de l'administrateur global sont requis.             |
 
 Ces points de terminaison avec état acceptent aussi `X-Apprise-Config-ID`. Par exemple, envoyez `POST /get/` avec `X-Apprise-Config-ID: mykey`. Cela garde la clé hors de l'URL. `/cfg` n'accepte pas cet en-tête.
+
+Le point de terminaison QR renvoie `url` et `uses_admin_credentials` au format
+JSON. Il peut inclure un nom d'utilisateur à préremplir, mais jamais un mot de
+passe enregistré. Utilisez `/qr/@` pour la configuration mémorisée par la
+connexion Web actuelle, ou `/qr` avec `X-Apprise-Config-ID` depuis un client
+API. Lorsque l'authentification est activée, les identifiants de
+l'administrateur ou de la configuration sont requis ; l'accès aux notifications
+`public` ne rend pas ce point de terminaison public. Les réponses ne peuvent pas
+être mises en cache.
 
 `GET /cfg` conserve la réponse v1 d'origine lorsque l'authentification est désactivée :
 

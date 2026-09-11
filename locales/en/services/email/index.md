@@ -173,21 +173,21 @@ mailto://server.com?smtp=smtp.server.com&from=noreply@server.com
 
 The From address has two components: the **email address** and the optional **display name** (what recipients see in their mail client instead of a raw address).
 
-**Historical form -- still fully supported:** `name=` accepted only a plain display name string; `from=` accepted only an email address. Using them together combined the two:
+**Historical form (still supported):** `name=` accepted a display name and `from=` accepted an email address. Together they supplied both values:
 
 ```text
 name=No%20Reply&from=noreply@example.com
 # Result: "No Reply" <noreply@example.com>
 ```
 
-**Modern form -- preferred:** Apprise now parses `Display Name <email@example.com>` in both `from=` and `name=`. Either parameter can supply both components in one value. The preferred approach is to use `from=` alone:
+**Modern form (preferred):** Both parameters accept `Display Name <email@example.com>`, although using `from=` alone is recommended:
 
 ```text
 from=No%20Reply <noreply@example.com>
 # Result: "No Reply" <noreply@example.com>
 ```
 
-When `from=` contains a complete `Name <email>` value, it is self-contained -- there is no need to also provide `name=`.
+When `from=` contains `Name <email>`, you do not need to provide `name=`.
 
 **Behaviour summary:**
 
@@ -265,15 +265,15 @@ SMTP provider limits may apply. Apprise does not impose attachment size restrict
 
 By default all attachments are sent as regular downloads (`Content-Disposition: attachment`). Adding `?inline=yes` to your URL tells Apprise to embed image attachments **inside** the email body using the `multipart/related` MIME structure defined in [RFC 2387](https://datatracker.ietf.org/doc/html/rfc2387) and the `cid:` URI scheme from [RFC 2392](https://datatracker.ietf.org/doc/html/rfc2392).
 
-### How it works
+### How It Works
 
 When `inline=yes` is set:
 
-- **HTML emails** -- Apprise scans the body for existing `cid:filename` references. For each image attachment (`image/*` MIME type) that is not yet referenced, Apprise automatically appends `<br/><img src="cid:filename">` to the body so every image is always visible inline. The MIME wrapper is upgraded from `multipart/mixed` to `multipart/related` and each inlined attachment receives `Content-Disposition: inline` and a `Content-ID` header.
-- **Plain-text emails** -- Images cannot be embedded in plain text. Apprise instead appends `[Image: filename]` placeholder lines to the body so the recipient knows image attachments are present. The attachment itself is still sent as a regular download.
-- **Non-image attachments** -- Files that are not images (PDFs, spreadsheets, etc.) are always sent as regular downloads regardless of the `inline=` setting.
+- **HTML emails:** Existing `cid:filename` references are preserved. Missing image references are appended automatically, and matching attachments receive inline MIME headers.
+- **Plain-text emails:** Images remain downloadable attachments, with `[Image: filename]` lines added to the body.
+- **Non-image attachments:** Files such as PDFs and spreadsheets remain regular downloads unless referenced explicitly by CID.
 
-### Referencing images manually
+### Referencing Images Manually
 
 If you write your own `cid:` references in an HTML body, Apprise honours them and does not add a duplicate anchor:
 
@@ -282,9 +282,9 @@ If you write your own `cid:` references in an HTML body, Apprise honours them an
 <img src="cid:chart.png">
 ```
 
-When `inline=yes` is active and `chart.png` is among the attachments, no extra anchor is appended -- the attachment is still inlined via the `Content-ID` header.
+When `inline=yes` is active and `chart.png` is attached, no extra anchor is added. The attachment still receives a `Content-ID` header.
 
-### Unmatched cid: references
+### Unmatched cid: References
 
 If a `cid:filename` appears in the body but no attachment with that exact name was provided, Apprise logs a warning to help you debug the mismatch:
 
@@ -318,7 +318,7 @@ Both modes require the [pgpy](https://pypi.org/project/pgpy/) Python package:
 pip install pgpy
 ```
 
-If pgpy is not installed, Apprise logs a warning and sends the message without PGP protection.
+If pgpy is not installed when either mode is selected, the notification fails instead of sending an unprotected message.
 
 ### Signing (`pgp=sign`)
 
@@ -362,19 +362,19 @@ mailtos://user:pass@example.com?pgp=encrypt&pgppub=/path/to/recipient-pub.asc
 
 For **public keys** (used by `pgp=encrypt` and the opportunistic-encrypt step of `pgp=sign`), Apprise searches these sources in order and uses the first key it finds:
 
-1. **Explicit key file** -- a `.asc` file supplied via `pgppub=`
-1. **Web Key Directory (WKD)** -- automatic HTTPS lookup, enabled with `wkd=yes`
-1. **Local key file** -- Apprise scans the persistent storage namespace directory for the filenames listed in the [public key search table](#public-key-search-order) below
-1. **Auto-generated key pair** -- created on first use when persistent storage is configured and `pgp_autogen` is enabled in the asset (only for `pgp=encrypt`; the opportunistic step of `pgp=sign` never auto-generates)
+1. **Explicit key file:** a `.asc` file supplied via `pgppub=`
+1. **Web Key Directory (WKD):** automatic HTTPS lookup enabled with `wkd=yes`
+1. **Local key file:** the filenames in the [public key search table](#public-key-search-order)
+1. **Auto-generated sender key:** available only for a `pgp=encrypt` self-send when persistent storage and asset-level `pgp_autogen` are enabled; external recipient keys are never generated
 
 For **private keys** (used by `pgp=sign`), Apprise searches:
 
-1. **Explicit key file** -- a `.asc` file supplied via `pgpprv=`
-1. **Local key file** -- Apprise scans the persistent storage namespace directory for the filenames listed in the [private key search table](#private-key-search-order) below
+1. **Explicit key file:** a `.asc` file supplied via `pgpprv=`
+1. **Local key file:** the filenames in the [private key search table](#private-key-search-order)
 
 ### Web Key Directory (WKD)
 
-WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) is a standard that lets mail clients automatically fetch a recipient's public key from their mail provider without any manual key exchange. If the recipient's provider publishes their key via WKD, enabling `wkd=yes` is all that is needed -- no key file, no manual import.
+WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) lets Apprise fetch a recipient's public key from their mail provider. When the provider publishes one, enable `wkd=yes`; no local key file is needed.
 
 Setting `wkd=yes` automatically implies `pgp=encrypt`, so both of the following URLs are equivalent:
 
@@ -387,24 +387,24 @@ Apprise tries two URL forms (subdomain method first, then direct method) and cac
 
 :::tip[Zero-configuration encryption]
 
-For recipients at providers that publish WKD keys (Proton Mail, Fastmail, and many self-hosted setups), `wkd=yes` is the easiest path to end-to-end encrypted email -- no key files to manage and no key generation required.
+For providers that publish WKD keys, `wkd=yes` enables encryption without managing or generating recipient key files.
 
 :::
 
 ### Auto-Generated Keys
 
-When no public key is found by any other method, Apprise generates a fresh RSA-2048 key pair and writes **both** files to the persistent storage namespace directory:
+Apprise never generates a recipient's key. For a `pgp=encrypt` self-send, it may generate the sender's RSA-2048 key pair when no key is found and persistent storage and `pgp_autogen` are enabled:
 
-| File                  | Role                                             |
-| --------------------- | ------------------------------------------------ |
-| `{localpart}-pub.asc` | Public key — used to encrypt outbound messages   |
-| `{localpart}-prv.asc` | Private key — auto-discovered by `pgp=sign` mode |
+| File                  | Role                                              |
+| --------------------- | ------------------------------------------------- |
+| `{localpart}-pub.asc` | Public key used for the encrypted self-send       |
+| `{localpart}-prv.asc` | Private key used for later signing and decryption |
 
 `{localpart}` is the part of the sender's From address before `@`, lowercased. For `user@example.com`, the files are `user-pub.asc` and `user-prv.asc`.
 
-Because `keygen()` writes the private key alongside the public key, a single `pgp=encrypt` send that triggers auto-generation also makes signing available automatically. Any subsequent `pgp=sign` URL pointing at the same storage discovers `user-prv.asc` without a `pgpprv=` parameter.
+The same storage can later discover `user-prv.asc` for `pgp=sign` without a `pgpprv=` parameter. Import this private key into the client that reads encrypted replies.
 
-Auto-generation is enabled by default when [persistent storage](/library/persistent-storage/) is configured. It can be disabled at the asset level by setting `pgp_autogen = False`. Note that `pgp_autogen` only affects `pgp=encrypt` — the opportunistic-encrypt step of `pgp=sign` never auto-generates keys.
+External recipients still require an existing key from `pgppub=`, WKD, or local storage. Set `pgp_autogen = False` on the asset to disable sender-key generation as well.
 
 ### Key File Placement
 
@@ -471,7 +471,7 @@ apprise storage list "mailtos://user:pass@example.com"
 
 The uid column in the output (e.g. `2a3f8b1c`) is the 8-character namespace hash for that URL — the same identifier shown on the Apprise-API review tab. The full cache directory is `{storage-path}/2a3f8b1c/`. Copy your key file into that directory with a matching name — for example `user@example.com-pub.asc` for a public key, or `user-prv.asc` for a private key — and Apprise will find it without any `pgppub=` or `pgpprv=` parameter.
 
-#### Per-recipient Keys (Multiple Recipients)
+#### Per-Recipient Keys (Multiple Recipients)
 
 When you notify multiple recipients in one URL, Apprise sends a **separate email per recipient** and performs the key lookup independently for each one. This means every recipient can have their own public key pre-placed in the cache directory and will receive their own individually encrypted copy.
 
@@ -504,12 +504,6 @@ Apprise sends two separate emails:
 
 If a key file is missing for a particular recipient, the opportunistic fallback applies: that recipient receives a signed-only (unencrypted) copy. No other recipients are affected — each send is independent.
 
-:::note[Deprecated parameter: `pgpkey=`]
-
-The `pgpkey=` parameter has been renamed to `pgppub=` to clarify that it holds a **public** key. Existing URLs using `pgpkey=` continue to work but produce a deprecation warning in the logs. Update your URLs to use `pgppub=` — support for `pgpkey=` will be removed in a future release.
-
-:::
-
 ## Parameter Breakdown
 
 | Variable | Required | Description                                                                                                                                                                                                                                              |
@@ -526,10 +520,9 @@ The `pgpkey=` parameter has been renamed to `pgppub=` to clarify that it holds a
 | bcc      |       No | Blind Carbon Copy recipients. Comma separated. Name formatting is supported.                                                                                                                                                                             |
 | reply    |       No | Reply-To recipients. Comma separated. Name formatting is supported.                                                                                                                                                                                      |
 | mode     |       No | Secure mode: `ssl` or `starttls`. When using `mailto://`, specifying `mode=` upgrades to a secure connection.                                                                                                                                            |
-| pgp      |       No | PGP mode: `no` (default), `sign`, or `encrypt`. Prefix shorthand accepted: `n`, `s`, `e`. Legacy `yes`/`true` implies `encrypt` (deprecated). `none`/`false` map to `no`.                                                                                |
+| pgp      |       No | PGP mode: `no` (default), `sign`, or `encrypt`. The prefixes `n`, `s`, and `e` are also accepted. `none` is treated as `no`.                                                                                                                             |
 | pgppub   |       No | Path or URL to a recipient's ASCII-armoured PGP **public** key (`.asc`). When set, WKD and auto-generation are bypassed. Masked in privacy-safe URLs.                                                                                                    |
 | pgpprv   |       No | Path to the sender's ASCII-armoured PGP **private** key (`.asc`). Required for `pgp=sign`. Passphrase-protected keys are not supported. Masked in privacy-safe URLs.                                                                                     |
-| pgpkey   |       No | **Deprecated.** Alias for `pgppub=`. Still accepted but emits a deprecation warning. Will be removed in a future release. Use `pgppub=` instead.                                                                                                         |
 | wkd      |       No | Enable Web Key Directory key discovery (`yes` or `no`). Defaults to `no`. Setting `wkd=yes` implies `pgp=encrypt` when `pgp=` is not specified.                                                                                                          |
 | inline   |       No | Embed image attachments inline in HTML email bodies (`yes` or `no`). Defaults to `no`. See [Inline Attachments](#inline-attachments-rfc-2387).                                                                                                           |
 | +Header  |       No | Add custom email headers by prefixing keys with `+`. Example: `?+X-Team=Ops`.                                                                                                                                                                            |

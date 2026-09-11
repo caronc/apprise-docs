@@ -122,11 +122,20 @@ All endpoints in this section are unavailable when `APPRISE_STATEFUL_MODE=disabl
 | `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. `locked` and `public` require a specific tag; `disabled` is administrator-only. |
 | `/json/urls/{KEY}` | `GET`    | Returns saved URLs and tags. With `APPRISE_CONFIG_LOCK=yes`, global administrator credentials are required.            |
 | `/status/{KEY}`    | `GET`    | Returns status after authentication. `config_lock` includes the key's effective access.                                |
+| `/qr/{KEY}`        | `GET`    | Returns the password-safe `apprise://` or `apprises://` URL used to add the configuration to Apprise Mobile.           |
 | `/auth/{KEY}`      | `GET`    | Opens the browser editor, or returns mode, access, and username as JSON. Passwords are never returned.                 |
 | `/auth/{KEY}`      | `POST`   | Sets credentials and `access`. Administrators change access; configuration users change only their password.           |
 | `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration. Global administrator credentials are required.                  |
 
 These stateful endpoints also accept `X-Apprise-Config-ID`. For example, send `POST /get/` with `X-Apprise-Config-ID: mykey`. This keeps the key out of the URL. `/cfg` does not accept the header.
+
+The QR endpoint returns `url` and `uses_admin_credentials` as JSON. It may
+include a username for the app to prefill, but never includes a saved password.
+Use `/qr/@` for the configuration remembered by the current browser login, or
+`/qr` with `X-Apprise-Config-ID` for API clients. When authentication is
+enabled, administrator or configuration credentials are required; `public`
+notification access does not make this endpoint public. Responses cannot be
+cached.
 
 `GET /cfg` keeps the original v1 response when authentication is disabled:
 

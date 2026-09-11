@@ -112,21 +112,21 @@ This table documents the **actual defaults** from the implementation, plus where
 
 ### Key Material Management
 
-| Field         | Type   | Default | Used by        | Notes                                                                                                                                                                                                                                                                    |
-| ------------- | ------ | ------: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pgp_autogen` | `bool` |  `True` | PGP controller | When `True` and persistent storage is configured, generates an RSA-2048 key pair (`{localpart}-pub.asc` + `{localpart}-prv.asc`) the first time no key is found. Only applies to `pgp=encrypt` mode — the opportunistic-encrypt step of `pgp=sign` never auto-generates. |
-| `pem_autogen` | `bool` |  `True` | PEM controller | Enables auto-generation of PEM keys when storage allows it and no key is provided.                                                                                                                                                                                       |
+| Field         | Type   | Default | Used by        | Notes                                                                                                                                                             |
+| ------------- | ------ | ------: | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pgp_autogen` | `bool` |  `True` | PGP controller | When `True`, a `pgp=encrypt` self-send may generate the sender's RSA-2048 key pair in persistent storage. Recipient keys and `pgp=sign` keys are never generated. |
+| `pem_autogen` | `bool` |  `True` | PEM controller | Enables auto-generation of PEM keys when storage allows it and no key is provided.                                                                                |
 
 #### PGP Auto-Generation Details
 
-When `pgp_autogen = True`, Apprise generates **both** a public and a private key on the first `pgp=encrypt` send where no key is found:
+When `pgp_autogen = True`, a `pgp=encrypt` self-send may generate **both** sender key files when no key is found:
 
-- `{localpart}-pub.asc` — RSA-2048 public key, used to encrypt outbound messages
-- `{localpart}-prv.asc` — RSA-2048 private key, auto-discovered by `pgp=sign` mode
+- `{localpart}-pub.asc` — RSA-2048 public key used for the self-send
+- `{localpart}-prv.asc` — RSA-2048 private key used for replies and later signing
 
 `{localpart}` is derived from the sender's From address (everything before `@`, lowercased).
 
-This means bootstrapping is automatic: configure `pgp=encrypt` once with persistent storage, let the first send generate both keys, then switch to `pgp=sign` and the private key will be discovered from the same storage directory without any `pgpprv=` parameter.
+The private key can later be discovered by `pgp=sign` from the same storage. Import it into the client that reads encrypted replies. External recipients always require an existing key; Apprise never generates one for them.
 
 To disable auto-generation globally:
 
@@ -139,7 +139,7 @@ asset = AppriseAsset(
 )
 ```
 
-With `pgp_autogen = False`, no key pair is created automatically. Apprise falls back to the next discovery method (WKD or an explicit `pgppub=` path) and fails the send if no key is found.
+With `pgp_autogen = False`, no key pair is created automatically. A key must come from local storage, WKD, or an explicit `pgppub=` path.
 
 ### Safety Boundaries
 

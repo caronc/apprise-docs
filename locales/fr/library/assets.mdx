@@ -27,7 +27,7 @@ apobj = Apprise(asset=asset)
 
 Si aucun asset n'est fourni, Apprise en crée un par défaut.
 
-## Cycle de vie et portée
+## Cycle de Vie et Portée
 
 - créé une seule fois, en général au démarrage de l'application ;
 - partagé entre tous les plugins chargés et le traitement de configuration ;
@@ -35,7 +35,7 @@ Si aucun asset n'est fourni, Apprise en crée un par défaut.
 
 Modifier un asset après l'avoir lié à `Apprise` peut produire des résultats incohérents d'un plugin à l'autre.
 
-## Initialisation de l'objet
+## Initialisation de l'Objet
 
 `AppriseAsset.__init__()` fournit des arguments nommés pour le stockage, les
 délais d'attente, les limites de messages et d'autres réglages partagés.
@@ -50,11 +50,11 @@ configuration YAML.
 
 ---
 
-## Valeurs par défaut et référence des champs
+## Valeurs par Défaut et Référence des Champs
 
 Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentation, ainsi que l'endroit où chaque champ est utilisé.
 
-### Identité et présentation
+### Identité et Présentation
 
 | Champ                | Type              |                          Par défaut | Utilisé par                       | Notes                                                                                                |
 | -------------------- | ----------------- | ----------------------------------: | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -68,7 +68,7 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `image_url_logo`     | `str`             |                      URL GitHub raw | `image_url(logo=True)`            | Utilisé pour le logo de l'application.                                                               |
 | `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`    | Utilisé pour la résolution locale d'icônes et le chargement des octets bruts.                        |
 
-### Aides de correspondance de type
+### Aides de Correspondance de Type
 
 | Champ                 | Type                   |  Valeur par défaut | Utilisé par | Notes                                                      |
 | --------------------- | ---------------------- | -----------------: | ----------- | ---------------------------------------------------------- |
@@ -77,7 +77,7 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `ascii_notify_map`    | `dict[NotifyType,str]` | mappage type→jeton | `ascii()`   | Jetons ASCII par défaut pour les contextes purement texte. |
 | `default_ascii_chars` | `str`                  |              `[?]` | `ascii()`   | Utilisé lorsqu'un mappage est absent.                      |
 
-### Interprétation du contenu
+### Interprétation du Contenu
 
 | Champ               | Type           |  Défaut | Utilisé par            | Notes                                                                                                                                    |
 | ------------------- | -------------- | ------: | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -86,7 +86,7 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `interpret_escapes` | `bool`         | `False` | Pré-traitement message | Active `\n`, `\t`, etc. avant l'envoi.                                                                                                   |
 | `encoding`          | `str`          | `utf-8` | Encodage               | Utilisé lors du traitement des chaînes et par certains services pendant l'envoi. Conservez la valeur par défaut sauf besoin particulier. |
 
-### Concurrence et envoi
+### Concurrence et Envoi
 
 | Champ                    | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
 | ------------------------ | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -97,13 +97,13 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `result_log_memory_size` | `int`           |    `0` | Journaux du résultat     | Octets conservés en mémoire avant de transférer les journaux vers un fichier temporaire. Utilisé seulement si `result_log_disk_size` est supérieur à `0`.                                                                  |
 | `result_log_disk_size`   | `int`           |    `0` | Journaux du résultat     | Espace disque temporaire maximal pour le résultat d'une notification. `0` conserve tous les journaux en mémoire.                                                                                                           |
 
-### Découverte de plugins
+### Découverte de Plugins
 
 | Champ          | Type        | Défaut | Utilisé par             | Notes                                                 |
 | -------------- | ----------- | -----: | ----------------------- | ----------------------------------------------------- |
 | `plugin_paths` | `list[str]` |   `[]` | Chargement personnalisé | Déclenche la détection de modules à l'initialisation. |
 
-### Stockage persistant
+### Stockage Persistant
 
 | Champ           | Type                  | Défaut | Utilisé par                  | Notes                                                                                                |
 | --------------- | --------------------- | -----: | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -112,23 +112,23 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `storage_idlen` | `int`                 |    `8` | Génération d'espaces nommés  | Contrôle la longueur des répertoires de namespace générés.                                           |
 | `storage_salt`  | `bytes`               |  `b""` | Génération d'espaces nommés  | Fournit un salage facultatif ; les chaînes sont encodées avec `encoding`.                            |
 
-### Gestion du matériel de clé
+### Gestion du Matériel de Clé
 
-| Champ         | Type   | Défaut | Utilisé par    | Notes                                                                                                                                                                                                                                                                                          |
-| ------------- | ------ | -----: | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pgp_autogen` | `bool` | `True` | Contrôleur PGP | Quand `True` et que le stockage persistant est configuré, génère une paire de clés RSA-2048 (`{localpart}-pub.asc` + `{localpart}-prv.asc`) la première fois qu'aucune clé n'est trouvée. S'applique uniquement à `pgp=encrypt` -- l'étape opportuniste de `pgp=sign` ne génère jamais de clé. |
-| `pem_autogen` | `bool` | `True` | Contrôleur PEM | Active la génération automatique de clés PEM si le stockage le permet et qu'aucune clé n'est fournie.                                                                                                                                                                                          |
+| Champ         | Type   | Défaut | Utilisé par    | Notes                                                                                                                                                                                                   |
+| ------------- | ------ | -----: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pgp_autogen` | `bool` | `True` | Contrôleur PGP | Quand `True`, un auto-envoi avec `pgp=encrypt` peut générer la paire de clés RSA-2048 de l'expéditeur dans le stockage persistant. Les clés des destinataires et de `pgp=sign` ne sont jamais générées. |
+| `pem_autogen` | `bool` | `True` | Contrôleur PEM | Active la génération automatique de clés PEM si le stockage le permet et qu'aucune clé n'est fournie.                                                                                                   |
 
-#### Détails de la génération automatique PGP
+#### Détails de la Génération Automatique PGP
 
-Quand `pgp_autogen = True`, Apprise génère **les deux** clés (publique et privée) lors du premier envoi `pgp=encrypt` où aucune clé n'est trouvée :
+Quand `pgp_autogen = True`, un auto-envoi avec `pgp=encrypt` peut générer **les deux** fichiers de clés de l'expéditeur si aucune clé n'est trouvée :
 
-- `{localpart}-pub.asc` -- clé publique RSA-2048, utilisée pour chiffrer les messages sortants
-- `{localpart}-prv.asc` -- clé privée RSA-2048, découverte automatiquement par le mode `pgp=sign`
+- `{localpart}-pub.asc` — clé publique RSA-2048 utilisée pour l'auto-envoi
+- `{localpart}-prv.asc` — clé privée RSA-2048 utilisée pour les réponses et les signatures ultérieures
 
 `{localpart}` est dérivé de l'adresse From de l'expéditeur (tout ce qui précède le `@`, en minuscules).
 
-L'amorçage est donc automatique : configurez `pgp=encrypt` une fois avec le stockage persistant, laissez le premier envoi générer les deux clés, puis passez à `pgp=sign` -- la clé privée sera découverte depuis le même répertoire de stockage, sans paramètre `pgpprv=`.
+La clé privée peut ensuite être découverte par `pgp=sign` dans le même stockage. Importez-la dans le client qui lit les réponses chiffrées. Les destinataires externes nécessitent toujours une clé existante ; Apprise n'en génère jamais pour eux.
 
 Pour désactiver la génération automatique globalement :
 
@@ -141,9 +141,9 @@ asset = AppriseAsset(
 )
 ```
 
-Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement. Apprise passe à la méthode de découverte suivante (WKD ou un chemin `pgppub=` explicite) et échoue l'envoi si aucune clé n'est trouvée.
+Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement. Une clé doit provenir du stockage local, de WKD ou d'un chemin `pgppub=` explicite.
 
-### Limites de sécurité
+### Limites de Sécurité
 
 | Champ                      | Type             |         Défaut | Utilisé par                      | Notes                                                                                                                                                                                                                                       |
 | -------------------------- | ---------------- | -------------: | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -154,7 +154,7 @@ Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement.
 | `payload_min_buffer`       | `int`            |           `25` | Formatage/découpage des messages | Caractères réservés à l'autre côté avant de conserver le côté court en entier ; voir [Plafond de taille des messages](#plafond-de-taille-des-messages).                                                                                     |
 | `timezone`                 | `str` / `tzinfo` | fuseau système | Comportement temporel            | Définit le fuseau horaire utilisé par les plugins qui génèrent des horodatages. Accepte un nom IANA comme `"America/Toronto"` ou un objet `tzinfo`. YAML accepte `timezone` ou son alias `tz`.                                              |
 
-## Schémas d'utilisation courants
+## Schémas d'Utilisation Courants
 
 <Tabs>
 
@@ -285,7 +285,7 @@ asset = AppriseAsset(timezone="America/Toronto")
 
 </Tabs>
 
-## Résolution d'icônes et d'images
+## Résolution d'Icônes et d'Images
 
 Apprise résout les icônes à l'aide de masques configurables.
 
@@ -305,7 +305,7 @@ asset = AppriseAsset(
 
 ---
 
-## Contrôles de sécurité
+## Contrôles de Sécurité
 
 ### Redirections HTTP
 
@@ -328,7 +328,7 @@ schema://token/?redirect=yes
 schema://token/?redirect=no
 ```
 
-### Journalisation sécurisée
+### Journalisation Sécurisée
 
 Lorsqu'elle est activée, les secrets sont masqués dans toutes les sorties de journal.
 
@@ -338,7 +338,7 @@ asset = AppriseAsset(secure_logging=True)
 
 La désactiver est fortement déconseillé en dehors d'environnements isolés.
 
-### Plafond de taille des messages
+### Plafond de Taille des Messages
 
 `payload_max_size` définit la limite du message, c'est-à-dire le budget total
 de caractères (`N`) pour le titre et le corps avant le formatage ou le
@@ -391,7 +391,7 @@ admissible peut donc utiliser toute la limite.
 Le formatage et l'échappement peuvent ensuite ajouter quelques caractères.
 La limite s'applique à tous les modes `overflow=`, y compris `upstream`.
 
-## Limites des fichiers de configuration
+## Limites des Fichiers de Configuration
 
 YAML prend volontairement en charge moins de réglages d'asset que le
 constructeur Python. Les contrôles numériques comme `service_timeout`,
@@ -408,7 +408,7 @@ asset:
   timezone: America/Toronto # ou : tz: America/Toronto
 ```
 
-## Voir aussi
+## Voir Aussi
 
 - [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/attente par service, les délais maximum par service et les remplacements par appel dans les fichiers de configuration.
 - [Résultats de notification](./results/) -- comment un service en échec ou dont le délai a expiré vous est signalé depuis `notify()`.
