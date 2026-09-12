@@ -12,6 +12,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - brevo://APIToken:FromEmail/ToEmail
   - brevo://APIToken:FromEmail/ToEmail1/ToEmail2/ToEmailN
@@ -59,16 +63,16 @@ The plugin URL template is:
 
 ## Parameter Breakdown
 
-| Variable    | Required | Description                                                                |
-| ----------- | -------- | -------------------------------------------------------------------------- |
-| `APIToken`  | Yes      | Your Brevo transactional API key (`api-key` header value).                 |
-| `FromEmail` | Yes      | Verified sender email address in Brevo (`sender.email`).                   |
-| `ToEmail`   | No       | One or more recipient email addresses in the URL path.                     |
-| `to`        | No       | Additional recipients as a comma-separated list in the query string.       |
-| `cc`        | No       | Carbon-copy recipients, comma-separated.                                   |
-| `bcc`       | No       | Blind carbon-copy recipients, comma-separated.                             |
-| `reply`     | No       | Reply-To header, optionally including a display name.                      |
-| `format`    | No       | Overrides default format (`html` or `text`), consistent with Apprise core. |
+| Variable    | Required | Description                                                                           |
+| ----------- | -------- | ------------------------------------------------------------------------------------- |
+| `APIToken`  | Yes      | Your Brevo transactional API key (`api-key` header value).                            |
+| `FromEmail` | Yes      | Verified sender email address in Brevo (`sender.email`).                              |
+| `ToEmail`   | No       | One or more recipient email addresses in the URL path.                                |
+| `to`        | No       | Additional recipients as a comma-separated list in the query string.                  |
+| `cc`        | No       | Carbon-copy recipients, comma-separated.                                              |
+| `bcc`       | No       | Blind carbon-copy recipients, comma-separated.                                        |
+| `reply`     | No       | Reply-To header, optionally including a display name.                                 |
+| `format`    | No       | Brevo sends HTML by default. Set this to `text` to send a plain-text message instead. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 

@@ -17,14 +17,22 @@ async def main():
     apobj = apprise.Apprise()
     apobj.add('mailto://user:pass@example.com')
 
-    # Attendre l'envoi de la notification
-    await apobj.async_notify(
+    # Attendre l'envoi de la notification. Comme notify(),
+    # async_notify() retourne un AppriseResult : gardez-le si vous
+    # voulez savoir si l'envoi a réussi.
+    result = await apobj.async_notify(
         title='Test asynchrone',
         body='Ceci a été envoyé de manière asynchrone',
     )
 
+    if not result:
+        print("L'envoi a échoué :", result.status.name)
+
 asyncio.run(main())
 ```
+
+Voir [Résultats de notification](/library/results/) pour tout ce que `result`
+peut vous dire : détail par service, durée, journaux capturés, et plus encore.
 
 ## Sérialisation (Pickle)
 
@@ -69,6 +77,35 @@ obj.send(
 :::caution
 Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::
+
+## Gestion des erreurs de configuration
+
+Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque
+reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette
+exception lorsque votre application doit signaler un problème de configuration :
+
+```python
+from apprise import AppriseAsset
+from apprise.exception import AppriseImproperlyConfigured
+
+try:
+    asset = AppriseAsset(service_timeout=-1)
+except AppriseImproperlyConfigured as error:
+    print(f"Paramètres Apprise non valides : {error}")
+```
+
+Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError`
+continuent de fonctionner. Dans le nouveau code, interceptez plutôt
+`AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de
+configuration.
+
+Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous
+pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin
+de distinguer la cause.
+Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être
+interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent
+sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs
+détails individuels ne sont pas nécessaires.
 
 ## Prise en charge des proxys
 

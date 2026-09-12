@@ -7,13 +7,13 @@ sidebar:
 
 Persistent Storage allows Apprise to cache data locally. This greatly reduces the number of API transactions between you and the service(s) you are using.
 
-## Why use Persistent Storage?
+## Why Use Persistent Storage?
 
 Some services require complex authentication handshakes or resource lookups that are "expensive" to perform every time you send a notification.
 
 - **Matrix:** Login information is cached locally to avoid re-authenticating with the homeserver on every request.
 - **Telegram:** User account details are cached to save extra fetches to the service.
-- **Email (PGP):** When PGP encryption is enabled without supplying explicit key files, Apprise auto-generates a PGP key pair and stores it persistently so the same keys are reused across every run.
+- **Email (PGP):** An encrypted self-send can generate and store the sender's PGP key pair for reuse. External recipient keys are never generated.
 
 ## Storage Locations
 

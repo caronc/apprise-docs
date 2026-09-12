@@ -19,6 +19,19 @@ schemas:
   - schema://: insecure
   - schemas://
 
+# Optional. Declares which message format(s) this service accepts: any of
+# text, html, markdown. Omit this field entirely if the service only
+# accepts plain text -- that is the implicit behavior with no body_formats
+# block at all.
+#
+# When declaring more than one format, mark exactly one entry ": default"
+# the same way 'schemas' marks an entry ": insecure" above. If no entry is
+# marked default, the first one listed is used. Declaring more than one
+# default fails documentation validation.
+# body_formats:
+#   - html: default
+#   - text
+
 sample_urls:
   # These will automatically be rendered for users visiting the main service tab
   # Do not specify more than 4 or 5 as it tends to bloat the main display; users

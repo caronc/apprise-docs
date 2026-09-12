@@ -11,6 +11,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - mailto://userid:pass@domain.com
   - mailtos://domain.com?user=userid&pass=password
@@ -21,6 +25,10 @@ sample_urls:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Format du Message
+
+Les e-mails sont envoyés en HTML par défaut, avec une version texte brut pour les clients qui en ont besoin. Définissez `?format=text` si vous voulez envoyer uniquement un e-mail en texte brut.
 
 ## Syntaxe
 
@@ -165,21 +173,21 @@ mailto://server.com?smtp=smtp.server.com&from=noreply@server.com
 
 L'adresse d'expéditeur comporte deux composantes : l'**adresse email** et le **nom d'affichage** facultatif (ce que les destinataires voient dans leur client mail à la place d'une adresse brute).
 
-**Forme historique -- toujours entièrement supportée :** `name=` n'acceptait qu'une chaîne de nom d'affichage ; `from=` n'acceptait qu'une adresse email. Utilisés ensemble, ils étaient combinés :
+**Forme historique (toujours prise en charge) :** `name=` acceptait un nom d'affichage et `from=` une adresse e-mail. Ensemble, ils fournissaient les deux valeurs :
 
 ```text
 name=No%20Reply&from=noreply@example.com
 # Résultat : "No Reply" <noreply@example.com>
 ```
 
-**Forme moderne -- recommandée :** Apprise analyse désormais le format `Nom d'Affichage <email@example.com>` dans `from=` et `name=`. L'un ou l'autre paramètre peut fournir les deux composantes en une seule valeur. L'approche recommandée est d'utiliser `from=` seul :
+**Forme moderne (recommandée) :** les deux paramètres acceptent `Nom d'affichage <email@example.com>`, mais il est recommandé d'utiliser uniquement `from=` :
 
 ```text
 from=No%20Reply <noreply@example.com>
 # Résultat : "No Reply" <noreply@example.com>
 ```
 
-Lorsque `from=` contient une valeur `Nom <email>` complète, il est autonome -- il n'est pas nécessaire de fournir également `name=`.
+Lorsque `from=` contient `Nom <email>`, il n'est pas nécessaire de fournir `name=`.
 
 **Récapitulatif des comportements :**
 
@@ -261,11 +269,11 @@ Par défaut, toutes les pièces jointes sont envoyées comme téléchargements s
 
 Lorsque `inline=yes` est défini :
 
-- **E-mails HTML** -- Apprise analyse le corps à la recherche de références `cid:nom_de_fichier` existantes. Pour chaque pièce jointe de type image (type MIME `image/*`) qui n'est pas encore référencée, Apprise ajoute automatiquement `<br/><img src="cid:nom_de_fichier">` à la fin du corps, de sorte que chaque image soit toujours visible en ligne. L'enveloppe MIME passe de `multipart/mixed` à `multipart/related`, et chaque pièce jointe intégrée reçoit les en-têtes `Content-Disposition: inline` et `Content-ID`.
-- **E-mails en texte brut** -- les images ne peuvent pas être incorporées dans du texte brut. Apprise ajoute à la place des lignes `[Image: nom_de_fichier]` au corps, afin que le destinataire sache que des images sont jointes. La pièce jointe est tout de même envoyée comme téléchargement standard.
-- **Pièces jointes non-images** -- les fichiers qui ne sont pas des images (PDF, tableurs, etc.) sont toujours envoyés comme téléchargements standards, quel que soit le paramètre `inline=`.
+- **E-mails HTML :** les références `cid:nom_de_fichier` existantes sont conservées. Les références d'images manquantes sont ajoutées et les pièces jointes correspondantes reçoivent les en-têtes MIME nécessaires.
+- **E-mails en texte brut :** les images restent téléchargeables et des lignes `[Image: nom_de_fichier]` sont ajoutées au corps.
+- **Pièces jointes non-images :** les PDF et autres fichiers restent téléchargeables, sauf s'ils sont explicitement référencés par CID.
 
-### Référencer les images manuellement
+### Référencer les Images Manuellement
 
 Si vous écrivez vous-même des références `cid:` dans un corps HTML, Apprise les respecte et n'ajoute pas d'ancre en doublon :
 
@@ -274,9 +282,9 @@ Si vous écrivez vous-même des références `cid:` dans un corps HTML, Apprise 
 <img src="cid:chart.png">
 ```
 
-Lorsque `inline=yes` est actif et que `chart.png` fait partie des pièces jointes, aucune ancre supplémentaire n'est ajoutée -- la pièce jointe est quand même intégrée via l'en-tête `Content-ID`.
+Lorsque `inline=yes` est actif et que `chart.png` est joint, aucune ancre supplémentaire n'est ajoutée. La pièce jointe reçoit tout de même un en-tête `Content-ID`.
 
-### Références cid: sans pièce jointe correspondante
+### Références cid: sans Pièce Jointe Correspondante
 
 Si une référence `cid:nom_de_fichier` apparaît dans le corps mais qu'aucune pièce jointe portant ce nom exact n'a été fournie, Apprise enregistre un avertissement pour vous aider à déboguer l'incohérence :
 
@@ -310,7 +318,7 @@ Ces deux modes nécessitent le package Python [pgpy](https://pypi.org/project/pg
 pip install pgpy
 ```
 
-Si pgpy n'est pas installé, Apprise enregistre un avertissement et envoie le message sans protection PGP.
+Si pgpy n'est pas installé lorsqu'un de ces modes est sélectionné, la notification échoue au lieu d'envoyer un message non protégé.
 
 ### Signature (`pgp=sign`)
 
@@ -354,19 +362,19 @@ mailtos://user:pass@example.com?pgp=encrypt&pgppub=/chemin/vers/destinataire-pub
 
 Pour les **clés publiques** (utilisées par `pgp=encrypt` et l'étape de chiffrement opportuniste de `pgp=sign`), Apprise cherche dans ces sources dans l'ordre et utilise la première clé trouvée :
 
-1. **Fichier de clé explicite** -- un fichier `.asc` fourni via `pgppub=`
-1. **Web Key Directory (WKD)** -- récupération automatique via HTTPS, activée avec `wkd=yes`
-1. **Fichier de clé local** -- Apprise parcourt le répertoire d'espace de noms du stockage persistant en cherchant les noms de fichiers listés dans le [tableau de recherche des clés publiques](#ordre-de-recherche-des-cles-publiques) ci-dessous
-1. **Paire de clés générée automatiquement** -- créée lors de la première utilisation lorsque le stockage persistant est configuré et que `pgp_autogen` est activé dans l'asset (uniquement pour `pgp=encrypt` ; l'étape opportuniste de `pgp=sign` ne génère jamais de clé automatiquement)
+1. **Fichier de clé explicite :** un fichier `.asc` fourni via `pgppub=`
+1. **Web Key Directory (WKD) :** recherche HTTPS automatique activée avec `wkd=yes`
+1. **Fichier de clé local :** les noms du [tableau de recherche des clés publiques](#ordre-de-recherche-des-cles-publiques)
+1. **Clé d'expéditeur générée automatiquement :** disponible uniquement pour un auto-envoi avec `pgp=encrypt` lorsque le stockage persistant et l'option d'asset `pgp_autogen` sont activés ; les clés des destinataires externes ne sont jamais générées
 
 Pour les **clés privées** (utilisées par `pgp=sign`), Apprise cherche :
 
-1. **Fichier de clé explicite** -- un fichier `.asc` fourni via `pgpprv=`
-1. **Fichier de clé local** -- Apprise parcourt le répertoire d'espace de noms du stockage persistant en cherchant les noms de fichiers listés dans le [tableau de recherche des clés privées](#ordre-de-recherche-des-cles-privees) ci-dessous
+1. **Fichier de clé explicite :** un fichier `.asc` fourni via `pgpprv=`
+1. **Fichier de clé local :** les noms du [tableau de recherche des clés privées](#ordre-de-recherche-des-cles-privees)
 
 ### Web Key Directory (WKD)
 
-Le WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) est un standard qui permet aux clients de messagerie de récupérer automatiquement la clé publique d'un destinataire auprès de son fournisseur, sans échange manuel de clé. Si le fournisseur du destinataire publie sa clé via WKD, activer `wkd=yes` est tout ce qu'il faut -- aucun fichier de clé, aucune importation manuelle.
+Le WKD ([RFC 9080](https://datatracker.ietf.org/doc/html/rfc9080)) permet à Apprise de récupérer la clé publique d'un destinataire auprès de son fournisseur. Si celui-ci en publie une, activez `wkd=yes` ; aucun fichier local n'est nécessaire.
 
 Définir `wkd=yes` implique automatiquement `pgp=encrypt`, ainsi les deux URL suivantes sont équivalentes :
 
@@ -379,24 +387,24 @@ Apprise essaie deux formes d'URL (méthode sous-domaine en premier, puis méthod
 
 :::tip[Chiffrement sans configuration]
 
-Pour les destinataires chez des fournisseurs qui publient des clés WKD (Proton Mail, Fastmail et de nombreuses installations auto-hébergées), `wkd=yes` est la façon la plus simple d'obtenir un e-mail chiffré de bout en bout -- aucun fichier de clé à gérer, aucune génération de clé requise.
+Pour les fournisseurs qui publient des clés WKD, `wkd=yes` active le chiffrement sans gérer ni générer de fichiers de clés destinataires.
 
 :::
 
 ### Clés Générées Automatiquement
 
-Lorsqu'aucune clé publique n'est trouvée par une autre méthode, Apprise génère une nouvelle paire de clés RSA-2048 et écrit **les deux** fichiers dans le répertoire d'espace de noms du stockage persistant :
+Apprise ne génère jamais la clé d'un destinataire. Pour un auto-envoi avec `pgp=encrypt`, il peut générer la paire de clés RSA-2048 de l'expéditeur si aucune clé n'est trouvée et si le stockage persistant et `pgp_autogen` sont activés :
 
-| Fichier               | Rôle                                                           |
-| --------------------- | -------------------------------------------------------------- |
-| `{localpart}-pub.asc` | Clé publique — utilisée pour chiffrer les messages sortants    |
-| `{localpart}-prv.asc` | Clé privée — découverte automatiquement par le mode `pgp=sign` |
+| Fichier               | Rôle                                                  |
+| --------------------- | ----------------------------------------------------- |
+| `{localpart}-pub.asc` | Clé publique utilisée pour l'auto-envoi chiffré       |
+| `{localpart}-prv.asc` | Clé privée utilisée ensuite pour signer et déchiffrer |
 
 `{localpart}` est la partie de l'adresse From de l'expéditeur avant le `@`, en minuscules. Pour `user@example.com`, les fichiers sont `user-pub.asc` et `user-prv.asc`.
 
-Comme `keygen()` écrit la clé privée en même temps que la clé publique, un seul envoi `pgp=encrypt` qui déclenche la génération automatique rend aussi la signature disponible. Tout envoi `pgp=sign` ultérieur pointant vers le même stockage découvrira `user-prv.asc` sans paramètre `pgpprv=`.
+Le même stockage peut ensuite retrouver `user-prv.asc` pour `pgp=sign` sans paramètre `pgpprv=`. Importez cette clé privée dans le client qui lira les réponses chiffrées.
 
-La génération automatique est activée par défaut lorsque le [stockage persistant](/library/persistent-storage/) est configuré. Elle peut être désactivée au niveau de l'asset en définissant `pgp_autogen = False`. Notez que `pgp_autogen` ne concerne que `pgp=encrypt` -- l'étape de chiffrement opportuniste de `pgp=sign` ne génère jamais de clé automatiquement.
+Les destinataires externes nécessitent toujours une clé existante fournie par `pgppub=`, WKD ou le stockage local. Définissez `pgp_autogen = False` sur l'asset pour désactiver également la génération de la clé de l'expéditeur.
 
 ### Emplacement des Fichiers de Clé
 
@@ -463,7 +471,7 @@ apprise storage list "mailtos://user:pass@example.com"
 
 La colonne uid dans la sortie (ex. `2a3f8b1c`) est le hash d'espace de noms à 8 caractères de cette URL — le même identifiant affiché dans l'onglet de révision d'Apprise-API. Le répertoire de cache complet est `{storage-path}/2a3f8b1c/`. Copiez votre fichier de clé dans ce répertoire avec un nom correspondant — par exemple `user@example.com-pub.asc` pour une clé publique, ou `user-prv.asc` pour une clé privée — et Apprise la trouvera sans paramètre `pgppub=` ni `pgpprv=`.
 
-#### Clés par destinataire (destinataires multiples)
+#### Clés par Destinataire (Destinataires Multiples)
 
 Lorsque vous notifiez plusieurs destinataires dans une seule URL, Apprise envoie un **e-mail séparé par destinataire** et effectue la recherche de clé indépendamment pour chacun. Chaque destinataire peut donc avoir sa propre clé publique pré-placée dans le répertoire de cache et recevoir sa propre copie chiffrée individuellement.
 
@@ -496,12 +504,6 @@ Apprise envoie deux e-mails séparés :
 
 Si un fichier de clé est manquant pour un destinataire particulier, le repli opportuniste s'applique : ce destinataire reçoit une copie signée uniquement (non chiffrée). Les autres destinataires ne sont pas affectés — chaque envoi est indépendant.
 
-:::note[Paramètre déprécié : `pgpkey=`]
-
-Le paramètre `pgpkey=` a été renommé en `pgppub=` pour indiquer clairement qu'il référence une clé **publique**. Les URL existantes utilisant `pgpkey=` continuent de fonctionner mais génèrent un avertissement de dépréciation dans les logs. Mettez à jour vos URL pour utiliser `pgppub=` -- la prise en charge de `pgpkey=` sera supprimée dans une prochaine version.
-
-:::
-
 ## Détail des Paramètres
 
 | Variable | Requis | Description                                                                                                                                                                                                                                                    |
@@ -518,10 +520,9 @@ Le paramètre `pgpkey=` a été renommé en `pgppub=` pour indiquer clairement q
 | bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                             |
 | reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                    |
 | mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                                                                                                                         |
-| pgp      |    Non | Mode PGP : `no` (par défaut), `sign` ou `encrypt`. Abréviations acceptées : `n`, `s`, `e`. Les valeurs `yes`/`true` impliquent `encrypt` (dépréciées). `none`/`false` correspondent à `no`.                                                                    |
+| pgp      |    Non | Mode PGP : `no` (par défaut), `sign` ou `encrypt`. Les préfixes `n`, `s` et `e` sont également acceptés. `none` correspond à `no`.                                                                                                                             |
 | pgppub   |    Non | Chemin ou URL vers la clé PGP **publique** blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Masqué dans les URL anonymisées.                                                                                  |
 | pgpprv   |    Non | Chemin vers la clé PGP **privée** blindée ASCII (`.asc`) de l'expéditeur. Requis pour `pgp=sign`. Les clés protégées par phrase de passe ne sont pas prises en charge. Masqué dans les URL anonymisées.                                                        |
-| pgpkey   |    Non | **Déprécié.** Alias de `pgppub=`. Toujours accepté mais génère un avertissement de dépréciation. Sera supprimé dans une prochaine version. Utilisez `pgppub=` à la place.                                                                                      |
 | wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.                                                                                                    |
 | inline   |    Non | Incorpore les pièces jointes de type image dans le corps des e-mails HTML (`yes` ou `no`). Par défaut : `no`. Voir [Pièces Jointes Intégrées](#pieces-jointes-integrees-rfc-2387).                                                                             |
 | +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                                                                                                             |

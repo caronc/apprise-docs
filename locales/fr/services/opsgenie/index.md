@@ -20,19 +20,23 @@ limits:
   max_chars: 15000
 ---
 
+:::note[Retrait prochain du service]
+Atlassian a cessé les nouvelles ventes d'Opsgenie le 4 juin 2025 et mettra fin
+au support le 5 avril 2027. Opsgenie reste disponible dans Apprise tant que le
+service fonctionne. Pour une nouvelle configuration ou une migration, consultez
+[`jira://`](/services/jira/) et le [guide de migration officiel d'Atlassian](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/).
+:::
+
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Configuration du Compte
 
-1. Rendez-vous sur [https://www.opsgenie.com](https://www.opsgenie.com) pour creer votre compte.
-2. [Generez votre cle API d'integration](https://app.opsgenie.com/settings/integration/add/API/)
+1. Connectez-vous à votre compte existant sur [Opsgenie](https://www.opsgenie.com).
+2. [Générez votre clé API d'intégration](https://app.opsgenie.com/settings/integration/add/API/)
 
 :::note
-Vous devez generer une cle API d'integration ; elle ne doit pas etre confondue avec la cle API de gestion Opsgenie.
-:::
-:::caution
-Opsgenie est en cours d'abandon par Atlassian. Envisagez une migration vers [Jira Service Management](../jira/), qui fournit la meme fonctionnalite. Consultez le [guide de migration Atlassian](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/) pour les details.
+Vous devez générer une clé API d'intégration ; ne la confondez pas avec la clé API de gestion Opsgenie.
 :::
 
 ## Syntaxe
@@ -61,14 +65,14 @@ Vous pouvez aussi melanger les cibles :
 
 | Variable   | Obligatoire | Description                                                                                                                                                                                                                                     |
 | ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey     | Oui         | Cle API associee a votre compte Opsgenie.                                                                                                                                                                                                       |
+| apikey     | Oui         | Clé API associée à votre compte Opsgenie.                                                                                                                                                                                                       |
 | user       | Non         | Utilisateur a notifier ; il peut s'agir d'un `username`, d'un `email` ou d'un `uuid4`. C'est le type de cible suppose par defaut, mais il est recommande de prefixer tous les utilisateurs avec le symbole `@` afin d'eliminer toute ambiguite. |
 | team       | Non         | Equipe a notifier ; il peut s'agir du nom de l'equipe elle-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les equipes doivent etre prefixees par un symbole `#`.                                                                 |
 | schedule   | Non         | Planning a notifier ; il peut s'agir du nom du planning lui-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les plannings doivent etre prefixes par un symbole `*`.                                                               |
 | escalation | Non         | Escalade a notifier ; il peut s'agir du nom de l'escalade elle-meme ou d'un `uuid4` qui lui est associe. <br/>**Remarque :** les escalades doivent etre prefixees par un symbole `^`.                                                           |
 | region     | Non         | Code region a 2 caracteres. Par defaut, cette valeur est `us` si rien n'est precise. Les utilisateurs europeens doivent definir cette valeur sur `eu` pour que cela fonctionne correctement.                                                    |
 | batch      | Non         | Definissez cette valeur sur **Yes** si vous souhaitez notifier toutes les cibles identifiees en lot, au lieu de maniere individuelle. Par defaut, cette option est definie sur **No**.                                                          |
-| tags       | Non         | Liste de tags separes par des virgules que vous pouvez associer a votre message Opsgenie.                                                                                                                                                       |
+| tags       | Non         | Liste de tags séparés par des virgules que vous pouvez associer à votre message Opsgenie.                                                                                                                                                       |
 | priority   | Non         | Priorite a associer au message. Elle se situe sur une echelle de 1 a 5. La valeur par defaut est `3` si rien n'est precise.                                                                                                                     |
 | alias      | Non         | Alias a associer au message.                                                                                                                                                                                                                    |
 | entity     | Non         | Entite a associer au message.                                                                                                                                                                                                                   |
@@ -78,7 +82,7 @@ Vous pouvez aussi melanger les cibles :
 
 ## Actions d'Alerte
 
-Le parametre `action` controle l'operation Opsgenie effectuee lorsqu'une notification est envoyee. Les actions suivantes sont prises en charge :
+Le paramètre `action` contrôle l'opération Opsgenie effectuée lors de l'envoi d'une notification. Les actions suivantes sont prises en charge :
 
 | Action        | Description                                                                                                            |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -117,7 +121,7 @@ apprise -vv -t "Titre de Test" -b "Corps de Test" \
 
 ## Exemples
 
-Envoyer une notification Opsgenie a tous les appareils associes a un projet :
+Envoyer une notification Opsgenie à tous les appareils associés à un projet :
 
 ```bash
 # Supposons que notre {apikey} soit a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty
@@ -127,7 +131,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 
 ### Inclure des Détails (Paires Clé/Valeur)
 
-Opsgenie vous permet de fournir des details composes de paires cle/valeur que vous pouvez definir avec vos messages. Pour cela, il suffit d'ajouter un symbole plus, **+**, devant n'importe quel parametre precise dans votre URL.
+Opsgenie accepte des détails composés de paires clé/valeur. Ajoutez simplement un symbole plus, **+**, devant chaque paramètre dans votre URL.
 
 ```bash
 # L'exemple ci-dessous definirait la paire cle/valeur foo=bar :

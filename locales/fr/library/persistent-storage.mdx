@@ -36,7 +36,7 @@ Il est volontairement limité à des **métadonnées petites et fréquemment ré
 - des jetons d'authentification ou indicateurs de fonctionnalités ;
 - des métadonnées de service mises en cache.
 
-## Comment le stockage persistant est activé
+## Comment le Stockage Persistant Est Activé
 
 Le stockage persistant est contrôlé par la **configuration d'asset Apprise**, pas directement par le plugin.
 
@@ -50,7 +50,7 @@ Si aucun chemin de stockage n'est disponible, Apprise bascule de façon transpar
 
 Les plugins n'ont **pas** besoin de gérer eux-mêmes ce repli.
 
-### Opt-in côté plugin (`storage_mode`)
+### Opt-In Côté Plugin (`storage_mode`)
 
 Le stockage persistant est toujours disponible via `self.store`, mais **la persistance disque nécessite un opt-in par plugin**.
 
@@ -71,7 +71,7 @@ class MyPlugin(NotifyBase):
 Le comportement final reste contraint par l'`AppriseAsset` actif (chemin de stockage et mode autorisé). Si le stockage disque n'est pas disponible, Apprise se rabat proprement sur la mémoire.
 :::
 
-## Modes de stockage persistant
+## Modes de Stockage Persistant
 
 | Mode     | Comportement                         | Quand l'utiliser                                                                                                                       |
 | -------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -81,7 +81,7 @@ Le comportement final reste contraint par l'`AppriseAsset` actif (chemin de stoc
 
 `AUTO` est le choix le plus sûr et le plus portable à travers les conteneurs, la CI et les services système.
 
-## Accéder au stockage persistant dans un plugin
+## Accéder au Stockage Persistant dans un Plugin
 
 Chaque plugin reçoit un store prêt à l'emploi via `self.store`.
 
@@ -92,7 +92,7 @@ store = self.store
 
 Le store se comporte comme un dictionnaire, mais avec des notions supplémentaires d'expiration, de persistance et de sécurité.
 
-## Identité du cache et `url_identifier`
+## Identité du Cache et `url_identifier`
 
 Le stockage persistant est délimité à l'aide de l'**identité d'URL** du plugin. Cette identité est dérivée de ce que votre plugin renvoie dans `url_identifier`.
 
@@ -115,12 +115,12 @@ Il ne doit **pas** inclure :
 
 Cela vous permet d'exécuter de nombreuses notifications vers différents destinataires tout en partageant le même état mis en cache pour le même serveur amont, comme des jetons OAuth, des résultats de découverte ou des identifiants résolus.
 
-## Schémas d'usage clé / valeur
+## Schémas d'Usage Clé / Valeur
 
 <Tabs>
 <TabItem label="De base">
 
-### Écrire et lire des valeurs
+### Écrire et Lire des Valeurs
 
 ```python
 # Stocker une valeur
@@ -140,7 +140,7 @@ if version:
 
 <TabItem label="Avec expiration">
 
-### Faire expirer des valeurs mises en cache
+### Faire Expirer des Valeurs Mises en Cache
 
 ```python
 # Mettre en cache pour 1 heure
@@ -164,7 +164,7 @@ Les entrées expirées deviennent automatiquement invalides.
 
 <TabItem label="Non persistant">
 
-### Entrées mémoire seule
+### Entrées Mémoire Seule
 
 ```python
 # Mettre en cache uniquement pour la durée du processus
@@ -182,7 +182,7 @@ self.store.set(
 </TabItem>
 </Tabs>
 
-## Comprendre la sémantique d'expiration
+## Comprendre la Sémantique d'Expiration
 
 Une valeur stockée :
 
@@ -198,7 +198,7 @@ if 'key' in self.store:
 
 L'expiration est **toujours appliquée**, même si le fichier existe encore sur disque.
 
-## Stockage basé sur des fichiers (avancé)
+## Stockage Basé sur des Fichiers (Avancé)
 
 Le stockage persistant prend aussi en charge **l'accès direct à des fichiers** pour des données spécifiques au plugin.
 
@@ -251,9 +251,9 @@ Cela reflète la sémantique standard des fichiers Python tout en restant sûr a
 </TabItem>
 </Tabs>
 
-## Maintenance et nettoyage du cache
+## Maintenance et Nettoyage du Cache
 
-### Effacer des entrées
+### Effacer des Entrées
 
 ```python
 # Supprimer des clés spécifiques
@@ -263,14 +263,14 @@ self.store.clear('key1', 'key2')
 self.store.clear()
 ```
 
-### Supprimer des fichiers persistants
+### Supprimer des Fichiers Persistants
 
 ```python
 self.store.delete('key')
 self.store.delete('key1', 'key2')
 ```
 
-### Purger les entrées expirées
+### Purger les Entrées Expirées
 
 ```python
 self.store.prune()
@@ -278,7 +278,7 @@ self.store.prune()
 
 Les entrées expirées sont retirées de la mémoire et marquées pour nettoyage disque.
 
-## Opérations disque (avancé)
+## Opérations Disque (Avancé)
 
 Ces opérations sont facultatives et surtout utiles pour les services longue durée.
 
@@ -292,7 +292,7 @@ PersistentStore.disk_scan(path)
 
 Ces fonctions opèrent **en dehors** d'une instance de plugin et doivent être utilisées avec prudence.
 
-## Garanties de sécurité automatiques
+## Garanties de Sécurité Automatiques
 
 Le stockage persistant est conçu pour **ne jamais bloquer les notifications**.
 
@@ -307,7 +307,7 @@ Apprise repasse automatiquement en mode `MEMORY` et continue de fonctionner.
 
 Aucune gestion d'erreur côté plugin n'est requise.
 
-## Bonnes pratiques pour les auteurs de plugins
+## Bonnes Pratiques pour les Auteurs de Plugins
 
 - traitez le stockage persistant comme une **optimisation**, pas comme une dépendance ;
 - ne stockez que de **petites** valeurs ;
@@ -316,9 +316,11 @@ Aucune gestion d'erreur côté plugin n'est requise.
 - utilisez des clés claires et spécifiques au plugin ;
 - partez du principe que le stockage peut être indisponible à l'exécution.
 
-## Plugins qui utilisent le stockage persistant
+## Plugins qui Utilisent le Stockage Persistant
 
 Les plugins principaux suivants l'utilisent déjà :
+
+- [**Jira**](https://github.com/caronc/apprise/blob/master/apprise/plugins/jira.py) : met en cache les identifiants d'alerte afin que les actions `acknowledge`, `close`, `note` et `delete` retrouvent les alertes existantes sans redemander leur identifiant.
 
 - [**Matrix**](https://github.com/caronc/apprise/blob/master/apprise/plugins/matrix.py) : met en cache les métadonnées de session et de découverte Matrix, y compris `access_token`, `home_server` et `user_id` obtenus lors de la connexion ou de l'inscription. Il stocke aussi un `transaction_id` pour éviter le traitement en double des messages, met en cache les résultats de résolution d'alias de salon et persiste les résultats de découverte `.well-known`. Cela évite des réauthentifications, découvertes et résolutions répétées d'une exécution à l'autre.
 
@@ -326,12 +328,12 @@ Les plugins principaux suivants l'utilisent déjà :
 
 - [**Office365**](https://github.com/caronc/apprise/blob/master/apprise/plugins/office365.py) : met en cache les métadonnées d'identité d'expéditeur résolues. Lorsque l'expéditeur configuré n'est pas une adresse email pleinement qualifiée, le plugin résout la bonne adresse `from` et le nom d'affichage via Microsoft Graph puis conserve le résultat pour les envois suivants.
 
-- [**Opsgenie**](https://github.com/caronc/apprise/blob/master/apprise/plugins/opsgenie.py) : met en cache les identifiants de requête d'alerte retournés lors de la création d'alertes. Ces identifiants sont indexés sous une clé stable dérivée et conservés longtemps, permettant à des actions de suivi comme acknowledge, close, note ou delete d'agir sur des alertes déjà créées sans demander à l'utilisateur de fournir à nouveau l'ID.
+- [**Opsgenie**](https://github.com/caronc/apprise/blob/master/apprise/plugins/opsgenie.py) : met en cache les identifiants d'alerte afin que les actions `acknowledge`, `close`, `note` et `delete` retrouvent les alertes existantes sans redemander leur identifiant.
 
 - [**SendPulse**](https://github.com/caronc/apprise/blob/master/apprise/plugins/sendpulse.py) : met en cache des jetons d'accès OAuth. Les jetons sont stockés avec une expiration dérivée de la valeur amont `expires_in` (avec une marge de sécurité), permettant aux notifications suivantes de les réutiliser et d'éviter des réauthentifications inutiles.
 
 - [**Telegram**](https://github.com/caronc/apprise/blob/master/apprise/plugins/telegram.py) : met en cache l'identifiant utilisateur du propriétaire du bot lorsqu'une détection automatique est activée. Une fois découvert, cet identifiant est réutilisé pour les notifications futures afin de ne pas répéter cette détection aux exécutions suivantes.
 
-- [**Email (PGP)**](https://github.com/caronc/apprise/blob/master/apprise/plugins/email/base.py) : utilise le stockage persistant pour conserver les paires de clés PGP générées automatiquement. Lorsque le chiffrement PGP est activé sans fichiers de clés explicites, le plugin génère une paire de clés publique/privée à la première utilisation et écrit les deux dans le chemin de stockage persistant (`pgp-public.asc` et `pgp-private.asc`). Les exécutions suivantes chargent les mêmes clés depuis le disque afin que chaque message chiffré soit signé et chiffré avec une identité stable et cohérente.
+- [**Email (PGP)**](https://github.com/caronc/apprise/blob/master/apprise/plugins/email/base.py) : stocke la paire de clés de l'expéditeur générée lors d'un auto-envoi chiffré afin que les exécutions suivantes réutilisent la même identité. Les clés des destinataires externes ne sont jamais générées.
 
 N'hésitez pas à vous inspirer de ces exemples pour concevoir votre propre stratégie ou améliorer un plugin existant qui pourrait vraiment bénéficier du stockage persistant.

@@ -7,13 +7,13 @@ sidebar:
 
 Le stockage persistant permet à Apprise de mettre des données en cache localement. Cela réduit fortement le nombre de transactions API entre vous et le ou les services que vous utilisez.
 
-## Pourquoi utiliser le Stockage Persistant ?
+## Pourquoi Utiliser le Stockage Persistant ?
 
 Certains services nécessitent des échanges d'authentification complexes ou des recherches de ressources « coûteuses » à effectuer à chaque envoi de notification.
 
 - **Matrix :** les informations de connexion sont mises en cache localement pour éviter une réauthentification au homeserver à chaque requête.
 - **Telegram :** les détails du compte utilisateur sont mis en cache pour éviter des récupérations supplémentaires auprès du service.
-- **Email (PGP) :** lorsque le chiffrement PGP est activé sans fournir de fichiers de clés explicites, Apprise génère automatiquement une paire de clés PGP et la conserve de façon persistante afin que les mêmes clés soient réutilisées à chaque exécution.
+- **Email (PGP) :** un auto-envoi chiffré peut générer et stocker la paire de clés PGP de l'expéditeur pour la réutiliser. Les clés des destinataires externes ne sont jamais générées.
 
 ## Emplacements de Stockage
 

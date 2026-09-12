@@ -15,6 +15,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
@@ -22,16 +27,10 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  - name: "Unencrypted Plain Text Body"
-    max_chars: 60000
-  - name: "Unencrypted HTML/Markdown Body"
-    max_chars: 29000
-  - name: "E2EE Plain Text Body"
-    max_chars: 40000
-  - name: "E2EE HTML/Markdown Body"
-    max_chars: 19000
-  - name: "Webhook Body"
+  - name: "Unencrypted Body"
     max_chars: 65000
+  - name: "E2EE Body"
+    max_chars: 40000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -43,19 +42,13 @@ By default, Apprise communicates directly with your Matrix server using the offi
 
 Alternatively, you may use webhook mode instead of the Matrix Client API. Webhook usage is enabled by specifying **?mode=matrix**, **?mode=slack**, or **?mode=hookshot** depending on the webhook service you have configured.
 
-## Message Size and Format
+## Message Formatting and Size
 
-Matrix limits the complete event to 65,536 bytes. Apprise v1 uses conservative character limits for direct messages and applies a final byte check before sending.
+Matrix accepts plain text, HTML, and Markdown. HTML and Markdown messages include a plain-text fallback for clients that cannot display formatted content. Slack-compatible webhooks receive Markdown unchanged so Slack can render it.
 
-- Plain text carries one body; HTML and Markdown also carry a fallback body.
-- E2EE uses smaller limits to leave room for encryption.
-- `overflow=split` keeps the remaining content in additional messages.
+Matrix limits the complete event to 65,536 bytes, including metadata added by the homeserver. The limits above are conservative body fallbacks, not fixed event sizes. For direct sends, Apprise calculates each chunk from its title, format, UTF-8 and JSON expansion, and possible E2EE overhead, so the actual character count may be lower.
 
-Apprise v1 supports one output format per Matrix URL: `text`, `html`, or `markdown`. When code calls the plugin without an input `body_format`, Matrix treats that content as already formatted and leaves its fallback unchanged.
-
-:::note
-Apprise v1 chooses the E2EE limit before checking each room. The E2EE limit therefore applies whenever E2EE is available and enabled, even if a specific room is later found to be unencrypted.
-:::
+If you do not declare an input format, Apprise does not guess or repair the markup. An explicit `?format=html` or `?format=markdown` means the body is already prepared for that output. With `overflow=split`, unknown or structured content is split on a best-effort basis; see [Pass-Through and Overflow](../../getting-started/formatting/#pass-through-and-overflow).
 
 ## Syntax
 

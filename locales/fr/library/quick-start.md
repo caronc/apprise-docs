@@ -27,6 +27,12 @@ apobj.add([
 ])
 ```
 
+Vous pouvez aussi fournir les services lors de la création de l'instance :
+
+```python
+apobj = apprise.Apprise(services='json://localhost')
+```
+
 ### Envoyer des notifications (`notify`)
 
 La méthode `notify()` envoie des messages à tous les services enregistrés.
@@ -37,6 +43,14 @@ apobj.notify(
     body="L'utilisation CPU est à 99%",
 )
 ```
+
+:::tip
+`notify()` retourne en réalité un petit objet résultat plutôt qu'un simple
+`True`/`False` -- mais vous pouvez toujours le traiter exactement comme un booléen si
+c'est tout ce dont vous avez besoin. Consultez
+[Résultats de notification](/library/results/) si vous voulez savoir quel service a
+réussi ou échoué, et pourquoi.
+:::
 
 #### Types de message
 
@@ -113,7 +127,7 @@ Les tags dans les fichiers de configuration peuvent porter un préfixe numériqu
 
 **Sans préfixe de priorité -- escalade (par défaut)**
 
-Les services sont regroupés par priorité de tag et traités dans l'ordre croissant. Si tous les services du groupe de priorité la plus basse réussissent, Apprise retourne `True` immédiatement sans déclencher les groupes de priorité supérieure. En cas d'échec, Apprise passe au groupe suivant.
+Les services sont regroupés par priorité de tag et traités dans l'ordre croissant. Si tous les services du groupe de priorité la plus basse réussissent, le résultat est considéré comme vrai immédiatement sans déclencher les groupes de priorité supérieure. En cas d'échec, Apprise passe au groupe suivant.
 
 ```python
 # Tous les services 'alerts' sont traités par priorité croissante.
