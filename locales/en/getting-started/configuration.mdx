@@ -504,6 +504,232 @@ include:
 You can not set up the Apprise API Server to include local file
 :::
 
+### Template Variables
+
+Sometimes you want to keep your configuration in version control, or share
+it with someone, without putting your passwords and tokens in it. Template
+variables let you leave a gap in a URL and fill it in later.
+
+Write `${NAME}` wherever the value should go, and list every name you use in
+a `template:` section. This only works in YAML configuration:
+
+```yaml
+template:
+  # A value written here is used when nothing else supplies one
+  smtp_host: smtp.example.com
+  # No value, so this one must always be supplied
+  api_key:
+
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/you@example.com:
+      - tag: alerts
+```
+
+You can also write the section as a list, which is handy if you prefer to
+see each entry on its own line:
+
+```yaml
+template:
+  - smtp_host: smtp.example.com
+  - api_key
+```
+
+Both forms mean the same thing. **A value written next to the name is the
+default. A name written with no value must be supplied**, and any URL using
+it is skipped until it is.
+
+#### Where the Values Come From
+
+Apprise looks in three places, in this order, and stops at the first one
+that has an answer:
+
+1. A value sent with the notification itself
+2. An environment variable named `APPRISE_TEMPLATE_` plus the name in
+   capitals, so `${API_KEY}` reads `APPRISE_TEMPLATE_API_KEY`
+3. The default written in the `template:` section
+
+If none of them has a value, that URL is not loaded and Apprise tells you so
+in its log.
+
+An empty value counts as an answer at every one of these steps. Setting
+`APPRISE_TEMPLATE_API_KEY=` deliberately leaves `${API_KEY}` blank rather than
+falling back to the default written in the file.
+
+From the command line, send a value with `--template-var` (or `-tv`):
+
+```bash
+# Supply it directly; repeat -tv for each name, but only once per name
+apprise --config=apprise.yml --tag=alerts \
+  --template-var api_key=your-secret-key \
+  --body="Hello"
+
+# Or leave it in the environment
+export APPRISE_TEMPLATE_API_KEY=your-secret-key
+apprise --config=apprise.yml --tag=alerts --body="Hello"
+```
+
+Add `--dry-run` to see which values a configuration is still waiting for
+without sending anything.
+
+#### Where You Can Use Them
+
+A variable can fill in any part of a URL, and it can fill in a setting
+written underneath one:
+
+```yaml
+template:
+  smtp_host: smtp.example.com
+  target:
+
+urls:
+  - mailtos://user:pass@example.com/:
+      - bcc: ${TARGET}
+        smtp: ${SMTP_HOST}
+        tag: work
+```
+
+There are a few places a variable is not allowed, because they decide _who_
+gets notified rather than _what_ is sent:
+
+- `tag:` and `tags:` can never be a variable
+- the part before `://` can never be a variable, so a value cannot choose
+  which service is used
+- a setting's **name** can never be a variable, only its value
+
+Apprise reports an error and skips the entry if you use a variable in one of
+these places.
+
+A handful of services also check the shape of a particular value while
+reading the URL, and a variable cannot stand in there. The usual example is a
+`from` address that has to look like a real email address, on services such
+as SendGrid, Brevo, MailerSend and Twist. Put the variable somewhere else in
+the same URL instead:
+
+```yaml
+# This will not work; the address has to be a real one
+- sendgrid://SG.your-key:${FROM_ADDRESS}/you@example.com
+
+# This is fine
+- sendgrid://${API_KEY}:noreply@example.com/you@example.com
+```
+
+Apprise tells you which service and configuration entry caused the problem.
+
+#### Choose Where to Put a Variable
+
+A variable can go directly in a URL or in a named setting:
+
+```yaml
+urls:
+  # In the URL itself
+  - mailtos://user:pass@example.com/${TARGET}
+
+  # ...or as a setting written underneath it
+  - mailtos://user:pass@example.com/:
+      - to: ${TARGET}
+```
+
+Both forms work, and they differ in how much the supplied value can reach.
+
+A variable **in the URL** can fill in any field, the host included. Everything
+else in that URL goes wherever the finished URL points, so a value placed in the
+host decides who receives the rest:
+
+```yaml
+urls:
+  # The supplied value decides where these credentials are sent
+  - mailtos://user:pass@${HOST}/you@example.com
+```
+
+A variable **in a named setting** only ever reaches that one option. The rest of
+the URL stays exactly as you wrote it:
+
+```yaml
+urls:
+  # The supplied value reaches "to" and nothing else
+  - mailtos://user:pass@mail.example.com/:
+      - to: ${TARGET}
+```
+
+:::caution
+Use the named setting whenever the value may come from somebody you do not
+fully trust. Apprise does not stop you putting a variable in the host of a URL
+that carries its own credentials -- trusted administrators keep full control
+over URL placement. On an API server, `public` callers need no credentials and
+`locked` callers cannot inspect the configuration, so use named settings for
+values they supply. A hard-to-guess Config ID is not a substitute for this.
+:::
+
+#### Punctuation in URL Values
+
+Apprise keeps characters such as `/`, `?`, `&`, `#`, `@`, and `:` unchanged.
+This supports email addresses, credentials, and service-specific values. Use a
+named setting when the value should affect only one option.
+
+A variable replacing the whole host may contain `user@host` or
+`user:pass@host`, unless the URL already provides credentials.
+
+For example, if `${EMAIL}` below arrives as
+`someone@example.com&format=html&to=stranger@example.com`:
+
+```yaml
+- mailto://user:pass@example.com/?bcc=${EMAIL}
+```
+
+...the whole thing stays in the `bcc` field. It does not become a `format`
+setting or add a recipient.
+
+Ordinary addresses, `user:pass`, and supported comma-separated values also
+arrive unchanged. The service reports any value it cannot use.
+
+When a variable stands for the **whole** host, Apprise recognises the familiar
+`user@host` and `user:pass@host` forms and fills in the matching fields for
+you:
+
+```yaml
+template:
+  server:
+
+urls:
+  - json://${SERVER}/
+```
+
+Supplying `user:pass@host.example` sets the user, password and host just as
+writing them out would. A variable standing for the whole user works the same
+way, so `user:pass` fills in both.
+
+This only applies when the URL does not already spell out its own credentials.
+In `json://a:b@${SERVER}/` the value stays in the host as written, because the
+user and password were already chosen by the configuration.
+
+#### Things Worth Knowing
+
+- **Names are not case sensitive.** `${TARGET}`, `${Target}` and `${target}`
+  all mean the same thing. Use letters, numbers and underscores, up to 32
+  characters. Each value may be up to 1,024 characters.
+- **Extra supplied names are harmless.** Names that no loaded configuration
+  uses are accepted and ignored. Their names, but never their values, appear
+  in the local debug log.
+- **Only names you declared are replaced.** If a URL contains
+  `${something}` and you never declared `something`, it is left exactly as
+  written and sent that way. Apprise logs a warning to help catch a typo, but
+  a password containing `${...}` is never changed by accident.
+- **A name may be used as often as you like**, in the URL and in the settings
+  below it. Each place gets the same value. There is no limit on how many
+  names one URL uses.
+- **Supply values in the form the service expects.** Apprise leaves them
+  unchanged. Email addresses such as `user@host`, credentials such as
+  `user:pass`, and comma-separated values are accepted wherever the chosen
+  service supports them.
+- **Declarations and uses are checked after the whole file is read.** Apprise
+  warns about names that are missing or unused, even when `template:` appears
+  after `urls:`. Repeated ordinary YAML keys also warn and keep their last
+  value; repeated `template:` or `urls:` sections make the file invalid.
+- **You do not need to set `version:`.** A configuration that does not say
+  otherwise uses version 2. Writing `version: 1` keeps the older
+  behaviour, where a `template:` section is refused.
+- TEXT configuration is unchanged. `${NAME}` in a TEXT file is just text.
+
 </TabItem>
 </Tabs>
 

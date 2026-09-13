@@ -233,6 +233,78 @@ curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
 curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
 
+### Supplying Template Values
+
+If a saved configuration uses `${NAME}` markers, the URLs that need them are
+not used until a value is available. You can supply values with the
+notification itself.
+
+With JSON, use a `template` object:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "alerts",
+    "body": "Database connection failed",
+    "template": {"api_key": "your-secret-key"}
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+With a form post, name each field `template[name]`:
+
+```bash
+curl -X POST \
+  -F "tag=alerts" \
+  -F "body=Database connection failed" \
+  -F "template[api_key]=your-secret-key" \
+  http://localhost:8000/notify/my-alerts
+```
+
+A value sent this way wins over anything set in the server's environment or
+written as a default in the configuration. Names are case-insensitive. Extra
+valid names are accepted and ignored, with their names acknowledged only in
+the server's local debug log.
+
+If a URL is still missing a value it is skipped, the rest are still notified,
+and the response reports that not everything was sent. For safety the
+response never says **which** value was missing; look in the server log for
+that. Use the **Review** tab, or `GET /json/urls/{KEY}`, to see which names a
+configuration is waiting for.
+
+Values sent this way only affect a saved configuration. A stateless request may
+include them, but they are unused and its URLs remain exactly as written.
+
+The **Notifications** tab adds a concealed key/value row for each variable used
+by the selected destinations. Defaults declared in `template:` are filled when
+available, but server environment values are never shown. A blank field uses
+the server fallback. You may remove rows freely, and **Clear Form** rebuilds the
+suggestions. **Add Value** is available after every current row has a name;
+highlighted rows will be sent. Quick tests use a separate concealed prompt.
+Stateless tests are unchanged.
+
+:::caution
+URL variables are intentionally unrestricted and can change any field, including
+the host. The completed destination receives that URL's credentials, path,
+headers, payload fields, and settings. Every access level may supply declared
+values, so use a named YAML setting when a caller should control only one option.
+This is the safer choice for `public`, `locked`, or otherwise less-trusted
+callers. A hard-to-guess Config ID is useful, but is not a security boundary.
+
+A variable cannot replace the service name before `://`, or a `tag:`/`tags:`
+value. The service and tags are selected before values are applied.
+:::
+
+:::note
+`X-Apprise-Log-Level: debug` (or `trace`) may expose a saved configuration, so
+it requires administrator privileges or `user` access. Calls using `locked`,
+`public`, or `disabled` access receive no more than `info`.
+:::
+
+See [Template Variables](/getting-started/configuration/#template-variables)
+for how to set a configuration up.
+
 ## Payload Mapping (Hooks)
 
 Sometimes you cannot change the payload format sent by a third-party tool (e.g., Grafana, Prometheus). Apprise API allows you to map incoming fields to Apprise-compatible fields using query parameters prefixed with a colon (`:`).

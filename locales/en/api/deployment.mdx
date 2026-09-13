@@ -1412,10 +1412,11 @@ The Config ID and credentials are separate values. Share the Config ID and confi
 
 API clients manage access with `POST /auth/{KEY}`. The `access` field accepts
 `user`, `locked`, `public`, or `disabled`. A new record defaults to `user`, or
-to `locked` while `APPRISE_CONFIG_LOCK=yes`. An administrator may save `user`
-or `public` while the global lock is enabled, but it behaves as `locked` until
-the global lock is removed. A configuration user may change only their
-password and must repeat their username. See [API Endpoints](/api/endpoints/).
+to `locked` while `APPRISE_CONFIG_LOCK=yes`. Saved `user` access then behaves
+as `locked` without being rewritten. Saved `public` access remains public
+because it already hides configuration content. A configuration user may
+change only their password and must repeat their username. See
+[API Endpoints](/api/endpoints/).
 
 Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
 
