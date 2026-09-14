@@ -242,9 +242,9 @@ Un serveur Apprise-API peut activer le verrouillage de configuration afin d'emp�
 
 Quand ce verrouillage est activé :
 
-- les inclusions distantes ciblant l'Apprise-API sont rejetées ;
-- les endpoints de configuration ne peuvent pas être consommés par des clients externes ;
-- seule la configuration définie localement est autorisée.
+- un administrateur global authentifié conserve un accès complet aux configurations ;
+- les autres appelants ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration ;
+- seule la configuration définie localement est disponible pour ces appelants.
 
 Ce comportement est appliqué **par le serveur Apprise-API**, pas par `AppriseConfig` lui-même.
 
@@ -256,6 +256,8 @@ Le verrouillage de configuration existe pour empêcher :
 
 Le verrouillage de configuration n'affecte **pas** :
 
+- les notifications avec état envoyées à l'aide d'un ID de configuration existant, y compris le filtrage facultatif par tags ;
+- les notifications sans état qui fournissent leurs propres URL de notification ;
 - les fichiers de configuration locaux ;
 - la configuration en mémoire ;
 - les sources de configuration personnalisées hébergées en dehors d'Apprise-API.

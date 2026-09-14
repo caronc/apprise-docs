@@ -17,14 +17,21 @@ async def main():
     apobj = apprise.Apprise()
     apobj.add('mailto://user:pass@example.com')
 
-    # Await the notification delivery
-    await apobj.async_notify(
+    # Await the notification delivery -- like notify(), this returns an
+    # AppriseResult, so capture it if you care whether delivery succeeded
+    result = await apobj.async_notify(
         title='Async Test',
         body='This was sent asynchronously',
     )
 
+    if not result:
+        print("Delivery failed:", result.status.name)
+
 asyncio.run(main())
 ```
+
+See [Notification Results](/library/results/) for everything `result` can tell you
+(per-service detail, timing, captured logs, and more).
 
 ## Serialization (Pickle)
 
@@ -69,6 +76,32 @@ obj.send(
 :::caution
 Using `send()` directly bypasses many of the safeguards and features (like tagging and attachment processing) provided by the main `notify()` method.
 :::
+
+## Handling Configuration Errors
+
+Apprise raises `AppriseImproperlyConfigured` when a library call receives
+missing, invalid, or conflicting settings. Catch it when your application needs
+to report a configuration problem:
+
+```python
+from apprise import AppriseAsset
+from apprise.exception import AppriseImproperlyConfigured
+
+try:
+    asset = AppriseAsset(service_timeout=-1)
+except AppriseImproperlyConfigured as error:
+    print(f"Invalid Apprise settings: {error}")
+```
+
+Existing handlers for `TypeError`, `ValueError`, or `AttributeError` continue to
+work. New code should catch `AppriseImproperlyConfigured` so configuration
+problems are easier to identify.
+
+All Apprise-specific exceptions inherit from `AppriseException`, which provides
+one catch-all when your application does not need to distinguish the cause.
+Disk failures reported as `AppriseDiskIOError` can also be caught as
+`OSError`. Plugin-specific failures based on `ApprisePluginException` can be
+handled together when their individual details are not needed.
 
 ## Proxy Support
 

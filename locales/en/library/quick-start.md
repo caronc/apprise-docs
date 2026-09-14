@@ -27,6 +27,12 @@ apobj.add([
 ])
 ```
 
+You can also pass services when creating the instance:
+
+```python
+apobj = apprise.Apprise(services='json://localhost')
+```
+
 ### Sending Notifications (`notify`)
 
 The `notify()` method sends messages to all registered services.
@@ -37,6 +43,13 @@ apobj.notify(
     body="CPU usage is at 99%",
 )
 ```
+
+:::tip
+`notify()` actually returns a small result object rather than a plain `True`/`False` --
+but you can still treat it exactly like a boolean if that's all you need. See
+[Notification Results](/library/results/) if you want to know which service succeeded
+or failed, or why.
+:::
 
 #### Message Types
 
@@ -113,7 +126,7 @@ Tags in configuration files may carry a numeric priority prefix (for example `1:
 
 **Without a priority prefix -- escalation (default)**
 
-Services are grouped by their tag priority and dispatched in ascending order. If every service in the lowest-numbered group succeeds, Apprise returns `True` immediately without running higher-numbered groups. If any fail, Apprise escalates to the next group.
+Services are grouped by their tag priority and dispatched in ascending order. If every service in the lowest-numbered group succeeds, the result evaluates as true immediately without running higher-numbered groups. If any fail, Apprise escalates to the next group.
 
 ```python
 # All 'alerts' services dispatched in ascending priority order.

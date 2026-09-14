@@ -15,15 +15,16 @@ Apprise recognises four **input format states**:
 
 | State                 | Description                                                            |
 | :-------------------- | :--------------------------------------------------------------------- |
-| _(implicit)_ **none** | No format declared. Content is passed through unchanged.               |
+| _(implicit)_ **none** | No source format declared. Automatic format conversion is skipped.     |
 | **text**              | Plain text input. Apprise may simplify content for text-only services. |
 | **markdown**          | Markdown input. Apprise may convert or simplify as needed.             |
 | **html**              | HTML input. Apprise may strip or convert markup as required.           |
 
 :::note
 
-- The `none` state is implicit. It is used automatically when no format is provided.
-- The `none` state cannot be explicitly set via the CLI, Library, or API.
+- The CLI uses `text` by default and does not offer `none` as a choice.
+- The Python Library uses `none` when `body_format=None`.
+- Apprise-API uses `none` when `format` is omitted, blank, or `null`, unless the server supplies a default for an omitted field.
 
   :::
 
@@ -54,22 +55,27 @@ This makes destinations more compatible _without_ requiring you to manually tail
 
 If you do **not** specify a format, Apprise assumes slightly different states depending on which component you're using:
 
-| Interface                    | Default input format                                                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [CLI](../../cli/)            | `text`                                                                                                                         |
-| [Python API](../../library/) | `none` - content passed as is unless `body_format` is provided in the `notify()` call or preset in the `AppriseAsset()` object |
-| [Apprise-API](../../api/)    | `none` - content passed as is unless `format` is provided in `/notify/` payload                                                |
+| Interface                    | Default input format                                                                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)            | `text`                                                                                                                             |
+| [Python API](../../library/) | `none` - no automatic format conversion unless `body_format` is provided in `notify()` or preset in `AppriseAsset()`               |
+| [Apprise-API](../../api/)    | `none` - no automatic format conversion unless the request supplies `format`, or the server operator sets `APPRISE_DEFAULT_FORMAT` |
 
-With the exception of the CLI, if no `input_format` is specified:
+Formatting on the Apprise-API is entirely opt-in per request. If you run your own Apprise-API server and want every request that leaves out `format` to assume one automatically, set the `APPRISE_DEFAULT_FORMAT` environment variable (e.g. `APPRISE_DEFAULT_FORMAT=text`) -- see the [Environment Variables reference](../../api/reference/environment/) for details. Callers can still override this on a per-request basis: sending a real `format` value always wins, and so does deliberately sending it blank or `null` -- that's treated as the caller explicitly asking for no formatting, even if you've set a server-wide default.
 
-- Content is passed **as-is**
-- No conversion or sanitisation occurs within Apprise
-- Any markup (HTML, Markdown, etc.) is treated as literal text
+With the exception of the CLI, if no input format is specified, Apprise skips automatic format conversion and markup repair. The destination still decides how to display the content. For example, `?format=html` tells an HTML-capable service to treat the body as ready-to-use HTML.
 
-This behaviour is intentional and useful when:
+Message limits, overflow handling, character encoding, escaping, JSON packaging, and encryption may still affect the final payload. Pass-through therefore means "do not interpret my source format," not "send these exact bytes."
 
-- You already know the destination is text-only
-- You want exact control over what is sent
+### Pass-Through and Overflow
+
+The URL's `overflow` setting still applies when no input format is declared:
+
+- `upstream` sends one message without splitting or truncating it for the service's documented limit.
+- `truncate` keeps the portion that fits and discards the rest.
+- `split` prefers readable breaks such as newlines or spaces, then uses a hard boundary when needed and sends every part in order.
+
+With an unknown source format, splitting is best effort. Apprise cannot reliably repair HTML, Markdown, JSON, ciphertext, signatures, or other structured content it was not asked to interpret. Use `overflow=upstream` when a message must remain one intact document, or declare the input format when you want format-aware handling.
 
 Declaring the correct input format is optional, but doing so allows Apprise to assist more effectively across mixed destinations.
 
@@ -154,7 +160,7 @@ If you are already using the API heavily (especially for multi-language examples
 :::
 
 :::tip[For Admins]
-Provided the Apprise API server has not enabled the `APPRISE_CONFIG_LOCK`, you can put your Apprise API configuration URL in one of the default configuations the Apprise CLI looks for to make your query even easier to use:
+You can put your Apprise API configuration URL in one of the default configurations used by the Apprise CLI. A server with `APPRISE_CONFIG_LOCK=yes` requires global administrator credentials:
 
 ```yaml
 # ~/.config/apprise/apprise.yaml
@@ -187,7 +193,7 @@ This does **not** describe the input you are providing. Instead, it instructs th
 
 When both are specified, Apprise will correctly adapt the content as needed before handing it off to the selected upstream delivery route.
 
-If the upstream service does **not** support the requested output format, it is silently ignored and the service’s default behaviour is used instead.
+If the upstream service does **not** support the requested output format, the request is ignored (a warning is logged) and the service's default behaviour is used instead.
 
 ### Examples
 
@@ -221,7 +227,7 @@ In these cases, setting `format=` may:
 
 This behaviour is **plugin-specific** and only applies when the service explicitly supports multiple output formats.
 
-### When Is This Useful?
+### Use Cases
 
 Specifying an output format is useful when:
 

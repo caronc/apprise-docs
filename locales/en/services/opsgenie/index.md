@@ -20,20 +20,23 @@ limits:
   max_chars: 15000
 ---
 
+:::note[Upcoming Service Retirement]
+Atlassian ended new Opsgenie sales on June 4, 2025, and will end support on
+April 5, 2027. Opsgenie remains available in Apprise while the service operates.
+For new setups or migrations, see [`jira://`](/services/jira/) and Atlassian's
+[official migration guide](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/).
+:::
+
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
 ## Account Setup
 
-1. Visit [https://www.opsgenie.com](https://www.opsgenie.com) to create your account.
+1. Sign in to your existing account at [Opsgenie](https://www.opsgenie.com).
 2. [Generate your Integration API Key](https://app.opsgenie.com/settings/integration/add/API/)
 
 :::note
 You must generate an Integration API Key; this is not to be confused with the Opsgenie Management API Key.
-:::
-
-:::caution
-Opsgenie is being retired by Atlassian. Consider migrating to [Jira Service Management](../jira/) which provides the same functionality. See the [Atlassian migration guide](https://support.atlassian.com/jira-service-management-cloud/docs/merge-opsgenie-with-jira-service-management/) for details.
 :::
 
 ## Syntax
@@ -118,7 +121,7 @@ apprise -vv -t "Test Title" -b "Test Body" \
 
 ## Examples
 
-Send a Opsgenie notification to all devices associated with a project:
+Send an Opsgenie notification to all devices associated with a project:
 
 ```bash
 # Assuming our {apikey} is a6k4ABnck26hDh8AA3EDHoOVdDEUlw3nty

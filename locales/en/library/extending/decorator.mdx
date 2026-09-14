@@ -13,7 +13,7 @@ This is ideal when you want a quick integration without creating and publishing 
 The decorator system works by importing a Python module and collecting any functions registered with `@notify()`.
 Those functions are then exposed as Apprise schemas.
 
-## When to use a decorator
+## When to Use a Decorator
 
 Use a decorator-based handler when:
 
@@ -92,18 +92,47 @@ Failures propagate back to Apprise and affect overall notification status.
 
 Your wrapper function may accept the following parameters.
 
-| Parameter     | Required | Description                                                                                                                               |
-| ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `body`        | Yes      | Notification body                                                                                                                         |
-| `title`       | No       | Notification title                                                                                                                        |
-| `notify_type` | No       | One of `info`, `success`, `warning`, `failure`                                                                                            |
-| `body_format` | No       | `text`, `html`, or `markdown`                                                                                                             |
-| `meta`        | No       | Parsed and merged URL metadata                                                                                                            |
-| `attach`      | No       | List of `AppriseAttachment` objects<br/> See [Attachments](../attachments/) for how to read, validate, and forward files from decorators. |
-| `*args`       | Yes      | Required for forward compatibility                                                                                                        |
-| `**kwargs`    | Yes      | Required for forward compatibility                                                                                                        |
+| Parameter          | Required | Description                                                                                                                               |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`             | Yes      | Notification body                                                                                                                         |
+| `title`            | No       | Notification title                                                                                                                        |
+| `notify_type`      | No       | One of `info`, `success`, `warning`, `failure`                                                                                            |
+| `body_format`      | No       | The format this send resolved to (`text`, `html`, or `markdown`) -- never `None`, even if the caller declared nothing                     |
+| `body_passthrough` | No       | `True` if no source was declared and automatic format conversion was skipped; otherwise `False`                                           |
+| `meta`             | No       | Parsed and merged URL metadata                                                                                                            |
+| `attach`           | No       | List of `AppriseAttachment` objects<br/> See [Attachments](../attachments/) for how to read, validate, and forward files from decorators. |
+| `*args`            | Yes      | Required for forward compatibility                                                                                                        |
+| `**kwargs`         | Yes      | Required for forward compatibility                                                                                                        |
 
-**Always include `*args` and `**kwargs`\*\* to remain compatible with future Apprise releases.
+Always include `*args` and `**kwargs` to remain compatible with future Apprise releases.
+
+### Declaring a Format
+
+By default, your function receives the body without automatic format conversion.
+To have Apprise convert it first, add `body_format=` to `@notify()`:
+
+```python
+from apprise import NotifyFormat
+from apprise.decorators import notify
+
+@notify(on="foobar", body_format=NotifyFormat.MARKDOWN)
+def my_wrapper(body, title, notify_type, *args, **kwargs):
+    # body already arrives as Markdown
+    ...
+```
+
+`body_format=` accepts one format or a tuple of supported formats. The first
+format in the tuple is the default. See
+[Message Format Conversion](../message-format-conversion/) for more examples.
+
+Without `body_format=`, Apprise does not convert the body. Your function still
+receives `body_format` and `body_passthrough` in `kwargs`. `body_format` reports
+the caller's format, or `TEXT` when the caller did not provide one.
+
+Pass-through does not bypass the normal delivery pipeline. The body may already
+have been split or truncated according to the configured overflow mode, and the
+wrapper may still need to escape or package it safely for its destination. Use
+`body_passthrough` to avoid making source-format assumptions.
 
 A minimal wrapper may look like:
 
@@ -115,7 +144,7 @@ def my_wrapper(body, *args, **kwargs):
     print(body)
 ```
 
-## The `meta` dictionary
+## The `meta` Dictionary
 
 The `meta` parameter provides a fully parsed and merged view of:
 

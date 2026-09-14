@@ -283,6 +283,13 @@ limits:
   - name: "Corps"
     max_chars: 2000
 
+# Format(s) de message accepté(s) par le service. Omettez entièrement ce
+# champ si le service n'accepte que du texte brut. Voir « Formats de
+# Corps » ci-dessous pour la directive « : default ».
+# body_formats:
+#   - html: default
+#   - text
+
 # Services retirés — indiquer la date à laquelle le service a cessé d'être disponible
 # ended: YYYY-MM-DD
 
@@ -307,9 +314,73 @@ limits:
 | `group`         | chaîne             | Recommandé  | Identifiant de groupe utilisé par l'index des services. Les groupes inconnus reviennent au groupe par défaut pendant la synchronisation.                                                                                                                                                                                                          |
 | `schemas`       | tableau de chaînes | Oui         | Schémas d'URL Apprise pris en charge, comme `discord://` ou `tgram://`.                                                                                                                                                                                                                                                                           |
 | `sample_urls`   | tableau de chaînes | Recommandé  | Exemples d'URL Apprise utilisés dans les métadonnées générées et les aides du générateur d'URL.                                                                                                                                                                                                                                                   |
+| `body_formats`  | tableau de chaînes | Non         | Format(s) de message accepté(s) par le service (`text`, `html`, `markdown`). Omettez entièrement pour un service texte uniquement. Voir [Formats de Corps](#formats-de-corps) ci-dessous.                                                                                                                                                         |
 | `keywords`      | chaîne             | Non         | Termes de recherche supplémentaires pour la boîte de recherche de la liste des services. Séparés par des virgules ou des espaces ; les points sont autorisés. À utiliser lorsque le titre et les schémas ne contiennent pas un nom que les utilisateurs taperaient naturellement. La correspondance est par sous-chaîne et insensible à la casse. |
 | `limits`        | tableau d'objets   | Non         | Limites optionnelles de longueur de message. Chaque entrée doit inclure un `name` affichable et `max_chars`.                                                                                                                                                                                                                                      |
 | `ended`         | chaîne de date     | Non         | Marque un service retiré. Utilisez `YYYY`, `YYYY-MM` ou `YYYY-MM-DD`.                                                                                                                                                                                                                                                                             |
+
+#### Formats de Corps
+
+`body_formats` déclare le(s) format(s) de message qu'un service accepte :
+`text`, `html`, ou `markdown`. Ce champ reflète la déclaration `notify_format`
+du plugin correspondant dans la bibliothèque Apprise.
+
+Le champ est entièrement optionnel. Une page de service qui l'omet est
+documentée comme n'acceptant que `text`, la même valeur par défaut que
+`NotifyBase` utilise lui-même lorsqu'un plugin ne déclare aucun
+`notify_format`.
+
+```yaml
+# Service texte uniquement -- aucun bloc body_formats n'est nécessaire.
+schemas:
+  - example://
+```
+
+Lorsqu'un service accepte plusieurs formats, listez-les et marquez celui
+par défaut avec un mapping à clé unique `format: default`, le même
+raccourci que `schemas` utilise déjà pour `: insecure` :
+
+```yaml
+body_formats:
+  - html: default
+  - text
+```
+
+Règles, dans l'ordre :
+
+1. **`body_formats` est optionnel.** Omettez-le entièrement pour un
+   service texte uniquement ; cela équivaut à `body_formats: [text]`.
+2. **Au plus une entrée peut être marquée `: default`.** Déclarer deux
+   valeurs par défaut ou plus est un échec de validation de la
+   documentation — il n'existe aucun moyen d'honorer deux valeurs par
+   défaut sur le même service.
+3. **Si aucune entrée n'est marquée `: default`, la première entrée de la
+   liste devient la valeur par défaut implicite.** Ceci est valide et ne
+   fera pas échouer la validation, mais `pnpm lint` affiche une
+   recommandation d'en marquer une explicitement dès qu'un service déclare
+   plus d'un format, car l'intention est facile à manquer à la lecture
+   autrement.
+4. **Le même format ne peut pas être déclaré deux fois** dans la même
+   liste.
+5. **Les noms de format inconnus font échouer la validation.** Seuls
+   `text`, `html`, et `markdown` sont reconnus.
+
+```yaml
+# Valide : aucune valeur par défaut explicite -- "text" (la première
+# entrée) est utilisée, mais pnpm lint recommande d'en marquer une
+# explicitement.
+body_formats:
+  - text
+  - html
+  - markdown
+```
+
+```yaml
+# Invalide : deux entrées marquées par défaut -- échoue la validation.
+body_formats:
+  - html: default
+  - markdown: default
+```
 
 #### Indicateurs de Capacité
 

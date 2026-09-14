@@ -41,6 +41,67 @@ By default, endpoints return `text/plain`. If you prefer JSON, send `Accept: app
 
 For notification endpoints (`/notify` and `/notify/{KEY}`), you can also request a simple HTML log view by sending `Accept: text/html`. This is mainly useful for human testing in a browser.
 
+These normal responses wait for notification work to finish, then send retained
+logs one entry at a time. This avoids rebuilding a large on-disk result in
+memory and does not change the response format.
+
+### Live Progress Streaming
+
+Notification endpoints can report progress as each service is notified. Use `?stream=yes` or send `Accept: text/event-stream`.
+
+Any `log` events are followed by one `result` event. An unexpected failure produces an `error` event instead.
+
+```bash
+curl -N -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Backup completed successfully.", "title": "System Status"}' \
+  "http://localhost:8000/notify?stream=yes"
+```
+
+```text
+event: log
+data: {"level": "INFO", "asctime": "2025-01-01 12:00:00,000", "message": "Sent to Telegram", "service": "Telegram"}
+
+event: result
+data: {"status": "SUCCESS"}
+```
+
+The stream starts with HTTP `200`, before delivery finishes. Check the final `result` status (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL`, or `TIMEOUT`) instead of expecting HTTP `424`.
+
+Each connection keeps up to 2 MB of waiting logs in memory. If the client falls
+behind, up to 256 MB more can use temporary disk storage. Events stay ordered
+unless either limit is reached.
+
+If the storage limit is reached or temporary storage fails, notification
+delivery continues. The stream sends an `ERROR` log asking the caller to
+contact the server administrator. New entries resume after the stored backlog
+drains.
+
+Operators can change these limits with `APPRISE_STREAM_MEMORY_SIZE` and
+`APPRISE_STREAM_DISK_SIZE`. The same limits also keep the completed result's
+logs from growing without bound in memory. See [Environment Variables](/api/reference/environment/#storage--limits) for the zero-value modes.
+
+At most `APPRISE_STREAM_WORKER_COUNT` streamed notifications run concurrently
+in each Gunicorn worker process. The default is `4`, so the effective
+server-wide default is `APPRISE_WORKER_COUNT * 4`.
+
+`APPRISE_STREAM_QUEUE_SIZE` allows up to `8` additional streams to remain
+connected in each worker process while waiting for an active slot or
+finishing their responses. When both the active and queued slots are full, a
+new stream receives HTTP `503` with a `Retry-After` header. Non-streaming
+notifications are unaffected.
+
+Work still occupies its slot if the client disconnects during delivery. A
+reverse proxy may also enforce its own limits before a request reaches
+Apprise API.
+
+In the packaged container, `APPRISE_CONNECTION_TIMEOUT` controls how long a
+proxy waits for live-stream activity and defaults to 10 minutes.
+
+:::note
+`-N` (`--no-buffer`) tells `curl` to print each event as it arrives instead of waiting for the connection to close.
+:::
+
 ## Stateless Notifications
 
 <picture class="theme-aware-sl-diagram">
@@ -56,6 +117,8 @@ For notification endpoints (`/notify` and `/notify/{KEY}`), you can also request
 </picture>
 
 Stateless notifications are ideal for "sidecar" usage where you don't want to manage persistent configuration on the server. You must provide the `urls` parameter in every request.
+
+With authentication enabled, use administrator credentials, or send explicit `urls` with configuration-user credentials and the matching `X-Apprise-Config-ID` header. Configuration-user access must be `user`; `locked`, `public`, and `disabled` cannot send stateless notifications. For Apprise API v2 compatibility, the header without `urls` remains a stateful send through the saved configuration.
 
 ### Basic JSON Request
 
@@ -125,8 +188,23 @@ curl -X POST \
     "body": "Database connection failed",
     "type": "warning"
   }' \
+  http://localhost:8000/notify
+```
+
+When authentication is enabled, keep the same keyed URL and add Basic Auth:
+
+```bash
+curl -u "user:password" -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Database connection failed", "type": "warning"}' \
   http://localhost:8000/notify/my-alerts
 ```
+
+A password-only administrator login uses `-u ":password"`.
+
+An administrator may also set a Config ID to `public`. Public callers omit Basic Auth but must provide a specific tag other than `all`. Public access works only for stateful notification calls; other endpoints remain protected.
+
+The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it.
 
 ### Tagging
 

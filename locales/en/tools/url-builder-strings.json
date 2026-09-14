@@ -24,6 +24,10 @@
   "boolDefaultNo": "\u2014 default (no) \u2014",
   "defaultPrefix": "\u2014 default (",
   "defaultSuffix": ") \u2014",
+  "formatDefault": "Default",
+  "formatNotUsed": "Not used",
+  "choiceYes": "Yes",
+  "choiceNo": "No",
   "listPlaceholder": "One per line or comma-separated",
   "listCommaSeparated": "Comma-separated",
 
@@ -41,6 +45,11 @@
   "stepGeneratedUrl": "Access Your Generated URL",
 
   "schemaVariant": "Schema",
+  "schemaSecureSuffix": "secure",
+  "templateResetTitle": "Reset to auto-select",
+  "templateAutoBadge": "auto",
+  "requiredProgressTitle": "Minimum parameters required to generate a valid notification URL.",
+  "requiredTitle": "Required",
 
   "fillRequired": "Fill required (*) fields to complete the URL",
   "copy": "Copy",
