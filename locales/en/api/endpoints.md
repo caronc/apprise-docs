@@ -40,6 +40,11 @@ You can perform status or health checks on your server configuration.
 
   `degraded` is `true` only when both `stateful_enabled` and `stateless_enabled` are `false`. The server cannot accept notifications until an admin enables at least one mode.
 
+  `config_lock` is relative to the authenticated caller and is `false` for an
+  administrator who can bypass the lock. `stateful_enabled` and
+  `stateless_enabled` describe server-wide mode switches; they do not grant the
+  current caller permission to use those modes.
+
 ## Stateless Notifications
 
 Send notifications without using persistent storage.
@@ -112,20 +117,20 @@ Manage and use saved configurations associated with a `{KEY}`.
 
 All endpoints in this section are unavailable when `APPRISE_STATEFUL_MODE=disabled`.
 
-| Path               | Method   | Description                                                                                                            |
-| :----------------- | :------- | :--------------------------------------------------------------------------------------------------------------------- |
-| `/cfg`             | `GET`    | Lists saved Config IDs. The JSON format depends on whether authentication is enabled, as shown below.                  |
-| `/add/{KEY}`       | `POST`   | Saves a configuration. Payload: `urls`, `config`, `format`.                                                            |
-| `/del/{KEY}`       | `POST`   | Removes a configuration and its per-key authentication.                                                                |
-| `/move/{KEY}`      | `POST`   | Moves a configuration to a new Config ID. Payload: `to` (required).                                                    |
-| `/get/{KEY}`       | `POST`   | Returns a configuration. Alias: `/cfg/{KEY}`.                                                                          |
-| `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. `locked` and `public` require a specific tag; `disabled` is administrator-only. |
-| `/json/urls/{KEY}` | `GET`    | Returns saved URLs and tags. With `APPRISE_CONFIG_LOCK=yes`, global administrator credentials are required.            |
-| `/status/{KEY}`    | `GET`    | Returns status after authentication. `config_lock` includes the key's effective access.                                |
-| `/qr/{KEY}`        | `GET`    | Returns the password-safe `apprise://` or `apprises://` URL used to add the configuration to Apprise Mobile.           |
-| `/auth/{KEY}`      | `GET`    | Opens the browser editor, or returns mode, access, and username as JSON. Passwords are never returned.                 |
-| `/auth/{KEY}`      | `POST`   | Sets credentials and `access`. Administrators change access; configuration users change only their password.           |
-| `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration. Global administrator credentials are required.                  |
+| Path               | Method   | Description                                                                                                                                                                                                                                                                                |
+| :----------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/cfg`             | `GET`    | Lists saved Config IDs. The JSON format depends on whether authentication is enabled, as shown below.                                                                                                                                                                                      |
+| `/add/{KEY}`       | `POST`   | Saves a configuration. Payload: `urls`, `config`, `format`.                                                                                                                                                                                                                                |
+| `/del/{KEY}`       | `POST`   | Removes a configuration and its per-key authentication.                                                                                                                                                                                                                                    |
+| `/move/{KEY}`      | `POST`   | Moves a configuration to a new Config ID. Payload: `to` (required).                                                                                                                                                                                                                        |
+| `/get/{KEY}`       | `POST`   | Returns a configuration. Alias: `/cfg/{KEY}`.                                                                                                                                                                                                                                              |
+| `/notify/{KEY}`    | `POST`   | Sends through the saved configuration. Accepts an optional `template` object (or `template[name]` form fields) for configurations using `${NAME}`. `locked` and `public` require a specific tag; `disabled` is administrator-only.                                                         |
+| `/json/urls/{KEY}` | `GET`    | Returns saved URLs and tags. Each URL also reports the template names it uses and which must be supplied. With `privacy=1`, URL secrets and configuration defaults are hidden. Server environment values are never returned. With `APPRISE_CONFIG_LOCK=yes`, global administrator credentials are required. |
+| `/status/{KEY}`    | `GET`    | Returns status after authentication. `config_lock` reports whether this caller may view configuration content.                                                                                                                                                                             |
+| `/qr/{KEY}`        | `GET`    | Returns the password-safe `apprise://` or `apprises://` URL used to add the configuration to Apprise Mobile.                                                                                                                                                                               |
+| `/auth/{KEY}`      | `GET`    | Opens the browser editor, or returns the mode, `access`, and username as JSON. Passwords are never returned.                                                                                                                                                                               |
+| `/auth/{KEY}`      | `POST`   | Sets credentials and `access`. Administrators change access; configuration users change only their password.                                                                                                                                                                               |
+| `/auth/{KEY}`      | `DELETE` | Removes Basic Auth without removing the configuration. Global administrator credentials are required.                                                                                                                                                                                      |
 
 These stateful endpoints also accept `X-Apprise-Config-ID`. For example, send `POST /get/` with `X-Apprise-Config-ID: mykey`. This keeps the key out of the URL. `/cfg` does not accept the header.
 
@@ -156,9 +161,9 @@ An empty `user` means password-only access. `null` means that no configuration u
 
 `access` accepts `user`, `locked`, `public`, or `disabled`. Public access applies only to stateful notification calls and requires a specific tag. Disabled access preserves the account but permits only the administrator. Only an administrator may send the `access` field. Configuration users may change their password, but must omit `access` entirely. See [Authentication and Access Control](/api/deployment/#authentication-and-access-control).
 
-`/move/{KEY}` moves a configuration to a free Config ID. Configuration users may move only their own key while locking is off. A `user` may also clear their own configuration; their credentials remain for the configured prune grace period so they can save a replacement. With `APPRISE_CONFIG_LOCK=yes`, only an authenticated administrator may move or delete entries.
+`/move/{KEY}` moves a configuration to a free Config ID. Configuration users may move only their own key while locking is off. A `user` may also clear their own configuration; their credentials remain for the configured cleanup period so they can save a replacement. With `APPRISE_CONFIG_LOCK=yes`, only an authenticated administrator may move or delete entries.
 
-When `APPRISE_CONFIG_LOCK=yes`, an authenticated administrator retains full configuration access. Other callers cannot add, retrieve, inspect, list, move, or delete configuration. New accounts default to `locked`. An administrator may save `user` or `public`, but either behaves as `locked` until the global lock is removed. Saved access is not rewritten.
+When `APPRISE_CONFIG_LOCK=yes`, an authenticated administrator retains full configuration access. Other callers cannot add, retrieve, inspect, list, move, or delete configuration. New accounts default to `locked`, and saved `user` access behaves as `locked` without being rewritten. Saved `public` access remains public because it already hides configuration content.
 
 If both the URL and header contain a key, the header wins. Invalid headers are rejected. The Web interface and Apprise Mobile may continue using URL-based keys.
 

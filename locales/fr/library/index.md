@@ -44,3 +44,5 @@ Les pages de cette section couvrent aussi :
 - Le [stockage persistant](./persistent-storage/)
 - Le [développement de plugins](./plugin/)
 - Les [points d'extension](./extending/)
+- Les [variables de substitution](./configuration/#variables-de-substitution)
+  pour fournir des valeurs YAML au moment de l'envoi

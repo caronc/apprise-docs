@@ -93,15 +93,16 @@ Apprise prend en charge un cache de stockage persistant. Vous pouvez l'ajuster a
 
 ### Exécution et Diagnostic
 
-| Flag  | Option longue     | Description                                                                                               |
-| :---- | :---------------- | :-------------------------------------------------------------------------------------------------------- |
-| `-Da` | `--disable-async` | Envoyer de manière synchrone (l'un après l'autre) plutôt qu'en parallèle.                                 |
-| `-d`  | `--dry-run`       | Exécution d'essai. Affiche quels services seraient déclenchés sur `stdout`. N'envoie aucune notification. |
-| `-l`  | `--details`       | Afficher les détails des services actuellement pris en charge.                                            |
-| `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                           |
-| `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                      |
-| `-V`  | `--version`       | Afficher la version puis quitter.                                                                         |
-| `-h`  | `--help`          | Afficher le message d'aide puis quitter.                                                                  |
+| Flag  | Option longue     | Description                                                                                                                                 |
+| :---- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-Da` | `--disable-async` | Envoyer de manière synchrone (l'un après l'autre) plutôt qu'en parallèle.                                                                   |
+| `-d`  | `--dry-run`       | Exécution d'essai. Affiche quels services seraient déclenchés sur `stdout`. N'envoie aucune notification.                                   |
+| `-l`  | `--details`       | Afficher les détails des services actuellement pris en charge.                                                                              |
+| `-tv` | `--template-var`  | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML, sous la forme `NOM=VALEUR`. Répétable, mais une seule fois par nom. |
+| `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                                                             |
+| `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                                                        |
+| `-V`  | `--version`       | Afficher la version puis quitter.                                                                                                           |
+| `-h`  | `--help`          | Afficher le message d'aide puis quitter.                                                                                                    |
 
 ## Variables d'Environnement
 
@@ -113,6 +114,7 @@ Vous pouvez prédéfinir certains comportements via des variables d'environnemen
 | `APPRISE_CONFIG_PATH`                   | Remplacer les chemins de recherche de configuration par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                |
 | `APPRISE_PLUGIN_PATH`                   | Remplacer les chemins de recherche de plugins par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                      |
 | `APPRISE_STORAGE_PATH`                  | Remplacer le chemin par défaut du stockage persistant.                                                                                                                                                                                                                                                                       |
+| `APPRISE_TEMPLATE_<NOM>`                | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML. Par exemple, `APPRISE_TEMPLATE_API_KEY` remplit `${API_KEY}`. Voir [Variables de substitution](/getting-started/configuration/#variables-de-substitution).                                                                                           |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Variables de proxy standard prises en compte automatiquement (non spécifiques à Apprise). Acheminez les notifications sortantes via un proxy, ou exemptez certains hôtes avec `NO_PROXY`. Voir [Prise en charge des proxys](/library/advanced/#prise-en-charge-des-proxys) pour plus de détails, y compris les proxys SOCKS. |
 
 ## Emplacements de Configuration par Défaut
