@@ -1,0 +1,417 @@
+---
+title: "Notifications Vapid/WebPush"
+description: "Envoyer des notifications Vapid/WebPush."
+sidebar:
+  label: "Vapid/WebPush"
+
+source: https://www.rfc-editor.org/rfc/rfc8292
+
+schemas:
+  - vapid
+
+has_image: true
+
+sample_urls:
+  - vapid://vous@example.com/
+  - vapid://vous@example.com/telephone/
+  - vapid://vous@example.com/portable/telephone/
+
+limits:
+  max_chars: 4000
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/_SPONSORS:BANNER _/}
+{/_ SERVICE:DETAILS_/}
+
+## Comment Fonctionne Web Push
+
+Web Push est la façon dont un site web envoie une notification à un navigateur qui l'a déjà visité. Si vous n'en avez jamais configuré, l'essentiel à comprendre est que **ce n'est pas vous qui choisissez la destination de la notification : c'est le navigateur qui vous l'indique.**
+
+Le déroulement est le suivant :
+
+1. Quelqu'un visite votre site et clique sur le bouton que vous utilisez pour demander l'autorisation d'envoyer des notifications.
+2. Son navigateur renvoie à votre site un petit bloc de JSON appelé **abonnement**. Il contient un `endpoint` (une longue adresse web appartenant à Google, Mozilla, Apple ou à l'éditeur de ce navigateur) ainsi que deux clés servant à chiffrer les messages pour que seul ce navigateur puisse les lire.
+3. Vous enregistrez ce JSON dans un fichier `subscriptions.json`.
+4. Apprise lit le fichier, chiffre votre message pour ce navigateur, le signe avec votre clé privée et l'envoie à l'`endpoint` fourni par le navigateur.
+
+L'endpoint est propre à un navigateur sur un appareil donné. Rien dans votre URL Apprise ne décide de la destination d'un message : celle-ci provient entièrement de l'abonnement. C'est pourquoi le fichier `subscriptions.json` est nécessaire avant qu'Apprise puisse notifier qui que ce soit.
+
+:::note
+Apprise ne peut pas créer d'abonnements à votre place. Seul un navigateur peut en produire un, depuis un vrai site web visité par une vraie personne. Si vous n'avez pas encore de site qui le fait, Apprise n'a aucune destination à qui envoyer.
+:::
+
+## Configuration du Compte
+
+Trois éléments sont nécessaires :
+
+| Élément                | De quoi il s'agit                                                                                                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Une adresse de contact | Apprise l'utilise comme identité d'expéditeur VAPID. Il s'agit de la première partie après `vapid://`, par exemple `vous@example.com`.                                  |
+| Une clé privée         | Un fichier `private_key.pem` utilisé pour signer chaque message afin que le service de push puisse confirmer qu'il vient bien de vous. Apprise peut le créer pour vous. |
+| `subscriptions.json`   | Les abonnements de navigateurs que vous avez collectés, comme décrit ci-dessus. Vous devez fournir ce fichier vous-même.                                                |
+
+### Utiliser la Même Clé VAPID Partout
+
+Choisissez la paire de clés VAPID **avant** que les navigateurs s'abonnent.
+Votre site fournit la clé publique au navigateur sous le nom
+[`applicationServerKey`](https://www.w3.org/TR/push-api/#dom-pushsubscriptionoptions-applicationserverkey) ; Apprise a besoin du fichier `private_key.pem`
+correspondant. Le service de push rejette un message signé avec une autre clé.
+
+Les valeurs `p256dh` et `auth` de `subscriptions.json` sont des clés de
+chiffrement propres au navigateur. Elles ne sont pas votre clé publique VAPID.
+
+Si votre site crée déjà des abonnements Web Push, réutilisez sa clé privée
+VAPID. Un changement de clé oblige tous les navigateurs à se réabonner.
+
+### Commencer Sans Clé VAPID
+
+Créez une clé privée P-256 et gardez-la secrète :
+
+```bash
+openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
+chmod 600 private_key.pem
+```
+
+De nombreux frameworks web peuvent calculer la valeur publique. Si le vôtre
+ne le fait pas, exécutez ceci à côté de `private_key.pem`, puis copiez la
+valeur affichée dans le paramètre `applicationServerKey` de votre site :
+
+```bash
+python - <<'PY'
+from base64 import urlsafe_b64encode
+from cryptography.hazmat.primitives import serialization
+
+with open("private_key.pem", "rb") as stream:
+    key = serialization.load_pem_private_key(stream.read(), password=None)
+
+raw = key.public_key().public_bytes(
+    serialization.Encoding.X962,
+    serialization.PublicFormat.UncompressedPoint,
+)
+print(urlsafe_b64encode(raw).rstrip(b"=").decode())
+PY
+```
+
+Votre site demande ensuite au navigateur de s'abonner avec cette valeur
+publique et enregistre `subscription.toJSON()`. Le résultat contient les
+valeurs `endpoint`, `p256dh` et `auth` nécessaires à Apprise.
+
+:::caution
+Ne placez jamais `private_key.pem` dans le code du navigateur, un téléchargement
+public ou le contrôle de source. Le navigateur reçoit uniquement la valeur
+publique `applicationServerKey`.
+:::
+
+### Liste de Vérification
+
+1. Créez ou choisissez une paire de clés VAPID.
+2. Configurez sa valeur publique comme `applicationServerKey` du site.
+3. Demandez l'autorisation à chaque navigateur et enregistrez son abonnement JSON.
+4. Placez les abonnements dans le format nommé présenté ci-dessous.
+5. Donnez à Apprise la clé privée correspondante et le fichier d'abonnements.
+6. Envoyez un test avec `-vv` afin d'afficher tout problème de configuration.
+
+## Où Placer Vos Fichiers
+
+Apprise doit trouver votre `subscriptions.json` (et un `private_key.pem`). Il y a trois façons de s'organiser ; choisissez celle qui correspond à votre manière d'exécuter Apprise.
+
+<Tabs>
+<TabItem label="Déposer le fichier (stockage persistant)">
+
+Idéal lorsque vous exécutez Apprise vous-même et que vous avez accès au système de fichiers.
+
+Omettez complètement `subfile` et `keyfile` de l'URL. Apprise attribue à chaque URL son propre répertoire et y cherche les fichiers. Il peut créer une paire de clés, mais les navigateurs doivent s'abonner avec sa clé publique : créez ou repérez donc la clé avant de collecter les abonnements.
+
+1. Trouvez le répertoire de votre URL :
+
+   ```bash
+   apprise storage list
+   ```
+
+2. Copiez vos abonnements dans le répertoire indiqué :
+
+   ```bash
+   cp subscriptions.json ~/.local/share/apprise/cache/<id>/
+   ```
+
+3. Utilisez une URL propre qui ne pointe vers rien :
+
+   ```bash
+   apprise -vv -t "Titre" -b "Contenu du message" \
+       vapid://vous@example.com/phone
+   ```
+
+C'est l'option la plus propre. L'URL ne contient aucun chemin de fichier : elle peut donc être copiée d'une machine à l'autre et partagée dans un fichier de configuration. Voir [Déplacer Votre Configuration vers un Autre Serveur](#déplacer-votre-configuration-vers-un-autre-serveur).
+
+</TabItem>
+<TabItem label="Pointer vers un chemin">
+
+Idéal lorsque les fichiers se trouvent déjà à un endroit précis et que vous préférez les y laisser.
+
+Nommez les fichiers sur l'URL. N'importe quel chemin lisible fonctionne :
+
+```bash
+apprise -vv -t "Titre" -b "Contenu du message" \
+    "vapid://vous@example.com/phone?keyfile=/etc/apprise/private_key.pem&subfile=/etc/apprise/subscriptions.json"
+```
+
+Ou, plus confortablement, dans un fichier de configuration :
+
+```yaml
+urls:
+  - vapid://vous@example.com/phone:
+      keyfile: /etc/apprise/private_key.pem
+      subfile: /etc/apprise/subscriptions.json
+```
+
+Si Apprise peut écrire dans le fichier, il en retire également les abonnements qui ne fonctionnent plus. Si le fichier est en lecture seule, il est laissé intact. Dans les deux cas, cela continue de fonctionner.
+
+</TabItem>
+<TabItem label="L'héberger ailleurs">
+
+Idéal lorsque vous n'avez aucun accès au système de fichiers, ce qui est la situation habituelle derrière l'[API Apprise](https://github.com/caronc/apprise-api).
+
+Pointez vers une adresse web au lieu d'un chemin. Apprise la récupère au moment de l'envoi, et un nom d'utilisateur et un mot de passe sont pris en charge :
+
+```yaml
+urls:
+  - vapid://vous@example.com/phone:
+      keyfile: https://user:pass123@example.com/private_key.pem
+      subfile: https://user:pass123@example.com/subscriptions.json
+```
+
+Vous conservez le fichier là où cela vous arrange et vous le modifiez sur place ; Apprise se contente de le lire.
+
+:::caution
+Un fichier hébergé n'est jamais modifié : les abonnements morts n'en sont donc pas retirés. Apprise les mémorise séparément et cesse de leur envoyer des messages, mais le fichier lui-même reste tel que vous l'avez laissé. Protégez tout particulièrement le `keyfile` : il s'agit de votre clé de signature, et quiconque peut la lire peut envoyer des notifications en votre nom.
+
+Utilisez uniquement un `subfile` distant que vous contrôlez. Son contenu
+détermine les destinations HTTPS contactées par le serveur Apprise.
+:::
+
+</TabItem>
+</Tabs>
+
+## Syntaxe
+
+La syntaxe valide est la suivante :
+
+- `vapid://vous@example.com/`
+- `vapid://vous@example.com/telephone`
+- `vapid://vous@example.com/portable/telephone/`
+
+Une `target` est le nom donné à un abonnement dans `subscriptions.json`. Sans cible dans l'URL, Apprise recherche celle qui porte votre adresse de contact.
+
+## Détail des Paramètres
+
+| Variable | Requis | Description                                                                                                                                                                                                                                                                                   |
+| -------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| keyfile  | Non    | La clé privée VAPID P-256 au format `PEM`. En son absence, Apprise utilise celle du stockage persistant de cette URL et peut en créer une. Sa partie publique doit correspondre à la clé utilisée par le navigateur.                                                                          |
+| subfile  | Non    | Un fichier `subscriptions.json` identifiant la configuration à référencer. Il peut s'agir d'un chemin local ou d'un emplacement distant tel que `https://user:pass@example.com/subscriptions.json`. En son absence, le fichier du répertoire de stockage persistant de cette URL est utilisé. |
+| mode     | Non    | Une étiquette de compatibilité conservée dans l'URL (par défaut `chrome`). Elle ne choisit pas la destination. Laissez-la généralement inchangée. Valeurs possibles : `chrome`, `firefox`, `edge`, `opera` et `apple`.                                                                        |
+| ttl      | Non    | Durée, en secondes, pendant laquelle le service de push peut conserver un message pour un appareil hors ligne (par défaut `0`, maximum `60`). `0` signifie livrer immédiatement ou abandonner le message.                                                                                     |
+
+:::note
+Un `subfile` distant est récupéré pour la durée de la notification et traité en lecture seule, puisqu'il n'y a rien en local qu'Apprise puisse mettre à jour. C'est le choix pratique lorsque vous exécutez Apprise derrière l'[API Apprise](https://github.com/caronc/apprise-api) sur un serveur où vous ne pouvez pas déposer vous-même un fichier dans le répertoire de stockage.
+:::
+
+### À Propos du Paramètre `mode`
+
+`mode` est conservé pour la compatibilité et fait partie de l'identité de stockage de l'URL. Il ne choisit **pas** le service de push : la livraison utilise toujours l'`endpoint` de chaque abonnement. La plupart des utilisateurs doivent conserver la valeur par défaut. Un changement peut sélectionner un autre répertoire de stockage persistant.
+
+| Mode    | Famille de navigateurs             |
+| ------- | ---------------------------------- |
+| chrome  | Google Chrome                      |
+| firefox | Mozilla Firefox                    |
+| edge    | Microsoft Edge                     |
+| opera   | Opera                              |
+| apple   | Safari et autres navigateurs Apple |
+
+{/_TEMPLATE:SERVICE-PARAMS_/}
+
+## Configuration de subscriptions.json
+
+VAPID nécessite un fichier `subscriptions.json`. Apprise accepte deux formats :
+
+1. autonome ; dans l'exemple ci-dessous, la cible serait `abc123`
+
+   ```json
+   {
+     "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+     "keys": {
+       "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+       "auth": "k9Xzm43nBGo="
+     }
+   }
+   ```
+
+1. prise en charge de plusieurs cibles ; dans l'exemple ci-dessous, 2 cibles sont créées, nommées `name1` et `name2`
+
+   ```json
+   {
+     "name1": {
+       "endpoint": "https://fcm.googleapis.com/fcm/send/...",
+       "keys": {
+         "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+         "auth": "k9Xzm43nBGo="
+       }
+     },
+     "name2": {
+       "endpoint": "https://web.push.apple.com/...",
+       "keys": {
+         "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+         "auth": "k9Xzm43nBGo="
+       }
+     }
+   }
+   ```
+
+Les cibles permettent de notifier un ou plusieurs endpoints. Les noms ne sont pas sensibles à la casse, et un même fichier peut contenir des abonnements de navigateurs différents.
+
+Utilisez le format nommé à plusieurs cibles pour une installation normale. Il est plus facile à gérer et permet à Apprise de supprimer séparément les entrées expirées. Un fichier autonome ne possède aucun nom d'entrée à retirer : remplacez-le manuellement lorsque son abonnement expire.
+
+Copiez chaque `endpoint` exactement tel que le navigateur vous l'a fourni. Apprise vérifie chacun d'eux avant de l'utiliser et ignore tout abonnement dont l'`endpoint` :
+
+- ne commence pas par `https://` (Web Push ne fonctionne pas en `http` simple)
+- n'a pas de nom d'hôte, ou a un nom d'hôte invalide
+- contient un nom d'utilisateur ou un mot de passe
+
+### Abonnements Qui Cessent de Fonctionner
+
+Les gens désinstallent des applications, effacent les données de leur navigateur et changent de téléphone. Dans ce cas, le service de push indique à Apprise que l'abonnement n'existe plus, et il ne sert plus à rien de réessayer cet endpoint. Ce qu'Apprise fait ensuite dépend de son droit ou non de modifier votre fichier :
+
+- **Le fichier est accessible en écriture.** L'entrée morte en est retirée, ce qui garde le fichier propre au fil des appareils qui arrivent et repartent. Seule cette entrée est supprimée ; tout le reste est laissé exactement tel quel, y compris une entrée qu'Apprise n'a pas pu lire. Si votre fichier contient une faute de frappe, elle y reste pour que vous la corrigiez plutôt que d'être supprimée en silence.
+- **Le fichier est en lecture seule, ou il est distant.** Apprise n'y touche pas et mémorise l'endpoint dans son stockage persistant pendant 30 jours. Un envoi ultérieur l'ignore ; après 30 jours, il peut être vérifié à nouveau. Sans stockage persistant, cette mémoire ne survit pas à un redémarrage.
+
+Lorsqu'un fichier local est réécrit, les liens symboliques sont suivis et Apprise tente de conserver les permissions et le propriétaire. Le remplacement est atomique : les lecteurs ne voient pas de JSON à moitié écrit. Les écritures simultanées ne sont pas verrouillées ; évitez que plusieurs processus modifient le même fichier en même temps.
+
+:::tip
+Un appareil qui se réabonne reçoit un endpoint tout neuf de son navigateur : réajouter quelqu'un plus tard fonctionne donc toujours. Rien n'est mémorisé qui puisse empêcher la livraison vers un nouvel abonnement.
+:::
+
+## Configuration de la Clé Privée (PEM)
+
+Apprise signe les messages avec `private_key.pem`. Ce fichier doit correspondre à l'`applicationServerKey` publique utilisée lors de l'abonnement du navigateur. Placez-le dans le stockage persistant, ou choisissez un fichier local ou distant avec `keyfile`. Consultez [Utiliser la Même Clé VAPID Partout](#utiliser-la-même-clé-vapid-partout) avant de créer des abonnements.
+
+:::caution
+Un `keyfile` peut être une adresse web tout comme `subfile`, mais soyez prudent avec celui-ci : il s'agit de votre clé de signature, et quiconque peut la lire peut envoyer des notifications en votre nom. Gardez-la dans un endroit privé et privilégiez, dans la mesure du possible, un fichier local ou le stockage persistant.
+:::
+
+## Conseils sur le Stockage Persistant
+
+Lorsque le stockage persistant est activé, chaque URL Apprise reçoit son propre répertoire nommé d'après un identifiant calculé à partir de l'URL elle-même. Vos fichiers Vapid s'y trouvent :
+
+```text
+<stockage>/<id>/subscriptions.json
+<stockage>/<id>/private_key.pem
+```
+
+La commande suivante liste tous les emplacements de stockage persistant associés à votre configuration :
+
+```bash
+apprise storage list
+```
+
+Repérez simplement l'ID associé au compte Vapid que vous souhaitez mettre à jour ; notez que les ID de répertoire se trouvent à :
+
+1. Microsoft Windows : `%APPDATA%/Apprise/cache`
+1. Linux : `~/.local/share/apprise/cache`
+
+Pour plus de détails à ce sujet, voir [ici](https://github.com/caronc/apprise/wiki/persistent_storage).
+
+:::caution
+Vapid nécessite que le stockage persistant soit activé **ou** qu'un `?subfile=` figure sur l'URL. Sans l'un ou l'autre, Apprise n'a aucun endroit d'où lire les abonnements et la notification échoue avec `Vapid could not load subscriptions`.
+:::
+
+## Déplacer Votre Configuration vers un Autre Serveur
+
+L'identifiant de stockage est calculé à partir de votre URL Apprise et non à partir d'un élément propre à une machine : la même URL aboutit donc au même identifiant partout. Déplacer une configuration fonctionnelle vers une autre installation d'Apprise se résume donc à une copie :
+
+1. Exécutez `apprise storage list` sur l'ancien serveur et notez l'ID de votre URL Vapid.
+2. Copiez les fichiers `subscriptions.json` et `private_key.pem` de ce répertoire dans le répertoire du même nom sous le chemin de stockage du nouveau serveur.
+3. Utilisez la même URL Apprise sur le nouveau serveur.
+
+Votre URL reste propre et ne contient aucun chemin de fichier : elle peut donc être conservée sans risque dans un fichier de configuration partagé par plusieurs machines.
+
+:::note
+Si vous figez un emplacement avec `?subfile=` ou `?keyfile=`, ce chemin fait partie de votre URL et doit exister sur la machine qui l'utilise. Omettez-les si vous voulez une seule URL qui fonctionne partout.
+:::
+
+## Construction de l'URL Apprise
+
+Pour une installation reproductible, conservez l'URL et les emplacements de fichiers dans une configuration YAML Apprise :
+
+```yaml
+urls:
+  - vapid://vous@example.com/telephone:
+      keyfile: /path/to/private_key.pem
+      subfile: /path/to/subscriptions.json
+```
+
+Le `keyfile` et le `subfile` peuvent également être hébergés ailleurs, y compris derrière un nom d'utilisateur et un mot de passe. C'est ainsi que vous feriez fonctionner Vapid sous l'API Apprise, où vous n'avez aucun moyen simple de placer des fichiers sur le serveur :
+
+```yaml
+urls:
+  - vapid://vous@example.com/telephone:
+      keyfile: https://user:pass123@example.com/private_key.pem
+      subfile: https://user:pass123@example.com/subscriptions.json
+```
+
+Si vous utilisez le stockage persistant, vous pouvez omettre les deux entièrement et laisser Apprise utiliser les fichiers du répertoire de stockage propre à cette URL :
+
+```yaml
+urls:
+  - vapid://vous@example.com:
+```
+
+## Exemples
+
+Notifier l'abonnement portant le nom de votre propre adresse de contact :
+
+```bash
+apprise -vv -t "Titre" -b "Contenu du message" \
+    vapid://vous@example.com
+```
+
+Notifier deux cibles nommées de votre `subscriptions.json` :
+
+```bash
+apprise -vv -t "Titre" -b "Contenu du message" \
+    vapid://vous@example.com/laptop/phone
+```
+
+Pointer vers vos propres fichiers au lieu des copies du stockage persistant :
+
+```bash
+apprise -vv -t "Titre" -b "Contenu du message" \
+    "vapid://vous@example.com/phone?keyfile=/etc/apprise/private_key.pem&subfile=/etc/apprise/subscriptions.json"
+```
+
+Demander au service de push de conserver un message jusqu'à 30 secondes si l'appareil est hors ligne :
+
+```bash
+apprise -vv -t "Titre" -b "Contenu du message" \
+    "vapid://vous@example.com/phone?ttl=30"
+```
+
+## Dépannage
+
+Exécutez les tests avec `-vv` ; les échecs VAPID proviennent généralement de la configuration.
+
+:::caution
+Les journaux détaillés peuvent contenir des endpoints d'abonnement et des
+emplacements de fichiers distants. Considérez-les comme secrets et masquez les
+endpoints, noms d'utilisateur, mots de passe et jetons avant de partager un
+journal.
+:::
+
+| Symptôme                                          | Points à Vérifier                                                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `Vapid could not load subscriptions`              | Vérifiez `subfile`, le stockage persistant, la syntaxe JSON et les permissions du fichier.                         |
+| Cible introuvable                                 | Faites correspondre la cible de l'URL à un nom de premier niveau dans `subscriptions.json`.                        |
+| Réponse `401` ou `403`                            | La clé privée ne correspond probablement pas à l'`applicationServerKey` publique utilisée pour créer l'abonnement. |
+| Réponse `404` ou `410`                            | L'abonnement a expiré. Demandez à ce navigateur de se réabonner et enregistrez son nouveau JSON.                   |
+| Endpoint refusé                                   | Copiez exactement l'endpoint HTTPS du navigateur ; n'ajoutez pas d'identifiants et ne modifiez pas son hôte.       |
+| Fonctionne localement, mais pas dans un conteneur | Montez les deux fichiers, utilisez le stockage persistant ou indiquez des chemins présents dans le conteneur.      |
