@@ -1,0 +1,424 @@
+---
+title: "Vapid/WebPush Notifications"
+description: "Send Vapid/WebPush notifications."
+sidebar:
+  label: "Vapid/WebPush"
+
+source: https://www.rfc-editor.org/rfc/rfc8292
+
+schemas:
+  - vapid
+
+has_image: true
+
+sample_urls:
+  - vapid://you@example.com/
+  - vapid://you@example.com/phone/
+  - vapid://you@example.com/laptop/phone/
+
+limits:
+  max_chars: 4000
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/_SPONSORS:BANNER _/}
+{/_ SERVICE:DETAILS_/}
+
+## How Web Push Works
+
+Web Push is how a website sends a notification to a browser that has already visited it. If you have never set one up before, the important thing to understand is that **you do not choose where the notification goes; the browser tells you.**
+
+The flow looks like this:
+
+1. Somebody visits your site and clicks whatever button you use to ask permission for notifications.
+2. Their browser hands your site back a small block of JSON called a **subscription**. It contains an `endpoint` (a long web address belonging to Google, Mozilla, Apple, or whoever makes that browser) plus two keys used to encrypt messages so only that browser can read them.
+3. You save that JSON into a `subscriptions.json` file.
+4. Apprise reads the file, encrypts your message for that browser, signs it with your private key, and sends it to the `endpoint` the browser gave you.
+
+The endpoint is unique to one browser on one device. There is nothing in your Apprise URL that decides where a message is delivered; that comes entirely out of the subscription. This is why you need the `subscriptions.json` file before Apprise can notify anybody.
+
+:::note
+Apprise cannot create subscriptions for you. Only a browser can produce one, from a real website that a real person visited. If you do not have a site doing this yet, there is nothing for Apprise to send to.
+:::
+
+## Account Setup
+
+You need three things:
+
+| Thing                | What it is                                                                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| A contact email      | Apprise uses this as the VAPID sender identity. It is the first part after `vapid://`, such as `you@example.com`.                            |
+| A private key        | A `private_key.pem` file used to sign each message so the push service can confirm it really came from you. Apprise can create this for you. |
+| `subscriptions.json` | The browser subscriptions you collected, as described above. You must supply this yourself.                                                  |
+
+### Use the Same VAPID Key Everywhere
+
+Choose the VAPID key pair **before** browsers subscribe. Your website gives
+the public key to the browser as [`applicationServerKey`](https://www.w3.org/TR/push-api/#dom-pushsubscriptionoptions-applicationserverkey); Apprise needs the
+matching `private_key.pem`. A push service rejects messages signed by a
+different key.
+
+The `p256dh` and `auth` values in `subscriptions.json` are separate browser
+encryption keys. They are not your VAPID public key.
+
+If your website already creates Web Push subscriptions, reuse its existing
+VAPID private key. Changing keys means every browser must subscribe again.
+
+### Starting Without a VAPID Key
+
+Create a P-256 private key and keep it private:
+
+```bash
+openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
+chmod 600 private_key.pem
+```
+
+Many web frameworks can derive the public value for you. If yours cannot,
+run this beside `private_key.pem` and copy the printed value into your
+website's `applicationServerKey` setting:
+
+```bash
+python - <<'PY'
+from base64 import urlsafe_b64encode
+from cryptography.hazmat.primitives import serialization
+
+with open("private_key.pem", "rb") as stream:
+    key = serialization.load_pem_private_key(stream.read(), password=None)
+
+raw = key.public_key().public_bytes(
+    serialization.Encoding.X962,
+    serialization.PublicFormat.UncompressedPoint,
+)
+print(urlsafe_b64encode(raw).rstrip(b"=").decode())
+PY
+```
+
+Your website then asks the browser to subscribe with that public value and
+saves `subscription.toJSON()`. The result contains the `endpoint`, `p256dh`,
+and `auth` values Apprise needs.
+
+:::caution
+Never put `private_key.pem` in browser code, a public download, or source
+control. The browser receives only the public `applicationServerKey` value.
+:::
+
+### Setup Checklist
+
+1. Create or select one VAPID key pair.
+2. Configure its public value as your website's `applicationServerKey`.
+3. Ask each browser for permission and save its subscription JSON.
+4. Put the subscriptions into the named format shown below.
+5. Give Apprise the matching private key and subscription file.
+6. Send a test with `-vv` so any setup problem is visible.
+
+## Where to Put Your Files
+
+Apprise needs to find your `subscriptions.json` (and a `private_key.pem`). There are three ways to arrange this; pick the one that matches how you run Apprise.
+
+<Tabs>
+<TabItem label="Drop it in (persistent storage)">
+
+Best when you run Apprise yourself and can reach the filesystem.
+
+Leave `subfile` and `keyfile` off the URL entirely. Apprise gives every URL its own storage directory and looks for the files there. It can generate a key pair, but browsers must subscribe with that pair's public key, so create or locate the key before collecting subscriptions.
+
+1. Find the directory for your URL:
+
+   ```bash
+   apprise storage list
+   ```
+
+2. Copy your subscriptions into the directory it names:
+
+   ```bash
+   cp subscriptions.json ~/.local/share/apprise/cache/<id>/
+   ```
+
+3. Use a clean URL with nothing pointing anywhere:
+
+   ```bash
+   apprise -vv -t "Title" -b "Message content" \
+       vapid://you@example.com/phone
+   ```
+
+This is the tidiest option. The URL carries no file paths, so it can be copied between machines and shared in a configuration file. See [Moving Your Setup to Another Server](#moving-your-setup-to-another-server).
+
+</TabItem>
+<TabItem label="Point at a path">
+
+Best when the files already live somewhere specific and you would rather leave them there.
+
+Name the files on the URL. Any readable path works:
+
+```bash
+apprise -vv -t "Title" -b "Message content" \
+    "vapid://you@example.com/phone?keyfile=/etc/apprise/private_key.pem&subfile=/etc/apprise/subscriptions.json"
+```
+
+Or, more comfortably, in a configuration file:
+
+```yaml
+urls:
+  - vapid://you@example.com/phone:
+      keyfile: /etc/apprise/private_key.pem
+      subfile: /etc/apprise/subscriptions.json
+```
+
+If Apprise can write to the file, it also tidies out subscriptions that stop working. If the file is read-only, it is left untouched. Either way it keeps working.
+
+</TabItem>
+<TabItem label="Host it elsewhere">
+
+Best when you cannot reach the filesystem at all, which is the usual situation behind the [Apprise API](https://github.com/caronc/apprise-api).
+
+Point at a web address instead of a path. Apprise fetches it when it sends, and a username and password are supported:
+
+```yaml
+urls:
+  - vapid://you@example.com/phone:
+      keyfile: https://user:pass123@example.com/private_key.pem
+      subfile: https://user:pass123@example.com/subscriptions.json
+```
+
+You keep the file wherever is convenient for you and edit it there; Apprise only reads it.
+
+:::caution
+A hosted file is never written to, so dead subscriptions are not tidied out of it. Apprise remembers them separately and stops sending to them, but the file itself stays as you left it. Guard the `keyfile` especially carefully: it is your signing key, and anything that can read it can send notifications as you.
+
+Only use a remote `subfile` that you control. Its contents choose the HTTPS
+destinations contacted by the Apprise server.
+:::
+
+</TabItem>
+</Tabs>
+
+## Syntax
+
+Valid syntax is as follows:
+
+- `vapid://you@example.com/`
+- `vapid://you@example.com/phone`
+- `vapid://you@example.com/laptop/phone/`
+
+A `target` is the name you gave a subscription inside `subscriptions.json`. If you omit targets, Apprise looks for one named after your contact email.
+
+## Parameter Breakdown
+
+| Variable       | Required | Description                                                                                                                                                                                                                                                            |
+| -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| keyfile        | No       | The P-256 VAPID private key in `PEM` format. When omitted, Apprise uses the key in this URL's persistent-storage directory and can create one there. Its public half must match the key used by the browser.                                                           |
+| subfile        | No       | A `subscriptions.json` file identifying the configuration you wish to reference. This can be a local path or a remote location such as `https://user:pass@example.com/subscriptions.json`. When left out, the file in this URL's persistent storage directory is used. |
+| mode           | No       | A compatibility label retained in the URL (default `chrome`). It does not select the destination. Usually leave it unchanged. Possible values are `chrome`, `firefox`, `edge`, `opera`, and `apple`.                                                                   |
+| ttl            | No       | How long, in seconds, the push service may retain a message for an offline device (default `0`, maximum `60`). `0` means deliver immediately or discard it.                                                                                                            |
+| image          | No       | Whether to include a thumbnail image alongside the message body (default `yes`).                                                                                                                                                                                       |
+| ignore_expired | No       | Ignore newly reported expired subscriptions when another target succeeds (default `yes`). See [Subscriptions That Stop Working](#subscriptions-that-stop-working).                                                                                                     |
+
+:::note
+A remote `subfile` is fetched for the duration of the notification and treated as read-only, since there is nothing local for Apprise to update. This is the practical choice when you run Apprise behind the [Apprise API](https://github.com/caronc/apprise-api) on a server where you cannot drop a file into the storage directory yourself.
+:::
+
+### About the `mode` Setting
+
+`mode` is retained for compatibility and forms part of the URL's storage identity. It does **not** choose the push service; delivery always uses the `endpoint` inside each subscription. Most users should leave the default unchanged. Changing it can select a different persistent-storage directory.
+
+| Mode    | Browser family                  |
+| ------- | ------------------------------- |
+| chrome  | Google Chrome                   |
+| firefox | Mozilla Firefox                 |
+| edge    | Microsoft Edge                  |
+| opera   | Opera                           |
+| apple   | Safari and other Apple browsers |
+
+{/_TEMPLATE:SERVICE-PARAMS_/}
+
+## subscriptions.json Setup
+
+VAPID requires a `subscriptions.json` file. Apprise supports two formats:
+
+1. standalone; in the below example, the target would be `abc123`
+
+   ```json
+   {
+     "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+     "keys": {
+       "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+       "auth": "k9Xzm43nBGo="
+     }
+   }
+   ```
+
+1. multiple target support; in the below example, 2 targets are created called `name1` and `name2`
+
+   ```json
+   {
+     "name1": {
+       "endpoint": "https://fcm.googleapis.com/fcm/send/...",
+       "keys": {
+         "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+         "auth": "k9Xzm43nBGo="
+       }
+     },
+     "name2": {
+       "endpoint": "https://web.push.apple.com/...",
+       "keys": {
+         "p256dh": "BNcW4oA7zq5H9TKIrA3XfKclN2fX9P_7NR...",
+         "auth": "k9Xzm43nBGo="
+       }
+     }
+   }
+   ```
+
+Targets let you notify one or more endpoints. Names are case-insensitive, and subscriptions from different browsers can share one file.
+
+Use the named, multiple-target format for normal installations. It is easier to manage and lets Apprise remove individual expired entries. A standalone file has no entry name to remove, so replace it manually when that subscription expires.
+
+Copy each `endpoint` exactly as the browser gave it to you. Apprise checks each one before using it and skips any subscription where the `endpoint`:
+
+- does not start with `https://` (Web Push does not run over plain `http`)
+- has no host name, or a host name that is not valid
+- contains a username or password
+
+### Subscriptions That Stop Working
+
+People uninstall apps, clear their browser data, and replace phones. When that happens the push service tells Apprise the subscription no longer exists, so repeatedly trying that endpoint will not help. What Apprise does next depends on whether it is allowed to change your file:
+
+- **The file is writable.** The dead entry is taken out of it, so the file stays tidy as devices come and go. Only that one entry is removed; everything else is left exactly as it was found, including any entry Apprise could not read. If you have a typo somewhere in the file, it stays there for you to fix rather than being quietly deleted.
+- **The file is read-only, or it is remote.** Apprise leaves it alone and remembers the endpoint in persistent storage. Later sends skip it. The retired-endpoint list is cleared 30 days after its last update; without persistent storage, it does not survive a restart.
+
+When a local file is rewritten, symlinks are followed and Apprise attempts to preserve permissions and ownership. Replacement is atomic, so readers do not see half-written JSON. Simultaneous writers are not locked; avoid having multiple processes edit the same file at once.
+
+A dead subscription is **not** counted as a failed notification when a push service accepts the message for at least one other device. A retry cannot revive the dead subscription and may send another copy to healthy subscribers. To report the expiration as a failure, set `?ignore_expired=no`; when `?retry=` is also set, each retry resends to the remaining healthy subscribers.
+
+This setting applies when the push service reports the expiration during the current send. Endpoints already recorded as retired are skipped; they cause a failure only when no other target succeeds.
+
+If no device at all could be notified, the notification is reported as a failure whichever way this is set.
+
+:::tip
+When a browser issues a new endpoint, Apprise treats it as a new subscription.
+The retired-endpoint list is also cleared after 30 days without an update.
+:::
+
+## Private Key (PEM) Setup
+
+Apprise signs messages with `private_key.pem`. This must match the public `applicationServerKey` used when the browser subscribed. Put it in persistent storage, or select a local or remote file with `keyfile`. See [Use the Same VAPID Key Everywhere](#use-the-same-vapid-key-everywhere) before creating subscriptions.
+
+:::caution
+A `keyfile` may be a web address just like `subfile`, but be careful with this one: it is your signing key, and anything that can read it can send notifications as you. Keep it somewhere private, and prefer a local file or persistent storage where you can.
+:::
+
+## Persistent Storage Tips
+
+When persistent storage is turned on, each Apprise URL gets its own directory named after an ID worked out from the URL itself. Your Vapid files live in there:
+
+```text
+<storage>/<id>/subscriptions.json
+<storage>/<id>/private_key.pem
+```
+
+The following command will list all of the persistent storage locations associated with your configuration:
+
+```bash
+apprise storage list
+```
+
+Simply locate the ID associated with the Vapid account you wish to update; consider that the directory ID's can be found as:
+
+1. Microsoft Windows: `%APPDATA%/Apprise/cache`
+1. Linux: `~/.local/share/apprise/cache`
+
+For more details on this; see [here](https://github.com/caronc/apprise/wiki/persistent_storage).
+
+:::caution
+Vapid needs persistent storage turned on **or** a `?subfile=` on the URL. With neither of these, Apprise has nowhere to read subscriptions from and the notification fails with `Vapid could not load subscriptions`.
+:::
+
+## Moving Your Setup to Another Server
+
+The storage ID is worked out from your Apprise URL, not from anything specific to one machine, so the same URL lands on the same ID everywhere. Moving a working setup to another Apprise install is therefore a copy job:
+
+1. Run `apprise storage list` on the old server and note the ID for your Vapid URL.
+2. Copy that directory's `subscriptions.json` and `private_key.pem` into the same-named directory under the new server's storage path.
+3. Use the same Apprise URL on the new server.
+
+Your URL stays clean and carries no file paths, so it is safe to keep in a shared configuration file used by more than one machine.
+
+:::note
+If you pin a location with `?subfile=` or `?keyfile=`, that path is part of your URL and has to exist on whichever machine uses it. Leave them out if you want one URL that works everywhere.
+:::
+
+## Apprise URL Construction
+
+For repeatable installations, keep the URL and file locations in an Apprise YAML configuration:
+
+```yaml
+urls:
+  - vapid://you@example.com/phone:
+      keyfile: /path/to/private_key.pem
+      subfile: /path/to/subscriptions.json
+```
+
+Both the `keyfile` and the `subfile` can also be hosted elsewhere, including behind a username and password. This is how you would run Vapid under the Apprise API, where you have no easy way to place files on the server:
+
+```yaml
+urls:
+  - vapid://you@example.com/phone:
+      keyfile: https://user:pass123@example.com/private_key.pem
+      subfile: https://user:pass123@example.com/subscriptions.json
+```
+
+If you are using persistent storage, you can leave both out entirely and let Apprise use the files in this URL's own storage directory:
+
+```yaml
+urls:
+  - vapid://you@example.com:
+```
+
+## Examples
+
+Notify the subscription named after your own contact address:
+
+```bash
+apprise -vv -t "Title" -b "Message content" \
+    vapid://you@example.com
+```
+
+Notify two named targets from your `subscriptions.json`:
+
+```bash
+apprise -vv -t "Title" -b "Message content" \
+    vapid://you@example.com/laptop/phone
+```
+
+Point at your own files instead of the persistent storage copies:
+
+```bash
+apprise -vv -t "Title" -b "Message content" \
+    "vapid://you@example.com/phone?keyfile=/etc/apprise/private_key.pem&subfile=/etc/apprise/subscriptions.json"
+```
+
+Ask the push service to hold a message for up to 30 seconds if the device is offline:
+
+```bash
+apprise -vv -t "Title" -b "Message content" \
+    "vapid://you@example.com/phone?ttl=30"
+```
+
+## Troubleshooting
+
+Run tests with `-vv`; VAPID failures are usually configuration problems.
+
+:::caution
+Verbose logs can contain subscription endpoints and remote file locations.
+Treat them as secrets, and redact endpoints, usernames, passwords, and tokens
+before sharing a log.
+:::
+
+| Symptom                              | What to Check                                                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `Vapid could not load subscriptions` | Confirm `subfile`, persistent storage, JSON syntax, and file permissions.                                  |
+| Target not found                     | Match the URL target to a top-level name in `subscriptions.json`.                                          |
+| `401` or `403` response              | The private key probably does not match the public `applicationServerKey` used to create the subscription. |
+| `404` or `410` response              | The browser subscription expired. Ask that browser to subscribe again and save its new JSON.               |
+| Endpoint rejected                    | Copy the browser-provided HTTPS endpoint exactly; do not add credentials or edit its host.                 |
+| Works locally but not in a container | Mount both files, use persistent storage, or provide paths that exist inside the container.                |
