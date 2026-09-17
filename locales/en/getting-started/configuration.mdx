@@ -7,7 +7,7 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Configuration allows you to identify all of your notification services in one place, while supporting grouping, tagging, and keeping secrets out of your shell history.
+Configuration keeps your notification services, tags, and groups in one file. It also keeps credentials out of your shell history.
 
 Apprise configuration is **portable**. The same configuration file can be used by the CLI, the API server, and the Python library without modification.
 
@@ -58,12 +58,12 @@ discord://webhook_id/webhook_token
 
 ### Parameter Priority in TEXT Configuration
 
-TEXT URLs -- and any URL passed directly via the CLI or Python library -- follow a two-level priority. The same rule applies globally whenever no YAML token block is involved:
+For TEXT URLs and URLs passed directly to the CLI or Python library, values follow this order:
 
 1. **Query-string parameters** (`?key=value`) -- override URL-path values, including aliases (e.g. `?pass=` is treated as `?password=`).
 2. **URL-path values** (lowest) -- credentials and host parsed directly from the URL string (e.g. `user:pass@host:port`).
 
-YAML configuration adds a third, higher-priority level on top of these two: [YAML token sub-keys](#yaml-configuration) always win over both.
+In YAML, [settings written under a URL](#yaml-configuration) take priority over both.
 
 ## TEXT Tagging and Grouping
 
@@ -102,7 +102,7 @@ friends = user1, user2
 You can import other configuration files (local or remote) using the `include` keyword.
 
 ```apache
-# Read from another Apprise configuation file on the local server
+# Read from another Apprise configuration file on the local server
 include /etc/apprise/secrets.conf
 
 # Read from an Apprise API server
@@ -123,7 +123,7 @@ YAML configuration is structured and is best for larger setups. But it also prov
 
 ### Basic YAML Syntax
 
-All services are listed under a `urls` list.
+List notification services under `urls`.
 
 ```yaml
 urls:
@@ -133,7 +133,7 @@ urls:
 
 ### YAML vs TEXT for Complex Parameters
 
-One of the most practical advantages of YAML over TEXT is that **parameters can be moved out of the URL and written as normal YAML values**. In a plain URL, any value that contains special characters -- spaces, `@`, `#`, angle brackets -- must be percent-encoded before it can appear in the URL. In YAML, those same values can be written as plain strings with no URL encoding required.
+With YAML, **you can write settings below the URL**. Passwords and other values containing spaces or characters such as `@` and `#` can then be written as ordinary text. In a plain URL, those characters need URL encoding.
 
 Consider an SMTP email URL with a complex password, a display-name sender address, and a private PGP key path:
 
@@ -163,9 +163,7 @@ YAML sub-keys follow a strict three-level priority — the highest level wins wh
 
 Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
 
-This means the URL itself can be as minimal as just the schema, with all credentials and options in the YAML block and no URL encoding required anywhere. The [email service](/services/email/) is shown above, but the same approach works for any Apprise service.
-
-The same pattern works for any service. The XMPP example below keeps the URL minimal — the `host:` sub-key overrides the hostname parsed from the URL, while `user:` and `password:` supply credentials that were never in the URL at all:
+The [email service](/services/email/) above is one example. The XMPP example below places credentials and options under the URL too. Its `host:` setting replaces the host in the URL:
 
 ```yaml
 urls:
@@ -535,8 +533,8 @@ template:
 ```
 
 Both forms mean the same thing. **A value written next to the name is the
-default. A name written with no value must be supplied**, and any URL using
-it is skipped until it is.
+default. A name written with no value needs a value from the notification or
+environment**, or any URL using it is skipped.
 
 #### Where the Values Come From
 
@@ -544,16 +542,16 @@ Apprise looks in three places, in this order, and stops at the first one
 that has an answer:
 
 1. A value sent with the notification itself
-2. An environment variable named `APPRISE_TEMPLATE_` plus the name in
+2. The default written in the `template:` section
+3. An environment variable named `APPRISE_TEMPLATE_` plus the name in
    capitals, so `${API_KEY}` reads `APPRISE_TEMPLATE_API_KEY`
-3. The default written in the `template:` section
 
 If none of them has a value, that URL is not loaded and Apprise tells you so
 in its log.
 
-An empty value counts as an answer at every one of these steps. Setting
-`APPRISE_TEMPLATE_API_KEY=` deliberately leaves `${API_KEY}` blank rather than
-falling back to the default written in the file.
+Blank or whitespace-only values sent with a notification or set in the
+environment are ignored. An empty default in `template:` is still a valid
+value and takes priority over the environment.
 
 From the command line, send a value with `--template-var` (or `-tv`):
 

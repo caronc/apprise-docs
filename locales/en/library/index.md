@@ -39,7 +39,7 @@ apobj.notify(
 )
 ```
 
-## Why use the Library?
+## Why Use the Library?
 
 - **Unified Syntax**: One URL format for **<!-- SERVICES:COUNT -->** services.
 - **Asynchronous**: Sending notifications is non-blocking (optional).

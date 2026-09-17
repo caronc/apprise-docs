@@ -75,6 +75,38 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
 
+Pour essayer la connexion administrateur intégrée en local, arrêtez d'abord le
+conteneur de démarrage rapide : les deux exemples utilisent le port `8000`.
+Celui-ci laisse la liste des configurations accessible à `admin` :
+
+```bash
+docker run --name apprise-auth \
+  -p 127.0.0.1:8000:8000 \
+  -v ./config:/config \
+  -v ./attach:/attach \
+  -e APPRISE_STATEFUL_MODE=simple \
+  -e APPRISE_ADMIN=yes \
+  -e APPRISE_AUTH_REQUIRED=yes \
+  -e APPRISE_USER=admin \
+  -e APPRISE_PASSWORD=changeme \
+  -e APPRISE_WEB_AUTH_SECRET="$(openssl rand -hex 32)" \
+  -e APPRISE_WORKER_COUNT=1 \
+  -e APPRISE_DEFAULT_FORMAT=text \
+  -d caronc/apprise:latest
+```
+
+Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous avec `admin` et le mot de
+passe `changeme`. La liste fonctionne grâce au mode `simple` et à
+`APPRISE_ADMIN=yes`.
+
+:::caution
+`admin` / `changeme` ne sert qu'à cet exemple local. Choisissez un mot de passe
+fort avant de partager le service et utilisez HTTPS pour les connexions réseau.
+La commande Docker expose ce mot de passe aux personnes qui peuvent consulter
+les processus ou le conteneur ; utilisez un fichier d'environnement protégé
+pour un vrai déploiement.
+:::
+
 </TabItem>
 <TabItem label="Déploiement derrière un proxy">
 
@@ -311,6 +343,49 @@ services:
       retries: 3
       start_period: 20s
 ```
+
+Pour obtenir la même configuration administrateur locale avec Compose,
+enregistrez le YAML ci-dessous dans `compose.yaml`. Placez le mot de passe
+d'exemple et un secret durable pour les connexions Web dans un fichier `.env`
+protégé :
+
+```bash
+printf 'APPRISE_PASSWORD=changeme\nAPPRISE_WEB_AUTH_SECRET=%s\n' \
+  "$(openssl rand -hex 32)" > .env
+chmod 600 .env
+```
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - .env
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_ADMIN: "yes"
+      APPRISE_AUTH_REQUIRED: "yes"
+      APPRISE_USER: admin
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_DEFAULT_FORMAT: "text"
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+```
+
+L'entrée `env_file` charge les deux secrets depuis `.env`, placé à côté de
+`compose.yaml`. Arrêtez tout ancien conteneur utilisant le port `8000`, puis lancez
+`docker compose up -d`. Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous
+avec `admin` et le mot de passe `changeme`. Conservez `.env` lors des
+redéploiements ; changer son secret Web déconnecte les sessions existantes.
+
+:::caution
+Remplacez `changeme` avant toute utilisation hors d'un test local. Placez le
+vrai mot de passe dans un fichier d'environnement protégé ou un coffre à
+secrets, et utilisez HTTPS pour les connexions réseau.
+:::
 
 </TabItem>
 <TabItem label="Kubernetes">
@@ -1386,7 +1461,7 @@ L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPR
 
 **Utilisez HTTPS/TLS.** L'authentification Basic ne chiffre pas les identifiants. HTTPS est indispensable en dehors de `localhost` ou d'un réseau de confiance.
 
-Les clients API envoient Basic Auth avec chaque requête. Les vérifications récentes et réussies par configuration utilisent un cache mémoire limité à cinq minutes. Cela évite de recalculer le hachage sans créer de session API ni conserver les identifiants. Les échecs sont mémorisés uniquement pendant la requête en cours.
+Les clients API envoient Basic Auth avec chaque requête. Le serveur garde brièvement en mémoire les vérifications réussies pour accélérer les requêtes suivantes. Il ne conserve pas les identifiants et ne crée pas de session API.
 
 Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse fermer la session. Les appels API JSON et texte brut ne peuvent pas utiliser cette connexion Web.
 
@@ -1400,7 +1475,7 @@ limite de débit réservée aux routes protégées.
 
 Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
 
-Les connexions Web expirent après 24 heures d'inactivité. Chaque requête authentifiée renouvelle ce délai. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs sans changer les chemins de configuration en mode `hash`.
+Les connexions Web expirent après 24 heures d'inactivité. Chaque requête authentifiée renouvelle ce délai. Modifier `APPRISE_WEB_AUTH_SECRET` déconnecte tous les navigateurs.
 
 Le champ ID de configuration permet d'ouvrir une autre configuration sans afficher son ID dans la barre d'adresse. L'utilisateur doit se reconnecter si le nouvel ID utilise d'autres identifiants. Les administrateurs peuvent aussi choisir ou générer un ID avec **Nouvelle Configuration**.
 

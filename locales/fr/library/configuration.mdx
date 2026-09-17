@@ -191,20 +191,20 @@ apobj.notify(body="Bonjour", template={"api_key": "votre-cle-secrete"})
 ```
 
 `template_vars()` indique la valeur par défaut elle-même ; un `None`
-signifie que la configuration ne lui en a donné aucune, une valeur devra donc
-toujours être fournie. Cette valeur par défaut fait partie de la
-configuration : ne transmettez pas ce résultat tel quel à quelqu'un qui ne
+signifie que la configuration ne lui en a donné aucune : la valeur doit alors
+venir de l'appel ou de l'environnement. Cette valeur par défaut fait partie de
+la configuration : ne transmettez pas ce résultat tel quel à quelqu'un qui ne
 devrait pas la lire.
 
 Les valeurs sont résolues à chaque appel, dans cet ordre :
 
 1. le dictionnaire `template` passé à `notify()` ou `find()`
-2. la variable d'environnement `APPRISE_TEMPLATE_<NOM>`
-3. la valeur par défaut déclarée dans la configuration
+2. la valeur par défaut déclarée dans la configuration
+3. la variable d'environnement `APPRISE_TEMPLATE_<NOM>`
 
-Une chaîne vide est une valeur à chacune de ces étapes :
-`APPRISE_TEMPLATE_API_KEY=""` laisse donc `${API_KEY}` vide au lieu de revenir
-à la valeur par défaut déclarée.
+Les valeurs vides ou composées uniquement d'espaces, passées à l'appel ou
+définies dans l'environnement, sont ignorées. Une valeur par défaut vide reste
+valide et passe donc avant `APPRISE_TEMPLATE_API_KEY`.
 
 `template` doit être un mappage, et chaque clé un nom de variable valide
 utilisé une seule fois. Tout `collections.abc.Mapping` convient : un

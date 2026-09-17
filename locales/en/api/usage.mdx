@@ -262,9 +262,10 @@ curl -X POST \
   http://localhost:8000/notify/my-alerts
 ```
 
-A value sent this way wins over anything set in the server's environment or
-written as a default in the configuration. Names are case-insensitive. Extra
-valid names are accepted and ignored, with their names acknowledged only in
+A value sent this way takes priority. If it is blank or whitespace-only,
+Apprise uses the configuration default, then the server's environment.
+Names are case-insensitive. Extra valid names are accepted and ignored, with
+their names acknowledged only in
 the server's local debug log.
 
 If a URL is still missing a value it is skipped, the rest are still notified,
@@ -279,7 +280,8 @@ include them, but they are unused and its URLs remain exactly as written.
 The **Notifications** tab adds a concealed key/value row for each variable used
 by the selected destinations. Defaults declared in `template:` are filled when
 available, but server environment values are never shown. A blank field uses
-the server fallback. You may remove rows freely, and **Clear Form** rebuilds the
+the configuration default, then the environment. You may remove rows freely,
+and **Clear Form** rebuilds the
 suggestions. **Add Value** is available after every current row has a name;
 highlighted rows will be sent. Quick tests use a separate concealed prompt.
 Stateless tests are unchanged.
@@ -304,6 +306,32 @@ it requires administrator privileges or `user` access. Calls using `locked`,
 
 See [Template Variables](/getting-started/configuration/#template-variables)
 for how to set a configuration up.
+
+### Seeing What a Configuration Needs
+
+`GET /json/urls/{KEY}` lists each saved URL together with the template names it uses:
+
+```json
+{
+  "url": "mailto://user:pass@gmail.com?smtp=${SMTPSERVER}&to=${RECIPIENT}",
+  "template": { "smtpserver": null, "recipient": "default@example.com" }
+}
+```
+
+`template` maps every name the URL uses to the default declared for it in the configuration's `template:` section:
+
+- `null` means there is no default to hand over. Either none was written, or `privacy=1` withheld it.
+- `null` does not mean the value is unavailable. The server may still fill the name in from its own environment when the notification is sent.
+- The object is always present. It is empty when there is nothing to report.
+
+The markers inside `url` are left exactly as written:
+
+- They are never percent-encoded and never masked, so a client can search for them and substitute its own values.
+- Marker names are upper case while the keys under `template` are lower case. Match them without regard to case.
+
+Each `url` also carries the settings written underneath it in the configuration, so substituting the markers gives you a URL that sends the same way the saved entry does. The exception is a setting the service has no URL argument for, which is left out because a URL cannot express it.
+
+Add `privacy=1` and the text around each marker is masked and every default is withheld. That listing is fine to display, but it cannot be used to send.
 
 ## Payload Mapping (Hooks)
 

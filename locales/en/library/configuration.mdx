@@ -190,19 +190,19 @@ apobj.notify(body="Hello", template={"api_key": "your-secret-key"})
 ```
 
 `template_vars()` reports the default itself; a `None` means the
-configuration gave the variable no default, so a value must always be
-supplied. The default is configuration content, so do not hand the result
-straight to someone who should not be reading the configuration.
+configuration gave the variable no default, so a value must come from the
+call or the environment. The default is configuration content, so do not hand
+the result straight to someone who should not be reading the configuration.
 
 Values are resolved per call, in this order:
 
 1. the `template` mapping passed to `notify()` or `find()`
-2. the `APPRISE_TEMPLATE_<NAME>` environment variable
-3. the default declared in the configuration
+2. the default declared in the configuration
+3. the `APPRISE_TEMPLATE_<NAME>` environment variable
 
-An empty string is a value at each of these steps, so
-`APPRISE_TEMPLATE_API_KEY=""` leaves `${API_KEY}` empty rather than falling
-back to the declared default.
+Blank or whitespace-only values passed to the call or set in the environment
+are ignored. An empty configuration default is still a value, so it takes
+priority over `APPRISE_TEMPLATE_API_KEY`.
 
 `template` must be a mapping, and each key a valid variable name used only
 once. Any `collections.abc.Mapping` works, so a `MappingProxyType` or a

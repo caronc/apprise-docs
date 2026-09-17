@@ -280,9 +280,10 @@ curl -X POST \
   http://localhost:8000/notify/my-alerts
 ```
 
-Une valeur envoyée ainsi l'emporte sur l'environnement du serveur et sur toute
-valeur par défaut écrite dans la configuration. Les noms ne sont pas sensibles
-à la casse. Les noms valides supplémentaires sont acceptés et ignorés ; seul
+Une valeur envoyée ainsi passe en premier. Si elle est vide ou ne contient que
+des espaces, Apprise utilise la valeur par défaut de la configuration, puis
+l'environnement du serveur. Les noms ne sont pas sensibles à la casse. Les
+noms valides supplémentaires sont acceptés et ignorés ; seul
 leur nom apparaît dans le journal de débogage local du serveur.
 
 S'il manque encore une valeur à une URL, celle-ci est ignorée, les autres sont
@@ -299,7 +300,8 @@ L'onglet **Notifications** ajoute une ligne clé/valeur masquée pour chaque
 variable utilisée par les destinations sélectionnées. Les valeurs par défaut
 déclarées dans `template:` sont remplies lorsqu'elles sont disponibles, mais
 celles de l'environnement du serveur ne sont jamais affichées. Un champ vide
-utilise la valeur de repli du serveur. Vous pouvez supprimer librement des
+utilise la valeur par défaut de la configuration, puis l'environnement. Vous
+pouvez supprimer librement des
 lignes, et **Clear Form** reconstruit les suggestions. **Add Value** devient
 disponible lorsque chaque ligne actuelle possède un nom ; les lignes mises en
 évidence seront envoyées. Les tests rapides utilisent une fenêtre masquée
@@ -328,6 +330,32 @@ Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 
 Voir [Variables de substitution](/getting-started/configuration/#variables-de-substitution)
 pour la mise en place d'une configuration.
+
+### Voir ce dont une configuration a besoin
+
+`GET /json/urls/{KEY}` liste chaque URL enregistrée avec les noms de substitution qu'elle utilise :
+
+```json
+{
+  "url": "mailto://user:pass@gmail.com?smtp=${SMTPSERVER}&to=${RECIPIENT}",
+  "template": { "smtpserver": null, "recipient": "default@example.com" }
+}
+```
+
+`template` associe chaque nom utilisé par l'URL à la valeur par défaut déclarée pour lui dans la section `template:` de la configuration :
+
+- `null` signifie qu'aucune valeur par défaut ne peut être transmise. Soit aucune n'a été écrite, soit `privacy=1` l'a masquée.
+- `null` ne veut pas dire que la valeur est indisponible. Le serveur peut encore la fournir depuis son propre environnement au moment de l'envoi.
+- L'objet est toujours présent. Il est vide lorsqu'il n'y a rien à signaler.
+
+Les marqueurs présents dans `url` sont laissés exactement tels qu'ils ont été écrits :
+
+- Ils ne sont jamais encodés en pourcentage ni masqués, un client peut donc les rechercher et y substituer ses propres valeurs.
+- Les noms des marqueurs sont en majuscules alors que les clés de `template` sont en minuscules. Comparez-les sans tenir compte de la casse.
+
+Chaque `url` reprend aussi les paramètres écrits sous elle dans la configuration : en substituant les marqueurs, vous obtenez donc une URL qui envoie comme le fait l'entrée enregistrée. Seule exception, un paramètre pour lequel le service n'a aucun argument d'URL est omis, car une URL ne peut pas l'exprimer.
+
+Avec `privacy=1`, le texte autour de chaque marqueur est masqué et toutes les valeurs par défaut sont retirées. Cette liste convient à l'affichage, mais ne permet pas d'envoyer.
 
 ## Mapping du Payload (Hooks)
 

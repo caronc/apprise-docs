@@ -7,7 +7,7 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-La configuration permet de définir tous vos services de notification au même endroit, tout en prenant en charge les groupes, les tags et la protection des secrets hors de l'historique de votre shell.
+La configuration rassemble vos services de notification, tags et groupes dans un seul fichier. Elle évite aussi d'inscrire vos identifiants dans l'historique du shell.
 
 La configuration Apprise est **portable**. Le même fichier de configuration peut être utilisé sans modification avec le CLI, le serveur API et la bibliothèque Python.
 
@@ -58,12 +58,12 @@ discord://webhook_id/webhook_token
 
 ### Priorité des Paramètres en Configuration TEXT
 
-Les URLs TEXT -- et toute URL passée directement via la CLI ou la bibliothèque Python -- suivent une priorité à deux niveaux. Cette règle s'applique de manière globale dès qu'aucun bloc de tokens YAML n'est impliqué :
+Pour les URL TEXT et celles transmises directement à la CLI ou à la bibliothèque Python, les valeurs suivent cet ordre :
 
 1. **Paramètres de requête** (`?clé=valeur`) -- ont la priorité sur les valeurs du chemin URL, y compris les alias (ex. `?pass=` est traité comme `?password=`).
 2. **Valeurs du chemin URL** (plus bas) -- identifiants et hôte extraits directement de la chaîne URL (ex. `user:pass@host:port`).
 
-La configuration YAML ajoute un troisième niveau, encore plus prioritaire : les [sous-clés de tokens YAML](#configuration-yaml) l'emportent toujours sur les deux niveaux précédents.
+En YAML, les [réglages placés sous une URL](#configuration-yaml) ont la priorité sur les deux.
 
 ## Tags et Groupement en TEXT
 
@@ -123,7 +123,7 @@ La configuration YAML est structurée et convient mieux aux installations plus i
 
 ### Syntaxe YAML de Base
 
-Tous les services sont listés sous une liste `urls`.
+Placez les services de notification dans la liste `urls`.
 
 ```yaml
 urls:
@@ -133,7 +133,7 @@ urls:
 
 ### YAML vs TEXT pour les Paramètres Complexes
 
-L'un des avantages les plus pratiques de YAML par rapport au TEXT est que **les paramètres peuvent être sortis de l'URL et écrits comme des valeurs YAML normales**. Dans une URL brute, toute valeur contenant des caractères spéciaux -- espaces, `@`, `#`, chevrons -- doit être encodée en pourcentage avant de pouvoir figurer dans l'URL. En YAML, ces mêmes valeurs peuvent être écrites comme des chaînes ordinaires sans encodage URL.
+Avec YAML, **vous pouvez écrire les réglages sous l'URL**. Les mots de passe et autres valeurs contenant des espaces ou des caractères comme `@` et `#` s'écrivent alors normalement. Dans une URL, ces caractères nécessitent un encodage.
 
 Prenons l'exemple d'une URL SMTP avec un mot de passe complexe, une adresse d'expéditeur incluant un nom d'affichage, et un chemin vers une clé PGP privée :
 
@@ -163,9 +163,7 @@ Les sous-clés YAML suivent une priorité à trois niveaux — le niveau le plus
 
 Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
 
-Cela signifie que l'URL elle-même peut se réduire au strict minimum — le schéma seul — avec tous les identifiants et options dans le bloc YAML, sans aucun encodage URL nulle part. Le [service Email](/services/email/) est illustré ci-dessus, mais la même approche fonctionne pour n'importe quel service Apprise.
-
-Le même modèle fonctionne pour n'importe quel service. L'exemple XMPP ci-dessous conserve une URL minimale — la sous-clé `host:` remplace le nom d'hôte extrait de l'URL, tandis que `user:` et `password:` fournissent des identifiants qui n'étaient pas dans l'URL :
+Le [service Email](/services/email/) ci-dessus en est un exemple. Dans l'exemple XMPP suivant, les identifiants et options sont aussi placés sous l'URL. Le réglage `host:` remplace l'hôte indiqué dans l'URL :
 
 ```yaml
 urls:
@@ -537,8 +535,9 @@ template:
 ```
 
 Les deux formes sont équivalentes. **Une valeur écrite à côté du nom devient sa
-valeur par défaut. Un nom écrit sans valeur doit obligatoirement être fourni**,
-et toute URL qui l'utilise est ignorée tant que ce n'est pas le cas.
+valeur par défaut. Un nom écrit sans valeur doit recevoir une valeur avec la
+notification ou depuis l'environnement**, sinon toute URL qui l'utilise est
+ignorée.
 
 #### D'où viennent les valeurs
 
@@ -546,16 +545,16 @@ Apprise regarde à trois endroits, dans cet ordre, et s'arrête au premier qui
 répond :
 
 1. Une valeur envoyée avec la notification elle-même
-2. Une variable d'environnement nommée `APPRISE_TEMPLATE_` suivie du nom en
+2. La valeur par défaut écrite dans la section `template:`
+3. Une variable d'environnement nommée `APPRISE_TEMPLATE_` suivie du nom en
    majuscules : `${API_KEY}` lit donc `APPRISE_TEMPLATE_API_KEY`
-3. La valeur par défaut écrite dans la section `template:`
 
 Si aucun des trois ne fournit de valeur, l'URL concernée n'est pas chargée et
 Apprise vous l'indique dans son journal.
 
-Une valeur vide compte comme une réponse à chacune de ces étapes. Définir
-`APPRISE_TEMPLATE_API_KEY=` laisse volontairement `${API_KEY}` vide, au lieu de
-revenir à la valeur par défaut écrite dans le fichier.
+Les valeurs vides ou composées uniquement d'espaces, envoyées avec la
+notification ou définies dans l'environnement, sont ignorées. Une valeur par
+défaut vide dans `template:` reste valide et passe avant l'environnement.
 
 En ligne de commande, transmettez une valeur avec `--template-var` (ou `-tv`) :
 
