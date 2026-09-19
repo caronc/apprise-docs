@@ -74,6 +74,37 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
 
+To try the built-in administrator login locally, stop the earlier quick-start
+container first; both examples use port `8000`. This one keeps the
+configuration list available to `admin`:
+
+```bash
+docker run --name apprise-auth \
+  -p 127.0.0.1:8000:8000 \
+  -v ./config:/config \
+  -v ./attach:/attach \
+  -e APPRISE_STATEFUL_MODE=simple \
+  -e APPRISE_ADMIN=yes \
+  -e APPRISE_AUTH_REQUIRED=yes \
+  -e APPRISE_USER=admin \
+  -e APPRISE_PASSWORD=changeme \
+  -e APPRISE_WEB_AUTH_SECRET="$(openssl rand -hex 32)" \
+  -e APPRISE_WORKER_COUNT=1 \
+  -e APPRISE_DEFAULT_FORMAT=text \
+  -d caronc/apprise:latest
+```
+
+Open `http://127.0.0.1:8000/cfg` and sign in as `admin` with password
+`changeme`. The list works because stateful storage is in `simple` mode and
+`APPRISE_ADMIN=yes`.
+
+:::caution
+`admin` / `changeme` is only for a local example. Choose your own strong
+password before sharing the service, and use HTTPS when clients connect over a
+network. The Docker command exposes the example password to local process and
+container inspection; use a protected environment file for a real deployment.
+:::
+
 </TabItem>
 <TabItem label="Self-Hosted Docker Compose">
 
@@ -122,6 +153,48 @@ services:
       retries: 3
       start_period: 20s
 ```
+
+For the same local administrator setup with Compose, save the YAML below as
+`compose.yaml`. Put the example password and a lasting browser-login secret in
+a protected `.env` file:
+
+```bash
+printf 'APPRISE_PASSWORD=changeme\nAPPRISE_WEB_AUTH_SECRET=%s\n' \
+  "$(openssl rand -hex 32)" > .env
+chmod 600 .env
+```
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - .env
+    environment:
+      APPRISE_STATEFUL_MODE: simple
+      APPRISE_ADMIN: "yes"
+      APPRISE_AUTH_REQUIRED: "yes"
+      APPRISE_USER: admin
+      APPRISE_WORKER_COUNT: 1
+      APPRISE_DEFAULT_FORMAT: "text"
+    volumes:
+      - ./config:/config
+      - ./attach:/attach
+```
+
+The `env_file` entry loads the two secrets from `.env` beside `compose.yaml`.
+Stop any earlier container using port `8000`, then run `docker compose up -d`.
+Open `http://127.0.0.1:8000/cfg` and sign in as `admin` with password
+`changeme`. Keep `.env` when redeploying; changing its browser-login secret
+signs out existing browser sessions.
+
+:::caution
+Replace `changeme` before using this outside a local test. Put the real
+password in a protected environment file or secret store, and use HTTPS for
+network access.
+:::
 
 </TabItem>
 <TabItem label="Deployment Behind a Proxy">
@@ -1374,7 +1447,7 @@ Apprise API does not require authentication by default. Set `APPRISE_AUTH_REQUIR
 
 **Use HTTPS/TLS.** Basic Auth does not encrypt credentials. HTTPS is required outside `localhost` or a trusted network.
 
-API clients send Basic Auth with every request. Recent successful per-configuration checks use a bounded five-minute memory cache, avoiding repeated password hashing without creating an API session or retaining credentials. Failed checks are remembered only within their current request.
+API clients send Basic Auth with every request. The server briefly remembers successful checks to make repeated requests faster. It does not store the credentials or create an API session.
 
 Browser pages use a signed login so **Logout** can end the session. JSON and plain-text API calls cannot use this browser login.
 
@@ -1387,7 +1460,7 @@ applies its protected-route rate limit to these requests.
 
 The Apprise CLI's `apprise://` plugin sends this header in its default version 2 mode. Use `?v=1` only with older servers that require `/notify/{KEY}`.
 
-Browser logins expire after 24 hours without activity. Each authenticated request renews that window. Changing `APPRISE_WEB_AUTH_SECRET` signs out every browser but does not change hash-mode configuration paths.
+Browser logins expire after 24 hours without activity. Each authenticated request renews that period. Changing `APPRISE_WEB_AUTH_SECRET` signs out every browser.
 
 The Config ID field can open another configuration without showing its ID in the address bar. Users must log in when they switch to an ID with different credentials. Administrators can also choose or generate an ID from **New Configuration**.
 
@@ -1412,10 +1485,11 @@ The Config ID and credentials are separate values. Share the Config ID and confi
 
 API clients manage access with `POST /auth/{KEY}`. The `access` field accepts
 `user`, `locked`, `public`, or `disabled`. A new record defaults to `user`, or
-to `locked` while `APPRISE_CONFIG_LOCK=yes`. An administrator may save `user`
-or `public` while the global lock is enabled, but it behaves as `locked` until
-the global lock is removed. A configuration user may change only their
-password and must repeat their username. See [API Endpoints](/api/endpoints/).
+to `locked` while `APPRISE_CONFIG_LOCK=yes`. Saved `user` access then behaves
+as `locked` without being rewritten. Saved `public` access remains public
+because it already hides configuration content. A configuration user may
+change only their password and must repeat their username. See
+[API Endpoints](/api/endpoints/).
 
 Per-key locks are ignored while `APPRISE_AUTH_REQUIRED` is disabled, restoring the original open behavior. Their files remain and take effect again when authentication is enabled.
 

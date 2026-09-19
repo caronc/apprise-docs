@@ -233,6 +233,103 @@ curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
 curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
 
+### Supplying Template Values
+
+If a saved configuration uses `${NAME}` markers, the URLs that need them are
+not used until a value is available. You can supply values with the
+notification itself.
+
+The saved YAML must declare each marker:
+
+```yaml
+template:
+  api_key:
+
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/admin@example.com:
+      - tag: alerts
+```
+
+With JSON, use a `template` object:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "alerts",
+    "body": "Database connection failed",
+    "template": {"api_key": "your-secret-key"}
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+With a form post, name each field `template[name]`:
+
+```bash
+curl -X POST \
+  -F "tag=alerts" \
+  -F "body=Database connection failed" \
+  -F "template[api_key]=your-secret-key" \
+  http://localhost:8000/notify/my-alerts
+```
+
+A value sent this way takes priority. If it is blank or whitespace-only,
+Apprise uses the configuration default, then the server's environment.
+Names are case-insensitive. Extra valid names are accepted and ignored, with
+their names acknowledged only in
+the server's local debug log.
+
+Missing values skip only the affected URLs and make the result partial. Their
+names appear only in the local server log. Use the **Review** tab or
+`GET /json/urls/{KEY}` to see what a configuration needs.
+
+These values affect saved configurations only; stateless requests ignore them.
+
+The **Notifications** tab adds a concealed key/value row for each variable used
+by the selected destinations. Defaults declared in `template:` are filled when
+available, but server environment values are never shown. A blank field uses
+the configuration default, then the environment. You may remove rows freely,
+and **Clear Form** rebuilds the suggestions. **Add Value** is available after
+every current row has a name; highlighted rows will be sent. Quick tests use a
+separate concealed prompt.
+Stateless tests are unchanged.
+
+Any caller allowed to send through a saved configuration may supply its
+declared template values. See [Template Variables](../getting-started/template/)
+for setup and placement guidance.
+
+:::note
+`X-Apprise-Log-Level: debug` (or `trace`) may expose a saved configuration, so
+it requires administrator privileges or `user` access. Calls using `locked`,
+`public`, or `disabled` access receive no more than `info`.
+:::
+
+### Seeing What a Configuration Needs
+
+`GET /json/urls/{KEY}` lists each saved URL together with the template names it uses:
+
+```json
+{
+  "url": "mailto://user:pass@gmail.com?smtp=${SMTPSERVER}&to=${RECIPIENT}",
+  "template": { "smtpserver": null, "recipient": "default@example.com" }
+}
+```
+
+`template` maps every name the URL uses to the default declared for it in the configuration's `template:` section:
+
+- `null` means there is no default to hand over. Either none was written, or `privacy=1` withheld it.
+- `null` does not mean the value is unavailable. The server may still fill the name in from its own environment when the notification is sent.
+- The object is always present. It is empty when there is nothing to report.
+
+The markers inside `url` are left exactly as written:
+
+- They are never percent-encoded and never masked, so a client can search for them and substitute its own values.
+- Marker names are upper case while the keys under `template` are lower case. Match them without regard to case.
+
+Each `url` also carries the settings written underneath it in the configuration, so substituting the markers gives you a URL that sends the same way the saved entry does. The exception is a setting the service has no URL argument for, which is left out because a URL cannot express it.
+
+Add `privacy=1` and the text around each marker is masked and every default is withheld. That listing is fine to display, but it cannot be used to send.
+
 ## Payload Mapping (Hooks)
 
 Sometimes you cannot change the payload format sent by a third-party tool (e.g., Grafana, Prometheus). Apprise API allows you to map incoming fields to Apprise-compatible fields using query parameters prefixed with a colon (`:`).

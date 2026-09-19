@@ -1,0 +1,153 @@
+---
+title: Variables de substitution
+description: Déclarer des valeurs YAML réutilisables et les fournir par la CLI, l'API ou l'environnement.
+sidebar:
+  order: 4.5
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Les variables de substitution permettent à un administrateur de laisser
+certaines valeurs YAML ouvertes jusqu'à l'envoi. Elles sont utiles pour les
+configurations partagées et les secrets fournis par une plateforme
+d'automatisation.
+
+## Définir une variable
+
+Déclarez chaque nom sous `template:`, puis utilisez `${NOM}` dans une URL ou
+l'un de ses paramètres :
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+  smtp_host: smtp.example.com
+
+urls:
+  - mailtos://user:password@example.com/:
+      - smtp: ${SMTP_HOST}
+        to: ${RECIPIENT}
+        tag: alerts
+```
+
+`recipient` doit être fourni plus tard. `smtp_host` possède une valeur par
+défaut.
+
+## Règles simples
+
+- Les variables fonctionnent uniquement dans une configuration YAML.
+- Un marqueur est remplacé seulement si son nom est déclaré sous `template:`.
+  Un texte `${NOM}` non déclaré reste inchangé.
+- `tag:` et `tags:` ne peuvent pas contenir de marqueur.
+- Le nom du service avant `://` ne peut pas être une variable. Par exemple,
+  `${SERVICE}://...` est invalide.
+- Les noms ne sont pas sensibles à la casse et acceptent les lettres, les
+  chiffres et le caractère de soulignement.
+- Les valeurs sont remplacées une seule fois et restent autrement inchangées.
+
+S'il manque encore une valeur, Apprise ignore l'entrée concernée et poursuit
+avec les autres.
+
+## Fournir les valeurs
+
+Apprise utilise la première valeur disponible dans cet ordre :
+
+1. Une valeur fournie avec la notification
+2. La valeur par défaut sous `template:`
+3. La variable d'environnement `APPRISE_TEMPLATE_<NOM>`
+
+Les valeurs vides venant d'une notification ou de l'environnement sont
+ignorées. Une valeur YAML vide reste valide.
+
+<Tabs syncKey="template-client">
+<TabItem label="Configuration">
+
+Déclarez les noms sous forme de mappage, comme ci-dessus, ou de liste :
+
+```yaml
+template:
+  - recipient
+  - smtp_host: smtp.example.com
+```
+
+Les deux formes ont le même effet. Un nom sans valeur doit être fourni lors de
+l'envoi ou par l'environnement.
+
+</TabItem>
+<TabItem label="CLI">
+
+Fournissez une valeur déclarée avec `--template-var` ou `-tv` :
+
+```bash
+apprise --config apprise.yml --tag alerts \
+  --template-var recipient=admin@example.com \
+  --body "Sauvegarde terminée"
+```
+
+Répétez l'option pour des noms différents. Vous pouvez aussi utiliser
+l'environnement :
+
+```bash
+export APPRISE_TEMPLATE_RECIPIENT=admin@example.com
+apprise --config apprise.yml --tag alerts --body "Sauvegarde terminée"
+```
+
+Ajoutez `--dry-run` pour signaler les valeurs manquantes sans rien envoyer.
+
+</TabItem>
+<TabItem label="API Apprise">
+
+Pour une configuration enregistrée, fournissez un objet JSON `template` :
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "alerts",
+    "body": "Sauvegarde terminée",
+    "template": {"recipient": "admin@example.com"}
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+Les formulaires utilisent `template[nom]`, par exemple
+`template[recipient]=admin@example.com`.
+
+</TabItem>
+</Tabs>
+
+## URL ou paramètre nommé
+
+Un marqueur peut se trouver directement dans une URL ou dans un paramètre YAML
+nommé :
+
+```yaml
+urls:
+  # La valeur remplit cette partie de l'URL
+  - mailtos://user:password@example.com/${RECIPIENT}
+
+  # La valeur reste limitée à l'option « to »
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+:::caution
+Les marqueurs d'URL utilisent une substitution directe, pratique lorsque vous
+faites confiance à la personne qui fournit la valeur. Sur un système partagé
+ou d'entreprise, utilisez des paramètres YAML nommés pour que chaque valeur
+venant d'un autre utilisateur reste limitée à une seule option.
+:::
+
+Les caractères comme `/`, `?`, `&`, `#`, `@` et `:` restent dans le champ
+choisi. Ils ne sont pas réinterprétés comme de nouvelles options d'URL. Certains
+services valident des champs pendant le chargement ; si un marqueur y est
+refusé, utilisez un autre emplacement compatible ou un paramètre nommé.
+
+## Comportements supplémentaires
+
+- Un nom peut être utilisé plusieurs fois et reçoit partout la même valeur.
+- Une valeur fournie contenant `${AUTRE}` n'est pas développée de nouveau.
+- Les noms supplémentaires sont ignorés et consignés par nom dans le journal
+  de débogage local.
+- Les noms peuvent comporter jusqu'à 32 caractères et les valeurs jusqu'à
+  1 024 caractères.
+- Répéter une section `template:` ou `urls:` rend le YAML invalide.
