@@ -104,6 +104,31 @@ Apprise prend en charge un cache de stockage persistant. Vous pouvez l'ajuster a
 | `-V`  | `--version`       | Afficher la version puis quitter.                                                                                                           |
 | `-h`  | `--help`          | Afficher le message d'aide puis quitter.                                                                                                    |
 
+## Exemple de variable de substitution
+
+Commencez par déclarer la valeur dans une configuration YAML :
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+
+urls:
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+Fournissez-la ensuite lors de l'envoi :
+
+```bash
+apprise --config apprise.yml \
+  --template-var recipient=admin@example.com \
+  --body "Sauvegarde terminée"
+```
+
+Seuls les noms déclarés sous `template:` sont remplacés. Consultez
+[Variables de substitution](../getting-started/template/) pour les valeurs par
+défaut, l'environnement, les règles de placement et d'autres exemples.
+
 ## Variables d'Environnement
 
 Vous pouvez prédéfinir certains comportements via des variables d'environnement. C'est utile dans des environnements conteneurisés ou pour définir des valeurs par défaut au niveau système.
@@ -114,7 +139,7 @@ Vous pouvez prédéfinir certains comportements via des variables d'environnemen
 | `APPRISE_CONFIG_PATH`                   | Remplacer les chemins de recherche de configuration par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                |
 | `APPRISE_PLUGIN_PATH`                   | Remplacer les chemins de recherche de plugins par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                      |
 | `APPRISE_STORAGE_PATH`                  | Remplacer le chemin par défaut du stockage persistant.                                                                                                                                                                                                                                                                       |
-| `APPRISE_TEMPLATE_<NOM>`                | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML. Par exemple, `APPRISE_TEMPLATE_API_KEY` remplit `${API_KEY}`. Voir [Variables de substitution](/getting-started/configuration/#variables-de-substitution).                                                                                           |
+| `APPRISE_TEMPLATE_<NOM>`                | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML. Par exemple, `APPRISE_TEMPLATE_API_KEY` remplit `${API_KEY}`. Voir [Variables de substitution](../getting-started/template/).                                                                                                                        |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Variables de proxy standard prises en compte automatiquement (non spécifiques à Apprise). Acheminez les notifications sortantes via un proxy, ou exemptez certains hôtes avec `NO_PROXY`. Voir [Prise en charge des proxys](/library/advanced/#prise-en-charge-des-proxys) pour plus de détails, y compris les proxys SOCKS. |
 
 ## Emplacements de Configuration par Défaut

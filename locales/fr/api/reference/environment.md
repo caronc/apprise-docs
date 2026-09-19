@@ -76,15 +76,10 @@ Pour un guide complet sur la réduction de la mémoire conteneur et de la RAM, c
 | `APPRISE_TEMPLATE_<NOM>`         |        | Fournit `${NOM}` dans un YAML enregistré sans valeur par défaut. Une valeur vide est ignorée.                                                 |
 
 :::caution
-`APPRISE_TEMPLATE_<NOM>` est lu dans l'environnement du serveur lui-même :
-**toutes les configurations enregistrées sur ce serveur voient donc la même
-valeur**. Des configurations distinctes utilisant `${TOKEN}` partagent ainsi
-une seule valeur du serveur.
-
-Définissez `APPRISE_ALLOW_TEMPLATES=no` pour ignorer les sections `template:`
-et les variables de substitution de l'environnement. `${NOM}` est alors traité
-comme du texte ordinaire. Voir
-[Variables de substitution](/getting-started/configuration/#variables-de-substitution).
+`APPRISE_TEMPLATE_<NOM>` est partagé par toutes les configurations enregistrées
+sur le serveur. Utilisez des noms distincts pour les valeurs qui ne doivent pas
+être partagées. Définissez `APPRISE_ALLOW_TEMPLATES=no` pour désactiver les
+variables ; consultez [Variables de substitution](../../getting-started/template/).
 :::
 
 ## Réseau
