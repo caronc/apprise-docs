@@ -257,6 +257,17 @@ Si une configuration enregistrée utilise des marqueurs `${NOM}`, les URL qui en
 dépendent ne sont pas utilisées tant qu'une valeur n'est pas disponible. Vous
 pouvez fournir ces valeurs avec la notification elle-même.
 
+Le YAML enregistré doit déclarer chaque marqueur :
+
+```yaml
+template:
+  api_key:
+
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/admin@example.com:
+      - tag: alerts
+```
+
 En JSON, utilisez un objet `template` :
 
 ```bash
@@ -286,50 +297,35 @@ l'environnement du serveur. Les noms ne sont pas sensibles à la casse. Les
 noms valides supplémentaires sont acceptés et ignorés ; seul
 leur nom apparaît dans le journal de débogage local du serveur.
 
-S'il manque encore une valeur à une URL, celle-ci est ignorée, les autres sont
-tout de même notifiées, et la réponse indique que l'envoi n'a pas été complet.
-Par sécurité, la réponse ne précise jamais **quelle** valeur manquait :
-consultez le journal du serveur pour cela. Utilisez l'onglet **Review**, ou
-`GET /json/urls/{KEY}`, pour voir quels noms une configuration attend.
+Une valeur manquante ignore seulement les URL concernées et rend le résultat
+partiel. Son nom apparaît uniquement dans le journal local du serveur. Utilisez
+l'onglet **Review** ou `GET /json/urls/{KEY}` pour voir ce qu'attend la
+configuration.
 
-Ces valeurs n'ont d'effet que sur une configuration enregistrée. Une requête
-sans état peut les inclure, mais elles ne sont pas utilisées et ses URL restent
-inchangées.
+Ces valeurs concernent uniquement les configurations enregistrées ; les
+requêtes sans état les ignorent.
 
 L'onglet **Notifications** ajoute une ligne clé/valeur masquée pour chaque
 variable utilisée par les destinations sélectionnées. Les valeurs par défaut
 déclarées dans `template:` sont remplies lorsqu'elles sont disponibles, mais
 celles de l'environnement du serveur ne sont jamais affichées. Un champ vide
 utilise la valeur par défaut de la configuration, puis l'environnement. Vous
-pouvez supprimer librement des
-lignes, et **Clear Form** reconstruit les suggestions. **Add Value** devient
-disponible lorsque chaque ligne actuelle possède un nom ; les lignes mises en
-évidence seront envoyées. Les tests rapides utilisent une fenêtre masquée
+pouvez supprimer librement des lignes, et **Clear Form** reconstruit les
+suggestions. **Add Value** devient disponible lorsque chaque ligne actuelle
+possède un nom ; les lignes mises en évidence seront envoyées. Les tests rapides
+utilisent une fenêtre masquée
 distincte. Les tests sans état ne changent pas.
 
-:::caution
-Les variables placées dans l'URL sont volontairement libres et peuvent modifier
-n'importe quel champ, y compris l'hôte. La destination finale reçoit les
-identifiants, le chemin, les en-têtes, les champs de charge utile et les
-paramètres de cette URL. Tous les niveaux d'accès peuvent fournir les valeurs
-déclarées. Utilisez donc un paramètre YAML nommé si l'appelant ne doit contrôler
-qu'une option. C'est le choix le plus sûr pour les appelants `public`, `locked`
-ou moins fiables. Un Config ID difficile à deviner est utile, mais ne constitue
-pas une barrière de sécurité.
-
-Une variable ne peut remplacer ni le nom du service avant `://`, ni une valeur
-`tag:`/`tags:`. Le service et les tags sont sélectionnés avant l'application des
-valeurs.
-:::
+Tout appelant autorisé à envoyer via une configuration enregistrée peut fournir
+ses valeurs déclarées. Consultez
+[Variables de substitution](../getting-started/template/) pour la configuration
+et le choix des emplacements.
 
 :::note
 `X-Apprise-Log-Level: debug` (ou `trace`) peut révéler une configuration
 enregistrée. Ce niveau exige les droits d'administrateur ou l'accès `user`.
 Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 :::
-
-Voir [Variables de substitution](/getting-started/configuration/#variables-de-substitution)
-pour la mise en place d'une configuration.
 
 ### Voir ce dont une configuration a besoin
 

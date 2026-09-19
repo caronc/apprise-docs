@@ -158,9 +158,9 @@ This loads two email services with shared credentials and different targets.
 ## Template Variables
 
 A YAML configuration may include a `template:` section and reference those
-names as `${NAME}` inside its URLs. A file that does not declare a `version:`
-is read as version 2; `version: 1` keeps the older behaviour and refuses a
-`template:` section.
+names as `${NAME}` in its URLs or settings. See
+[Template Variables](../getting-started/template/) for
+the YAML syntax and placement guidance.
 
 An entry that still needs a value is kept as an `apprise.NotifyTemplate`.
 It retains its tags for filtering, and `url()` shows its `${NAME}` markers.
@@ -191,8 +191,7 @@ apobj.notify(body="Hello", template={"api_key": "your-secret-key"})
 
 `template_vars()` reports the default itself; a `None` means the
 configuration gave the variable no default, so a value must come from the
-call or the environment. The default is configuration content, so do not hand
-the result straight to someone who should not be reading the configuration.
+call or environment. Treat returned defaults as configuration content.
 
 Values are resolved per call, in this order:
 
@@ -206,21 +205,17 @@ priority over `APPRISE_TEMPLATE_API_KEY`.
 
 `template` must be a mapping, and each key a valid variable name used only
 once. Any `collections.abc.Mapping` works, so a `MappingProxyType` or a
-`UserDict` is accepted alongside a plain `dict`. Anything else raises
-`apprise.exception.AppriseTemplateError` out of `find()`; `notify()` reports
-`FAILURE` instead, since it never raises for a bad argument.
+`UserDict` works alongside a plain `dict`. Invalid input raises
+`apprise.exception.AppriseTemplateError` from `find()`; `notify()` returns
+`FAILURE`.
 
-An entry with no value available is skipped and the result reports `PARTIAL`
-rather than `SUCCESS`, so a caller is never told a send was clean when a
-destination was dropped.
+An entry with no available value is skipped and returns `PARTIAL`.
 
 `find(..., resolve=False)` returns pending entries without filling them in.
 `urls()` and iteration do the same.
 
-One case-insensitive set of values covers everything loaded into an `Apprise`
-object, and each configuration uses only the names it needs. Extra valid names
-are accepted and ignored; the local debug log records their names but never
-their values.
+One case-insensitive set of values covers everything in an `Apprise` object.
+Extra valid names are ignored and recorded by name in the local debug log.
 
 Templates can be switched off entirely through the asset:
 
@@ -228,80 +223,14 @@ Templates can be switched off entirely through the asset:
 asset = apprise.AppriseAsset(allow_templates=False)
 ```
 
-The configuration is then read exactly as it was before templates existed: a
-`template:` section is ignored, `${NAME}` is ordinary text, nothing is read
-from the environment, and every URL loads straight away. This is deliberately
-an internal setting, so the person running the server decides; a configuration
-cannot switch it on for itself.
+This ignores `template:` sections and environment values, and treats `${NAME}`
+as ordinary text. Only the application can change this setting.
 
-Per-call values never change the cached configuration or carry into later
-calls. Reusing the same values also reuses the built service, keeping its
-`url_id()` and persistent storage stable.
+Per-call values do not change the cached configuration or later calls. Reusing
+the same values also reuses the built service and storage identity.
 
-:::caution
-When a value cannot be found, the variable's name is written to the local log
-only. It is deliberately withheld from `AppriseResult` logs and from anything
-a `log_callback` receives, because those are streamed back to API callers.
-:::
-
-The configuration author may place a variable directly in a URL or in a named
-setting below it. URL placement is unrestricted and supports email addresses,
-`user:pass`, comma-separated targets, and other forms a plugin understands. A
-whole-host value may also contain `user@host` or `user:pass@host` unless the
-URL already provides credentials. A named setting is available when a caller
-should control only that option.
-
-### Choosing Where a Variable Goes
-
-Apprise does not restrict where in a URL a variable may sit. The two placements
-give the supplied value different amounts of reach, and choosing between them is
-the author's decision.
-
-A variable **in the URL** can fill in any field, the host included. Whatever
-else that URL holds -- credentials, the path, query parameters, headers, payload
-fields, and any setting written underneath -- travels to whichever host the
-finished URL points at:
-
-```python
-CONFIG = """
-template:
-  host:
-urls:
-  # The supplied value decides where these credentials are sent
-  - json://user:pass@${HOST}/api/notify
-"""
-```
-
-A variable **in a named setting** can only ever reach that one option. The rest
-of the URL is fixed by the configuration:
-
-```python
-CONFIG = """
-template:
-  target:
-urls:
-  # The supplied value reaches "to" and nothing else
-  - json://user:pass@fixed.example.com/:
-      - to: ${TARGET}
-"""
-```
-
-:::caution
-Reach for the named setting whenever the value may come from somewhere you do
-not fully trust. Putting a variable in the host of a URL that carries its own
-credentials lets the supplied value decide who receives them.
-:::
-
-Apprise deliberately leaves this choice to the host application. Code using the
-library directly commonly owns the configuration, but an API may accept values
-from callers who cannot read it. Host applications should use named settings or
-limit who may supply whole-host values when those callers are not trusted.
-
-Beyond that, values are not inspected. A value that makes no sense for the
-service it was used in is handed over as written, and the service reports the
-problem the way it normally would. The one thing a variable may never do is
-choose the service or a tag: `${NAME}` cannot appear before `://` or in
-`tag:`/`tags:`. Both are selected before template values are resolved.
+Missing variable names are written to the local log, but not to
+`AppriseResult` or `log_callback` output.
 
 ## Includes
 

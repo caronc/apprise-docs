@@ -76,13 +76,10 @@ For a full guide on reducing container memory and RAM usage, see [Resource Usage
 | `APPRISE_TEMPLATE_<NAME>`        |         | Fills `${NAME}` in stored YAML when no default exists. Blank values are ignored.                             |
 
 :::caution
-`APPRISE_TEMPLATE_<NAME>` is read from the server's own environment, so
-**every stored configuration on this server sees the same value**. Separate
-configurations using `${TOKEN}` therefore share one server value.
-
-Set `APPRISE_ALLOW_TEMPLATES=no` to ignore `template:` sections and template
-environment variables. `${NAME}` is then treated as ordinary text. See
-[Template Variables](/getting-started/configuration/#template-variables).
+`APPRISE_TEMPLATE_<NAME>` is shared by every stored configuration on the
+server. Use unique names for values that should not be shared. Set
+`APPRISE_ALLOW_TEMPLATES=no` to disable templates; see
+[Template Variables](../../getting-started/template/).
 :::
 
 ## Network

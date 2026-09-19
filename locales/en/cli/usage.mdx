@@ -103,6 +103,31 @@ Apprise supports a persistent storage cache. You can tune it with the flags belo
 | `-V`  | `--version`       | Print version and exit.                                                                                                                  |
 | `-h`  | `--help`          | Show the help message and exit.                                                                                                          |
 
+## Template Variable Example
+
+First declare the value in a YAML configuration:
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+
+urls:
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+Then supply it when sending:
+
+```bash
+apprise --config apprise.yml \
+  --template-var recipient=admin@example.com \
+  --body "Backup complete"
+```
+
+Only names declared under `template:` are replaced. See
+[Template Variables](../getting-started/template/) for defaults, environment
+values, placement rules, and more examples.
+
 ## Environment Variables
 
 You can pre-set default behaviors using environment variables. This is useful for containerized environments or setting system-wide defaults.
@@ -113,7 +138,7 @@ You can pre-set default behaviors using environment variables. This is useful fo
 | `APPRISE_CONFIG_PATH`                   | Override the default configuration search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                   |
 | `APPRISE_PLUGIN_PATH`                   | Override the default plugin search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                          |
 | `APPRISE_STORAGE_PATH`                  | Override the default persistent storage path.                                                                                                                                                                                                              |
-| `APPRISE_TEMPLATE_<NAME>`               | Supply a value for a `${NAME}` used by a YAML configuration. For example `APPRISE_TEMPLATE_API_KEY` fills in `${API_KEY}`. See [Template Variables](/getting-started/configuration/#template-variables).                                                   |
+| `APPRISE_TEMPLATE_<NAME>`               | Supply a value for a `${NAME}` used by a YAML configuration. For example `APPRISE_TEMPLATE_API_KEY` fills in `${API_KEY}`. See [Template Variables](../getting-started/template/).                                                                         |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Standard proxy variables honored automatically (not Apprise-specific). Route outbound notifications through a proxy, or exempt specific hosts with `NO_PROXY`. See [Proxy Support](/library/advanced/#proxy-support) for details, including SOCKS proxies. |
 
 ## Default Configuration Locations

@@ -1,0 +1,145 @@
+---
+title: Template Variables
+description: Declare reusable YAML values and supply them from the CLI, API, or environment.
+sidebar:
+  order: 4.5
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Template variables let an administrator leave selected YAML values open until
+a notification is sent. They are useful for shared configurations and secrets
+provided by an automation platform.
+
+## Define a Template
+
+Declare each name under `template:`, then use `${NAME}` in a URL or one of its
+settings:
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+  smtp_host: smtp.example.com
+
+urls:
+  - mailtos://user:password@example.com/:
+      - smtp: ${SMTP_HOST}
+        to: ${RECIPIENT}
+        tag: alerts
+```
+
+`recipient` must be supplied later. `smtp_host` has a default.
+
+## Simple Rules
+
+- Templates work only in YAML configuration.
+- A marker is replaced only when its name is declared under `template:`.
+  Undeclared `${NAME}` text remains unchanged.
+- `tag:` and `tags:` cannot contain template markers.
+- The service name before `://` cannot be a template. For example,
+  `${SERVICE}://...` is invalid.
+- Names are case-insensitive and may contain letters, numbers, and underscores.
+- Values are substituted once and otherwise kept as supplied.
+
+If an entry still needs a value, Apprise skips that entry and continues with
+the others.
+
+## Supplying Values
+
+Apprise uses the first available value in this order:
+
+1. A value supplied with the notification
+2. The default in `template:`
+3. `APPRISE_TEMPLATE_<NAME>` from the environment
+
+Blank notification and environment values are ignored. An empty YAML default
+is still a valid value.
+
+<Tabs syncKey="template-client">
+<TabItem label="Configuration">
+
+Declare names as a mapping, as shown above, or as a list:
+
+```yaml
+template:
+  - recipient
+  - smtp_host: smtp.example.com
+```
+
+Both forms behave the same way. A name without a value must be supplied when
+the notification is sent or through the environment.
+
+</TabItem>
+<TabItem label="CLI">
+
+Supply a declared value with `--template-var` or `-tv`:
+
+```bash
+apprise --config apprise.yml --tag alerts \
+  --template-var recipient=admin@example.com \
+  --body "Backup complete"
+```
+
+Repeat the option for different names. You can also use the environment:
+
+```bash
+export APPRISE_TEMPLATE_RECIPIENT=admin@example.com
+apprise --config apprise.yml --tag alerts --body "Backup complete"
+```
+
+Add `--dry-run` to report missing values without sending.
+
+</TabItem>
+<TabItem label="Apprise API">
+
+For a saved configuration, send values in a JSON `template` object:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "alerts",
+    "body": "Backup complete",
+    "template": {"recipient": "admin@example.com"}
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+Form requests use `template[name]`, such as
+`template[recipient]=admin@example.com`.
+
+</TabItem>
+</Tabs>
+
+## URL or Named Setting
+
+A marker may appear directly in a URL or in a named YAML setting:
+
+```yaml
+urls:
+  # The value fills this part of the URL
+  - mailtos://user:password@example.com/${RECIPIENT}
+
+  # The value is limited to the "to" option
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+:::caution
+URL markers use direct substitution, which is useful when you trust whoever
+supplies the value. On shared or enterprise systems, use named YAML settings
+for values from other users so each value stays within one option.
+:::
+
+Characters such as `/`, `?`, `&`, `#`, `@`, and `:` stay in the selected
+field. They are not reparsed as new URL options. A few services validate fields
+while loading; if a marker is rejected there, use another supported position
+or a named setting.
+
+## Additional Behavior
+
+- A name may be used more than once and receives the same value everywhere.
+- A supplied value containing `${OTHER}` is not expanded again.
+- Extra supplied names are ignored and recorded by name in the local debug log.
+- Names may be up to 32 characters and values up to 1,024 characters.
+- Repeated `template:` or `urls:` sections make the YAML invalid.

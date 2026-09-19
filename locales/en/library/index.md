@@ -47,5 +47,5 @@ apobj.notify(
 - **Attachments**: Send files and images effortlessly.
 - **Rich Text**: Support Emojis and handle HTML, TEXT, and Markdown
 - **Configuration**: Load URLs from YAML/Text files or API endpoints.
-- **[Template Variables](./configuration/#template-variables)**: Fill declared
+- **[Template Variables](../getting-started/template/)**: Fill declared
   YAML values at send time without changing the saved configuration.
