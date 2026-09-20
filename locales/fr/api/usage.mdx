@@ -206,7 +206,7 @@ curl -X POST \
     "body": "Database connection failed",
     "type": "warning"
   }' \
-  http://localhost:8000/notify
+  http://localhost:8000/notify/my-alerts
 ```
 
 Lorsque l'authentification est activée, conservez la même URL avec la clé et ajoutez Basic Auth :
@@ -250,6 +250,108 @@ curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
 # Notifier les services correspondant à ('comment' ET 'create') OU 'admin'
 curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
+
+### Fournir des valeurs de substitution
+
+Si une configuration enregistrée utilise des marqueurs `${NOM}`, les URL qui en
+dépendent ne sont pas utilisées tant qu'une valeur n'est pas disponible. Vous
+pouvez fournir ces valeurs avec la notification elle-même.
+
+Le YAML enregistré doit déclarer chaque marqueur :
+
+```yaml
+template:
+  api_key:
+
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/admin@example.com:
+      - tag: alerts
+```
+
+En JSON, utilisez un objet `template` :
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "alerts",
+    "body": "Échec de la connexion à la base de données",
+    "template": {"api_key": "votre-cle-secrete"}
+  }' \
+  http://localhost:8000/notify/my-alerts
+```
+
+Avec un formulaire, nommez chaque champ `template[nom]` :
+
+```bash
+curl -X POST \
+  -F "tag=alerts" \
+  -F "body=Échec de la connexion à la base de données" \
+  -F "template[api_key]=votre-cle-secrete" \
+  http://localhost:8000/notify/my-alerts
+```
+
+Une valeur envoyée ainsi passe en premier. Si elle est vide ou ne contient que
+des espaces, Apprise utilise la valeur par défaut de la configuration, puis
+l'environnement du serveur. Les noms ne sont pas sensibles à la casse. Les
+noms valides supplémentaires sont acceptés et ignorés ; seul
+leur nom apparaît dans le journal de débogage local du serveur.
+
+Une valeur manquante ignore seulement les URL concernées. Le résultat est
+`PARTIAL` si une autre URL correspondante est envoyée, ou `FAILURE` si elles
+sont toutes ignorées. Les noms manquants apparaissent uniquement dans le
+journal local du serveur. Utilisez l'onglet **Review** ou
+`GET /json/urls/{KEY}` pour voir ce qu'attend la configuration.
+
+Ces valeurs concernent uniquement les configurations enregistrées ; les
+requêtes sans état les ignorent.
+
+L'onglet **Notifications** ajoute une ligne clé/valeur masquée pour chaque
+variable utilisée par les destinations sélectionnées. Les valeurs par défaut
+déclarées dans `template:` sont remplies lorsqu'elles sont disponibles, mais
+celles de l'environnement du serveur ne sont jamais affichées. Un champ vide
+utilise la valeur par défaut de la configuration, puis l'environnement. Vous
+pouvez supprimer librement des lignes, et **Clear Form** reconstruit les
+suggestions. **Add Value** devient disponible lorsque chaque ligne actuelle
+possède un nom ; les lignes mises en évidence seront envoyées. Les tests rapides
+utilisent une fenêtre masquée distincte. Les tests sans état ne changent pas.
+
+Tout appelant autorisé à envoyer via une configuration enregistrée peut fournir
+ses valeurs déclarées. Consultez
+[Variables de substitution](../getting-started/template/) pour la configuration
+et le choix des emplacements.
+
+:::note
+`X-Apprise-Log-Level: debug` (ou `trace`) peut révéler une configuration
+enregistrée. Ce niveau exige les droits d'administrateur ou l'accès `user`.
+Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
+:::
+
+### Voir ce dont une configuration a besoin
+
+`GET /json/urls/{KEY}` liste chaque URL enregistrée avec les noms de substitution qu'elle utilise :
+
+```json
+{
+  "url": "mailto://user:pass@gmail.com?smtp=${SMTPSERVER}&to=${RECIPIENT}",
+  "template": { "smtpserver": null, "recipient": "default@example.com" }
+}
+```
+
+`template` associe chaque nom utilisé par l'URL à la valeur par défaut déclarée pour lui dans la section `template:` de la configuration :
+
+- `null` signifie qu'aucune valeur par défaut ne peut être transmise. Soit aucune n'a été écrite, soit `privacy=1` l'a masquée.
+- `null` ne veut pas dire que la valeur est indisponible. Le serveur peut encore la fournir depuis son propre environnement au moment de l'envoi.
+- L'objet est toujours présent. Il est vide lorsqu'il n'y a rien à signaler.
+
+Les marqueurs présents dans `url` sont laissés exactement tels qu'ils ont été écrits :
+
+- Ils ne sont jamais encodés en pourcentage ni masqués, un client peut donc les rechercher et y substituer ses propres valeurs.
+- Les noms des marqueurs sont en majuscules alors que les clés de `template` sont en minuscules. Comparez-les sans tenir compte de la casse.
+
+Chaque `url` reprend aussi les paramètres écrits sous elle dans la configuration : en substituant les marqueurs, vous obtenez donc une URL qui envoie comme le fait l'entrée enregistrée. Seule exception, un paramètre pour lequel le service n'a aucun argument d'URL est omis, car une URL ne peut pas l'exprimer.
+
+Avec `privacy=1`, le texte autour de chaque marqueur est masqué et toutes les valeurs par défaut sont retirées. Cette liste convient à l'affichage, mais ne permet pas d'envoyer.
 
 ## Mapping du Payload (Hooks)
 

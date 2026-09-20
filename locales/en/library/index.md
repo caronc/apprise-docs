@@ -39,7 +39,7 @@ apobj.notify(
 )
 ```
 
-## Why use the Library?
+## Why Use the Library?
 
 - **Unified Syntax**: One URL format for **<!-- SERVICES:COUNT -->** services.
 - **Asynchronous**: Sending notifications is non-blocking (optional).
@@ -47,3 +47,5 @@ apobj.notify(
 - **Attachments**: Send files and images effortlessly.
 - **Rich Text**: Support Emojis and handle HTML, TEXT, and Markdown
 - **Configuration**: Load URLs from YAML/Text files or API endpoints.
+- **[Template Variables](../getting-started/template/)**: Fill declared
+  YAML values at send time without changing the saved configuration.

@@ -155,6 +155,84 @@ urls:
 
 This loads two email services with shared credentials and different targets.
 
+## Template Variables
+
+A YAML configuration may include a `template:` section and reference those
+names as `${NAME}` in its URLs or settings. See
+[Template Variables](../getting-started/template/) for
+the YAML syntax and placement guidance.
+
+An entry that still needs a value is kept as an `apprise.NotifyTemplate`.
+It retains its tags for filtering, and `url()` shows its `${NAME}` markers.
+
+```python
+import apprise
+
+CONFIG = """
+template:
+  api_key:
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/you@example.com
+"""
+
+config = apprise.AppriseConfig()
+config.add_config(CONFIG, format="yaml")
+
+apobj = apprise.Apprise()
+apobj.add(config)
+
+# What is still required?
+apobj.template_vars()
+# {'api_key': {'default': None, 'services': 1}}
+
+# Supply it for this call
+apobj.notify(body="Hello", template={"api_key": "your-secret-key"})
+```
+
+`template_vars()` reports the default itself; a `None` means the
+configuration gave the variable no default, so a value must come from the
+call or environment. Treat returned defaults as configuration content.
+
+Values are resolved per call, in this order:
+
+1. the `template` mapping passed to `notify()` or `find()`
+2. the default declared in the configuration
+3. the `APPRISE_TEMPLATE_<NAME>` environment variable
+
+Blank or whitespace-only call and environment values are ignored. An explicit
+empty-string default (`api_key: ""`) is still a value, so it takes priority over
+`APPRISE_TEMPLATE_API_KEY`.
+
+`template` must be a mapping, and each key a valid variable name used only
+once. Any `collections.abc.Mapping` works, so a `MappingProxyType` or a
+`UserDict` works alongside a plain `dict`. Invalid input raises
+`apprise.exception.AppriseTemplateError` from `find()`; `notify()` returns
+`FAILURE`.
+
+An entry with no available value is skipped. The result is `PARTIAL` when
+another matching entry sends, or `FAILURE` when every matching entry is skipped.
+
+`find(..., resolve=False)` returns pending entries without filling them in.
+`urls()` and iteration do the same.
+
+One case-insensitive set of values covers everything in an `Apprise` object.
+Extra valid names are ignored and recorded by name in the local debug log.
+
+Templates can be switched off entirely through the asset:
+
+```python
+asset = apprise.AppriseAsset(allow_templates=False)
+```
+
+This ignores `template:` sections and environment values, and treats `${NAME}`
+as ordinary text. Only the application can change this setting.
+
+Per-call values do not change the cached configuration or later calls. Reusing
+the same values also reuses the built service and storage identity.
+
+Missing variable names are written to the local log, but not to
+`AppriseResult` or `log_callback` output.
+
 ## Includes
 
 The `include` directive allows one configuration source to reference another.

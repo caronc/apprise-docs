@@ -92,15 +92,41 @@ Apprise supports a persistent storage cache. You can tune it with the flags belo
 
 ### Execution and Diagnostics
 
-| Flag  | Long flag         | Description                                                                                   |
-| :---- | :---------------- | :-------------------------------------------------------------------------------------------- |
-| `-Da` | `--disable-async` | Send synchronously (one after the other) instead of in parallel.                              |
-| `-d`  | `--dry-run`       | Trial run. Prints which services would be triggered to `stdout`. Does not send notifications. |
-| `-l`  | `--details`       | Print details about currently supported services.                                             |
-| `-v`  | `--verbose`       | Increase verbosity. You can stack it (for example `-vvvv`).                                   |
-| `-D`  | `--debug`         | Debug mode, useful for troubleshooting.                                                       |
-| `-V`  | `--version`       | Print version and exit.                                                                       |
-| `-h`  | `--help`          | Show the help message and exit.                                                               |
+| Flag  | Long flag         | Description                                                                                                                              |
+| :---- | :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `-Da` | `--disable-async` | Send synchronously (one after the other) instead of in parallel.                                                                         |
+| `-d`  | `--dry-run`       | Trial run. Prints which services would be triggered to `stdout`. Does not send notifications.                                            |
+| `-l`  | `--details`       | Print details about currently supported services.                                                                                        |
+| `-tv` | `--template-var`  | Supply a value for a `${NAME}` used by a YAML configuration, written as `NAME=VALUE`. Repeat for more than one, but name each only once. |
+| `-v`  | `--verbose`       | Increase verbosity. You can stack it (for example `-vvvv`).                                                                              |
+| `-D`  | `--debug`         | Debug mode, useful for troubleshooting.                                                                                                  |
+| `-V`  | `--version`       | Print version and exit.                                                                                                                  |
+| `-h`  | `--help`          | Show the help message and exit.                                                                                                          |
+
+## Template Variable Example
+
+First declare the value in a YAML configuration:
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+
+urls:
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+Then supply it when sending:
+
+```bash
+apprise --config apprise.yml \
+  --template-var recipient=admin@example.com \
+  --body "Backup complete"
+```
+
+Only names declared under `template:` are replaced. See
+[Template Variables](../getting-started/template/) for defaults, environment
+values, placement rules, and more examples.
 
 ## Environment Variables
 
@@ -112,6 +138,7 @@ You can pre-set default behaviors using environment variables. This is useful fo
 | `APPRISE_CONFIG_PATH`                   | Override the default configuration search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                   |
 | `APPRISE_PLUGIN_PATH`                   | Override the default plugin search paths. Use `;`, `\n`, and/or `\r` to delimit multiple entries.                                                                                                                                                          |
 | `APPRISE_STORAGE_PATH`                  | Override the default persistent storage path.                                                                                                                                                                                                              |
+| `APPRISE_TEMPLATE_<NAME>`               | Supply a value for a `${NAME}` used by a YAML configuration. For example `APPRISE_TEMPLATE_API_KEY` fills in `${API_KEY}`. See [Template Variables](../getting-started/template/).                                                                         |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Standard proxy variables honored automatically (not Apprise-specific). Route outbound notifications through a proxy, or exempt specific hosts with `NO_PROXY`. See [Proxy Support](/library/advanced/#proxy-support) for details, including SOCKS proxies. |
 
 ## Default Configuration Locations
@@ -178,7 +205,7 @@ The following global paths are also searched if nothing is found above:
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yml`
 1. `%COMMONPROGRAMFILES%\Apprise\apprise.yaml`
 
-Assuming we were the user `foobar` and Microsoft Windows was installed on the `C:\` drive; the above can be interprted as:
+For a user named `foobar` with Microsoft Windows installed on `C:\`, these paths become:
 
 | Environment Variable  | Example Translation               |
 | --------------------- | --------------------------------- |
