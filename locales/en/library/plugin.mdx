@@ -252,6 +252,114 @@ class NotifyDemoHTTP(NotifyBase):
 
 </TabItem>
 
+<TabItem value="targets" label="Multiple targets">
+This pattern is ideal for:
+
+- Sending the same message to several rooms, numbers, or addresses
+- Any service where one target can fail while the others succeed
+
+```python
+# apprise/plugins/demotargets.py
+import requests
+
+from .base import NotifyBase
+from ..common import NotifyType
+from ..locale import gettext_lazy as _
+from ..utils.parse import parse_list
+
+
+class NotifyDemoTargets(NotifyBase):
+    service_name = _("Apprise Demo Targets")
+    secure_protocol = "demotargets"
+    setup_url = "https://appriseit.com/services/demotargets/"
+
+    notify_url = "https://example.com/api/send"
+
+    templates = (
+        "{schema}://{token}/{targets}",
+    )
+
+    template_tokens = dict(
+        NotifyBase.template_tokens,
+        **{
+            "token": {
+                "name": _("Token"),
+                "type": "string",
+                "private": True,
+                "required": True,
+            },
+            "targets": {
+                "name": _("Targets"),
+                "type": "list:string",
+            },
+        },
+    )
+
+    def __init__(self, token, targets=None, **kwargs):
+        super().__init__(**kwargs)
+        self.token = token
+        self.targets = parse_list(targets)
+
+    def send(self, body, title="", notify_type=NotifyType.INFO, **kwargs):
+        has_error = False
+
+        for target in self.targets:
+            # This target already got the message on an earlier attempt
+            if self.is_delivered(target):
+                continue
+
+            self.throttle()
+            r = requests.post(
+                self.notify_url,
+                data={"to": target, "message": body},
+                headers={"Authorization": self.token},
+                verify=self.verify_certificate,
+                timeout=self.request_timeout,
+                allow_redirects=self.redirects,
+            )
+
+            if r.status_code != requests.codes.ok:
+                self.logger.warning("Failed to notify %s.", target)
+                has_error = True
+                continue
+
+            self.logger.info("Sent notification to %s.", target)
+
+            # Record it so a retry skips this target
+            self.mark_delivered(target)
+
+        return not has_error
+
+    def url(self, privacy=False, *args, **kwargs):
+        return "{schema}://{token}/{targets}?{params}".format(
+            schema=self.secure_protocol,
+            token=self.pprint(self.token, privacy, safe=""),
+            targets="/".join(
+                NotifyDemoTargets.quote(x, safe="") for x in self.targets
+            ),
+            params=NotifyDemoTargets.urlencode(
+                self.url_parameters(privacy=privacy, *args, **kwargs)
+            ),
+        )
+
+    def __len__(self):
+        return len(self.targets) if self.targets else 1
+
+    @staticmethod
+    def parse_url(url):
+        results = NotifyBase.parse_url(url, verify_host=False)
+        if not results:
+            return results
+
+        results["token"] = NotifyDemoTargets.unquote(results["host"])
+        results["targets"] = NotifyDemoTargets.split_path(
+            results["fullpath"]
+        )
+        return results
+```
+
+</TabItem>
+
 <TabItem value="boilerplate" label="Boilerplate plugin">
 Copy and paste this as a starting point. Search for `TODO:` and fill in the blanks.
 
@@ -450,7 +558,8 @@ class NotifyMyService(NotifyBase):
         """TODO: Implement the upstream call(s)."""
         self.throttle()
 
-        # TODO: Replace with real implementation
+        # TODO: Replace with a real implementation. For multiple targets,
+        # use is_delivered()/mark_delivered() as shown above.
         self.logger.debug(
             "Sending %s notification to %s", notify_type, self.host
         )
@@ -589,6 +698,59 @@ When combined with a well-formed `url_identifier` (configuration identity only),
 
 - If you do not override it, the base implementation returns `1`.
 - Override it in plugins that support multiple targets, usually returning `len(self.targets)` with a minimum of `1`.
+
+## Delivering to More Than One Target
+
+If `send()` loops over several targets, record each successful target. A
+retry then contacts only the targets that failed.
+
+```python
+for target in self.targets:
+    if self.is_delivered(target):
+        continue
+
+    if not self._post(target, body):
+        has_error = True
+        continue
+
+    self.mark_delivered(target)
+```
+
+`is_delivered()` checks whether a target already received the message.
+Call `mark_delivered()` only after the target accepts it.
+
+The key identifies the target, such as a phone number, room ID, token, or
+email address. Lists and dictionaries also work.
+
+Notes:
+
+- Both methods do nothing when `retry=0`, which is the default.
+- Each piece of a split message is tracked on its own.
+- Tracking is dropped when the notification finishes.
+- Something sent once for the whole notification, such as an image, uses
+  `per_message=True` so it is not repeated for every piece:
+
+```python
+image_key = ("image", target)
+if not self.is_delivered(image_key, per_message=True):
+    if self.send_image(target):
+        self.mark_delivered(image_key, per_message=True)
+```
+
+- For batches, use a stable key such as `(category, batch_position)` so each
+  batch remains distinct.
+- If one target needs several requests, include the request position in the
+  key and mark each request only after it succeeds.
+- If you count successes, count a skipped target too:
+
+```python
+if self.is_delivered(target):
+    delivered += 1
+    continue
+```
+
+Only sending loops need this tracking. Loops that build a payload, split a
+message, or collect recipients for one request do not.
 
 ## Requirements and Optional Dependencies
 

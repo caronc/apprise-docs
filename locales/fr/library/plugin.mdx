@@ -257,6 +257,114 @@ class NotifyDemoHTTP(NotifyBase):
 
 </TabItem>
 
+<TabItem value="targets" label="Cibles multiples">
+Ce modèle convient pour :
+
+- Envoyer le même message à plusieurs salons, numéros ou adresses
+- Tout service où une cible peut échouer pendant que les autres réussissent
+
+```python
+# apprise/plugins/demotargets.py
+import requests
+
+from .base import NotifyBase
+from ..common import NotifyType
+from ..locale import gettext_lazy as _
+from ..utils.parse import parse_list
+
+
+class NotifyDemoTargets(NotifyBase):
+    service_name = _("Apprise Demo Targets")
+    secure_protocol = "demotargets"
+    setup_url = "https://appriseit.com/services/demotargets/"
+
+    notify_url = "https://example.com/api/send"
+
+    templates = (
+        "{schema}://{token}/{targets}",
+    )
+
+    template_tokens = dict(
+        NotifyBase.template_tokens,
+        **{
+            "token": {
+                "name": _("Token"),
+                "type": "string",
+                "private": True,
+                "required": True,
+            },
+            "targets": {
+                "name": _("Targets"),
+                "type": "list:string",
+            },
+        },
+    )
+
+    def __init__(self, token, targets=None, **kwargs):
+        super().__init__(**kwargs)
+        self.token = token
+        self.targets = parse_list(targets)
+
+    def send(self, body, title="", notify_type=NotifyType.INFO, **kwargs):
+        has_error = False
+
+        for target in self.targets:
+            # Cette cible a déjà reçu le message lors d'une tentative
+            if self.is_delivered(target):
+                continue
+
+            self.throttle()
+            r = requests.post(
+                self.notify_url,
+                data={"to": target, "message": body},
+                headers={"Authorization": self.token},
+                verify=self.verify_certificate,
+                timeout=self.request_timeout,
+                allow_redirects=self.redirects,
+            )
+
+            if r.status_code != requests.codes.ok:
+                self.logger.warning("Failed to notify %s.", target)
+                has_error = True
+                continue
+
+            self.logger.info("Sent notification to %s.", target)
+
+            # L'enregistrer pour qu'une nouvelle tentative l'ignore
+            self.mark_delivered(target)
+
+        return not has_error
+
+    def url(self, privacy=False, *args, **kwargs):
+        return "{schema}://{token}/{targets}?{params}".format(
+            schema=self.secure_protocol,
+            token=self.pprint(self.token, privacy, safe=""),
+            targets="/".join(
+                NotifyDemoTargets.quote(x, safe="") for x in self.targets
+            ),
+            params=NotifyDemoTargets.urlencode(
+                self.url_parameters(privacy=privacy, *args, **kwargs)
+            ),
+        )
+
+    def __len__(self):
+        return len(self.targets) if self.targets else 1
+
+    @staticmethod
+    def parse_url(url):
+        results = NotifyBase.parse_url(url, verify_host=False)
+        if not results:
+            return results
+
+        results["token"] = NotifyDemoTargets.unquote(results["host"])
+        results["targets"] = NotifyDemoTargets.split_path(
+            results["fullpath"]
+        )
+        return results
+```
+
+</TabItem>
+
 <TabItem value="boilerplate" label="Plugin modèle">
 Copiez-collez ce point de départ. Recherchez `TODO:` et complétez les zones manquantes.
 
@@ -455,7 +563,8 @@ class NotifyMyService(NotifyBase):
         """TODO: Implement the upstream call(s)."""
         self.throttle()
 
-        # TODO: Replace with real implementation
+        # TODO: Remplacer par la vraie implémentation. Pour plusieurs cibles,
+        # utiliser is_delivered()/mark_delivered() comme illustré ci-dessus.
         self.logger.debug(
             "Sending %s notification to %s", notify_type, self.host
         )
@@ -616,6 +725,62 @@ chargées dans un plugin.
 
 - Si vous ne la redéfinissez pas, l'implémentation de base renvoie `1`.
 - Redéfinissez-la dans les plugins qui prennent en charge plusieurs cibles, généralement en renvoyant `len(self.targets)` avec un minimum de `1`.
+
+## Livraison vers plusieurs cibles
+
+Si `send()` parcourt plusieurs cibles, enregistrez chaque réussite. Une
+nouvelle tentative ne contacte alors que les cibles qui ont échoué.
+
+```python
+for target in self.targets:
+    if self.is_delivered(target):
+        continue
+
+    if not self._post(target, body):
+        has_error = True
+        continue
+
+    self.mark_delivered(target)
+```
+
+`is_delivered()` vérifie si une cible a déjà reçu le message. Appelez
+`mark_delivered()` seulement après que la cible l'a accepté.
+
+La clé identifie la cible, par exemple un numéro de téléphone, un identifiant
+de salon, un jeton ou une adresse e-mail. Les listes et dictionnaires sont
+également acceptés.
+
+Remarques :
+
+- Les deux méthodes ne font rien lorsque `retry=0`, la valeur par défaut.
+- Chaque partie d'un message découpé est suivie séparément.
+- Le suivi est supprimé à la fin de la notification.
+- Un élément envoyé une seule fois pour toute la notification, comme une
+  image, utilise `per_message=True` afin de ne pas être répété pour chaque
+  partie :
+
+```python
+image_key = ("image", target)
+if not self.is_delivered(image_key, per_message=True):
+    if self.send_image(target):
+        self.mark_delivered(image_key, per_message=True)
+```
+
+- Pour les lots, utilisez une clé stable comme `(catégorie, position_du_lot)`
+  afin de distinguer chaque lot.
+- Si une cible nécessite plusieurs requêtes, ajoutez la position de la requête
+  à la clé et enregistrez chaque requête seulement après sa réussite.
+- Si vous comptez les réussites, comptez aussi une cible ignorée :
+
+```python
+if self.is_delivered(target):
+    delivered += 1
+    continue
+```
+
+Seules les boucles d'envoi ont besoin de ce suivi. Les boucles qui préparent
+les données, découpent un message ou regroupent les destinataires d'une même
+requête n'en ont pas besoin.
 
 ## Requirements et Dépendances Optionnelles
 
