@@ -1,6 +1,6 @@
 ---
-title: "MacOS X Desktop Notifications"
-description: "Send MacOS X Desktop notifications."
+title: "macOS Desktop Notifications"
+description: "Send macOS desktop notifications."
 
 group: desktop
 schemas:
@@ -21,7 +21,7 @@ limits:
 
 ## Account Setup
 
-Display notifications right on your Mac OS X desktop provided you're running version 10.8 or higher and have installed [terminal-notifier](https://github.com/julienXX/terminal-notifier). This only works if you're sending the notification to the same system you're currently accessing. Hence this notification can not be sent from one PC to another.
+Display local notifications with [terminal-notifier](https://github.com/julienXX/terminal-notifier). Version `3` requires macOS 10.14 or later, while version `2` requires macOS 10.10. OS X 10.8 and 10.9 need an older compatible release. Notifications cannot be sent to another computer.
 
 ```bash
 # Make sure terminal-notifier is installed into your system
@@ -33,32 +33,46 @@ brew install terminal-notifier
 Valid syntax is as follows:
 
 - `macosx://`
-- `macosx://{sender}`
 
 You can also choose to set a sound to play (such as `default`):
 
 - `macosx://_/?sound=default`
 
-The `sound` can be set any of the sound names listed in _Sound Preferences_ of your Mac OS.
+Set `sound` to any name listed in your Mac's _Sound Preferences_.
 
-Notifications identify themselves to `terminal-notifier` as a `sender`, which is needed for them to show up on some systems. Apprise picks a sensible default on its own, but you can set your own directly in the URL:
-
-- `macosx://myapp/`
-
-`terminal-notifier` comes in two flavours, `2` and `3`. Apprise defaults to `2` unless it detects you're running macOS 26 (Tahoe) or higher, in which case it defaults to `3` instead. You can force a specific version yourself:
+`terminal-notifier` versions `2` and `3` use slightly different options. Apprise detects the installed version automatically. You can override it if needed:
 
 - `macosx://_/?version=3`
 
-The `sender` and `image` options are only supported by `terminal-notifier` version `2`; they're silently ignored when `version=3` is in effect.
+Version `2` uses a `sender` value to identify notifications. Apprise uses its `app_id` by default, but you can set your own:
+
+- `macosx://_/?sender=myapp`
+
+Version `3` does not support `sender`, so it ignores this option.
+
+## Troubleshooting
+
+With version `3`, run this command if notifications are not authorized or nothing appears:
+
+```bash
+terminal-notifier -diagnose
+```
+
+It checks permissions, Focus modes, Scheduled Summary, and other common problems. Version `2` does not provide this command.
+
+:::note
+macOS asks for notification permission once, but an OS upgrade can reset it. The permission belongs to `terminal-notifier`, not Apprise.
+:::
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                                       |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sound    | No       | The `sound` can be set any of the sound names listed in _Sound Preferences_ of your Mac OS.                                                                                                                                                       |
-| image    | No       | Associate an image with the message. By default this is enabled. Only applies to `terminal-notifier` `version=2`.                                                                                                                                 |
-| sender   | No       | Identifies your script to `terminal-notifier`. Can be set directly in the URL (`macosx://myapp/`) or with `?sender=`. Defaults to your Apprise `app_id` (`Apprise`, unless you've set your own). Only applies to `terminal-notifier` `version=2`. |
-| version  | No       | The `terminal-notifier` version you have installed: `2` or `3`. Defaults to `2`, or `3` if Apprise detects you're on macOS 26 (Tahoe) or higher.                                                                                                  |
+| Variable | Required | Description                                                                                                                                                     |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sound    | No       | A sound name listed in your Mac's _Sound Preferences_.                                                                                                          |
+| image    | No       | Associate an image with the message. By default this is enabled. Version `2` uses it as the notification icon; version `3` attaches it inside the notification. |
+| click    | No       | A URL to open when the notification is clicked.                                                                                                                 |
+| sender   | No       | Identifies your script to `terminal-notifier`. Defaults to your Apprise `app_id` (`Apprise`, unless you've set your own). Only applies to `version=2`.          |
+| version  | No       | The `terminal-notifier` version you have installed: `2` or `3`. Detected from the program itself when you don't set it.                                         |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -67,17 +81,17 @@ The `sender` and `image` options are only supported by `terminal-notifier` versi
 We can send a notification to ourselves like so:
 
 ```bash
-# Send ourselves a MacOS desktop notification
+# Send ourselves a macOS desktop notification
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "macosx://"
 
-# Send ourselves a MacOS desktop notification with the default sound
+# Send ourselves a macOS desktop notification with the default sound
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "macosx://_/?sound=default"
 
 # Send ourselves a notification, identifying ourselves as "myapp"
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   "macosx://myapp/"
+   "macosx://_/?sender=myapp"
 
 # Send ourselves a notification, forcing terminal-notifier version 3
 apprise -vv -t "Test Message Title" -b "Test Message Body" \

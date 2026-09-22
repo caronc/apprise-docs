@@ -14,6 +14,8 @@ sample_urls:
   - https://api.fluxer.app/v1/webhooks/{WebhookID}/{WebhookToken}
   - fluxer://{WebhookID}/{WebhookToken}
   - fluxer://{botname}@{WebhookID}/{WebhookToken}
+  - fluxers://{host}/{WebhookID}/{WebhookToken}
+  - fluxers://{host}/{path}/{WebhookID}/{WebhookToken}
 
 has_selfhosted: true
 has_attachments: true
@@ -34,10 +36,10 @@ A webhook URL looks like this:
 
 `https://api.fluxer.app/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
 
-This effectively equates to:
+Its general form is:
 `https://api.fluxer.app/webhooks/{WebhookID}/{WebhookToken}`
 
-The last part of the URL you are given make up the 2 tokens you need to send notifications with. With respect to the above example the tokens are as follows:
+The last two parts are the tokens needed to send notifications:
 
 1. **WebhookID** is `417429632418316298`
 2. **WebhookToken** is `JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
@@ -75,6 +77,28 @@ When `mode=private` is used, a host is required:
 
 If `mode=private` is selected but the host contains `fluxer.app`, Apprise will automatically switch back to `mode=cloud`.
 
+#### Self-Hosted API Paths
+
+The official self-hosted setup serves its API at `/api`. Apprise uses this path by default:
+
+- `fluxers://{host}/{WebhookID}/{WebhookToken}`
+- `fluxers://{host}:{port}/{WebhookID}/{WebhookToken}`
+
+If your API uses another path, place it before the webhook details:
+
+- `fluxers://{host}/{path}/{WebhookID}/{WebhookToken}`
+- `fluxers://{host}:{port}/{path}/{WebhookID}/{WebhookToken}`
+
+For example, `/custom/api/webhooks/...` becomes `fluxers://{host}/custom/api/{WebhookID}/{WebhookToken}`.
+
+:::note
+Use `path=/` when the API is served from the host root, such as when connecting directly to the API container.
+:::
+
+:::caution
+Paths apply only to self-hosted servers. Cloud mode always uses `https://api.fluxer.app` and ignores them.
+:::
+
 ## Parameter Breakdown
 
 | Variable     | Required | Description                                                                                                      |
@@ -84,6 +108,7 @@ If `mode=private` is selected but the host contains `fluxer.app`, Apprise will a
 | botname      | No       | Identify the name of the bot that should issue the message                                                       |
 | host         | No       | Hostname of your private Fluxer server (used with `mode=private`)                                                |
 | port         | No       | Port of your private Fluxer server (used with `mode=private`)                                                    |
+| path         | No       | API path for a private Fluxer server (default is `/api`; use `/` for the host root)                              |
 | mode         | No       | One of: `cloud` (default) or `private`                                                                           |
 | tts          | No       | Enable Text-To-Speech (default is **No**)                                                                        |
 | avatar       | No       | Override the default avatar icon and replace it with one identifying the notification type (default is **Yes**)  |
@@ -139,9 +164,26 @@ apprise -vv -b "Here is a file" \
 Post to a private Fluxer server:
 
 ```bash
-# Assuming your private server is https://fluxer.example.com
-# Assuming our {WebhookID} is 417429632418316298
-# Assuming our {WebhookToken} is JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+# Assuming your webhook URL is
+#   https://fluxer.example.com/api/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
 apprise -vv -b "Private server test" \
-  "fluxer://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV?mode=private"
+  "fluxers://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
+```
+
+Post to a private Fluxer server with a custom API path:
+
+```bash
+# Assuming your webhook URL is
+#   https://fluxer.example.com/custom/api/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+apprise -vv -b "Private server test" \
+  "fluxers://fluxer.example.com/custom/api/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
+```
+
+Post to a private Fluxer server that serves its API from the root of the hostname:
+
+```bash
+# Assuming your webhook URL is
+#   https://fluxer.example.com/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+apprise -vv -b "Private server test" \
+  "fluxers://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV?path=/"
 ```

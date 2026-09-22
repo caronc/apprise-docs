@@ -1,6 +1,6 @@
 ---
-title: "Notifications MacOS X Desktop"
-description: "Envoyer des notifications MacOS X Desktop."
+title: "Notifications de bureau macOS"
+description: "Envoyer des notifications sur le bureau macOS."
 
 group: desktop
 schemas:
@@ -21,10 +21,10 @@ limits:
 
 ## Configuration du compte
 
-Affichez des notifications directement sur votre bureau Mac OS X a condition d'utiliser la version 10.8 ou superieure et d'avoir installe [terminal-notifier](https://github.com/julienXX/terminal-notifier). Cela ne fonctionne que si vous envoyez la notification vers le systeme que vous utilisez actuellement. Cette notification ne peut donc pas etre envoyee d'un PC a un autre.
+Affichez des notifications locales avec [terminal-notifier](https://github.com/julienXX/terminal-notifier). La version `3` nécessite macOS 10.14 ou une version ultérieure, tandis que la version `2` nécessite macOS 10.10. OS X 10.8 et 10.9 exigent une version antérieure compatible. Les notifications ne peuvent pas être envoyées vers un autre ordinateur.
 
 ```bash
-# Assurez-vous que terminal-notifier est installe sur votre systeme
+# Assurez-vous que terminal-notifier est installé sur votre système
 brew install terminal-notifier
 ```
 
@@ -33,53 +33,67 @@ brew install terminal-notifier
 La syntaxe valide est la suivante :
 
 - `macosx://`
-- `macosx://{sender}`
 
-Vous pouvez aussi definir un son a jouer, par exemple `default` :
+Vous pouvez aussi définir un son à jouer, par exemple `default` :
 
 - `macosx://_/?sound=default`
 
-La valeur `sound` peut correspondre a n'importe quel nom de son liste dans les _Preferences Son_ de votre Mac OS.
+Définissez `sound` sur un nom proposé dans les _Préférences Son_ de votre Mac.
 
-Les notifications s'identifient aupres de `terminal-notifier` avec un `sender`, ce qui est necessaire pour qu'elles s'affichent sur certains systemes. Apprise choisit une valeur par defaut raisonnable, mais vous pouvez definir la votre directement dans l'URL :
-
-- `macosx://myapp/`
-
-`terminal-notifier` existe en deux versions, `2` et `3`. Apprise utilise `2` par defaut, sauf s'il detecte que vous utilisez macOS 26 (Tahoe) ou une version superieure, auquel cas `3` est utilise a la place. Vous pouvez aussi forcer une version en particulier :
+Les versions `2` et `3` de `terminal-notifier` utilisent des options légèrement différentes. Apprise détecte automatiquement la version installée. Vous pouvez la remplacer si nécessaire :
 
 - `macosx://_/?version=3`
 
-Les options `sender` et `image` ne sont prises en charge que par `terminal-notifier` en version `2` ; elles sont ignorees lorsque `version=3` est utilise.
+La version `2` utilise une valeur `sender` pour identifier les notifications. Apprise utilise son `app_id` par défaut, mais vous pouvez définir le vôtre :
 
-## Détail des Paramètres
+- `macosx://_/?sender=myapp`
 
-| Variable | Obligatoire | Description                                                                                                                                                                                                                                                                                    |
-| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sound    | Non         | La valeur `sound` peut correspondre a n'importe quel nom de son liste dans les _Preferences Son_ de votre Mac OS.                                                                                                                                                                              |
-| image    | Non         | Associe une image au message. Cette option est activee par defaut. Ne s'applique qu'a `terminal-notifier` en `version=2`.                                                                                                                                                                      |
-| sender   | Non         | Identifie votre script aupres de `terminal-notifier`. Peut etre defini directement dans l'URL (`macosx://myapp/`) ou avec `?sender=`. Par defaut, votre `app_id` Apprise est utilise (`Apprise`, sauf si vous en avez defini un autre). Ne s'applique qu'a `terminal-notifier` en `version=2`. |
-| version  | Non         | La version de `terminal-notifier` que vous avez installee : `2` ou `3`. Par defaut `2`, ou `3` si Apprise detecte que vous etes sur macOS 26 (Tahoe) ou une version superieure.                                                                                                                |
+La version `3` ne prend pas en charge `sender` et ignore donc cette option.
+
+## Dépannage
+
+Avec la version `3`, lancez cette commande si les notifications ne sont pas autorisées ou si rien ne s'affiche :
+
+```bash
+terminal-notifier -diagnose
+```
+
+Elle vérifie les autorisations, les modes de concentration, le résumé programmé et d'autres problèmes courants. La version `2` ne propose pas cette commande.
+
+:::note
+macOS ne demande l'autorisation de notification qu'une seule fois, mais une mise à niveau du système peut la réinitialiser. Cette autorisation appartient à `terminal-notifier`, et non à Apprise.
+:::
+
+## Détail des paramètres
+
+| Variable | Obligatoire | Description                                                                                                                                                                       |
+| -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sound    | Non         | Un nom proposé dans les _Préférences Son_ de votre Mac.                                                                                                                           |
+| image    | Non         | Associe une image au message. Cette option est activée par défaut. La version `2` l'utilise comme icône de notification ; la version `3` la joint au message.                     |
+| click    | Non         | Une URL à ouvrir lorsque vous cliquez sur la notification.                                                                                                                        |
+| sender   | Non         | Identifie votre script auprès de `terminal-notifier`. Utilise votre `app_id` Apprise par défaut (`Apprise`, sauf si vous l'avez modifié). S'applique uniquement à la version `2`. |
+| version  | Non         | La version de `terminal-notifier` installée : `2` ou `3`. Apprise la détecte automatiquement si vous ne la définissez pas.                                                        |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Nous pouvons nous envoyer une notification de la facon suivante :
+Nous pouvons nous envoyer une notification de la façon suivante :
 
 ```bash
-# Nous envoyer une notification de bureau MacOS
+# Nous envoyer une notification de bureau macOS
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://"
 
-# Nous envoyer une notification de bureau MacOS avec le son par defaut
+# Nous envoyer une notification de bureau macOS avec le son par défaut
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://_/?sound=default"
 
 # Nous envoyer une notification en nous identifiant comme "myapp"
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
-   "macosx://myapp/"
+   "macosx://_/?sender=myapp"
 
-# Nous envoyer une notification en forcant la version 3 de terminal-notifier
+# Nous envoyer une notification en forçant la version 3 de terminal-notifier
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "macosx://_/?version=3"
 

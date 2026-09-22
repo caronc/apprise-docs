@@ -14,6 +14,8 @@ sample_urls:
   - https://api.fluxer.app/v1/webhooks/{WebhookID}/{WebhookToken}
   - fluxer://{WebhookID}/{WebhookToken}
   - fluxer://{botname}@{WebhookID}/{WebhookToken}
+  - fluxers://{host}/{WebhookID}/{WebhookToken}
+  - fluxers://{host}/{path}/{WebhookID}/{WebhookToken}
 
 has_selfhosted: true
 has_attachments: true
@@ -26,7 +28,7 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
-## Configuration du Compte
+## Configuration du compte
 
 Fluxer utilise des webhooks pour publier des notifications.
 
@@ -34,15 +36,15 @@ Une URL de webhook ressemble à ceci :
 
 `https://api.fluxer.app/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
 
-Ce qui correspond effectivement à :
+Sa forme générale est la suivante :
 `https://api.fluxer.app/webhooks/{WebhookID}/{WebhookToken}`
 
-La dernière partie de l'URL qui vous est fournie constitue les 2 jetons nécessaires pour envoyer des notifications. Pour l'exemple ci-dessus, les jetons sont les suivants :
+Les deux dernières parties sont les jetons nécessaires pour envoyer des notifications :
 
 1. **WebhookID** est `417429632418316298`
 2. **WebhookToken** est `JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV`
 
-### Mentionner des Rôles, Tags et Utilisateurs
+### Mentionner des rôles, tags et utilisateurs
 
 Fluxer prend en charge les mentions de style Discord. Vous pouvez les placer directement dans le corps du message :
 
@@ -61,7 +63,7 @@ La syntaxe valide est la suivante :
 - `fluxer://{WebhookID}/{WebhookToken}/`
 - `fluxer://{botname}@{WebhookID}/{WebhookToken}/`
 
-### Mode Serveur Privé
+### Mode serveur privé
 
 Fluxer peut être utilisé dans deux modes :
 
@@ -75,7 +77,29 @@ Lorsque `mode=private` est utilisé, un hôte est requis :
 
 Si `mode=private` est sélectionné mais que l'hôte contient `fluxer.app`, Apprise repassera automatiquement en `mode=cloud`.
 
-## Détail des Paramètres
+#### Chemins d'API auto-hébergés
+
+L'installation auto-hébergée officielle expose son API sous `/api`. Apprise utilise ce chemin par défaut :
+
+- `fluxers://{host}/{WebhookID}/{WebhookToken}`
+- `fluxers://{host}:{port}/{WebhookID}/{WebhookToken}`
+
+Si votre API utilise un autre chemin, placez-le avant les détails du webhook :
+
+- `fluxers://{host}/{path}/{WebhookID}/{WebhookToken}`
+- `fluxers://{host}:{port}/{path}/{WebhookID}/{WebhookToken}`
+
+Par exemple, `/custom/api/webhooks/...` devient `fluxers://{host}/custom/api/{WebhookID}/{WebhookToken}`.
+
+:::note
+Utilisez `path=/` lorsque l'API est exposée à la racine de l'hôte, par exemple pour joindre directement son conteneur.
+:::
+
+:::caution
+Les chemins ne s'appliquent qu'aux serveurs auto-hébergés. Le mode cloud utilise toujours `https://api.fluxer.app` et les ignore.
+:::
+
+## Détail des paramètres
 
 | Variable     | Requis | Description                                                                                                                                            |
 | ------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -84,6 +108,7 @@ Si `mode=private` est sélectionné mais que l'hôte contient `fluxer.app`, Appr
 | botname      | Non    | Indique le nom du robot qui doit émettre le message                                                                                                    |
 | host         | Non    | Nom d'hôte de votre serveur Fluxer privé (utilisé avec `mode=private`)                                                                                 |
 | port         | Non    | Port de votre serveur Fluxer privé (utilisé avec `mode=private`)                                                                                       |
+| path         | Non    | Chemin de l'API d'un serveur Fluxer privé (`/api` par défaut ; utilisez `/` pour la racine de l'hôte)                                                  |
 | mode         | Non    | L'une des valeurs suivantes : `cloud` (par défaut) ou `private`                                                                                        |
 | tts          | Non    | Activer la synthèse vocale (Text-To-Speech) (par défaut **Non**)                                                                                       |
 | avatar       | Non    | Remplacer l'icône d'avatar par défaut par une icône identifiant le type de notification (par défaut **Oui**)                                           |
@@ -105,8 +130,8 @@ Si `mode=private` est sélectionné mais que l'hôte contient `fluxer.app`, Appr
 Envoyer une notification Fluxer :
 
 ```bash
-# Assuming our {WebhookID} is 417429632418316298
-# Assuming our {WebhookToken} is JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+# En supposant que {WebhookID} soit 417429632418316298
+# En supposant que {WebhookToken} soit JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "fluxer://417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
 ```
@@ -114,24 +139,24 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 Envoyer une notification en utilisant le formatage markdown vers intégration :
 
 ```bash
-# Assuming our {WebhookID} is 417429632418316298
-# Assuming our {WebhookToken} is JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+# En supposant que {WebhookID} soit 417429632418316298
+# En supposant que {WebhookToken} soit JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
 cat << _EOF | apprise -vv \
   "fluxer://417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV?format=markdown"
-# Title
+# Titre
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- Élément 1
+- Élément 2
+- Élément 3
 _EOF
 ```
 
 Envoyer une pièce jointe :
 
 ```bash
-# Assuming our {WebhookID} is 417429632418316298
-# Assuming our {WebhookToken} is JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o3dV_js
-apprise -vv -b "Here is a file" \
+# En supposant que {WebhookID} soit 417429632418316298
+# En supposant que {WebhookToken} soit JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o3dV_js
+apprise -vv -b "Voici un fichier" \
   --attach=/path/to/file.png \
   "fluxer://417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
 ```
@@ -139,9 +164,26 @@ apprise -vv -b "Here is a file" \
 Publier vers un serveur Fluxer privé :
 
 ```bash
-# Assuming your private server is https://fluxer.example.com
-# Assuming our {WebhookID} is 417429632418316298
-# Assuming our {WebhookToken} is JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
-apprise -vv -b "Private server test" \
-  "fluxer://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV?mode=private"
+# En supposant que l'URL de votre webhook soit :
+#   https://fluxer.example.com/api/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+apprise -vv -b "Test du serveur privé" \
+  "fluxers://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
+```
+
+Publier vers un serveur Fluxer privé avec un chemin d'API personnalisé :
+
+```bash
+# En supposant que l'URL de votre webhook soit :
+#   https://fluxer.example.com/custom/api/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+apprise -vv -b "Test du serveur privé" \
+  "fluxers://fluxer.example.com/custom/api/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV"
+```
+
+Publier vers un serveur Fluxer privé qui expose son API à la racine du nom d'hôte :
+
+```bash
+# En supposant que l'URL de votre webhook soit :
+#   https://fluxer.example.com/webhooks/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV
+apprise -vv -b "Test du serveur privé" \
+  "fluxers://fluxer.example.com/417429632418316298/JHZ7lQml277CDHmQKMHI8qBe7bk2ZwO5UKjCiOAF7711o33MyqU344Qpgv7YTpadV?path=/"
 ```
