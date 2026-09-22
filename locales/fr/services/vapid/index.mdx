@@ -124,6 +124,8 @@ Idéal lorsque vous exécutez Apprise vous-même et que vous avez accès au syst
 
 Omettez complètement `subfile` et `keyfile` de l'URL. Apprise attribue à chaque URL son propre répertoire et y cherche les fichiers. Il peut créer une paire de clés, mais les navigateurs doivent s'abonner avec sa clé publique : créez ou repérez donc la clé avant de collecter les abonnements.
 
+Lorsque la génération automatique des clés PEM est activée (par défaut), Apprise crée tout fichier `subscriptions.json` manquant avec une entrée d'exemple. Remplacez cet espace réservé par votre propre abonnement avant d'envoyer des notifications.
+
 1. Trouvez le répertoire de votre URL :
 
    ```bash

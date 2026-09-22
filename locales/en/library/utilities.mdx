@@ -34,6 +34,7 @@ from apprise.utils.parse import (
     is_email,
     is_hostname,
     is_ipaddr,
+    is_secure_url,
     is_phone_no,
     is_uuid,
     validate_regex,
@@ -92,20 +93,20 @@ qsd = results.get("qsd", {})  # query-string dictionary
 
 #### Key Arguments
 
-- `verify_host`  
+- `verify_host`
   When `True`, `parse_url()` validates the host and returns `None` if it is
   missing or invalid. This is a good default for network targets.
   When `False`, host validation is relaxed, which is useful for plugins that
   treat the host as an identifier or do not require a host.
 
-- `default_schema`  
+- `default_schema`
   Used when a user omits the `schema://` portion.
 
-- `simple`  
+- `simple`
   When `True`, returns a smaller result structure. Most plugins should use the
   default `simple=False`.
 
-- `plus_to_space`  
+- `plus_to_space`
   Controls whether `+` in the query string becomes a space. Apprise defaults
   this to `False` because `+` is common in tokens and passwords.
 
@@ -314,20 +315,28 @@ A practical pattern mirrors phone and email handling:
 These helpers are frequently used by plugins to validate inputs early and
 produce clear error messages.
 
-- `is_hostname(hostname, ipv4=True, ipv6=True, underscore=True)`  
+- `is_hostname(hostname, ipv4=True, ipv6=True, underscore=True)`
   Validates hostnames and optionally IP addresses. It supports underscores when
   `underscore=True` to accommodate practical Docker and local naming
   conventions.
 
-- `is_ipaddr(addr, ipv4=True, ipv6=True)`  
+- `is_ipaddr(addr, ipv4=True, ipv6=True)`
   Validates IPv4 and IPv6. For IPv6, it returns the address enclosed in
   brackets (`[addr]`) to align with URL formatting expectations.
 
-- `is_uuid(value)`  
+- `is_secure_url(url)`
+  Validates a URL that was handed to a plugin by a remote server, such as a
+  service discovery record or a `.well-known` file. It returns `True` only when
+  the URL uses HTTPS, names a valid host, carries no username, password, or
+  non-empty fragment, and has a usable port. Private and loopback addresses
+  stay valid so self-hosted services keep working.
+
+- `is_uuid(value)`
   Validates UUID strings.
 
-These helpers return `False` when invalid. When valid, they return a normalized
-string (not a boolean).
+Apart from `is_secure_url()`, which answers `True` or `False`, these helpers
+return `False` when invalid and a normalized string (not a boolean) when
+valid.
 
 ## Regex Validation
 

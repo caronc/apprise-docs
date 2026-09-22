@@ -35,6 +35,7 @@ from apprise.utils.parse import (
     is_email,
     is_hostname,
     is_ipaddr,
+    is_secure_url,
     is_phone_no,
     is_uuid,
     validate_regex,
@@ -340,11 +341,21 @@ et produire des messages d'erreur clairs.
   Valide IPv4 et IPv6. Pour IPv6, la fonction renvoie l'adresse entourée de
   crochets (`[addr]`) afin de respecter les attentes de format d'URL.
 
+- `is_secure_url(url)`
+  Valide une URL transmise à un plugin par un serveur distant, par exemple un
+  enregistrement de découverte de service ou un fichier `.well-known`. La
+  fonction renvoie `True` uniquement si l'URL utilise HTTPS, désigne un hôte
+  valide, ne contient ni nom d'utilisateur, ni mot de passe, ni fragment non
+  vide, et possède un port utilisable. Les adresses privées et de bouclage
+  restent valides afin que les services auto-hébergés continuent de
+  fonctionner.
+
 - `is_uuid(value)`
   Valide des chaînes UUID.
 
-Ces helpers renvoient `False` lorsqu'une valeur est invalide. Sinon, ils
-renvoient une chaîne normalisée.
+À l'exception de `is_secure_url()`, qui répond `True` ou `False`, ces helpers
+renvoient `False` lorsqu'une valeur est invalide et une chaîne normalisée
+(et non un booléen) lorsqu'elle est valide.
 
 ## Validation par regex
 

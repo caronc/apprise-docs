@@ -123,6 +123,8 @@ Best when you run Apprise yourself and can reach the filesystem.
 
 Leave `subfile` and `keyfile` off the URL entirely. Apprise gives every URL its own storage directory and looks for the files there. It can generate a key pair, but browsers must subscribe with that pair's public key, so create or locate the key before collecting subscriptions.
 
+With automatic PEM generation enabled (the default), Apprise creates a missing `subscriptions.json` with one example entry. Replace that placeholder with your own subscription before sending notifications.
+
 1. Find the directory for your URL:
 
    ```bash
