@@ -161,7 +161,11 @@ YAML sub-keys follow a strict three-level priority — the highest level wins wh
 2. **URL query-string parameters** (e.g. `?smtp=...`, `?user=abc`) — override URL-path values.
 3. **URL-path values** (lowest) — the `user`, `password`, `host`, and `port` parsed from the URL itself (e.g. `user:pass@host:port`).
 
-Every common URL component — `user`, `password`, `host`, `port`, and `verify` — as well as every service-specific parameter from a plugin's `## Parameter Breakdown` table can be supplied as a sub-key.
+Common URL components such as `user`, `password`, `host`, `port`, and `verify` can be supplied as sub-keys. The same applies to service-specific parameters from the plugin's `## Parameter Breakdown` table, including named URL parts such as Discord's `botname:`.
+
+:::note
+Some shortcuts represent several URL values. For example, Slack's `token:` can represent either a bot token or three webhook tokens. Keep these shortcuts in the URL; when used as sub-keys, they are ignored and a warning is logged.
+:::
 
 The [email service](/services/email/) above is one example. The XMPP example below places credentials and options under the URL too. Its `host:` setting replaces the host in the URL:
 

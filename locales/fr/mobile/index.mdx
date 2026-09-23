@@ -12,7 +12,7 @@ import "~/styles/mobile.css";
 <div class="mobile-page">
   <section class="mobile-hero">
     <div class="mobile-hero-copy">
-      <span class="mobile-beta-label">Bêta Android</span>
+      <span class="mobile-app-label">Application Android</span>
       <h2>Vos notifications, où que vous soyez</h2>
       <p>
         Envoyez un message ou une photo que vous venez de prendre vers une destination, un groupe
@@ -23,11 +23,25 @@ import "~/styles/mobile.css";
         Nécessite un <a href="../api/deployment/">serveur API Apprise</a> en cours d'exécution —
         Apprise Mobile est un client pour votre serveur, pas un service de notification à lui seul.
       </p>
+      <a
+        class="mobile-get-link mobile-get-link-primary"
+        href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Disponible sur Google Play
+      </a>
     </div>
 
-    <div class="mobile-play-mark">
+    <a
+      class="mobile-play-mark"
+      href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Obtenir Apprise Mobile sur Google Play"
+    >
       <img src="/assets/google-play.svg" alt="Google Play" width="97" height="96" />
-    </div>
+    </a>
 
   </section>
 
@@ -60,79 +74,6 @@ import "~/styles/mobile.css";
     </li>
   </ul>
 </section>
-
-<section class="mobile-beta-intro">
-  <h2>Aidez-Nous à Tester l'Application</h2>
-  <p>
-    Apprise Mobile est proposée en test fermé sur Google Play avant sa sortie
-    publique. Nous avons besoin d'au moins 12 testeurs inscrits sans
-    interruption pendant 14 jours. En rejoignant la bêta et en essayant
-    l'application, vous nous aidez à atteindre cet objectif et à améliorer
-    l'expérience de tous.
-  </p>
-  <p>
-    <strong>Utilisez le même compte Google pour les trois étapes.</strong>
-  </p>
-  <div class="mobile-beta-order">
-    Suivez les étapes dans l'ordre. La fiche Google Play reste inaccessible tant
-    que vous n'avez pas rejoint le groupe et que Google n'a pas reconnu votre
-    compte comme celui d'un testeur.
-  </div>
-</section>
-
-<div class="mobile-beta-steps" role="list">
-  <article role="listitem">
-    <div>
-      <h2>Rejoignez le Groupe Google</h2>
-      <div class="mobile-step-copy">
-        Votre inscription au groupe ajoute votre compte Google à la liste des
-        testeurs autorisés.
-      </div>
-      <a
-        class="mobile-step-link"
-        href="https://groups.google.com/g/apprise-testers/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Rejoindre Apprise Testers
-      </a>
-    </div>
-  </article>
-  <article role="listitem">
-    <div>
-      <h2>Devenez Testeur</h2>
-      <div class="mobile-step-copy">
-        Ouvrez la page d'inscription et sélectionnez{" "}
-        <strong>Become a tester</strong>.
-      </div>
-      <a
-        class="mobile-step-link"
-        href="https://play.google.com/apps/testing/com.appriseit.mobile"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Ouvrir la page d'inscription
-      </a>
-    </div>
-  </article>
-  <article role="listitem">
-    <div>
-      <h2>Installez Apprise Mobile</h2>
-      <div class="mobile-step-copy">
-        Après la confirmation de votre statut de testeur, ouvrez la fiche et
-        installez l'application.
-      </div>
-      <a
-        class="mobile-step-link mobile-step-link-primary"
-        href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Ouvrir Google Play
-      </a>
-    </div>
-  </article>
-</div>
 
   <section class="mobile-preview">
     <h2>Tout au même endroit</h2>
@@ -175,6 +116,27 @@ import "~/styles/mobile.css";
     </div>
 
   </section>
+
+<section class="mobile-get">
+  <h2>Obtenir Apprise Mobile</h2>
+  <p>
+    Installez l'application depuis Google Play, scannez le code QR dans
+    l'interface Web de votre API Apprise et commencez à envoyer. Google Play
+    installe automatiquement les mises à jour.
+  </p>
+  <a
+    class="mobile-get-link mobile-get-link-primary"
+    href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Disponible sur Google Play
+  </a>
+  <p class="mobile-get-note">
+    La version publique est en cours de déploiement sur Google Play. Si la fiche
+    n'est pas encore accessible, revenez bientôt.
+  </p>
+</section>
 
 <nav class="mobile-legal" aria-label="Documents juridiques d'Apprise Mobile">
   <a href="./privacy/">Politique de confidentialité</a>

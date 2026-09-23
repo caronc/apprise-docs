@@ -161,7 +161,11 @@ Les sous-clés YAML suivent une priorité à trois niveaux — le niveau le plus
 2. **Paramètres de requête de l'URL** (ex. `?smtp=...`, `?user=abc`) — remplacent les valeurs du chemin d'URL.
 3. **Valeurs du chemin d'URL** (le plus bas) — `user`, `password`, `host` et `port` extraits de l'URL elle-même (ex. `user:pass@host:port`).
 
-Tous les composants courants d'une URL — `user`, `password`, `host`, `port` et `verify` — ainsi que chaque paramètre propre au service figurant dans le tableau `## Détail des Paramètres` du plugin peuvent être fournis en tant que sous-clés.
+Les composants courants d'une URL, comme `user`, `password`, `host`, `port` et `verify`, peuvent être fournis comme sous-clés. Il en va de même pour les paramètres propres au service qui figurent dans le tableau `## Détail des Paramètres` du plugin, y compris les éléments nommés de l'URL comme le `botname:` de Discord.
+
+:::note
+Certains raccourcis représentent plusieurs valeurs d'URL. Par exemple, le `token:` de Slack peut représenter un jeton de bot ou trois jetons de webhook. Conservez ces raccourcis dans l'URL ; utilisés comme sous-clés, ils sont ignorés et un avertissement est consigné dans le journal.
+:::
 
 Le [service Email](/services/email/) ci-dessus en est un exemple. Dans l'exemple XMPP suivant, les identifiants et options sont aussi placés sous l'URL. Le réglage `host:` remplace l'hôte indiqué dans l'URL :
 

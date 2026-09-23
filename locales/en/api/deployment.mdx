@@ -50,7 +50,6 @@ docker run --name apprise \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
-  -e APPRISE_ADMIN=y \
   -e APPRISE_DEFAULT_FORMAT=text \
   -d caronc/apprise:latest
 ```
@@ -64,7 +63,6 @@ docker run --name apprise \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
-  -e APPRISE_ADMIN=y \
   -e APPRISE_DEFAULT_FORMAT=text \
   --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
   --health-interval=30s \
@@ -84,7 +82,6 @@ docker run --name apprise-auth \
   -v ./config:/config \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
-  -e APPRISE_ADMIN=yes \
   -e APPRISE_AUTH_REQUIRED=yes \
   -e APPRISE_USER=admin \
   -e APPRISE_PASSWORD=changeme \
@@ -95,8 +92,8 @@ docker run --name apprise-auth \
 ```
 
 Open `http://127.0.0.1:8000/cfg` and sign in as `admin` with password
-`changeme`. The list works because stateful storage is in `simple` mode and
-`APPRISE_ADMIN=yes`.
+`changeme`. The list works because stateful storage is in `simple` mode; the
+configuration list is shown by default.
 
 :::caution
 `admin` / `changeme` is only for a local example. Choose your own strong
@@ -118,7 +115,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
@@ -137,7 +133,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
@@ -174,7 +169,6 @@ services:
       - .env
     environment:
       APPRISE_STATEFUL_MODE: simple
-      APPRISE_ADMIN: "yes"
       APPRISE_AUTH_REQUIRED: "yes"
       APPRISE_USER: admin
       APPRISE_WORKER_COUNT: 1
@@ -217,7 +211,6 @@ web_secret="$(openssl rand -hex 32)"
 cat > apprise/apprise.env <<EOF
 STRICT_MODE=yes
 APPRISE_STATEFUL_MODE=simple
-APPRISE_ADMIN=yes
 APPRISE_WORKER_COUNT=1
 APPRISE_AUTH_REQUIRED=yes
 APPRISE_WEB_AUTH_SECRET=${web_secret}
@@ -410,8 +403,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: 1
-            - name: APPRISE_ADMIN
-              value: y
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
 ```
@@ -443,8 +434,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: 1
-            - name: APPRISE_ADMIN
-              value: y
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
 
@@ -738,8 +727,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: "1"
-            - name: APPRISE_ADMIN
-              value: "y"
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
           ports:
@@ -815,8 +802,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: "1"
-            - name: APPRISE_ADMIN
-              value: "y"
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
           ports:
@@ -923,7 +908,6 @@ Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
 Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
 Environment=APPRISE_STATEFUL_MODE=simple
 Environment=APPRISE_WORKER_COUNT=1
-Environment=APPRISE_ADMIN=y
 Environment=APPRISE_DEFAULT_FORMAT=text
 Environment=TZ=Etc/UTC
 ExecStart=/opt/apprise-api/venv/bin/gunicorn \
@@ -947,8 +931,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
 ```
 
-`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
-`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
+and lets the configuration manager list your saved keys. One Gunicorn worker
 keeps resource use modest for a home or small-team installation.
 
 **Create `/etc/nginx/sites-available/appriseapi`** to serve static files and
@@ -1053,7 +1037,6 @@ Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
 Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
 Environment=APPRISE_STATEFUL_MODE=simple
 Environment=APPRISE_WORKER_COUNT=1
-Environment=APPRISE_ADMIN=y
 Environment=APPRISE_DEFAULT_FORMAT=text
 Environment=TZ=Etc/UTC
 ExecStart=/opt/apprise-api/venv/bin/gunicorn \
@@ -1077,8 +1060,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
 ```
 
-`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
-`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
+and lets the configuration manager list your saved keys. One Gunicorn worker
 keeps resource use modest for a home or small-team installation.
 
 **Copy the static files into Nginx's document tree:**
@@ -1208,7 +1191,7 @@ load_rc_config $name
 
 pidfile=${apprise_pidfile}
 command="/usr/sbin/daemon"
-command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_ADMIN=y APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
+command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
 
 run_rc_command "$1"
 ```
@@ -1221,8 +1204,8 @@ sudo sysrc apprise_enable=YES
 sudo service apprise start
 ```
 
-`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file.
-`APPRISE_ADMIN=y` displays the configuration manager, and one Gunicorn worker
+`APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
+and lets the configuration manager list your saved keys. One Gunicorn worker
 keeps resource use modest for a home or small-team installation. The `-P`
 option records the supervising `daemon` process, allowing `service apprise
 stop` to stop the service instead of immediately restarting Gunicorn.
@@ -1317,15 +1300,15 @@ For most deployments, mounting **only `/config` and `/attach`** is sufficient.
 
 Persistent features follow the server mode, configuration lock, and current login:
 
-| State                                      | Configuration List                                                         | Move / Delete                          | Configuration Login           | Configuration Content                  |
-| :----------------------------------------- | :------------------------------------------------------------------------- | :------------------------------------- | :---------------------------- | :------------------------------------- |
-| Stateful mode disabled                     | Unavailable                                                                | Unavailable                            | Unavailable                   | Unavailable                            |
-| Authentication off, configuration unlocked | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed                                | Unavailable                   | Available                              |
-| Authentication off, configuration locked   | Hidden and denied                                                          | Denied                                 | Unavailable                   | Hidden; saved notifications still work |
-| Configuration user, unlocked               | Denied                                                                     | May move their ID or clear its content | May update their own password | Available for their ID                 |
-| Configuration user, locked                 | Denied                                                                     | Denied                                 | May update their own password | Hidden; saved notifications still work |
-| Administrator, unlocked                    | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
-| Administrator, locked                      | Available only with `APPRISE_ADMIN=yes` and `APPRISE_STATEFUL_MODE=simple` | Allowed for any ID                     | May manage any login          | Available                              |
+| State                                      | Configuration List                                                      | Move / Delete                          | Configuration Login           | Configuration Content                  |
+| :----------------------------------------- | :---------------------------------------------------------------------- | :------------------------------------- | :---------------------------- | :------------------------------------- |
+| Stateful mode disabled                     | Unavailable                                                             | Unavailable                            | Unavailable                   | Unavailable                            |
+| Authentication off, configuration unlocked | Available with `APPRISE_STATEFUL_MODE=simple` unless `APPRISE_ADMIN=no` | Allowed                                | Unavailable                   | Available                              |
+| Authentication off, configuration locked   | Hidden and denied                                                       | Denied                                 | Unavailable                   | Hidden; saved notifications still work |
+| Configuration user, unlocked               | Denied                                                                  | May move their ID or clear its content | May update their own password | Available for their ID                 |
+| Configuration user, locked                 | Denied                                                                  | Denied                                 | May update their own password | Hidden; saved notifications still work |
+| Administrator, unlocked                    | Available with `APPRISE_STATEFUL_MODE=simple` unless `APPRISE_ADMIN=no` | Allowed for any ID                     | May manage any login          | Available                              |
+| Administrator, locked                      | Available with `APPRISE_STATEFUL_MODE=simple` unless `APPRISE_ADMIN=no` | Allowed for any ID                     | May manage any login          | Available                              |
 
 When configuration content is locked, the Web notification form asks for at least one tag because it cannot display the saved destinations.
 
@@ -1362,7 +1345,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
 
     volumes:

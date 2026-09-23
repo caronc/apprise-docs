@@ -34,11 +34,13 @@ from apprise.utils.parse import (
     is_email,
     is_hostname,
     is_ipaddr,
-    is_secure_url,
     is_phone_no,
     is_uuid,
     validate_regex,
 )
+
+# HTTP request validation
+from apprise.utils.http import is_secure_http_url
 
 # Safer debug logging
 from apprise.utils.sanitize import sanitize_payload
@@ -324,19 +326,18 @@ produce clear error messages.
   Validates IPv4 and IPv6. For IPv6, it returns the address enclosed in
   brackets (`[addr]`) to align with URL formatting expectations.
 
-- `is_secure_url(url)`
-  Validates a URL that was handed to a plugin by a remote server, such as a
-  service discovery record or a `.well-known` file. It returns `True` only when
-  the URL uses HTTPS, names a valid host, carries no username, password, or
-  non-empty fragment, and has a usable port. Private and loopback addresses
-  stay valid so self-hosted services keep working.
+- `is_secure_http_url(url)`
+  Checks a URL received from a remote server, such as through service discovery
+  or a `.well-known` file. It returns `True` only for HTTPS URLs with a valid
+  host and port, and without a username, password, or fragment. Private and
+  loopback addresses remain valid for self-hosted services.
 
 - `is_uuid(value)`
   Validates UUID strings.
 
-Apart from `is_secure_url()`, which answers `True` or `False`, these helpers
-return `False` when invalid and a normalized string (not a boolean) when
-valid.
+Apart from `is_secure_http_url()`, which returns `True` or `False`, these
+helpers return `False` for invalid input and a normalized string for valid
+input.
 
 ## Regex Validation
 

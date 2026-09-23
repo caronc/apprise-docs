@@ -12,7 +12,7 @@ import "~/styles/mobile.css";
 <div class="mobile-page">
   <section class="mobile-hero">
     <div class="mobile-hero-copy">
-      <span class="mobile-beta-label">Android Beta</span>
+      <span class="mobile-app-label">Android App</span>
       <h2>Your Notifications, Wherever You Are</h2>
       <p>
         Send a message or a photo you just took to one destination, a group, or every destination
@@ -23,11 +23,25 @@ import "~/styles/mobile.css";
         Requires a running <a href="/api/deployment/">Apprise API server</a> — Apprise Mobile is a
         client for your server, not a notification service on its own.
       </p>
+      <a
+        class="mobile-get-link mobile-get-link-primary"
+        href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Get It on Google Play
+      </a>
     </div>
 
-    <div class="mobile-play-mark">
+    <a
+      class="mobile-play-mark"
+      href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Get Apprise Mobile on Google Play"
+    >
       <img src="/assets/google-play.svg" alt="Google Play" width="97" height="96" />
-    </div>
+    </a>
 
   </section>
 
@@ -56,75 +70,6 @@ import "~/styles/mobile.css";
     </li>
   </ul>
 </section>
-
-<section class="mobile-beta-intro">
-  <h2>Help Test the App</h2>
-  <p>
-    Apprise Mobile is in a closed Google Play test before its public release. We
-    need at least 12 testers to remain enrolled for 14 continuous days. Joining
-    the beta and trying the app helps us reach that goal and improve the
-    experience for everyone.
-  </p>
-  <p>
-    <strong>Use the same Google account for all three steps.</strong>
-  </p>
-  <div class="mobile-beta-order">
-    Complete each step in order. The Google Play listing is unavailable until
-    you have joined the group and Google recognizes your account as a tester.
-  </div>
-</section>
-
-<div class="mobile-beta-steps" role="list">
-  <article role="listitem">
-    <div>
-      <h2>Join the Google Group</h2>
-      <div class="mobile-step-copy">
-        Joining the group adds your Google account to the approved tester list.
-      </div>
-      <a
-        class="mobile-step-link"
-        href="https://groups.google.com/g/apprise-testers/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Join Apprise Testers
-      </a>
-    </div>
-  </article>
-  <article role="listitem">
-    <div>
-      <h2>Become a Tester</h2>
-      <div class="mobile-step-copy">
-        Open the opt-in page and select <strong>Become a tester</strong>.
-      </div>
-      <a
-        class="mobile-step-link"
-        href="https://play.google.com/apps/testing/com.appriseit.mobile"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Open the Opt-In Page
-      </a>
-    </div>
-  </article>
-  <article role="listitem">
-    <div>
-      <h2>Install Apprise Mobile</h2>
-      <div class="mobile-step-copy">
-        After Google confirms that you are a tester, open the listing and
-        install the app.
-      </div>
-      <a
-        class="mobile-step-link mobile-step-link-primary"
-        href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Open Google Play
-      </a>
-    </div>
-  </article>
-</div>
 
   <section class="mobile-preview">
     <h2>Everything in One Place</h2>
@@ -166,6 +111,26 @@ import "~/styles/mobile.css";
     </div>
 
   </section>
+
+<section class="mobile-get">
+  <h2>Get Apprise Mobile</h2>
+  <p>
+    Install the app from Google Play, scan the QR code in the Apprise API Web
+    interface, and start sending. Google Play installs updates automatically.
+  </p>
+  <a
+    class="mobile-get-link mobile-get-link-primary"
+    href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Get It on Google Play
+  </a>
+  <p class="mobile-get-note">
+    The public release is rolling out on Google Play. If the listing is not
+    available to you yet, check back soon.
+  </p>
+</section>
 
 <nav class="mobile-legal" aria-label="Apprise Mobile legal documents">
   <a href="./privacy/">Privacy Policy</a>

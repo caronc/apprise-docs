@@ -51,7 +51,6 @@ docker run --name apprise \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
-  -e APPRISE_ADMIN=y \
   -e APPRISE_DEFAULT_FORMAT=text \
   -d caronc/apprise:latest
 ```
@@ -65,7 +64,6 @@ docker run --name apprise \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
   -e APPRISE_WORKER_COUNT=1 \
-  -e APPRISE_ADMIN=y \
   -e APPRISE_DEFAULT_FORMAT=text \
   --health-cmd='curl -fsS http://127.0.0.1:8000/status >/dev/null || exit 1' \
   --health-interval=30s \
@@ -85,7 +83,6 @@ docker run --name apprise-auth \
   -v ./config:/config \
   -v ./attach:/attach \
   -e APPRISE_STATEFUL_MODE=simple \
-  -e APPRISE_ADMIN=yes \
   -e APPRISE_AUTH_REQUIRED=yes \
   -e APPRISE_USER=admin \
   -e APPRISE_PASSWORD=changeme \
@@ -96,8 +93,8 @@ docker run --name apprise-auth \
 ```
 
 Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous avec `admin` et le mot de
-passe `changeme`. La liste fonctionne grâce au mode `simple` et à
-`APPRISE_ADMIN=yes`.
+passe `changeme`. La liste fonctionne grâce au mode `simple` ; la liste des
+configurations est affichée par défaut.
 
 :::caution
 `admin` / `changeme` ne sert qu'à cet exemple local. Choisissez un mot de passe
@@ -129,7 +126,6 @@ web_secret="$(openssl rand -hex 32)"
 cat > apprise/apprise.env <<EOF
 STRICT_MODE=yes
 APPRISE_STATEFUL_MODE=simple
-APPRISE_ADMIN=yes
 APPRISE_WORKER_COUNT=1
 APPRISE_AUTH_REQUIRED=yes
 APPRISE_WEB_AUTH_SECRET=${web_secret}
@@ -308,7 +304,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
@@ -327,7 +322,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
     volumes:
       - ./config:/config
@@ -365,7 +359,6 @@ services:
       - .env
     environment:
       APPRISE_STATEFUL_MODE: simple
-      APPRISE_ADMIN: "yes"
       APPRISE_AUTH_REQUIRED: "yes"
       APPRISE_USER: admin
       APPRISE_WORKER_COUNT: 1
@@ -416,8 +409,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: 1
-            - name: APPRISE_ADMIN
-              value: y
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
 ```
@@ -449,8 +440,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: 1
-            - name: APPRISE_ADMIN
-              value: y
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
 
@@ -744,8 +733,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: "1"
-            - name: APPRISE_ADMIN
-              value: "y"
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
           ports:
@@ -821,8 +808,6 @@ spec:
               value: simple
             - name: APPRISE_WORKER_COUNT
               value: "1"
-            - name: APPRISE_ADMIN
-              value: "y"
             - name: APPRISE_DEFAULT_FORMAT
               value: "text"
           ports:
@@ -930,7 +915,6 @@ Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
 Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
 Environment=APPRISE_STATEFUL_MODE=simple
 Environment=APPRISE_WORKER_COUNT=1
-Environment=APPRISE_ADMIN=y
 Environment=APPRISE_DEFAULT_FORMAT=text
 Environment=TZ=Etc/UTC
 ExecStart=/opt/apprise-api/venv/bin/gunicorn \
@@ -955,9 +939,9 @@ sudo systemctl enable --now apprise
 ```
 
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
-processus Gunicorn limite l'utilisation des ressources pour un usage personnel
-ou une petite équipe.
+lisible et permet au gestionnaire de configurations d'afficher vos clés
+enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
+pour un usage personnel ou une petite équipe.
 
 **Créez `/etc/nginx/sites-available/appriseapi`** pour servir les fichiers
 statiques et transmettre le reste à Gunicorn :
@@ -1061,7 +1045,6 @@ Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
 Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
 Environment=APPRISE_STATEFUL_MODE=simple
 Environment=APPRISE_WORKER_COUNT=1
-Environment=APPRISE_ADMIN=y
 Environment=APPRISE_DEFAULT_FORMAT=text
 Environment=TZ=Etc/UTC
 ExecStart=/opt/apprise-api/venv/bin/gunicorn \
@@ -1086,9 +1069,9 @@ sudo systemctl enable --now apprise
 ```
 
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
-processus Gunicorn limite l'utilisation des ressources pour un usage personnel
-ou une petite équipe.
+lisible et permet au gestionnaire de configurations d'afficher vos clés
+enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
+pour un usage personnel ou une petite équipe.
 
 **Copiez les fichiers statiques dans l'arborescence web de Nginx :**
 
@@ -1220,7 +1203,7 @@ load_rc_config $name
 
 pidfile=${apprise_pidfile}
 command="/usr/sbin/daemon"
-command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_ADMIN=y APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
+command_args="-f -r -P ${pidfile} -o ${apprise_logfile} -u ${apprise_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_venv}/bin/gunicorn --no-control-socket --workers 1 --worker-class gevent --timeout 300 --bind 127.0.0.1:8000 --chdir ${apprise_dir}/apprise_api core.wsgi:application"
 
 run_rc_command "$1"
 ```
@@ -1234,9 +1217,9 @@ sudo service apprise start
 ```
 
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible. `APPRISE_ADMIN=y` affiche le gestionnaire de configurations et un seul
-processus Gunicorn limite l'utilisation des ressources pour un usage personnel
-ou une petite équipe. L'option `-P` enregistre le processus superviseur de
+lisible et permet au gestionnaire de configurations d'afficher vos clés
+enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
+pour un usage personnel ou une petite équipe. L'option `-P` enregistre le processus superviseur de
 `daemon` ; `service apprise stop` peut ainsi arrêter le service sans que Gunicorn
 soit aussitôt redémarré.
 
@@ -1330,15 +1313,15 @@ Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** 
 
 Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la configuration et de la connexion actuelle :
 
-| État                                                     | Liste des Configurations                                                         | Déplacement / Suppression                              | Connexion de Configuration            | Contenu de Configuration                                      |
-| :------------------------------------------------------- | :------------------------------------------------------------------------------- | :----------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------ |
-| Mode avec état désactivé                                 | Indisponible                                                                     | Indisponible                                           | Indisponible                          | Indisponible                                                  |
-| Authentification désactivée, configuration déverrouillée | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé                                               | Indisponible                          | Disponible                                                    |
-| Authentification désactivée, configuration verrouillée   | Masquée et refusée                                                               | Refusé                                                 | Indisponible                          | Masqué ; les notifications enregistrées fonctionnent toujours |
-| Utilisateur de configuration, déverrouillée              | Refusée                                                                          | Peut déplacer son propre ID ; ne peut pas le supprimer | Peut modifier son propre mot de passe | Disponible pour son ID                                        |
-| Utilisateur de configuration, verrouillée                | Refusée                                                                          | Refusé                                                 | Peut modifier son propre mot de passe | Masqué ; les notifications enregistrées fonctionnent toujours |
-| Administrateur, déverrouillée                            | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
-| Administrateur, verrouillée                              | Disponible uniquement avec `APPRISE_ADMIN=yes` et `APPRISE_STATEFUL_MODE=simple` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+| État                                                     | Liste des Configurations                                                   | Déplacement / Suppression                              | Connexion de Configuration            | Contenu de Configuration                                      |
+| :------------------------------------------------------- | :------------------------------------------------------------------------- | :----------------------------------------------------- | :------------------------------------ | :------------------------------------------------------------ |
+| Mode avec état désactivé                                 | Indisponible                                                               | Indisponible                                           | Indisponible                          | Indisponible                                                  |
+| Authentification désactivée, configuration déverrouillée | Disponible avec `APPRISE_STATEFUL_MODE=simple`, sauf si `APPRISE_ADMIN=no` | Autorisé                                               | Indisponible                          | Disponible                                                    |
+| Authentification désactivée, configuration verrouillée   | Masquée et refusée                                                         | Refusé                                                 | Indisponible                          | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Utilisateur de configuration, déverrouillée              | Refusée                                                                    | Peut déplacer son propre ID ; ne peut pas le supprimer | Peut modifier son propre mot de passe | Disponible pour son ID                                        |
+| Utilisateur de configuration, verrouillée                | Refusée                                                                    | Refusé                                                 | Peut modifier son propre mot de passe | Masqué ; les notifications enregistrées fonctionnent toujours |
+| Administrateur, déverrouillée                            | Disponible avec `APPRISE_STATEFUL_MODE=simple`, sauf si `APPRISE_ADMIN=no` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
+| Administrateur, verrouillée                              | Disponible avec `APPRISE_STATEFUL_MODE=simple`, sauf si `APPRISE_ADMIN=no` | Autorisé pour tous les ID                              | Peut gérer toutes les connexions      | Disponible                                                    |
 
 Lorsque le contenu est verrouillé, le formulaire Web de notification exige au moins un tag, car il ne peut pas afficher les destinations enregistrées.
 
@@ -1375,7 +1358,6 @@ services:
     environment:
       APPRISE_STATEFUL_MODE: simple
       APPRISE_WORKER_COUNT: 1
-      APPRISE_ADMIN: "y"
       APPRISE_DEFAULT_FORMAT: "text"
 
     volumes:
