@@ -12,6 +12,10 @@ schemas:
 has_email: true
 has_attachments: true
 
+body_formats:
+  - html: default
+  - text
+
 sample_urls:
   - sendpulse://{user}@{host}/{client_id}/{client_secret}
   - sendpulse://{user}@{host}/{client_id}/{client_secret}/{to_email}
@@ -20,6 +24,10 @@ sample_urls:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Message Format
+
+SendPulse sends HTML email by default. Set `?format=text` when you want to send a plain-text email instead.
 
 ## Account Setup
 

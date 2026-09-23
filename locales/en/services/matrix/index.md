@@ -15,6 +15,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
@@ -22,16 +27,10 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  - name: "Unencrypted Plain Text Body"
-    max_chars: 60000
-  - name: "Unencrypted HTML/Markdown Body"
-    max_chars: 29000
-  - name: "E2EE Plain Text Body"
-    max_chars: 40000
-  - name: "E2EE HTML/Markdown Body"
-    max_chars: 19000
-  - name: "Webhook Body"
+  - name: "Unencrypted Body"
     max_chars: 65000
+  - name: "E2EE Body"
+    max_chars: 40000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -43,19 +42,13 @@ By default, Apprise communicates directly with your Matrix server using the offi
 
 Alternatively, you may use webhook mode instead of the Matrix Client API. Webhook usage is enabled by specifying **?mode=matrix**, **?mode=slack**, or **?mode=hookshot** depending on the webhook service you have configured.
 
-## Message Size and Format
+## Message Formatting and Size
 
-Matrix limits the complete event to 65,536 bytes. Apprise v1 uses conservative character limits for direct messages and applies a final byte check before sending.
+Matrix accepts plain text, HTML, and Markdown. HTML and Markdown messages include a plain-text fallback for clients that cannot display formatted content. Slack-compatible webhooks receive Markdown unchanged so Slack can render it.
 
-- Plain text carries one body; HTML and Markdown also carry a fallback body.
-- E2EE uses smaller limits to leave room for encryption.
-- `overflow=split` keeps the remaining content in additional messages.
+Matrix limits the complete event to 65,536 bytes, including metadata added by the homeserver. The limits above are conservative body fallbacks, not fixed event sizes. For direct sends, Apprise calculates each chunk from its title, format, UTF-8 and JSON expansion, and possible E2EE overhead, so the actual character count may be lower.
 
-Apprise v1 supports one output format per Matrix URL: `text`, `html`, or `markdown`. When code calls the plugin without an input `body_format`, Matrix treats that content as already formatted and leaves its fallback unchanged.
-
-:::note
-Apprise v1 chooses the E2EE limit before checking each room. The E2EE limit therefore applies whenever E2EE is available and enabled, even if a specific room is later found to be unencrypted.
-:::
+If you do not declare an input format, Apprise does not guess or repair the markup. An explicit `?format=html` or `?format=markdown` means the body is already prepared for that output. With `overflow=split`, unknown or structured content is split on a best-effort basis; see [Pass-Through and Overflow](../../getting-started/formatting/#pass-through-and-overflow).
 
 ## Syntax
 
@@ -226,7 +219,7 @@ Or directly:
 | e2ee                | No       | Controls end-to-end encryption using the Matrix Olm/MegOLM protocol. When enabled (the default), Apprise automatically detects whether each room has encryption configured and encrypts both messages and attachments for those that do, while sending others as plain text. When Apprise creates a new room with `e2ee=yes`, it sets `m.room.encryption` at creation time so the room is encrypted from the very first message. Requires the `cryptography` Python package and a **matrixs://** (HTTPS) connection. Not supported in webhook mode. Set to **no** to always send unencrypted and to skip E2EE room creation. Default is **yes**. |
 | autoverify          | No       | Enables automatic Matrix SAS device verification. On first use, Apprise waits up to two minutes for a verification request from another session signed in to the same account. Successful verification is remembered. Setting `autoverify=yes` automatically turns on `e2ee=yes` too, so you do not need to set both; pass `e2ee=no` explicitly if you want to disable encryption anyway. Also requires a **matrixs://** (HTTPS) connection. Default is **no**.                                                                                                                                                                                  |
 | target_user         | No       | A Matrix user ID to notify via direct message. Must be prefixed with **@**, for example **@alice** or **@alice:homeserver**. Apprise looks up (or creates) a DM room with that user automatically. Not supported in webhook mode.                                                                                                                                                                                                                                                                                                                                                                                                                |
-| discovery           | No       | When enabled (the default), Apprise performs a `.well-known/matrix/client` server-discovery lookup on first use to resolve the actual homeserver base URL. Set to **no** to skip discovery and connect directly to the specified hostname. Automatically disabled in webhook mode. Default is **yes**.                                                                                                                                                                                                                                                                                                                                           |
+| discovery           | No       | When enabled (the default), Apprise uses `.well-known/matrix/client` on first use to find the homeserver address. Set to **no** to connect directly to the hostname in your Apprise URL. The discovered address must use `https://` and cannot contain a username or password. Otherwise, discovery fails and nothing is sent. Automatically disabled in webhook mode. Default is **yes**.                                                                                                                                                                                                                                                       |
 
 :::note
 If neither a **`{room_alias}`**, **`{room_id}`**, nor a **`{target_user}`** is specified, Apprise will query the server for currently joined rooms and notify all of them.

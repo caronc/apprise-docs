@@ -11,6 +11,10 @@ schemas:
 
 has_sms: true
 
+body_formats:
+  - text: default
+  - markdown
+
 sample_urls:
   - dingtalk://{ApiKey}/{ToPhoneNo}
   - dingtalk://{ApiKey}/{ToPhoneNo1}/{ToPhoneNo2}/{ToPhoneNoN}
@@ -46,6 +50,20 @@ La syntaxe valide est la suivante :
 | Secret    | Non         | Cle secrete facultative a associer a la signature du message.                                    |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Formats de message
+
+DingTalk peut afficher votre message en texte brut ou en Markdown, et Apprise
+choisit le bon format pour vous :
+
+- Le texte brut est utilise par defaut.
+- Si vous envoyez un message Markdown, DingTalk le recoit en Markdown.
+- Vous pouvez forcer l'un ou l'autre avec `?format=text` ou `?format=markdown`.
+
+:::note
+Un message Markdown sur DingTalk doit comporter un titre. Si vous n'en
+fournissez pas, Apprise y place le nom de votre application.
+:::
 
 ## Exemples
 

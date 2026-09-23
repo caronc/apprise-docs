@@ -155,6 +155,90 @@ urls:
 
 Cela charge deux services email avec des identifiants partagés et des destinations différentes.
 
+## Variables de substitution
+
+Une configuration YAML peut contenir une section `template:` et référencer
+ces noms sous la forme `${NOM}` dans ses URL ou paramètres. Consultez
+[Variables de substitution](../getting-started/template/)
+pour la syntaxe YAML et le choix des emplacements.
+
+Une entrée à laquelle il manque une valeur est conservée sous forme
+d'`apprise.NotifyTemplate`. Elle garde ses tags pour le filtrage, et `url()`
+affiche ses marqueurs `${NOM}`.
+
+```python
+import apprise
+
+CONFIG = """
+template:
+  api_key:
+urls:
+  - sendgrid://${API_KEY}:noreply@example.com/you@example.com
+"""
+
+config = apprise.AppriseConfig()
+config.add_config(CONFIG, format="yaml")
+
+apobj = apprise.Apprise()
+apobj.add(config)
+
+# Que manque-t-il encore ?
+apobj.template_vars()
+# {'api_key': {'default': None, 'services': 1}}
+
+# Fournir la valeur pour cet appel
+apobj.notify(body="Bonjour", template={"api_key": "votre-cle-secrete"})
+```
+
+`template_vars()` indique la valeur par défaut elle-même ; un `None`
+signifie que la configuration n'en a pas défini et qu'elle doit venir de
+l'appel ou de l'environnement. Traitez les valeurs renvoyées comme du contenu
+de configuration.
+
+Les valeurs sont résolues à chaque appel, dans cet ordre :
+
+1. le dictionnaire `template` passé à `notify()` ou `find()`
+2. la valeur par défaut déclarée dans la configuration
+3. la variable d'environnement `APPRISE_TEMPLATE_<NOM>`
+
+Les valeurs d'appel et d'environnement vides ou composées uniquement d'espaces
+sont ignorées. Une chaîne vide déclarée explicitement (`api_key: ""`) reste une
+valeur par défaut et passe donc avant `APPRISE_TEMPLATE_API_KEY`.
+
+`template` doit être un mappage, et chaque clé un nom de variable valide
+utilisé une seule fois. Tout `collections.abc.Mapping` convient : un
+`MappingProxyType` ou un `UserDict` convient comme un simple `dict`. Une entrée
+invalide lève `apprise.exception.AppriseTemplateError` depuis `find()` ;
+`notify()` renvoie `FAILURE`.
+
+Une entrée sans valeur disponible est ignorée. Le résultat est `PARTIAL` si une
+autre entrée correspondante est envoyée, ou `FAILURE` si toutes sont ignorées.
+
+`find(..., resolve=False)` renvoie les entrées en attente sans les compléter.
+`urls()` et l'itération font de même.
+
+Un même ensemble de valeurs, insensible à la casse, couvre tout l'objet
+`Apprise`. Les noms valides supplémentaires sont ignorés et consignés par nom
+dans le journal de débogage local.
+
+Les variables de substitution peuvent être désactivées entièrement via
+l'asset :
+
+```python
+asset = apprise.AppriseAsset(allow_templates=False)
+```
+
+Les sections `template:` et les valeurs d'environnement sont alors ignorées,
+et `${NOM}` devient du texte ordinaire. Seule l'application peut modifier ce
+réglage.
+
+Les valeurs d'un appel ne modifient ni la configuration en cache ni les appels
+suivants. Réutiliser les mêmes valeurs réutilise aussi le service et son
+identité de stockage.
+
+Le nom d'une variable manquante est écrit dans le journal local, mais pas dans
+les sorties d'`AppriseResult` ou de `log_callback`.
+
 ## Includes
 
 La directive `include` permet à une source de configuration d'en référencer une autre.
@@ -242,9 +326,9 @@ Un serveur Apprise-API peut activer le verrouillage de configuration afin d'emp�
 
 Quand ce verrouillage est activé :
 
-- les inclusions distantes ciblant l'Apprise-API sont rejetées ;
-- les endpoints de configuration ne peuvent pas être consommés par des clients externes ;
-- seule la configuration définie localement est autorisée.
+- un administrateur global authentifié conserve un accès complet aux configurations ;
+- les autres appelants ne peuvent pas ajouter, récupérer, inspecter, lister, déplacer ni supprimer une configuration ;
+- seule la configuration définie localement est disponible pour ces appelants.
 
 Ce comportement est appliqué **par le serveur Apprise-API**, pas par `AppriseConfig` lui-même.
 
@@ -256,6 +340,8 @@ Le verrouillage de configuration existe pour empêcher :
 
 Le verrouillage de configuration n'affecte **pas** :
 
+- les notifications avec état envoyées à l'aide d'un ID de configuration existant, y compris le filtrage facultatif par tags ;
+- les notifications sans état qui fournissent leurs propres URL de notification ;
 - les fichiers de configuration locaux ;
 - la configuration en mémoire ;
 - les sources de configuration personnalisées hébergées en dehors d'Apprise-API.

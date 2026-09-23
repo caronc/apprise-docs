@@ -40,6 +40,9 @@ from apprise.utils.parse import (
     validate_regex,
 )
 
+# Validation des requêtes HTTP
+from apprise.utils.http import is_secure_http_url
+
 # Journalisation de debug plus sûre
 from apprise.utils.sanitize import sanitize_payload
 
@@ -340,11 +343,19 @@ et produire des messages d'erreur clairs.
   Valide IPv4 et IPv6. Pour IPv6, la fonction renvoie l'adresse entourée de
   crochets (`[addr]`) afin de respecter les attentes de format d'URL.
 
+- `is_secure_http_url(url)`
+  Vérifie une URL reçue d'un serveur distant, par exemple lors de la découverte
+  d'un service ou dans un fichier `.well-known`. La fonction renvoie `True`
+  uniquement pour une URL HTTPS avec un hôte et un port valides, sans nom
+  d'utilisateur, mot de passe ni fragment. Les adresses privées et de bouclage
+  restent valides pour les services auto-hébergés.
+
 - `is_uuid(value)`
   Valide des chaînes UUID.
 
-Ces helpers renvoient `False` lorsqu'une valeur est invalide. Sinon, ils
-renvoient une chaîne normalisée.
+À l'exception de `is_secure_http_url()`, qui renvoie `True` ou `False`, ces
+fonctions renvoient `False` pour une entrée invalide et une chaîne normalisée
+pour une entrée valide.
 
 ## Validation par regex
 

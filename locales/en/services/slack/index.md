@@ -13,6 +13,10 @@ has_chat: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - markdown: default
+  - text
+
 sample_urls:
   - https://hooks.slack.com/services/{tokenA}/{tokenB}/{tokenC}
   - slack://{tokenA}/{tokenB}/{tokenC}
@@ -28,6 +32,12 @@ limits:
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
+
+## Message Format
+
+Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead.
+
+Declaring your input format lets Apprise convert supported content before sending it. Without one, Apprise assumes the body is already suitable for the selected Slack format. `overflow=split` is then best effort, so use `overflow=upstream` when markup or structured content must remain intact.
 
 ## Account Setup
 

@@ -11,6 +11,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - form://{hostname}
   - forms://{hostname}:{port}
@@ -35,6 +40,10 @@ The _type_ will be one of the following:
 - **success**: A successful report
 - **failure**: A failure report
 - **warning**: A warning report
+
+### Message Format
+
+The `message` field is delivered exactly as you provide it — this service is a pass-through and supports `text`, `html`, and `markdown` alike. If you don't specify `?format=`, plain text is assumed and delivered as-is.
 
 ## Syntax
 
@@ -66,6 +75,7 @@ Adding an `s` to the schema (i.e. `forms://`) switches to a secure HTTPS connect
 | password  | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | method    | No       | Optionally specify the server http method; possible options are `post`, `put`, `get`, `delete`, `patch`, `head`, `update`, and `options`. By default if no method is specified then `post` is used.                                                                                                                                                                                                                                                                                                                  |
 | attach-as | No       | Optionally override the meta filename set when there are attachments. Each attachment by default gets posted as `file01`, `file02`, etc. There have been use-cases where someone's end point expects the meta name (where the file is found on the HTTP request) to be named something specific such as `document`. Utilize this over-ride to accomplish such a feat. Also use the `*` character to allow the numbering. Hence `?attach-as=meta*` would cause Apprise to store the files as `meta01`, `meta02`, etc. |
+| format    | No       | The default is _text_. Set this to _markdown_ or _html_ when your receiving endpoint expects that format.                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 **Note:**: If you include file attachments; each one is concatenated into the same single post to the upstream server. The `Content-Type` header request also changes from `application/x-www-form-urlencoded` to `multipart/form-data` in this case.
 

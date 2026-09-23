@@ -34,6 +34,46 @@ Vous pouvez afficher le menu d'aide complet à tout moment avec `apprise --help`
 | `-R` | `--recursion-depth` | Nombre maximal de directives `include` récursives autorisées lors du chargement de la configuration. Par défaut : `1`. Mettez `0` pour ignorer `include`/imports. |
 | `-P` | `--plugin-path`     | Ajouter un ou plusieurs chemins à scanner pour les plugins de notification personnalisés.                                                                         |
 
+### Délais
+
+Il arrive qu'un service réponde lentement, ou soit simplement injoignable. Ces options limitent la durée pendant laquelle Apprise est prêt à attendre avant d'abandonner et de passer à la suite.
+
+| Flag  | Option longue     | Description                                                                                                                                                      |
+| :---- | :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-L`  | `--limit`         | Abandonne l'exécution entière si elle prend trop de temps, en secondes (par ex. `2.5`). Par défaut `0` -- aucune limite.                                         |
+| `-SL` | `--service-limit` | Abandonne un service s'il prend trop de temps, en secondes, ou `0` pour désactiver complètement. Laissez vide pour la valeur par défaut d'Apprise (60 secondes). |
+
+```bash
+# Abandonner l'exécution entière après 10 secondes
+apprise -t "Statut" -b "Vérification rapide" --limit 10 \
+    "slack://tokenA/tokenB/tokenC"
+
+# N'accorder que 5 secondes à chaque service, quel que soit leur nombre
+apprise -t "Statut" -b "Vérification rapide" --service-limit 5 \
+    "slack://tokenA/tokenB/tokenC" "discord://webhook_id/webhook_token"
+```
+
+:::tip
+`--limit` plafonne l'exécution entière ; `--service-limit` plafonne chaque service individuellement. Utilisez `--service-limit` pour une patience homogène sur de nombreux services ; utilisez `--limit` quand vous voulez simplement que la commande entière se termine avant une certaine durée.
+:::
+
+:::caution
+Une limite de temps peut empêcher Apprise de continuer à _attendre_ un service, mais
+elle ne peut pas couper de force un appel déjà en cours. Python ne sait pas arrêter
+proprement une requête réseau bloquée en plein milieu.
+
+Avec la CLI, si le résultat global est `TIMEOUT`, Apprise attend encore environ
+5 secondes pour laisser l'appel abandonné se terminer tout seul. S'il tourne
+toujours, la commande se termine quand même en arrêtant le processus. En pratique,
+cela veut dire qu'une commande CLI finit en général dans environ
+`--limit`/`--service-limit` + 5 secondes. C'est utile pour un script cron ou une
+automatisation qui ne doit pas rester bloquée indéfiniment.
+
+Cette garantie concerne la CLI uniquement. Une application Python qui utilise
+Apprise comme bibliothèque ne peut pas arrêter tout son propre processus juste
+pour stopper une seule notification.
+:::
+
 ### Pièces Jointes
 
 | Flag | Option longue | Description                                                                                                        |
@@ -53,14 +93,41 @@ Apprise prend en charge un cache de stockage persistant. Vous pouvez l'ajuster a
 
 ### Exécution et Diagnostic
 
-| Flag  | Option longue     | Description                                                                                               |
-| :---- | :---------------- | :-------------------------------------------------------------------------------------------------------- |
-| `-Da` | `--disable-async` | Envoyer de manière synchrone (l'un après l'autre) plutôt qu'en parallèle.                                 |
-| `-d`  | `--dry-run`       | Exécution d'essai. Affiche quels services seraient déclenchés sur `stdout`. N'envoie aucune notification. |
-| `-l`  | `--details`       | Afficher les détails des services actuellement pris en charge.                                            |
-| `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                           |
-| `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                      |
-| `-V`  | `--version`       | Afficher la version puis quitter.                                                                         |
+| Flag  | Option longue     | Description                                                                                                                                 |
+| :---- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-Da` | `--disable-async` | Envoyer de manière synchrone (l'un après l'autre) plutôt qu'en parallèle.                                                                   |
+| `-d`  | `--dry-run`       | Exécution d'essai. Affiche quels services seraient déclenchés sur `stdout`. N'envoie aucune notification.                                   |
+| `-l`  | `--details`       | Afficher les détails des services actuellement pris en charge.                                                                              |
+| `-tv` | `--template-var`  | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML, sous la forme `NOM=VALEUR`. Répétable, mais une seule fois par nom. |
+| `-v`  | `--verbose`       | Augmenter la verbosité. Peut être empilé (par exemple `-vvvv`).                                                                             |
+| `-D`  | `--debug`         | Mode debug, utile pour le dépannage.                                                                                                        |
+| `-V`  | `--version`       | Afficher la version puis quitter.                                                                                                           |
+| `-h`  | `--help`          | Afficher le message d'aide puis quitter.                                                                                                    |
+
+## Exemple de variable de substitution
+
+Commencez par déclarer la valeur dans une configuration YAML :
+
+```yaml title="apprise.yml"
+template:
+  recipient:
+
+urls:
+  - mailtos://user:password@example.com/:
+      - to: ${RECIPIENT}
+```
+
+Fournissez-la ensuite lors de l'envoi :
+
+```bash
+apprise --config apprise.yml \
+  --template-var recipient=admin@example.com \
+  --body "Sauvegarde terminée"
+```
+
+Seuls les noms déclarés sous `template:` sont remplacés. Consultez
+[Variables de substitution](../getting-started/template/) pour les valeurs par
+défaut, l'environnement, les règles de placement et d'autres exemples.
 
 ## Variables d'Environnement
 
@@ -72,6 +139,7 @@ Vous pouvez prédéfinir certains comportements via des variables d'environnemen
 | `APPRISE_CONFIG_PATH`                   | Remplacer les chemins de recherche de configuration par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                |
 | `APPRISE_PLUGIN_PATH`                   | Remplacer les chemins de recherche de plugins par défaut. Utilisez `;`, `\n` et/ou `\r` pour séparer plusieurs entrées.                                                                                                                                                                                                      |
 | `APPRISE_STORAGE_PATH`                  | Remplacer le chemin par défaut du stockage persistant.                                                                                                                                                                                                                                                                       |
+| `APPRISE_TEMPLATE_<NOM>`                | Fournir une valeur pour un `${NOM}` utilisé par une configuration YAML. Par exemple, `APPRISE_TEMPLATE_API_KEY` remplit `${API_KEY}`. Voir [Variables de substitution](../getting-started/template/).                                                                                                                        |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Variables de proxy standard prises en compte automatiquement (non spécifiques à Apprise). Acheminez les notifications sortantes via un proxy, ou exemptez certains hôtes avec `NO_PROXY`. Voir [Prise en charge des proxys](/library/advanced/#prise-en-charge-des-proxys) pour plus de détails, y compris les proxys SOCKS. |
 
 ## Emplacements de Configuration par Défaut
@@ -314,12 +382,17 @@ apprise \
 
 Si vous exécutez une instance auto-hébergée de [Apprise API](../api/), vous pouvez utiliser la CLI pour la déclencher avec le schéma `apprise://`. Cela vous permet de centraliser votre configuration côté serveur et de garder vos clients locaux très simples.
 
+Le plugin utilise la version 2 par défaut. Il envoie la clé de configuration dans `X-Apprise-Config-ID`, ce qui la retire du chemin de la requête HTTP. Ajoutez `?v=1` pour un ancien serveur Apprise API qui exige `/notify/{KEY}`.
+
 ### Syntaxe
 
 - **Non sécurisé (HTTP) :** `apprise://hostname/config_key`
 - **Sécurisé (HTTPS) :** `apprises://hostname/config_key`
 
 Exemples :
+
+<Tabs>
+<TabItem label="Sans Authentification">
 
 ```bash
 # Déclencher une configuration stockée sous la clé 'my-alerts' sur un serveur local
@@ -331,6 +404,22 @@ apprise -t "Production Issue" \
     --tag devops \
     "apprises://apprise.example.com/production-key"
 ```
+
+</TabItem>
+<TabItem label="Avec Authentification">
+
+```bash
+# Les identifiants de l'URL sont envoyés avec Basic Auth.
+apprise -t "Job Finished" \
+    "apprises://user:password@apprise.example.com/my-alerts"
+
+# Une connexion administrateur avec mot de passe uniquement laisse le nom vide.
+apprise -t "Job Finished" \
+    "apprises://:password@apprise.example.com/my-alerts"
+```
+
+</TabItem>
+</Tabs>
 
 ## Scripting et Pipes
 
@@ -393,10 +482,12 @@ Pour l'explication complète (UID, emplacements de cache, captures d'écran et w
 
 La CLI Apprise quitte avec :
 
-- `0` si toutes les notifications ont été envoyées avec succès.
-- `1` si une ou plusieurs notifications n'ont pas pu être envoyées.
+- `0` si tous les services notifiés ont réussi.
+- `1` si tous les services notifiés ont échoué, ou si la notification n'a pas pu démarrer.
 - `2` s'il y a eu une erreur de ligne de commande (par exemple des arguments invalides).
 - `3` si une ou plusieurs URL de service ont été chargées avec succès, mais qu'aucune n'a pu être notifiée à cause du filtrage utilisateur (tags).
+- `4` si certains services ont envoyé la notification avec succès et qu'au moins un autre ne l'a pas fait.
+- `5` si aucun service n'a envoyé la notification avec succès, mais que le seul problème était le manque de temps (voir [Délais](#délais) ci-dessus).
 
 ## Intégrations
 

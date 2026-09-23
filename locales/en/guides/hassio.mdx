@@ -158,7 +158,7 @@ mailtos://local-user@example.com
 
 </Tabs>
 :::note
-The `include` will only works if your Apprise API server has `APPRISE_CONFIG_LOCK` is not set to `yes`.
+The `include` requires global administrator credentials when your Apprise API server uses `APPRISE_CONFIG_LOCK=yes`.
 :::
 
 </TabItem>
@@ -180,7 +180,7 @@ notify:
 ```
 
 :::caution[Access Restriction]
-If your Apprise API server is running with `APPRISE_CONFIG_LOCK` enabled, then this method will not work.
+If your Apprise API server uses `APPRISE_CONFIG_LOCK=yes`, this method requires global administrator credentials.
 :::
 
 </TabItem>

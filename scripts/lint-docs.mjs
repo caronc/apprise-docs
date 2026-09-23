@@ -50,6 +50,7 @@ const ALLOWED_KEYS = new Set([
   "source",
   "group",
   "limits",
+  "body_formats",
   "ended",
   "has_sponsorship",
   "sponsorship_level",
@@ -315,6 +316,171 @@ function validateServiceSponsorship(data, file) {
         `[sponsorship] ${rel(file)}: sponsor_message requires sponsorship_level or has_sponsorship`,
       );
     }
+  }
+}
+
+const KNOWN_BODY_FORMATS = new Set(["text", "html", "markdown"]);
+
+/**
+ * Parses one body_formats frontmatter entry into its format name and
+ * default flag.
+ *
+ * Mirrors the shorthand already tolerated for `schemas: ... insecure`
+ * entries: a bare string names the format, and a single-key mapping
+ * (`- html: default`) marks that format as the explicit default. Unlike
+ * `schemas`, there is only one modifier keyword here -- "default" is a
+ * single boolean-shaped flag, not a secure/insecure pair -- so any other
+ * mapping value is invalid.
+ *
+ * @param {unknown} entry - Raw body_formats entry from frontmatter.
+ * @param {string} file - File path used for error messages.
+ * @returns {{name: string, isDefault: boolean}|null} Parsed entry, or null
+ *   if invalid (a failure has already been recorded).
+ */
+function parseBodyFormatEntry(entry, file) {
+  if (typeof entry === "string") {
+    const name = entry.trim().toLowerCase();
+    if (!name) {
+      fail(`[frontmatter] ${rel(file)}: body_formats has an empty entry`);
+      return null;
+    }
+
+    if (!KNOWN_BODY_FORMATS.has(name)) {
+      fail(
+        `[frontmatter] ${rel(file)}: body_formats entry "${entry}" is not ` +
+          `a known format (expected one of: text, html, markdown)`,
+      );
+      return null;
+    }
+
+    return { name, isDefault: false };
+  }
+
+  if (isPlainObject(entry)) {
+    const keys = Object.keys(entry);
+    if (keys.length !== 1) {
+      fail(
+        `[frontmatter] ${rel(file)}: body_formats entry must have exactly ` +
+          `one key (e.g. "html: default")`,
+      );
+      return null;
+    }
+
+    const name = String(keys[0] || "")
+      .trim()
+      .toLowerCase();
+    const rawValue = entry[keys[0]];
+    const value = String(rawValue == null ? "" : rawValue)
+      .trim()
+      .toLowerCase();
+
+    if (!KNOWN_BODY_FORMATS.has(name)) {
+      fail(
+        `[frontmatter] ${rel(file)}: body_formats entry "${keys[0]}" is ` +
+          `not a known format (expected one of: text, html, markdown)`,
+      );
+      return null;
+    }
+
+    if (value !== "default") {
+      fail(
+        `[frontmatter] ${rel(file)}: body_formats entry "${keys[0]}: ` +
+          `${rawValue}" is invalid -- the only supported modifier is ` +
+          `":default"`,
+      );
+      return null;
+    }
+
+    return { name, isDefault: true };
+  }
+
+  fail(
+    `[frontmatter] ${rel(file)}: body_formats entries must be a string ` +
+      `or a single-key "format: default" mapping`,
+  );
+  return null;
+}
+
+/**
+ * Validates the optional `body_formats` frontmatter field on service pages.
+ *
+ * body_formats declares which message formats a service accepts, mirroring
+ * the plugin's own `notify_format` tuple. The field is entirely optional --
+ * a service page that omits it is documented as accepting `text` only,
+ * matching the Apprise library's own NotifyBase default. When present:
+ *
+ *   - Each entry is a known format name (text, html, markdown), optionally
+ *     written as a single-key "format: default" mapping to mark it the
+ *     default -- mirroring the "schema: insecure" shorthand already used
+ *     for the `schemas` field.
+ *   - At most one entry may be marked default. Declaring more than one is
+ *     a hard failure: there is no way to honor two defaults at once.
+ *   - When no entry is marked default, the first entry in the list is the
+ *     implicit default -- matching how `resolve_format()` in the Apprise
+ *     library picks `formats[0]` when nothing else applies.
+ *   - Declaring the same format more than once is a failure.
+ *   - When two or more formats are declared without an explicit default, a
+ *     warning recommends adding ":default" for clarity. This does not fail
+ *     the build -- the implicit first-entry default is well-defined and
+ *     valid on its own.
+ *
+ * @param {object} data - Parsed frontmatter data.
+ * @param {string} file - File path used for error messages.
+ */
+function validateBodyFormats(data, file) {
+  if (data.body_formats == null) return;
+
+  const rawList = Array.isArray(data.body_formats)
+    ? data.body_formats
+    : [data.body_formats];
+
+  if (rawList.length === 0) {
+    fail(`[frontmatter] ${rel(file)}: body_formats cannot be an empty list`);
+    return;
+  }
+
+  const seen = new Set();
+  const defaults = [];
+  let sawInvalid = false;
+
+  for (const rawEntry of rawList) {
+    const parsed = parseBodyFormatEntry(rawEntry, file);
+    if (!parsed) {
+      sawInvalid = true;
+      continue;
+    }
+
+    if (seen.has(parsed.name)) {
+      fail(
+        `[frontmatter] ${rel(file)}: body_formats declares "${parsed.name}" more than once`,
+      );
+      continue;
+    }
+    seen.add(parsed.name);
+
+    if (parsed.isDefault) defaults.push(parsed.name);
+  }
+
+  // Individual entry errors were already reported above; do not pile on
+  // with default-count checks derived from a partially-invalid list.
+  if (sawInvalid) return;
+
+  if (defaults.length > 1) {
+    fail(
+      `[frontmatter] ${rel(file)}: body_formats declares more than one ` +
+        `default (${defaults.join(", ")}) -- only one entry may be marked ` +
+        `":default"`,
+    );
+    return;
+  }
+
+  if (defaults.length === 0 && seen.size > 1) {
+    warn(
+      `[frontmatter] ${rel(file)}: body_formats declares ${seen.size} ` +
+        `formats with no explicit default -- "${rawList[0]}" is used as ` +
+        `the implicit default. Consider marking one entry ":default" for ` +
+        `clarity.`,
+    );
   }
 }
 
@@ -700,6 +866,7 @@ for (const file of files) {
   }
 
   validateServiceSponsorship(data, file);
+  validateBodyFormats(data, file);
 
   // Service index pages must declare at least one sample URL so the URL
   // builder and docs have something concrete to display.

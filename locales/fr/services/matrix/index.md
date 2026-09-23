@@ -15,6 +15,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - matrix://{user}:{password}@{hostname}/#{room_alias}
   - matrixs://{user}:{password}@{hostname}/!{room_id}
@@ -22,16 +27,10 @@ sample_urls:
   - matrixs://{user}:{password}@{hostname}/@{target_user}
 
 limits:
-  - name: "Corps en texte brut non chiffré"
-    max_chars: 60000
-  - name: "Corps HTML/Markdown non chiffré"
-    max_chars: 29000
-  - name: "Corps E2EE en texte brut"
-    max_chars: 40000
-  - name: "Corps E2EE en HTML/Markdown"
-    max_chars: 19000
-  - name: "Corps du webhook"
+  - name: "Corps non chiffré"
     max_chars: 65000
+  - name: "Corps E2EE"
+    max_chars: 40000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -43,19 +42,13 @@ Par défaut, Apprise communique directement avec votre serveur Matrix via l’AP
 
 Vous pouvez aussi utiliser le mode webhook à la place de l’API Client Matrix. Ce mode est activé en précisant **?mode=matrix**, **?mode=slack** ou **?mode=hookshot**, selon le service webhook que vous avez configuré.
 
-## Taille et format des messages
+## Format et taille des messages
 
-Matrix limite l’événement complet à 65 536 octets. Apprise v1 utilise des limites de caractères prudentes pour les messages directs, puis vérifie la taille en octets avant l’envoi.
+Matrix accepte le texte brut, le HTML et le Markdown. Les messages HTML et Markdown incluent une version texte pour les clients qui ne peuvent pas afficher le contenu mis en forme. Les webhooks compatibles avec Slack reçoivent le Markdown inchangé afin que Slack puisse l’afficher.
 
-- Le texte brut comporte un seul corps ; HTML et Markdown ajoutent un corps de repli.
-- E2EE utilise des limites plus petites pour laisser de la place au chiffrement.
-- `overflow=split` place le contenu restant dans des messages supplémentaires.
+Matrix limite l’événement complet à 65 536 octets, y compris les métadonnées ajoutées par le homeserver. Les limites ci-dessus sont des valeurs de repli prudentes pour le corps du message, et non des tailles d’événement fixes. Pour les envois directs, Apprise calcule chaque fragment selon son titre, son format, l’expansion UTF-8 et JSON ainsi que le surcoût E2EE éventuel ; le nombre réel de caractères peut donc être inférieur.
 
-Apprise v1 accepte un seul format de sortie par URL Matrix : `text`, `html` ou `markdown`. Lorsqu’un appel direct au plugin omet le `body_format` d’entrée, Matrix considère le contenu comme déjà formaté et conserve son corps de repli tel quel.
-
-:::note
-Apprise v1 choisit la limite E2EE avant d’examiner chaque salon. Elle s’applique donc dès qu’E2EE est disponible et activé, même si un salon précis s’avère ensuite non chiffré.
-:::
+Si vous ne déclarez aucun format d'entrée, Apprise ne devine ni ne répare le balisage. Un réglage explicite `?format=html` ou `?format=markdown` signifie que le corps est déjà prêt pour cette sortie. Avec `overflow=split`, le découpage d'un contenu inconnu ou structuré reste une solution au mieux ; consultez [Pass-Through et Dépassement](../../getting-started/formatting/#pass-through-et-dépassement).
 
 ## Syntaxe
 
@@ -226,7 +219,7 @@ Ou directement :
 | e2ee                | Non    | Contrôle le chiffrement de bout en bout via le protocole Matrix Olm/MegOLM. Lorsqu’il est activé, ce qui est le cas par défaut, Apprise détecte automatiquement si chaque salon est configuré pour le chiffrement et chiffre alors les messages comme les pièces jointes pour ceux qui le prennent en charge, tout en envoyant les autres en texte brut. Lorsqu’Apprise crée un nouveau salon avec `e2ee=yes`, il définit l’état `m.room.encryption` dès la création afin que le salon soit chiffré dès le premier message. Cela exige le paquet Python `cryptography` et une connexion **matrixs://**. Non pris en charge en mode webhook. Définissez `no` pour toujours envoyer en clair et éviter la création de salons E2EE. La valeur par défaut est **yes**. |
 | autoverify          | Non    | Active la vérification automatique de l’appareil avec le protocole SAS de Matrix. Lors de la première utilisation, Apprise attend jusqu’à deux minutes une demande provenant d’une autre session connectée au même compte. Une vérification réussie est mémorisée. Définir `autoverify=yes` active automatiquement `e2ee=yes` aussi ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez tout de même désactiver le chiffrement. Nécessite également une connexion **matrixs://**. La valeur par défaut est **no**.                                                                                                                                                                                                                     |
 | target_user         | Non    | Identifiant utilisateur Matrix à notifier en message direct. Doit être préfixé par **@**, par exemple **@alice** ou **@alice:homeserver**. Apprise cherche, ou crée, automatiquement un salon DM avec cet utilisateur. Non pris en charge en mode webhook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| discovery           | Non    | Lorsqu’elle est activée, ce qui est le cas par défaut, Apprise effectue une recherche `.well-known/matrix/client` au premier usage pour résoudre l’URL de base réelle du homeserver. Définissez `no` pour désactiver cette découverte et vous connecter directement au nom d’hôte fourni. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                                                                                                             |
+| discovery           | Non    | Lorsqu’elle est activée (par défaut), Apprise utilise `.well-known/matrix/client` au premier usage pour trouver l’adresse du homeserver. Définissez `no` pour vous connecter directement au nom d’hôte de votre URL Apprise. L’adresse découverte doit utiliser `https://` et ne doit contenir ni nom d’utilisateur ni mot de passe. Sinon, la découverte échoue et rien n’est envoyé. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                |
 
 :::note
 Si ni **`{room_alias}`**, ni **`{room_id}`**, ni **`{target_user}`** n’est précisé, Apprise interrogera le serveur pour récupérer les salons actuellement rejoints et les notifiera tous.

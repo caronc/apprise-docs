@@ -11,6 +11,11 @@ has_selfhosted: true
 has_attachments: true
 has_image: true
 
+body_formats:
+  - text: default
+  - html
+  - markdown
+
 sample_urls:
   - form://{hostname}
   - forms://{hostname}:{port}
@@ -35,6 +40,10 @@ Le _type_ prendra l'une des valeurs suivantes :
 - **success** : rapport de succes
 - **failure** : rapport d'echec
 - **warning** : avertissement
+
+### Format du message
+
+Le champ `message` est transmis exactement tel que vous le fournissez : ce service relaie le contenu sans le modifier et prend en charge `text`, `html` et `markdown`. Si vous ne précisez pas `?format=`, le texte brut est utilisé par défaut.
 
 ## Syntaxe
 
@@ -65,6 +74,7 @@ L'ajout d'un `s` au schema, c'est-a-dire `forms://`, bascule vers une connexion 
 | user      | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _username_ pour vous authentifier.                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | password  | Non         | Si votre systeme est configure pour utiliser HTTP-AUTH, vous pouvez fournir le _password_ pour vous authentifier.                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | method    | Non         | Permet facultativement de preciser la methode HTTP du serveur ; les options possibles sont `post`, `put`, `get`, `delete`, `patch`, `head`, `update` et `options`. Si aucune methode n'est precisee, `post` est utilise par defaut.                                                                                                                                                                                                                                                                                                           |
+| format    | Non         | La valeur par défaut est _text_. Définissez cette valeur sur _markdown_ ou _html_ si votre point de réception attend ce format.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | attach-as | Non         | Permet facultativement de remplacer le nom meta du fichier lorsqu'il y a des pieces jointes. Par defaut, chaque piece jointe est publiee sous `file01`, `file02`, etc. Il existe des cas d'usage ou le point de terminaison distant attend un nom meta precis, c'est-a-dire le champ sous lequel le fichier apparait dans la requete HTTP, comme `document`. Utilisez cette surcharge pour obtenir ce comportement. Utilisez aussi le caractere `*` pour autoriser la numerotation. Ainsi `?attach-as=meta*` donnera `meta01`, `meta02`, etc. |
 
 **Remarque :** si vous incluez des pieces jointes, elles sont toutes concatenees dans une seule publication vers le serveur amont. Dans ce cas, l'en-tete `Content-Type` passe aussi de `application/x-www-form-urlencoded` a `multipart/form-data`.
