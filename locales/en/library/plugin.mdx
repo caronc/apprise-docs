@@ -752,6 +752,105 @@ if self.is_delivered(target):
 Only sending loops need this tracking. Loops that build a payload, split a
 message, or collect recipients for one request do not.
 
+To share other values between attempts, see **Carrying State Across Retries** below.
+
+## Carrying State Across Retries
+
+`remember()` and `recall()` share a value across one notification's attempts. The value is discarded when the notification ends, so the next notification starts clean.
+
+Use them for values a retry should reuse, such as a request ID, upload handle, or temporary token.
+
+| Situation            | Behaviour                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| Retries are enabled  | Every attempt of this notification reads back what an earlier one remembered.                  |
+| Retries are disabled | `remember()` keeps nothing and `recall()` returns its default. No later attempt would read it. |
+
+:::note
+Do not use `self.store` for retry-only state. It outlives a notification and requires an arbitrary expiry, while `remember()` is cleared automatically when the notification ends.
+:::
+
+<Tabs>
+<TabItem label="Idempotency key">
+
+An idempotency key prevents a service from acting twice. Reuse the original key when retrying a request that never returned.
+
+```python
+from hashlib import sha256
+from json import dumps
+from uuid import uuid4
+
+data = dumps(payload)
+
+# One notification can send several requests, so name this one too
+fingerprint = sha256(data.encode("utf-8")).hexdigest()
+
+key = self.recall(fingerprint)
+if key is None:
+    key = str(uuid4())
+    self.remember(fingerprint, key)
+
+headers["Idempotency-Key"] = key
+```
+
+</TabItem>
+<TabItem label="Skipping Repeated Work">
+
+Anything expensive a retry should not redo, such as uploading a file before the message that references it.
+
+```python
+def _media_id(self, attachment):
+    """Upload once per notification rather than once per attempt."""
+
+    # per_message, because one upload serves every piece of a
+    # split message
+    media_id = self.recall(attachment.path, per_message=True)
+    if media_id is None:
+        media_id = self._upload(attachment)
+        if media_id:
+            self.remember(attachment.path, media_id, per_message=True)
+
+    return media_id
+```
+
+</TabItem>
+<TabItem label="With Delivery Tracking">
+
+Use `remember()` and `recall()` for shared retry state. Use `is_delivered()` and `mark_delivered()` to track which targets already accepted the notification.
+
+```python
+def send(self, body, title="", notify_type=NotifyType.INFO,
+         attach=None, **kwargs):
+    """Upload once, then reach every target that is still waiting."""
+
+    has_error = False
+
+    # Uploaded on the first attempt and reused by the rest
+    media_id = self._media_id(attach) if attach else None
+
+    for target in self.targets:
+        # Accepted on an earlier attempt, so leave it alone
+        if self.is_delivered(target):
+            continue
+
+        if not self._post(target, body, media_id):
+            has_error = True
+            continue
+
+        self.mark_delivered(target)
+
+    return not has_error
+```
+
+</TabItem>
+</Tabs>
+
+Notes:
+
+- Both methods are inert when retries are disabled, so the default `retry=0` path costs nothing and needs no guard of your own.
+- Each split piece keeps its own value, even when its content matches another piece. Set `per_message=True` only for state shared by the whole notification, such as one uploaded file used by every piece.
+- When one notification makes several requests, use a distinct key for each request. A hash of the request body usually works well.
+- Key types stay distinct, so `1`, `"1"` and `["1"]` do not share state.
+
 ## Requirements and Optional Dependencies
 
 If your plugin needs extra packages, declare them in `requirements` so Apprise can report what is required or recommended.

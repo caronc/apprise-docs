@@ -782,6 +782,105 @@ Seules les boucles d'envoi ont besoin de ce suivi. Les boucles qui préparent
 les données, découpent un message ou regroupent les destinataires d'une même
 requête n'en ont pas besoin.
 
+Pour partager d'autres valeurs entre les tentatives, consultez **Conserver un état entre les tentatives** ci-dessous.
+
+## Conserver un état entre les tentatives
+
+`remember()` et `recall()` partagent une valeur entre les tentatives d'une même notification. Elle disparaît à la fin de la notification, afin que la suivante reparte de zéro.
+
+Utilisez-les pour les valeurs qu'une nouvelle tentative doit réutiliser, comme un identifiant de requête, une référence de fichier envoyé ou un jeton temporaire.
+
+| Situation                       | Comportement                                                                                                          |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Les tentatives sont activées    | Chaque tentative de cette notification relit ce qu'une tentative précédente a conservé.                               |
+| Les tentatives sont désactivées | `remember()` ne conserve rien et `recall()` renvoie sa valeur par défaut. Aucune tentative ultérieure ne la relirait. |
+
+:::note
+N'utilisez pas `self.store` pour un état limité aux nouvelles tentatives. Il survit à la notification et impose une expiration arbitraire, tandis que `remember()` est vidé automatiquement à la fin.
+:::
+
+<Tabs>
+<TabItem label="Clé d'idempotence">
+
+Une clé d'idempotence empêche un service d'agir deux fois. Réutilisez la clé d'origine lorsqu'une requête restée sans réponse est relancée.
+
+```python
+from hashlib import sha256
+from json import dumps
+from uuid import uuid4
+
+data = dumps(payload)
+
+# Une notification peut envoyer plusieurs requêtes : nommons celle-ci
+fingerprint = sha256(data.encode("utf-8")).hexdigest()
+
+key = self.recall(fingerprint)
+if key is None:
+    key = str(uuid4())
+    self.remember(fingerprint, key)
+
+headers["Idempotency-Key"] = key
+```
+
+</TabItem>
+<TabItem label="Éviter de refaire un travail">
+
+Tout traitement coûteux qu'une nouvelle tentative ne devrait pas refaire, comme l'envoi d'un fichier avant le message qui s'y réfère.
+
+```python
+def _media_id(self, attachment):
+    """Envoyer le fichier une fois par notification, pas par tentative."""
+
+    # per_message, car un seul envoi sert tous les morceaux d'un
+    # message découpé
+    media_id = self.recall(attachment.path, per_message=True)
+    if media_id is None:
+        media_id = self._upload(attachment)
+        if media_id:
+            self.remember(attachment.path, media_id, per_message=True)
+
+    return media_id
+```
+
+</TabItem>
+<TabItem label="Avec le suivi de livraison">
+
+Utilisez `remember()` et `recall()` pour partager l'état des nouvelles tentatives. Utilisez `is_delivered()` et `mark_delivered()` pour suivre les cibles qui ont déjà accepté la notification.
+
+```python
+def send(self, body, title="", notify_type=NotifyType.INFO,
+         attach=None, **kwargs):
+    """Envoyer le fichier une fois, puis joindre les cibles en attente."""
+
+    has_error = False
+
+    # Envoyé lors de la première tentative, puis réutilisé par les autres
+    media_id = self._media_id(attach) if attach else None
+
+    for target in self.targets:
+        # Acceptée lors d'une tentative précédente : on la laisse
+        if self.is_delivered(target):
+            continue
+
+        if not self._post(target, body, media_id):
+            has_error = True
+            continue
+
+        self.mark_delivered(target)
+
+    return not has_error
+```
+
+</TabItem>
+</Tabs>
+
+Remarques :
+
+- Les deux méthodes sont inertes lorsque les tentatives sont désactivées : le chemin par défaut `retry=0` ne coûte rien et ne demande aucune précaution de votre part.
+- Chaque morceau conserve sa propre valeur, même si son contenu est identique à celui d'un autre. Utilisez `per_message=True` uniquement pour un état partagé par toute la notification, comme un fichier envoyé une fois et utilisé par chaque morceau.
+- Lorsqu'une notification effectue plusieurs requêtes, utilisez une clé distincte pour chacune. Une empreinte du corps de la requête convient généralement.
+- Les types de clés restent distincts : `1`, `"1"` et `["1"]` ne partagent donc pas leur état.
+
 ## Requirements et Dépendances Optionnelles
 
 Si votre plugin a besoin de paquets supplémentaires, déclarez-les dans
