@@ -55,14 +55,16 @@ Utilisez le format local (`0412345678`) ou international (`61412345678`). Appris
 | to        | Non         | Alias des numéros de destination. Accepte une liste séparée par des virgules et peut se combiner aux numéros présents dans le chemin de l'URL.                                   |
 | from      | Non         | Alias de `senderID`. Pratique dans un fichier YAML pour placer l'identifiant d'expéditeur sur sa propre ligne.                                                                   |
 | batch     | Non         | Regroupe jusqu'à 10 000 destinataires par requête plutôt que d'envoyer une requête par destinataire. Vaut `yes` par défaut.                                                      |
-| unicode   | Non         | Conserve les émojis et les caractères accentués au lieu de les supprimer. Cette option réduit la taille de chaque partie et peut utiliser plus de crédits. Vaut `no` par défaut. |
+| unicode   | Non         | Conserve les emojis et les caractères accentués au lieu de les supprimer. Cette option réduit la taille de chaque partie et peut utiliser plus de crédits. Vaut `no` par défaut. |
 | max_parts | Non         | Nombre maximal de parties par notification, entre `1` et `99`. Réduisez-le pour limiter le coût d'une alerte. Vaut `10` par défaut.                                              |
 | ref       | Non         | Référence ajoutée à chaque message et renvoyée par le service. Elle facilite la recherche dans l'historique Mobile Message.                                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 :::note
-Les messages longs sont découpés en parties, et chaque partie coûte un crédit. Les parties GSM-7 contiennent 153 caractères, soit 1 530 par défaut. Avec `unicode=yes`, elles en contiennent 67, soit 670 par défaut.
+Chaque partie coûte un crédit. Elle contient 153 caractères GSM-7 ou 67 caractères Unicode, soit 1 530 ou 670 caractères avec la valeur par défaut `max_parts=10`.
+
+Les caractères `^`, `{`, `}`, `[`, `]`, `~`, `|`, `\` et `€` occupent deux emplacements. Les emojis nécessitent `unicode=yes` et peuvent en occuper deux ou plus. Mobile Message refuse tout contenu dépassant `max_parts`, ce qu'Apprise signale comme un échec.
 :::
 
 ## Exemples
@@ -98,7 +100,7 @@ apprise -vv -b "Utilisation du disque au-delà de 90 %" \
    "mobilemessage://apiuser01:s3cr3tpassw0rd@ALERTS/0412345678?max_parts=1"
 ```
 
-Autoriser les émojis et les caractères accentués, puis ajouter votre propre référence :
+Autoriser les emojis et les caractères accentués, puis ajouter votre propre référence :
 
 ```bash
 apprise -vv -b "Sauvegarde terminée, serveur café inclus" \

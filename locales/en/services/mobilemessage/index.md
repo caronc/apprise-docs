@@ -62,7 +62,9 @@ Use local (`0412345678`) or international (`61412345678`) phone numbers. Apprise
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 :::note
-Long messages are split into parts, and each part costs one credit. GSM-7 parts hold 153 characters, for 1,530 by default. With `unicode=yes`, parts hold 67 characters, for 670 by default.
+Each message part costs one credit. A part holds 153 GSM-7 characters or 67 Unicode characters, allowing 1,530 or 670 characters with the default `max_parts=10`.
+
+The characters `^`, `{`, `}`, `[`, `]`, `~`, `|`, `\` and `€` use two slots. Emoji require `unicode=yes` and may use two or more. Mobile Message rejects content beyond `max_parts`, which Apprise reports as a failed send.
 :::
 
 ## Examples
