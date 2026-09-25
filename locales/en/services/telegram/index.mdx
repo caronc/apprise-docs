@@ -111,10 +111,15 @@ If you want to see the icon/image associated with the notification, you can have
 | format    | No       | The default value is _html_. Set this to _markdown_ when you want Telegram's Markdown handling instead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | silent    | No       | A `yes/no` flag allowing you to send the notification in a silent fashion. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | preview   | No       | A `yes/no` flag allowing you to display webpage previews of your post. By default this is set to `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| album     | No       | Groups photos and videos into Telegram albums when set to `yes`. GIFs, audio, and documents are sent separately in their original order. If Telegram refuses an album, each item is sent on its own instead. A photo or video that is still refused is then sent as a regular file. The default is `no`.                                                                                                                                                                                                                                                                                                |
 | mdv       | No       | Optionally set the `markdown` version to use; can be set to either `v1` or `v2` and defaults to `v2` if not set. This value is only referenced when `?format=markdown` has also been set.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | topic     | No       | The Topic Thread ID you wish your message to be posted to. [Here is a StackOverflow post on acquiring the Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat)                                                                                                                                                                                                                                                                                                                                                                                    |
 | template  | No       | Path to a local Rich Message template file. When set, the file's contents are used to build a Telegram Rich Message (`sendRichMessage`) instead of the default text/Markdown/HTML message. The template must be a JSON file whose top-level object contains a non-empty `"blocks"` list. See **Templating** below.                                                                                                                                                                                                                                                                                      |
 | :token    | No       | Custom token(s) for template substitution. Prefix each token name with a colon in the URL (e.g. `?:mykey=myval`). Any token defined here is available as `{{mykey}}` inside the template file.                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+:::note
+Telegram accepts attachments up to 50 MB, and photos up to 10 MB. A larger photo is sent as a regular file instead. A file over 50 MB can't be sent, and the notification is reported as failed.
+:::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -280,6 +285,19 @@ Topics can also be assigned per chat id:
 # Assuming the {topic_id} is 1234567
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    tgram://123456789:abcdefg_hijklmnop/12315544:1234567/
+```
+
+Got several photos to send? Group them into a single Telegram album:
+
+```bash
+# Assuming our {bot_token} is 123456789:abcdefg_hijklmnop
+# Assuming the {chat_id} belonging to lead2gold is 12315544
+# The photos arrive as one album instead of three separate messages
+apprise -vv -t "Test Message Title" -b "Test Message Body" \
+   --attach=/path/to/one.jpg \
+   --attach=/path/to/two.jpg \
+   --attach=/path/to/three.jpg \
+   tgram://123456789:abcdefg_hijklmnop/12315544/?album=yes
 ```
 
 Send a notification using a custom Rich Message template (see **Templating** above), injecting a custom token with the `:key=value` prefix:

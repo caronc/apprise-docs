@@ -111,10 +111,15 @@ Si vous souhaitez afficher l'icone ou l'image associee a la notification, vous p
 | format    | Non         | La valeur par défaut est _html_. Définissez-la sur _markdown_ lorsque vous voulez utiliser le traitement Markdown de Telegram.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | silent    | Non         | Indicateur `yes/no` permettant d'envoyer la notification en mode silencieux. La valeur par defaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | preview   | Non         | Indicateur `yes/no` permettant d'afficher les apercus web de votre publication. La valeur par defaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| album     | Non         | Regroupe les photos et les vidéos dans des albums Telegram avec la valeur `yes`. Les GIF, les fichiers audio et les documents sont envoyés séparément dans leur ordre d'origine. Si Telegram refuse un album, chaque élément est envoyé séparément. Une photo ou une vidéo encore refusée est alors envoyée comme un fichier ordinaire. La valeur par défaut est `no`.                                                                                                                                                                                                      |
 | mdv       | Non         | Permet de definir la version de `markdown` a utiliser, soit `v1`, soit `v2`. La valeur par defaut est `v2` si rien n'est precise. Cette valeur n'est prise en compte que si `?format=markdown` a egalement ete defini.                                                                                                                                                                                                                                                                                                                                                      |
 | topic     | Non         | Identifiant du fil de sujet dans lequel vous souhaitez publier votre message. [Voici une publication StackOverflow expliquant comment recuperer le Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat).                                                                                                                                                                                                                                                                                                              |
 | template  | Non         | Chemin vers un fichier gabarit de Message Riche local. Lorsqu'il est defini, le contenu du fichier est utilise pour construire un Message Riche Telegram (`sendRichMessage`) a la place du message texte/Markdown/HTML par defaut. Le gabarit doit etre un fichier JSON dont l'objet racine contient une liste `"blocks"` non vide. Voir **Gabarits** ci-dessous.                                                                                                                                                                                                           |
 | :jeton    | Non         | Jeton(s) personnalise(s) pour la substitution dans le gabarit. Prefixez chaque nom de jeton par deux-points dans l'URL (par exemple `?:macle=mavaleur`). Tout jeton defini ici est disponible sous la forme `{{macle}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                                                            |
+
+:::note
+Telegram accepte les pièces jointes jusqu'à 50 Mo, et les photos jusqu'à 10 Mo. Une photo plus volumineuse est envoyée comme un fichier ordinaire. Un fichier de plus de 50 Mo ne peut pas être envoyé, et la notification est signalée en échec.
+:::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -280,6 +285,19 @@ Les sujets peuvent egalement etre definis pour chaque chat_id :
 # Supposons que le {topic_id} soit 1234567
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544:1234567/
+```
+
+Vous avez plusieurs photos à envoyer ? Regroupez-les dans un seul album Telegram :
+
+```bash
+# Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
+# Supposons que le {chat_id} de lead2gold soit 12315544
+# Les photos arrivent dans un seul album au lieu de trois messages séparés
+apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
+   --attach=/chemin/vers/une.jpg \
+   --attach=/chemin/vers/deux.jpg \
+   --attach=/chemin/vers/trois.jpg \
+   tgram://123456789:abcdefg_hijklmnop/12315544/?album=yes
 ```
 
 Envoyer une notification a l'aide d'un gabarit de Message Riche personnalise (voir **Gabarits** ci-dessus), en injectant un jeton personnalise avec le prefixe `:cle=valeur` :
