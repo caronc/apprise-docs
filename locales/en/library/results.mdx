@@ -237,8 +237,8 @@ for entry in result.logs():
 ## Messages Not Tied to One Service (`call_logs`)
 
 Apprise also logs work that does not belong to one service, such as retries,
-timeouts, escalation, or having no matching services. These entries are in
-`result.call_logs()`:
+escalation, a notification it could not prepare, or having no matching services.
+These entries are in `result.call_logs()`:
 
 ```python
 result = apobj.notify(body="Deploying new release")
@@ -246,6 +246,11 @@ result = apobj.notify(body="Deploying new release")
 for entry in result.call_logs():
     print(entry)
 ```
+
+:::note
+A service that runs out of time is recorded on that service's own attempt rather
+than here, so `result.logs()` lists the timeout once.
+:::
 
 `result.logs()` already combines these entries with all service logs in time
 order. Use `call_logs` directly when you only need Apprise's own messages:
@@ -498,21 +503,21 @@ if not result:
 
 ## Quick Reference
 
-| You want to know...                               | Check this                                               |
-| :------------------------------------------------ | :------------------------------------------------------- |
-| Did everything work?                              | `bool(result)`                                           |
-| Why did the whole call not succeed?               | `result.status` (compare it, or use `.name` to print it) |
-| Which services were even attempted?               | `for service in result: ...`                             |
-| Did one specific service succeed?                 | `bool(service)`                                          |
-| How many tries did a service take?                | `len(service)`                                           |
-| What actually happened on each try?               | `for attempt in service: ...`                            |
-| What warnings/errors did a service log?           | `service.logs()` / `attempt.logs`                        |
-| What did Apprise itself log (retries, deadlines)? | `result.call_logs()`                                     |
-| I want every service's logs, merged in time order | `result.logs()` (includes `call_logs` too)               |
-| I want to capture more (or less) than warnings    | `log_level=` on `Apprise()` or `notify()`                |
-| I want to see logs live, as they happen           | `log_callback=` on `Apprise()` or `notify()`             |
-| How long did it take?                             | `.elapsed` on `result`, `service`, or `attempt`          |
-| I need this as bounded JSON                       | `.write_json()` / `.iter_json()`                         |
+| You want to know...                                | Check this                                               |
+| :------------------------------------------------- | :------------------------------------------------------- |
+| Did everything work?                               | `bool(result)`                                           |
+| Why did the whole call not succeed?                | `result.status` (compare it, or use `.name` to print it) |
+| Which services were even attempted?                | `for service in result: ...`                             |
+| Did one specific service succeed?                  | `bool(service)`                                          |
+| How many tries did a service take?                 | `len(service)`                                           |
+| What actually happened on each try?                | `for attempt in service: ...`                            |
+| What warnings/errors did a service log?            | `service.logs()` / `attempt.logs`                        |
+| What did Apprise itself log (retries, escalation)? | `result.call_logs()`                                     |
+| I want every service's logs, merged in time order  | `result.logs()` (includes `call_logs` too)               |
+| I want to capture more (or less) than warnings     | `log_level=` on `Apprise()` or `notify()`                |
+| I want to see logs live, as they happen            | `log_callback=` on `Apprise()` or `notify()`             |
+| How long did it take?                              | `.elapsed` on `result`, `service`, or `attempt`          |
+| I need this as bounded JSON                        | `.write_json()` / `.iter_json()`                         |
 
 ## See Also
 

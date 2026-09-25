@@ -250,8 +250,9 @@ for entry in result.logs():
 ## Messages non rattachés à un service (`call_logs`)
 
 Apprise journalise aussi les opérations qui ne concernent pas un service précis,
-comme les tentatives supplémentaires, les délais, l'escalade ou l'absence de
-service correspondant. Ces entrées sont fournies par `result.call_logs()` :
+comme les tentatives supplémentaires, l'escalade, une notification qu'il n'a pas
+pu préparer ou l'absence de service correspondant. Ces entrées sont fournies par
+`result.call_logs()` :
 
 ```python
 result = apobj.notify(body="Déploiement de la nouvelle version")
@@ -259,6 +260,11 @@ result = apobj.notify(body="Déploiement de la nouvelle version")
 for entry in result.call_logs():
     print(entry)
 ```
+
+:::note
+Un service qui dépasse son délai est enregistré sur sa propre tentative plutôt
+qu'ici, si bien que `result.logs()` ne liste ce dépassement qu'une seule fois.
+:::
 
 `result.logs()` combine déjà ces entrées avec les journaux des services dans
 l'ordre chronologique. Utilisez directement `call_logs` pour consulter
@@ -529,7 +535,7 @@ if not result:
 | Combien de tentatives un service a-t-il pris ?                                  | `len(service)`                                                     |
 | Que s'est-il réellement passé à chaque tentative ?                              | `for attempt in service: ...`                                      |
 | Quels avertissements/erreurs un service a-t-il journalisés ?                    | `service.logs()` / `attempt.logs`                                  |
-| Qu'est-ce qu'Apprise lui-même a journalisé (tentatives, délais) ?               | `result.call_logs()`                                               |
+| Qu'est-ce qu'Apprise lui-même a journalisé (tentatives, escalade) ?             | `result.call_logs()`                                               |
 | Je veux les journaux de tous les services, fusionnés dans l'ordre chronologique | `result.logs()` (inclut aussi `call_logs`)                         |
 | Je veux capturer plus (ou moins) que les avertissements                         | `log_level=` sur `Apprise()` ou `notify()`                         |
 | Je veux voir les journaux en direct, au fur et à mesure                         | `log_callback=` sur `Apprise()` ou `notify()`                      |
