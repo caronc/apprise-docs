@@ -30,7 +30,7 @@ limits:
 
 ## Configuration du Compte
 
-Pour utiliser DingTalk, vous devez recuperer votre _API Key_.
+Pour utiliser DingTalk, vous devez récupérer votre _API Key_.
 
 ## Syntaxe
 
@@ -43,11 +43,11 @@ La syntaxe valide est la suivante :
 
 ## Détail des Paramètres
 
-| Variable  | Obligatoire | Description                                                                                      |
-| --------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| ApiKey    | Oui         | _API Key_ associee a votre compte DingTalk. Elle est disponible via le Tableau de Bord DingTalk. |
-| ToPhoneNo | Non         | Numero de telephone auquel envoyer votre notification.                                           |
-| Secret    | Non         | Cle secrete facultative a associer a la signature du message.                                    |
+| Variable  | Obligatoire | Description                                                                                       |
+| --------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| ApiKey    | Oui         | _API Key_ associée à votre compte DingTalk. Elle est disponible dans le tableau de bord DingTalk. |
+| ToPhoneNo | Non         | Numéro de téléphone auquel envoyer votre notification.                                            |
+| Secret    | Non         | Clé secrète facultative associée à la signature du message.                                       |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -56,8 +56,8 @@ La syntaxe valide est la suivante :
 DingTalk peut afficher votre message en texte brut ou en Markdown, et Apprise
 choisit le bon format pour vous :
 
-- Le texte brut est utilise par defaut.
-- Si vous envoyez un message Markdown, DingTalk le recoit en Markdown.
+- Le texte brut est utilisé par défaut.
+- Si vous envoyez un message Markdown, DingTalk le reçoit en Markdown.
 - Vous pouvez forcer l'un ou l'autre avec `?format=text` ou `?format=markdown`.
 
 :::note
@@ -72,13 +72,13 @@ Envoyer un SMS via DingTalk :
 ```bash
 # Supposons que notre {APIKey} soit gank339l7jk3cjaE
 # Supposons que notre {ToPhoneNo}
-#  - se trouve aux Etats-Unis, donc avec l'indicatif +1
-#  - corresponde a 1-123-555-1223
+#  - se trouve aux États-Unis, donc avec l'indicatif +1
+#  - corresponde à 1-123-555-1223
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    dingtalk://gank339l7jk3cjaE/11235551223
 
-# l'exemple suivant aurait egalement fonctionne, les espaces,
-# parentheses et tirets sont acceptes dans un numero :
+# L'exemple suivant aurait également fonctionné : les espaces,
+# parenthèses et tirets sont acceptés dans un numéro.
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    dingtalk://gank339l7jk3cjaE/1-(123) 555-1223
 ```

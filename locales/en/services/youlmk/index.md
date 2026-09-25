@@ -1,6 +1,6 @@
 ---
 title: "YouLMK Notifications"
-description: "Send notifications to your YouLMK inbox: your phone, the browser, email, Slack or a webhook you own, with the rules you set per sender."
+description: "Send notifications to your YouLMK inbox by phone, browser, email, Slack, or webhook, using rules set for each sender."
 sidebar:
   label: "YouLMK"
 
@@ -30,14 +30,14 @@ limits:
 
 ## Account Setup
 
-[YouLMK](https://youlmk.com/) is a hosted notification inbox. Anything with an HTTP client sends into it, and you decide per sender (a _source_) how far a message may reach (Silent, Badge, Banner, Break through), whether quiet hours hold it, and how repeats group. A notification lands on your phone, in your browser, in email, in Slack, or on a webhook you own.
+[YouLMK](https://youlmk.com/) is a hosted notification inbox. Any HTTP client can send it a message. For each sender (a _source_), you choose its reach (Silent, Badge, Banner, or Break through), whether it respects quiet hours, and how repeated messages are grouped. Notifications can arrive on your phone, in your browser, by email, in Slack, or through your own webhook.
 
-1. Sign in at [youlmk.com](https://youlmk.com/) or in the app and create a source for the thing that will send (for example `apprise`). Every source has its own key and its own rules.
-2. Open the source's **Key** screen. It shows two credentials, and either one works here:
+1. Sign in at [youlmk.com](https://youlmk.com/) or in the app and create a source for the sender (for example, `apprise`). Every source has its own key and rules.
+2. Open the source's **Key** screen. Either credential shown there works:
    - the bearer token, `ylk_` followed by 32 characters
    - the URL key, `k_` followed by 14 characters
 
-The trial is 10 notifications and 3 watches, no card; after that Send is $4 a month.
+The trial includes 10 notifications and 3 watches without a credit card. Afterward, Send costs $4 per month.
 
 ## Syntax
 
