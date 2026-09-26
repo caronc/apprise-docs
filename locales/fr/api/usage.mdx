@@ -340,8 +340,8 @@ Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 
 `template` associe chaque nom utilisé par l'URL à la valeur par défaut déclarée pour lui dans la section `template:` de la configuration :
 
-- `null` signifie qu'aucune valeur par défaut ne peut être transmise. Soit aucune n'a été écrite, soit `privacy=1` l'a masquée.
-- `null` ne veut pas dire que la valeur est indisponible. Le serveur peut encore la fournir depuis son propre environnement au moment de l'envoi.
+- `null` signifie qu'aucune valeur par défaut ne peut être transmise. Soit aucune n'a été écrite, soit `privacy=1` ou `APPRISE_CONFIG_LOCK` l'a masquée.
+- `null` ne veut pas dire que la valeur est indisponible. Le serveur peut encore la fournir depuis son propre environnement au moment de l'envoi. Les valeurs de l'environnement, et même leur existence, ne sont jamais indiquées.
 - L'objet est toujours présent. Il est vide lorsqu'il n'y a rien à signaler.
 
 Les marqueurs présents dans `url` sont laissés exactement tels qu'ils ont été écrits :

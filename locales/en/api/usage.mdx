@@ -317,8 +317,8 @@ it requires administrator privileges or `user` access. Calls using `locked`,
 
 `template` maps every name the URL uses to the default declared for it in the configuration's `template:` section:
 
-- `null` means there is no default to hand over. Either none was written, or `privacy=1` withheld it.
-- `null` does not mean the value is unavailable. The server may still fill the name in from its own environment when the notification is sent.
+- `null` means there is no default to hand over. Either none was written, or `privacy=1` or `APPRISE_CONFIG_LOCK` withheld it.
+- `null` does not mean the value is unavailable. The server may still fill the name in from its own environment when the notification is sent. Environment values, and whether one exists, are never listed.
 - The object is always present. It is empty when there is nothing to report.
 
 The markers inside `url` are left exactly as written:
