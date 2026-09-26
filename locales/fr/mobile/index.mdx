@@ -3,11 +3,21 @@ title: Apprise Mobile
 description: Envoyez des notifications et des pièces jointes où que vous soyez avec votre API Apprise auto-hébergée.
 tableOfContents: false
 sidebar:
-  label: Aperçu
+  label: Introduction
   order: 1
 ---
 
 import "~/styles/mobile.css";
+
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+`}</style>
 
 <div class="mobile-page">
   <section class="mobile-hero">
@@ -44,6 +54,25 @@ import "~/styles/mobile.css";
     </a>
 
   </section>
+
+<section class="mobile-preview">
+  <h2>Où se place Apprise Mobile</h2>
+  <p>
+    Apprise Mobile est un client pour un serveur que vous hébergez. Il dialogue
+    avec votre API Apprise, qui se charge de la remise.
+  </p>
+  <picture class="apprise-flow apprise-flow--mobile">
+    <source
+      srcset="./images/apprise-overview-dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <img
+      src="./images/apprise-overview-light.svg"
+      alt="Apprise Mobile mis en évidence parmi les façons d’envoyer des notifications."
+      loading="lazy"
+    />
+  </picture>
+</section>
 
 <section class="mobile-preview">
   <h2>Envoyez maintenant ou gardez pour plus tard</h2>

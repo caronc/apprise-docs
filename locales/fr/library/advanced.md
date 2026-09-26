@@ -107,6 +107,18 @@ interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent
 sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs
 détails individuels ne sont pas nécessaires.
 
+`notify()` et `async_notify()` signalent ces problèmes dans leur valeur de
+retour plutôt qu'en levant une exception.
+
+Un service qui échoue avant de préparer son message reçoit sa propre entrée
+`FAILURE`, comme un service qui échoue pendant l'envoi. Les autres services sont
+quand même exécutés, l'escalade continue et les services optionnels le restent.
+Un appel dont les résultats sont mixtes renvoie `PARTIAL`.
+
+Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE`
+sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le
+seul cas où ces méthodes lèvent encore une exception.
+
 ## Prise en charge des proxys
 
 Apprise envoie chaque notification via [requests](https://requests.readthedocs.io/), qui respecte automatiquement les variables d'environnement standard `HTTP_PROXY`, `HTTPS_PROXY` et `NO_PROXY`. Aucune configuration spécifique à Apprise n'est nécessaire : définissez la variable avant de démarrer votre processus (ou exportez-la dans l'environnement dans lequel Apprise s'exécute) et chaque requête sortante passera par le proxy :

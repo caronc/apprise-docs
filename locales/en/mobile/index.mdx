@@ -3,11 +3,21 @@ title: Apprise Mobile
 description: Send notifications and attachments from anywhere with your self-hosted Apprise API.
 tableOfContents: false
 sidebar:
-  label: Overview
+  label: Introduction
   order: 1
 ---
 
 import "~/styles/mobile.css";
+
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+`}</style>
 
 <div class="mobile-page">
   <section class="mobile-hero">
@@ -44,6 +54,25 @@ import "~/styles/mobile.css";
     </a>
 
   </section>
+
+<section class="mobile-preview">
+  <h2>Where Apprise Mobile fits</h2>
+  <p>
+    Apprise Mobile is a client for a server you run. It talks to your Apprise
+    API, which does the delivering.
+  </p>
+  <picture class="apprise-flow apprise-flow--mobile">
+    <source
+      srcset="./images/apprise-overview-dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <img
+      src="./images/apprise-overview-light.svg"
+      alt="Apprise Mobile highlighted among the ways to send notifications through Apprise."
+      loading="lazy"
+    />
+  </picture>
+</section>
 
 <section class="mobile-preview">
   <h2>Send It Now or Save It for Later</h2>

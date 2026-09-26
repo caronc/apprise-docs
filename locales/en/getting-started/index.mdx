@@ -22,11 +22,21 @@ sidebar:
   :root[data-theme="light"] .theme-aware-a1-diagram img {
     content: url("./images/apprise-notifications-light.svg");
   }
+
+  /* Overview diagram, same light/dark swap as the diagram above. */
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+
 `}</style>
 
 The name **Apprise** (/əˈpraɪz/) is pronounced like “uh-prise”, similar to _surprise_ or _arise_, with emphasis on the second syllable.
 
-**Apprise** is a notification routing library that standardizes how messages are delivered to more than 100+ different services. It takes the complexity out of sending notifications.
+**Apprise** is a notification router. You describe each destination as a URL, hand Apprise a message, and it delivers to every destination you listed.
 
 <picture class="theme-aware-a1-diagram">
   <source
@@ -35,14 +45,14 @@ The name **Apprise** (/əˈpraɪz/) is pronounced like “uh-prise”, similar t
   />
   <img
     src="./images/apprise-notifications-light.svg"
-    alt="Stateless API Integration"
+    alt="One message sent through Apprise fanning out to many notification services."
     loading="lazy"
   />
 </picture>
 
-It does not replace chat platforms, email providers, or alerting systems. Instead, it provides a single, consistent way to send notifications to them.
+It does not replace your chat platform, email provider, or alerting system. It sits in front of them, so you only have to learn one way to send a message.
 
-Whether you are a system administrator running scripts, a developer building an application, or a DevOps engineer managing distributed services, Apprise removes the need to learn and maintain dozens of vendor-specific APIs.
+Whether you run cron jobs, manage containers, or build applications, Apprise saves you from learning and maintaining a different API for every service.
 
 ## One Syntax to Rule Them All
 
@@ -54,67 +64,54 @@ Instead of learning a unique payload format for every service, you configure des
 service://credentials/direction/?parameter=value
 ```
 
-If you later decide to switch from one service to another, your application logic does not change. You simply update the URL configuration.
+Switching services later means changing the URL, not your code or your scripts.
 
 This makes notifications portable, maintainable, and easy to reason about.
 
-## The Four Pillars of Apprise
+## How Apprise Fits Together
 
-Apprise is more than a library. Its four tools work together to support applications, automation, shared servers, and mobile access.
+<picture class="apprise-flow">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="Sources on the left send through the Apprise API or core library in the middle, which deliver to notification services on the right."
+    loading="lazy"
+  />
+</picture>
 
-### 1. The Python Library
+- **Something needs to send a message.** A script, a webhook, the command line, the mobile app, or software that already speaks Apprise.
+- **Apprise handles the delivery.** You either import the Python library into your own code, or run the API server as a shared gateway that anything can post to.
+- **The message goes out.** A single request can reach one destination or every destination you have configured, in parallel.
 
-_For Developers_
+Because the URL format is the same everywhere, a URL you test on the command line works unchanged in a script, in the API server, or on your phone.
 
-At its core, Apprise is a lightweight Python library. You embed it directly into your application and send notifications in just a few lines of code.
+## What It Looks Like
+
+From a script or the command line:
+
+```bash
+apprise -t "Backup Complete" -b "The server is safe" \
+  "discord://webhook_id/webhook_token"
+```
+
+Or from your own Python code:
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
-
-# Add a service
 apobj.add("tgram://credentials")
 
-# Notification destinations are configured separately
 apobj.notify(
     body="Hello World",
     title="My Notification",
 )
 ```
 
-The same code works regardless of which notification services you configure.
-
-### 2. The Command Line Interface (CLI)
-
-_For system administrators and automation_
-
-Apprise ships with a powerful CLI that exposes the same functionality without requiring Python code. This is ideal for cron jobs, backup scripts, monitoring hooks, and CI/CD pipelines.
-
-```bash
-# e.g: Send a notification to Discord
-apprise -t "Backup Complete" -b "The server is safe" \
-  "discord://webhook_id/webhook_token"
-```
-
-### 3. The API Server
-
-_For centralized and networked environments_
-
-Apprise is also available as a stateless, containerized API server. This allows you to operate a centralized “notification gateway” for multiple systems.
-
-You can:
-
-- Send notifications directly with each request (stateless)
-- Store configurations server-side and reference them by key (stateful)
-
-This is especially useful for microservices, shared infrastructure, and teams that want centralized control.
-
-### 4. Apprise Mobile
-
-_For users on the go_
-
-Apprise Mobile is the Android interface for your self-hosted Apprise API. Use it to view saved servers, create notification URLs, and send notifications from your phone.
+Both send the same notification. Point them at a different service and only the URL changes.
 
 ## Key Features
 
@@ -124,11 +121,11 @@ Apprise Mobile is the Android interface for your self-hosted Apprise API. Use it
 - **High performance**, with parallel notification delivery
 - **Minimal dependencies**, designed to stay lightweight
 
-## Which Approach Should I Use?
+## Where to Start
 
-| If you are…                               | Start with…                     |
-| ----------------------------------------- | ------------------------------- |
-| Building a Python application             | [The Python Library](/library/) |
-| Automating scripts or system tasks        | [The CLI Tool](/cli/)           |
-| Centralizing notifications across systems | [The API Server](/api/)         |
-| Using your API from your phone            | [Apprise Mobile](/mobile/)      |
+| If you want to…                                      | Use…                                                            |
+| ---------------------------------------------------- | --------------------------------------------------------------- |
+| Notify from cron jobs, scripts or CI                 | [The CLI](/cli/)                                                |
+| Send notifications from your own application         | [The Python Library](/library/)                                 |
+| Give many systems one shared notification gateway    | [The API Server](/api/), stateless or with saved configurations |
+| Send from your phone against your self-hosted server | [Apprise Mobile](/mobile/)                                      |

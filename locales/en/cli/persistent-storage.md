@@ -7,7 +7,7 @@ sidebar:
 
 Persistent Storage allows Apprise to cache data locally. This greatly reduces the number of API transactions between you and the service(s) you are using.
 
-## Why Use Persistent Storage?
+## What Gets Cached
 
 Some services require complex authentication handshakes or resource lookups that are "expensive" to perform every time you send a notification.
 

@@ -54,17 +54,18 @@ This table documents the **actual defaults** from the implementation, plus where
 
 ### Identity and Presentation
 
-| Field                | Type              |                             Default | Used by                              | Notes                                                                                      |
-| -------------------- | ----------------- | ----------------------------------: | ------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `app_id`             | `str`             |                           `Apprise` | Plugin headers, key generation names | Used as a human-facing application identifier and as a default name in PGP key generation. |
-| `app_desc`           | `str`             |             `Apprise Notifications` | Metadata / Presentation              | Used by tooling and services that display an application description.                      |
-| `app_url`            | `str`             | `https://github.com/caronc/apprise` | Metadata / Presentation              | Provider URL exposed in docs and some plugin metadata.                                     |
-| `theme`              | `str`             |                           `default` | Icon URL/path resolution             | Drives `{THEME}` substitution for icon lookup.                                             |
-| `default_extension`  | `str`             |                              `.png` | Icon URL/path resolution             | Used when `extension` is not provided to `image_url()` or `image_path()`.                  |
-| `default_image_size` | `NotifyImageSize` |                            `XY_256` | Icon URL resolution                  | Used when size is omitted.                                                                 |
-| `image_url_mask`     | `str`             |                      GitHub raw URL | `image_url()`                        | Produces a themed image URL for `NotifyType` + size.                                       |
-| `image_url_logo`     | `str`             |                      GitHub raw URL | `image_url(logo=True)`               | Used for the application logo.                                                             |
-| `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`       | Used for local icon resolution and raw bytes loading.                                      |
+| Field                | Type              |                             Default | Used by                              | Notes                                                                                                                                                                                                                                                                           |
+| -------------------- | ----------------- | ----------------------------------: | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app_id`             | `str`             |                           `Apprise` | Plugin headers, key generation names | Used as a human-facing application identifier and as a default name in PGP key generation.                                                                                                                                                                                      |
+| `app_desc`           | `str`             |             `Apprise Notifications` | Metadata / Presentation              | Used by tooling and services that display an application description.                                                                                                                                                                                                           |
+| `app_url`            | `str`             | `https://github.com/caronc/apprise` | Metadata / Presentation              | Provider URL exposed in docs and some plugin metadata.                                                                                                                                                                                                                          |
+| `theme`              | `str`             |                           `default` | Icon URL/path resolution             | Drives `{THEME}` substitution for icon lookup.                                                                                                                                                                                                                                  |
+| `language`           | `str`             |                     system language | Translated text                      | Sets the language Apprise uses for its own text, such as the field names returned by `details()`. Accepts `en`, `en-CA`, or `en_CA`. A region falls back to its plain language, then to English, when no translation is installed. YAML accepts `language` or its `lang` alias. |
+| `default_extension`  | `str`             |                              `.png` | Icon URL/path resolution             | Used when `extension` is not provided to `image_url()` or `image_path()`.                                                                                                                                                                                                       |
+| `default_image_size` | `NotifyImageSize` |                            `XY_256` | Icon URL resolution                  | Used when size is omitted.                                                                                                                                                                                                                                                      |
+| `image_url_mask`     | `str`             |                      GitHub raw URL | `image_url()`                        | Produces a themed image URL for `NotifyType` + size.                                                                                                                                                                                                                            |
+| `image_url_logo`     | `str`             |                      GitHub raw URL | `image_url(logo=True)`               | Used for the application logo.                                                                                                                                                                                                                                                  |
+| `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`       | Used for local icon resolution and raw bytes loading.                                                                                                                                                                                                                           |
 
 ### Type Mapping Helpers
 
@@ -280,6 +281,30 @@ asset = AppriseAsset(timezone="America/Toronto")
 
   </TabItem>
 
+<TabItem value="language" label="Language Control" >
+
+Apprise translates its own human-readable text, such as the field names
+`details()` returns. Leave `language` unset and the language of the system
+Apprise runs on is used.
+
+```python
+from apprise import AppriseAsset
+
+# Two-letter codes and regional tags are both accepted; case does not matter
+asset = AppriseAsset(language="fr")
+asset = AppriseAsset(language="en-CA")
+```
+
+A regional tag looks for that exact translation first (`en_CA`), then for
+its plain language (`en`), and finally falls back to English. Apprise ships
+translations for `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`, `ko`,
+`ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi`, and `zh`.
+
+Only text a person reads is translated. Anything a program reads, such as a
+status code or a key in a response, stays in English.
+
+  </TabItem>
+
 </Tabs>
 
 ## Icon and Image Resolution
@@ -398,6 +423,13 @@ code or redirect persistent storage.
 ```yaml
 asset:
   timezone: America/Toronto # or: tz: America/Toronto
+```
+
+`language` is supported in YAML and may also use the `lang` alias:
+
+```yaml
+asset:
+  language: fr # or: lang: fr
 ```
 
 ## See Also

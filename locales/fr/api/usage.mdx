@@ -419,3 +419,29 @@ Les indices chaînés permettent de traverser des tableaux imbriqués :
 items[0]               premier élément du tableau items
 items[0].objectURI     propriété .objectURI du premier élément
 ```
+
+## Langue
+
+L'interface Web choisit une langue pour chaque page qu'elle affiche, dans cet ordre :
+
+1. La langue que vous sélectionnez dans le menu en haut de la page. Elle est conservée dans un cookie pendant un an et l'emporte toujours.
+2. Sinon l'en-tête `Accept-Language` envoyé par votre navigateur, selon l'ordre de préférence qu'il contient. Une langue que votre navigateur signale comme non souhaitée (`q=0`) est ignorée.
+3. Chaque tag complet de cet en-tête est essayé avant tout tag raccourci. Demander `pt-BR, de` essaie `pt-BR`, puis `de`, et seulement ensuite `pt`.
+4. L'anglais, lorsque aucune de vos langues n'est disponible.
+
+### Demander une langue depuis votre propre code
+
+Cet en-tête n'est pas réservé aux navigateurs. N'importe quel client peut l'envoyer, et les étapes 2 à 4 ci-dessus s'appliquent de la même manière :
+
+```http
+GET /details HTTP/1.1
+Accept-Language: en-US,en;q=0.9,de;q=0.5
+```
+
+Chaque réponse indique la langue utilisée grâce à un en-tête `Content-Language`. Les textes lus par une personne la suivent : les noms de services et les descriptions de champs renvoyés par `/details` arrivent donc dans cette langue.
+
+Apprise API est traduite en allemand, anglais, arabe, chinois, coréen, espagnol, français, hindi, indonésien, italien, japonais, malais, néerlandais, polonais, portugais, russe, tagalog, thaï, turc et vietnamien.
+
+:::note
+Seuls les textes lus par une personne sont traduits. Les valeurs acceptées par l'API, comme `type=success` ou `format=text`, restent toujours en anglais, tout comme les clés JSON et les mots d'état que votre code lit.
+:::

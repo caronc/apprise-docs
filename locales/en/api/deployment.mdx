@@ -16,21 +16,6 @@ If you are looking to:
 - integrate with the CLI or Python library, see **Integration**
 - understand keys, storage, or locking, see **Configuration**
 
-## Deployment Model
-
-Apprise API is a **stateless-first** service with **optional persistent state**.
-
-- Stateless usage sends notifications directly without saving configuration.
-- Stateful usage persists configuration under a `{KEY}` for reuse.
-- The built-in web interface is optional and provided for convenience only.
-
-The service is safe to run:
-
-- locally
-- behind a reverse proxy
-- in Docker or Docker Compose
-- in Kubernetes, including hardened and rootless environments
-
 ## Quick Start
 
 Choose one deployment method below to get Apprise API running quickly.

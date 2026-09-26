@@ -6,7 +6,31 @@ sidebar:
   order: 1
 ---
 
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+`}</style>
+
 The Apprise library allows you to send notifications to almost all of the most popular notification services available today (Telegram, Discord, Slack, Email, etc.) using a single, unified Python API.
+
+The library is the engine underneath everything else: the CLI, the API server, and the mobile app all send through it.
+
+<picture class="apprise-flow apprise-flow--library">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="The Apprise core library highlighted among the ways to send notifications through Apprise."
+    loading="lazy"
+  />
+</picture>
 
 For common helpers used across plugins, see the [Utilities Reference](./utilities/).
 
@@ -16,6 +40,12 @@ Apprise is available on PyPI and can be installed via pip.
 
 ```bash
 pip install apprise
+```
+
+If your project uses [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv add apprise
 ```
 
 ## Hello World
@@ -38,14 +68,3 @@ apobj.notify(
     title='My Notification Title',
 )
 ```
-
-## Why Use the Library?
-
-- **Unified Syntax**: One URL format for **<!-- SERVICES:COUNT -->** services.
-- **Asynchronous**: Sending notifications is non-blocking (optional).
-- **Tagging**: Group services (e.g., `devops`, `billing`) and notify them selectively.
-- **Attachments**: Send files and images effortlessly.
-- **Rich Text**: Support Emojis and handle HTML, TEXT, and Markdown
-- **Configuration**: Load URLs from YAML/Text files or API endpoints.
-- **[Template Variables](../getting-started/template/)**: Fill declared
-  YAML values at send time without changing the saved configuration.

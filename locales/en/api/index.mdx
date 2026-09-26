@@ -1,0 +1,135 @@
+---
+title: Apprise API
+description: A lightweight, production-ready notification gateway.
+sidebar:
+  label: "Introduction"
+  order: 1
+---
+
+<style>{`
+    :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+
+  /* Companion app callout. Colours come from the theme so it follows the toggle. */
+  .api-mobile-callout {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+    margin: 1.75rem 0;
+    padding: 1.15rem 1.3rem;
+    border-radius: 0.9rem;
+    border: 1px solid
+      color-mix(in srgb, var(--sl-color-accent) 24%, var(--sl-color-gray-5) 76%);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--sl-color-accent) 10%, var(--sl-color-bg) 90%),
+      color-mix(in srgb, var(--sl-color-accent) 3%, var(--sl-color-bg) 97%)
+    );
+  }
+
+  .api-mobile-callout img {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+  }
+
+  .api-mobile-callout__copy {
+    flex: 1 1 18rem;
+    min-width: 0;
+  }
+
+  .api-mobile-callout__copy strong {
+    display: block;
+    font-size: 1.05rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .api-mobile-callout__copy p {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: 0.95rem;
+  }
+
+  .api-mobile-callout a.api-mobile-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--sl-color-text-accent);
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-black);
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .api-mobile-callout a.api-mobile-cta:hover {
+    filter: brightness(1.1);
+  }
+`}</style>
+
+The **Apprise API** turns Apprise into a service. You run it once, point your systems at it, and they can all send notifications over plain HTTP without installing Python, without the CLI, and without knowing anything about the services behind it.
+
+It is the middle box in the picture below: everything on the left hands it a message, and it takes care of delivering to everything on the right.
+
+<picture class="apprise-flow apprise-flow--api">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="Sources on the left send to the Apprise API in the middle, which delivers to notification services on the right."
+    loading="lazy"
+  />
+</picture>
+
+## Use Cases
+
+- **One endpoint for everything.** Your scripts, containers, and applications all post to the same place instead of each carrying their own credentials.
+- **Keep your URLs in one spot.** Save a set of destinations under a key such as `my-alerts`, then send to that key. Change who gets notified without touching anything that calls you.
+- **Or store nothing at all.** Send the destination URLs with each request instead, which suits short-lived containers and sidecars. One server does both.
+- **No Python required.** Anything that can make an HTTP request can send a notification, including tools and appliances that have no scripting at all.
+- **A web interface included.** Manage saved configurations and send test notifications from your browser. It follows your browser language, and you can turn it off with `APPRISE_API_ONLY=yes`.
+- **Runs anywhere.** A small container that is at home under Docker, Docker Compose, or Kubernetes.
+
+<div class="api-mobile-callout">
+  <img src="/assets/google-play.svg" alt="" width="58" height="58" />
+  <div class="api-mobile-callout__copy">
+    <strong>Add your phone to the picture</strong>
+    <p>
+      Apprise Mobile is the official Android companion for a server you already
+      run. Scan a QR code from the web interface to connect, then send
+      notifications, share a photo, and check what was delivered, all from your
+      phone.
+    </p>
+  </div>
+  <a
+    class="api-mobile-cta"
+    href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Get It on Google Play
+  </a>
+</div>
+
+## Getting Started
+
+1. **Deploy it.** Start the container with [Docker or Kubernetes](/api/deployment/).
+2. **Add your destinations.** Use the web interface to save your notification URLs and give them a key.
+3. **Send.** Point anything that speaks HTTP at your server and the message goes out.
+
+[Deploy the server](/api/deployment/) · [See what it can do](/api/usage/) · [Browse the endpoints](/api/endpoints/)
+
+:::tip
+If your server is reachable from the internet, [enable authentication](/api/deployment/#authentication-and-access-control) and protect saved configurations through the web interface or `/auth/{KEY}`. A hard-to-guess key helps, but it is not a replacement for credentials.
+:::

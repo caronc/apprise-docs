@@ -103,6 +103,18 @@ Disk failures reported as `AppriseDiskIOError` can also be caught as
 `OSError`. Plugin-specific failures based on `ApprisePluginException` can be
 handled together when their individual details are not needed.
 
+`notify()` and `async_notify()` report these problems in their return value
+instead of raising exceptions.
+
+A service that fails before preparing its message gets its own `FAILURE` entry,
+just like one that fails while sending. Other services still run, escalation
+continues, and optional services remain optional. A call with mixed outcomes
+reports `PARTIAL`.
+
+If Apprise cannot use the message, the whole call reports `FAILURE` with no
+service entries and sends nothing. An invalid `timeout=` value is the only case
+these methods still raise for.
+
 ## Proxy Support
 
 Apprise sends every notification over [requests](https://requests.readthedocs.io/), which honours the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables automatically. No Apprise-specific configuration is required — set the variable before your process starts (or export it in the environment Apprise runs under) and every outbound request routes through the proxy:

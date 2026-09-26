@@ -249,7 +249,8 @@ for entry in result.call_logs():
 
 :::note
 A service that runs out of time is recorded on that service's own attempt rather
-than here, so `result.logs()` lists the timeout once.
+than here, so `result.logs()` lists the timeout once. A `log_callback` still
+receives it as it happens.
 :::
 
 `result.logs()` already combines these entries with all service logs in time

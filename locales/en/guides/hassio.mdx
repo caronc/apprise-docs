@@ -18,19 +18,6 @@ direct service calls), see the
 [Home Assistant service plugin](/services/homeassistant/) (`hassio://`).
 :::
 
-## Why Use Apprise with Home Assistant
-
-Using Apprise provides several benefits:
-
-- A single configuration file for all notification services
-- Support for dozens of providers (email, Telegram, ntfy, Kodi, and more)
-- Tag-based routing for flexible notification targeting
-- No vendor lock-in at the automation level
-
-Home Assistant remains unaware of provider details. It simply sends messages to Apprise and lets Apprise do the rest.
-
----
-
 ## 1. Installation
 
 Apprise is built into Home Assistant Core. You do not need to install a custom component or add-on. It is available immediately via the `notify` platform.

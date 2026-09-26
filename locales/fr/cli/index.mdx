@@ -6,13 +6,37 @@ sidebar:
   order: 1
 ---
 
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+`}</style>
+
 La CLI Apprise (`apprise`) est un outil leger en ligne de commande qui vous permet d'envoyer des notifications vers pratiquement n'importe quel service directement depuis votre terminal. Elle est ideale pour les administrateurs systeme, les ingenieurs DevOps et les scripts d'automatisation.
+
+La CLI est l’une des portes d’entrée d’Apprise. Elle utilise les mêmes URL de notification que le reste, et peut s’adresser à un serveur API Apprise plutôt que d’envoyer directement.
+
+<picture class="apprise-flow apprise-flow--cli">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="La CLI Apprise mise en évidence parmi les façons d’envoyer des notifications."
+    loading="lazy"
+  />
+</picture>
 
 ## Installer la CLI
 
 La commande `apprise` est incluse dans l'installation du coeur Apprise.
 
-La plupart des utilisateurs l'installent via `pip install apprise`.
+La plupart des utilisateurs l'installent via `pip install apprise`. Si vous utilisez [uv](https://docs.astral.sh/uv/), `uv tool install apprise` fait la même chose.
 
 Les images Docker ciblent principalement **Apprise API**, meme si la CLI reste disponible dans le conteneur pour un usage operationnel.
 

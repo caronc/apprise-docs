@@ -56,17 +56,18 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 
 ### Identité et Présentation
 
-| Champ                | Type              |                          Par défaut | Utilisé par                       | Notes                                                                                                |
-| -------------------- | ----------------- | ----------------------------------: | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `app_id`             | `str`             |                           `Apprise` | En-têtes de plugins, noms de clés | Utilisé comme identifiant applicatif lisible et comme nom par défaut pour la génération de clés PGP. |
-| `app_desc`           | `str`             |             `Apprise Notifications` | Métadonnées / présentation        | Utilisé par les outils et services qui affichent une description d'application.                      |
-| `app_url`            | `str`             | `https://github.com/caronc/apprise` | Métadonnées / présentation        | URL du fournisseur exposée dans la documentation et certaines métadonnées de plugins.                |
-| `theme`              | `str`             |                           `default` | Résolution d'URL/chemin d'icônes  | Pilote la substitution `{THEME}` lors de la recherche d'icônes.                                      |
-| `default_extension`  | `str`             |                              `.png` | Résolution d'URL/chemin d'icônes  | Utilisé lorsque `extension` n'est pas fourni à `image_url()` ou `image_path()`.                      |
-| `default_image_size` | `NotifyImageSize` |                            `XY_256` | Résolution d'URL d'icônes         | Utilisé quand la taille est omise.                                                                   |
-| `image_url_mask`     | `str`             |                      URL GitHub raw | `image_url()`                     | Produit une URL d'image thémée pour `NotifyType` + taille.                                           |
-| `image_url_logo`     | `str`             |                      URL GitHub raw | `image_url(logo=True)`            | Utilisé pour le logo de l'application.                                                               |
-| `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`    | Utilisé pour la résolution locale d'icônes et le chargement des octets bruts.                        |
+| Champ                | Type              |                          Par défaut | Utilisé par                       | Notes                                                                                                                                                                                                                                                                                                  |
+| -------------------- | ----------------- | ----------------------------------: | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app_id`             | `str`             |                           `Apprise` | En-têtes de plugins, noms de clés | Utilisé comme identifiant applicatif lisible et comme nom par défaut pour la génération de clés PGP.                                                                                                                                                                                                   |
+| `app_desc`           | `str`             |             `Apprise Notifications` | Métadonnées / présentation        | Utilisé par les outils et services qui affichent une description d'application.                                                                                                                                                                                                                        |
+| `app_url`            | `str`             | `https://github.com/caronc/apprise` | Métadonnées / présentation        | URL du fournisseur exposée dans la documentation et certaines métadonnées de plugins.                                                                                                                                                                                                                  |
+| `theme`              | `str`             |                           `default` | Résolution d'URL/chemin d'icônes  | Pilote la substitution `{THEME}` lors de la recherche d'icônes.                                                                                                                                                                                                                                        |
+| `language`           | `str`             |                   langue du système | Textes traduits                   | Définit la langue utilisée par Apprise pour ses propres textes, comme les noms de champs renvoyés par `details()`. Accepte `en`, `en-CA` ou `en_CA`. Une région revient à sa langue de base, puis à l'anglais, lorsque aucune traduction n'est installée. YAML accepte `language` ou son alias `lang`. |
+| `default_extension`  | `str`             |                              `.png` | Résolution d'URL/chemin d'icônes  | Utilisé lorsque `extension` n'est pas fourni à `image_url()` ou `image_path()`.                                                                                                                                                                                                                        |
+| `default_image_size` | `NotifyImageSize` |                            `XY_256` | Résolution d'URL d'icônes         | Utilisé quand la taille est omise.                                                                                                                                                                                                                                                                     |
+| `image_url_mask`     | `str`             |                      URL GitHub raw | `image_url()`                     | Produit une URL d'image thémée pour `NotifyType` + taille.                                                                                                                                                                                                                                             |
+| `image_url_logo`     | `str`             |                      URL GitHub raw | `image_url(logo=True)`            | Utilisé pour le logo de l'application.                                                                                                                                                                                                                                                                 |
+| `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`    | Utilisé pour la résolution locale d'icônes et le chargement des octets bruts.                                                                                                                                                                                                                          |
 
 ### Aides de Correspondance de Type
 
@@ -284,6 +285,31 @@ asset = AppriseAsset(timezone="America/Toronto")
 
   </TabItem>
 
+<TabItem value="language" label="Contrôle de la langue" >
+
+Apprise traduit ses propres textes lisibles, comme les noms de champs
+renvoyés par `details()`. Si `language` n'est pas défini, la langue du
+système sur lequel Apprise s'exécute est utilisée.
+
+```python
+from apprise import AppriseAsset
+
+# Les codes à deux lettres et les tags régionaux sont acceptés, sans tenir compte de la casse
+asset = AppriseAsset(language="fr")
+asset = AppriseAsset(language="en-CA")
+```
+
+Un tag régional recherche d'abord cette traduction exacte (`en_CA`),
+puis sa langue de base (`en`), et revient enfin à l'anglais. Apprise fournit
+des traductions pour `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`,
+`ko`, `ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi` et `zh`.
+
+Seuls les textes lus par une personne sont traduits. Tout ce qui est lu par
+un programme, comme un code de statut ou une clé dans une réponse, reste en
+anglais.
+
+  </TabItem>
+
 </Tabs>
 
 ## Résolution d'Icônes et d'Images
@@ -407,6 +433,13 @@ du code ni rediriger le stockage persistant.
 ```yaml
 asset:
   timezone: America/Toronto # ou : tz: America/Toronto
+```
+
+`language` est pris en charge dans YAML et peut aussi utiliser l'alias `lang` :
+
+```yaml
+asset:
+  language: fr # ou : lang: fr
 ```
 
 ## Voir Aussi

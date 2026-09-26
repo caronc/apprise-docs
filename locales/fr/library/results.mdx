@@ -264,6 +264,7 @@ for entry in result.call_logs():
 :::note
 Un service qui dépasse son délai est enregistré sur sa propre tentative plutôt
 qu'ici, si bien que `result.logs()` ne liste ce dépassement qu'une seule fois.
+Un `log_callback` le reçoit malgré tout au moment où il se produit.
 :::
 
 `result.logs()` combine déjà ces entrées avec les journaux des services dans

@@ -84,12 +84,51 @@ tox -e test,lint
 
 If you prefer running tools directly (once dev dependencies are installed), the repository documents `pytest` and `ruff` as optional manual equivalents.
 
+## Interface Translations
+
+The supported interface languages are defined in
+`apprise_api/core/settings/__init__.py`. Updating and compiling catalogs needs
+the GNU gettext tools (`xgettext`, `msgmerge`, and `msgfmt`) on your PATH; the
+Python development dependencies alone are not enough. When adding human-readable Python text,
+wrap it with Django's `gettext` helpers. In templates, use `{% trans %}` for a
+short string or `{% blocktrans %}` for a longer passage. Do not translate JSON
+keys, enum values, status tokens, or other values that client software must
+interpret consistently. A value the API parses, such as `success` or `text`,
+stays English even where the words around it do not.
+
+After changing source text, update every catalog:
+
+```bash
+tox -e translations -- --update
+```
+
+The command reports each supported language and prints a bullet for every
+missing or fuzzy translation. Edit the matching file under
+`apprise_api/locale/<language>/LC_MESSAGES/django.po`, then run the read-only
+report until it is clean:
+
+```bash
+tox -e translations
+```
+
+Fuzzy entries are not accepted. Once the report is clean, compile the catalogs
+that are shipped in packages and container images:
+
+```bash
+tox -e translations -- --compile
+```
+
+When changing the shared layout, test a left-to-right language and Arabic on
+both desktop and a narrow phone. Text direction may change, but branding and
+related header controls should remain together.
+
 ## Quick Checklist Before You Submit
 
 - Your change includes tests when practical.
 - `tox -e test` passes locally.
 - `tox -e lint` passes locally.
 - You ran `tox -e format` when formatting changes are needed.
+- The translation report is clean when human-readable text changed.
 - Your pull request description clearly explains what changed and why.
 
 ## Notes on Docker Compose Files

@@ -52,6 +52,21 @@ If you are not using a virtual environment or have proper rights on the machine 
 pip3 install tox --user
 ```
 
+### Using uv Instead
+
+If you use [uv](https://docs.astral.sh/uv/), install tox together with the `tox-uv` plugin so tox builds its environments with uv. Every `tox -e ...` command below then works unchanged:
+
+```bash
+uv tool install tox --with tox-uv
+```
+
+You can also set up a local `.venv` with every development tool and optional plugin dependency in one step:
+
+```bash
+uv sync
+uv run pytest tests/test_plugin_foobar.py
+```
+
 ## Development Environment
 
 Apprise works best just using a simple bare metal setup. The following commands can assist you:

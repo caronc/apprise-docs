@@ -14,19 +14,6 @@ Ce guide explique comment intégrer **Apprise** à **[Home Assistant](https://ww
 Ce guide explique comment utiliser Apprise **depuis** Home Assistant pour envoyer des notifications vers des services externes. Si vous souhaitez utiliser Apprise pour envoyer des notifications **vers** Home Assistant lui-même, par exemple des alertes persistantes sur le tableau de bord ou des appels de service directs, consultez le [plugin de service Home Assistant](../services/homeassistant/) (`hassio://`).
 :::
 
-## Pourquoi Utiliser Apprise avec Home Assistant
-
-Utiliser Apprise apporte plusieurs avantages :
-
-- un seul fichier de configuration pour tous vos services de notification ;
-- la prise en charge de dizaines de fournisseurs, comme l'e-mail, Telegram, ntfy, Kodi, et bien d'autres ;
-- un routage basé sur les tags pour cibler les notifications avec souplesse ;
-- aucune dépendance forte à un fournisseur au niveau de vos automatisations.
-
-Home Assistant n'a pas besoin de connaître les détails propres à chaque fournisseur. Il transmet simplement les messages à Apprise, qui se charge du reste.
-
----
-
 ## 1. Installation
 
 Apprise est intégré à Home Assistant Core. Vous n'avez pas besoin d'installer un composant personnalisé ni un module complémentaire. Il est disponible immédiatement via la plateforme `notify`.

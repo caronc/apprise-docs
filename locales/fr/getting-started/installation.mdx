@@ -25,6 +25,36 @@ pip3 install apprise --user
 ```
 
 </TabItem>
+<TabItem label="uv">
+
+[uv](https://docs.astral.sh/uv/) est une alternative rapide à `pip`. Cette méthode fonctionne sous Windows, macOS et Linux.
+
+Pour installer la commande `apprise` sur votre système (elle dispose de son propre environnement privé et n'entre donc pas en conflit avec vos autres outils Python) :
+
+```bash
+uv tool install apprise
+```
+
+Pour la mettre à jour plus tard :
+
+```bash
+uv tool upgrade apprise
+```
+
+Vous pouvez aussi lancer Apprise une seule fois sans l'installer :
+
+```bash
+uvx apprise -t "Bonjour" -b "Monde" \
+    "discord://webhook_id/webhook_token"
+```
+
+Si vous ajoutez Apprise à votre propre projet Python géré avec uv :
+
+```bash
+uv add apprise
+```
+
+</TabItem>
 <TabItem label="Distributions Linux">
 
 Apprise est empaqueté au format RPM et disponible via [EPEL](https://docs.fedoraproject.org/en-US/epel/), avec prise en charge de CentOS, Red Hat, Rocky et Oracle Linux.

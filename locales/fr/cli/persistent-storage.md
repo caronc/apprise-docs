@@ -7,7 +7,7 @@ sidebar:
 
 Le stockage persistant permet à Apprise de mettre des données en cache localement. Cela réduit fortement le nombre de transactions API entre vous et le ou les services que vous utilisez.
 
-## Pourquoi Utiliser le Stockage Persistant ?
+## Ce Qui Est Mis en Cache
 
 Certains services nécessitent des échanges d'authentification complexes ou des recherches de ressources « coûteuses » à effectuer à chaque envoi de notification.
 

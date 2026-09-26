@@ -406,3 +406,29 @@ a[0][1][2].value[3]   nested arrays -> dict -> array
 - If any step in the path cannot be resolved (missing key, index out of range, or a non-list node encountered at an index step), the server returns **400** and logs a `WARNING` — no notification is sent. This lets you catch misconfigured rules without silently dropping messages.
 - **Depth** is counted as the total number of individual traversal operations — each dict-key lookup _and_ each array-index dereference counts as one step. For example, `items[0].objectURI` is **3** steps (`items` -> `[0]` -> `objectURI`), and `a[0][1][2].b[3]` is **6** steps.
 - The maximum traversal depth defaults to **5**. Adjust it with the `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` environment variable.
+
+## Language
+
+The web interface chooses a language for every page it serves, in this order:
+
+1. The language you pick from the menu at the top of the page. It is remembered in a cookie for a year and always wins.
+2. Otherwise the `Accept-Language` header your browser sends, using the order of preference in it. A language your browser marks as unwanted (`q=0`) is skipped.
+3. Every full tag in that header is tried before any shortened one. Asking for `pt-BR, de` tries `pt-BR`, then `de`, and only then `pt`.
+4. English, when none of your languages is available.
+
+### Asking for a Language From Your Own Code
+
+The header is not only for browsers. Any client can send it, and steps 2 to 4 above apply the same way:
+
+```http
+GET /details HTTP/1.1
+Accept-Language: en-US,en;q=0.9,de;q=0.5
+```
+
+Every response tells you which language it used through a `Content-Language` header. Human-readable text follows it, so the service names and field descriptions returned by `/details` arrive in that language.
+
+Apprise API is translated into Arabic, Chinese, Dutch, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Malay, Polish, Portuguese, Russian, Spanish, Tagalog, Thai, Turkish, and Vietnamese.
+
+:::note
+Only text that people read is translated. Values the API accepts, such as `type=success` or `format=text`, are always English, and so are the JSON keys and status words your own code reads.
+:::

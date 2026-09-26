@@ -6,7 +6,31 @@ sidebar:
   order: 1
 ---
 
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+`}</style>
+
 La bibliothèque Apprise vous permet d'envoyer des notifications vers la quasi-totalité des services de notification populaires d'aujourd'hui (Telegram, Discord, Slack, email, etc.) à l'aide d'une API Python unique et unifiée.
+
+La bibliothèque est le moteur sous tout le reste : la CLI, le serveur API et l’application mobile passent tous par elle.
+
+<picture class="apprise-flow apprise-flow--library">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="La bibliothèque Apprise mise en évidence parmi les façons d’envoyer des notifications."
+    loading="lazy"
+  />
+</picture>
 
 Pour les utilitaires communs utilisés dans les plugins, consultez la [référence des utilitaires](./utilities/).
 
@@ -16,6 +40,12 @@ Apprise est disponible sur PyPI et peut être installé via `pip`.
 
 ```bash
 pip install apprise
+```
+
+Si votre projet utilise [uv](https://docs.astral.sh/uv/) :
+
+```bash
+uv add apprise
 ```
 
 ## Structure de la bibliothèque

@@ -85,12 +85,57 @@ tox -e test,lint
 
 Si vous préférez exécuter les outils directement (une fois les dépendances de développement installées), le dépôt documente `pytest` et `ruff` comme équivalents manuels optionnels.
 
+## Traductions de l'interface
+
+Les langues prises en charge par l'interface sont définies dans
+`apprise_api/core/settings/__init__.py`. La mise à jour et la compilation des
+catalogues nécessitent les outils GNU gettext (`xgettext`, `msgmerge` et
+`msgfmt`) dans votre PATH ; les dépendances de développement Python ne
+suffisent pas. Lorsque vous ajoutez un texte Python
+destiné aux utilisateurs, enveloppez-le avec les fonctions `gettext` de Django.
+Dans les templates, utilisez `{% trans %}` pour une chaîne courte ou
+`{% blocktrans %}` pour un passage plus long. Ne traduisez pas les clés JSON,
+les valeurs d'énumération, les codes d'état ni les autres valeurs que les
+logiciels clients doivent interpréter de manière stable. Une valeur analysée
+par l'API, comme `success` ou `text`, reste en anglais même si les mots qui
+l'entourent sont traduits.
+
+Après avoir modifié un texte source, mettez à jour tous les catalogues :
+
+```bash
+tox -e translations -- --update
+```
+
+La commande affiche chaque langue prise en charge et une puce pour chaque
+traduction manquante ou approximative (« fuzzy »). Modifiez le fichier
+correspondant sous
+`apprise_api/locale/<langue>/LC_MESSAGES/django.po`, puis relancez le rapport en
+lecture seule jusqu'à ce qu'il soit propre :
+
+```bash
+tox -e translations
+```
+
+Les entrées approximatives ne sont pas acceptées. Lorsque le rapport est
+propre, compilez les catalogues livrés dans les paquets et les images de
+conteneur :
+
+```bash
+tox -e translations -- --compile
+```
+
+Lorsque vous modifiez la mise en page commune, testez une langue écrite de
+gauche à droite et l'arabe sur ordinateur ainsi que sur un téléphone étroit.
+La direction du texte peut changer, mais la marque et les contrôles associés
+dans l'en-tête doivent rester réunis.
+
 ## Checklist Rapide Avant Soumission
 
 - Votre changement inclut des tests lorsque c'est pertinent.
 - `tox -e test` passe localement.
 - `tox -e lint` passe localement.
 - Vous avez exécuté `tox -e format` lorsque des changements de formatage étaient nécessaires.
+- Le rapport de traduction est propre lorsque des textes destinés aux utilisateurs ont changé.
 - La description de votre pull request explique clairement ce qui a changé et pourquoi.
 
 ## Notes sur les Fichiers Docker Compose

@@ -16,21 +16,6 @@ Si vous cherchez à :
 - l'intégrer avec la CLI ou la bibliothèque Python, consultez **Intégrations**
 - comprendre les clés, le stockage ou le verrouillage, consultez **Configuration**
 
-## Modèle de Déploiement
-
-L'API Apprise est un service **stateless-first** avec un **état persistant optionnel**.
-
-- L'usage stateless envoie les notifications directement sans sauvegarder de configuration.
-- L'usage stateful persiste la configuration sous une clé `{KEY}` afin de la réutiliser.
-- L'interface web intégrée est optionnelle et fournie uniquement par commodité.
-
-Le service peut être exécuté en toute sécurité :
-
-- localement ;
-- derrière un proxy inverse ;
-- dans Docker ou Docker Compose ;
-- dans Kubernetes, y compris dans des environnements durcis et rootless.
-
 ## Démarrage Rapide
 
 Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.

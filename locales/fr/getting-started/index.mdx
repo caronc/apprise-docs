@@ -22,11 +22,21 @@ sidebar:
   :root[data-theme="light"] .theme-aware-a1-diagram img {
     content: url("./images/apprise-notifications-light.svg");
   }
+
+  /* Overview diagram, same light/dark swap as the diagram above. */
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("./images/apprise-overview-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("./images/apprise-overview-light.svg");
+  }
+
 `}</style>
 
-Le nom **Apprise** (/əˈpraɪz/) se prononce comme "uh-prise", un peu comme _surprise_ ou _arise_, avec l'accent sur la deuxième syllabe.
+Le nom **Apprise** (/əˈpraɪz/) se prononce comme « uh-prise », un peu comme _surprise_ ou _arise_, avec l’accent sur la deuxième syllabe.
 
-**Apprise** est une bibliothèque d'acheminement de notifications qui normalise la manière dont les messages sont envoyés vers plus de 100 services différents. Elle élimine la complexité liée à l'envoi de notifications.
+**Apprise** est un routeur de notifications. Vous décrivez chaque destination sous forme d’URL, vous confiez un message à Apprise, et il le remet à toutes les destinations indiquées.
 
 <picture class="theme-aware-a1-diagram">
   <source
@@ -35,86 +45,73 @@ Le nom **Apprise** (/əˈpraɪz/) se prononce comme "uh-prise", un peu comme _su
   />
   <img
     src="./images/apprise-notifications-light.svg"
-    alt="Intégration d'API sans état"
+    alt="Un message envoyé via Apprise et redistribué vers de nombreux services de notification."
     loading="lazy"
   />
 </picture>
 
-Apprise ne remplace pas les plateformes de discussion, les fournisseurs de messagerie ou les systèmes d'alerte. Elle fournit plutôt une façon unique et cohérente de leur envoyer des notifications.
+Apprise ne remplace pas votre plateforme de discussion, votre fournisseur de messagerie ni votre système d’alerte. Il se place devant eux, pour que vous n’ayez qu’une seule façon d’envoyer un message à apprendre.
 
-Que vous soyez administrateur système exécutant des scripts, développeur construisant une application ou ingénieur DevOps gérant des services distribués, Apprise vous évite d'apprendre et de maintenir des dizaines d'API spécifiques à chaque fournisseur.
+Que vous lanciez des tâches cron, gériez des conteneurs ou développiez des applications, Apprise vous évite d’apprendre et de maintenir une API différente pour chaque service.
 
 ## Une Syntaxe pour Toutes les Gouverner
 
-Au cœur d'Apprise se trouve l'**URL Universelle de Notification**.
+Au cœur d’Apprise se trouve l’**URL Universelle de Notification**.
 
-Au lieu d'apprendre un format de charge utile propre à chaque service, vous configurez vos destinations à l'aide d'une syntaxe unique, prévisible et cohérente :
+Au lieu d’apprendre un format de charge utile propre à chaque service, vous configurez vos destinations à l’aide d’une syntaxe unique, prévisible et cohérente :
 
 ```text
 service://credentials/direction/?parameter=value
 ```
 
-Si vous décidez plus tard de passer d'un service à un autre, votre logique applicative ne change pas. Il suffit de mettre à jour la configuration de l'URL.
+Changer de service plus tard revient à modifier l’URL, pas votre code ni vos scripts.
 
 Les notifications restent ainsi portables, maintenables et faciles à raisonner.
 
-## Les Quatre Piliers d'Apprise
+## Comment Apprise s’Articule
 
-Apprise est plus qu'une bibliothèque. Ses quatre outils fonctionnent ensemble pour les applications, l'automatisation, les serveurs partagés et l'accès mobile.
+<picture class="apprise-flow">
+  <source
+    srcset="./images/apprise-overview-dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <img
+    src="./images/apprise-overview-light.svg"
+    alt="Les sources à gauche passent par l’API Apprise ou la bibliothèque au centre, qui distribuent vers les services de notification à droite."
+    loading="lazy"
+  />
+</picture>
 
-### 1. La Bibliothèque Python
+- **Quelque chose doit envoyer un message.** Un script, un webhook, la ligne de commande, l’application mobile, ou un logiciel qui parle déjà Apprise.
+- **Apprise se charge de la remise.** Vous importez la bibliothèque Python dans votre propre code, ou vous exécutez le serveur API comme passerelle partagée vers laquelle n’importe quoi peut poster.
+- **Le message part.** Une seule requête peut atteindre une destination ou toutes celles que vous avez configurées, en parallèle.
 
-_Pour les développeurs_
+Comme le format d’URL est le même partout, une URL testée en ligne de commande fonctionne telle quelle dans un script, dans le serveur API ou sur votre téléphone.
 
-À sa base, Apprise est une bibliothèque Python légère. Vous l'intégrez directement dans votre application et vous envoyez des notifications en seulement quelques lignes de code.
+## À quoi ça ressemble
+
+Depuis un script ou la ligne de commande :
+
+```bash
+apprise -t "Sauvegarde terminée" -b "Le serveur est sain et sauf" \
+  "discord://webhook_id/webhook_token"
+```
+
+Ou depuis votre propre code Python :
 
 ```python
 import apprise
 
 apobj = apprise.Apprise()
-
-# Ajouter un service
 apobj.add("tgram://credentials")
 
-# Les destinations de notification sont configurées séparément
 apobj.notify(
     body="Bonjour le monde",
     title="Ma notification",
 )
 ```
 
-Le même code fonctionne quel que soit le service de notification configuré.
-
-### 2. L'Interface en Ligne de Commande (CLI)
-
-_Pour les administrateurs système et l'automatisation_
-
-Apprise est livré avec un puissant outil en ligne de commande qui expose les mêmes fonctionnalités sans nécessiter de code Python. C'est idéal pour les tâches cron, les scripts de sauvegarde, les hooks de supervision et les pipelines CI/CD.
-
-```bash
-# Exemple : envoyer une notification vers Discord
-apprise -t "Sauvegarde terminée" -b "Le serveur est sain et sauf" \
-  "discord://webhook_id/webhook_token"
-```
-
-### 3. Le Serveur API
-
-_Pour les environnements centralisés et connectés_
-
-Apprise est également disponible sous la forme d'un serveur API conteneurisé et sans état. Cela vous permet d'exploiter une "passerelle de notifications" centralisée pour plusieurs systèmes.
-
-Vous pouvez :
-
-- Envoyer des notifications directement à chaque requête (sans état)
-- Stocker les configurations côté serveur et les référencer via une clé (avec état)
-
-Cette approche est particulièrement utile pour les microservices, les infrastructures partagées et les équipes qui souhaitent un point de contrôle centralisé.
-
-### 4. Apprise Mobile
-
-_Pour les utilisateurs en déplacement_
-
-Apprise Mobile est l'interface Android de votre API Apprise auto-hébergée. Elle permet de consulter vos serveurs enregistrés, de créer des URL de notification et d'envoyer des notifications depuis votre téléphone.
+Les deux envoient la même notification. Pour viser un autre service, seule l’URL change.
 
 ## Fonctionnalités Clés
 
@@ -124,11 +121,11 @@ Apprise Mobile est l'interface Android de votre API Apprise auto-hébergée. Ell
 - **Haute performance**, avec envoi parallèle des notifications
 - **Dépendances minimales**, afin de rester léger
 
-## Quelle Approche Utiliser ?
+## Par Où Commencer
 
-| Si vous êtes…                                                      | Commencez par…                        |
-| ------------------------------------------------------------------ | ------------------------------------- |
-| En train de créer une application Python                           | [La Bibliothèque Python](../library/) |
-| En train d'automatiser des scripts ou des tâches système           | [L'Outil CLI](../cli/)                |
-| En train de centraliser des notifications entre plusieurs systèmes | [Le Serveur API](../api/)             |
-| En train d'utiliser votre API depuis votre téléphone               | [Apprise Mobile](../mobile/)          |
+| Si vous voulez…                                                | Utilisez…                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Notifier depuis des tâches cron, des scripts ou la CI          | [La CLI](../cli/)                                                        |
+| Envoyer des notifications depuis votre application             | [La Bibliothèque Python](../library/)                                    |
+| Offrir une passerelle de notifications partagée à vos systèmes | [Le Serveur API](../api/), sans état ou avec configurations enregistrées |
+| Envoyer depuis votre téléphone vers votre serveur auto-hébergé | [Apprise Mobile](../mobile/)                                             |
