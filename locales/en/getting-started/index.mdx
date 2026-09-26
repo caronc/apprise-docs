@@ -25,11 +25,11 @@ sidebar:
 
   /* Overview diagram, same light/dark swap as the diagram above. */
   :root[data-theme="dark"] .apprise-flow img {
-    content: url("./images/apprise-overview-dark.svg");
+    content: url("/assets/apprise-overview-en-dark.svg");
   }
 
   :root[data-theme="light"] .apprise-flow img {
-    content: url("./images/apprise-overview-light.svg");
+    content: url("/assets/apprise-overview-en-light.svg");
   }
 
 `}</style>
@@ -72,11 +72,11 @@ This makes notifications portable, maintainable, and easy to reason about.
 
 <picture class="apprise-flow">
   <source
-    srcset="./images/apprise-overview-dark.svg"
+    srcset="/assets/apprise-overview-en-dark.svg"
     media="(prefers-color-scheme: dark)"
   />
   <img
-    src="./images/apprise-overview-light.svg"
+    src="/assets/apprise-overview-en-light.svg"
     alt="Sources on the left send through the Apprise API or core library in the middle, which deliver to notification services on the right."
     loading="lazy"
   />

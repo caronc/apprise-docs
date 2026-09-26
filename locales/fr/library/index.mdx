@@ -8,11 +8,11 @@ sidebar:
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
-    content: url("./images/apprise-overview-dark.svg");
+    content: url("/assets/apprise-overview-fr-dark.svg");
   }
 
   :root[data-theme="light"] .apprise-flow img {
-    content: url("./images/apprise-overview-light.svg");
+    content: url("/assets/apprise-overview-fr-light.svg");
   }
 `}</style>
 
@@ -22,11 +22,11 @@ La bibliothèque est le moteur sous tout le reste : la CLI, le serveur API et 
 
 <picture class="apprise-flow apprise-flow--library">
   <source
-    srcset="./images/apprise-overview-dark.svg"
+    srcset="/assets/apprise-overview-fr-dark.svg"
     media="(prefers-color-scheme: dark)"
   />
   <img
-    src="./images/apprise-overview-light.svg"
+    src="/assets/apprise-overview-fr-light.svg"
     alt="La bibliothèque Apprise mise en évidence parmi les façons d’envoyer des notifications."
     loading="lazy"
   />
@@ -48,31 +48,23 @@ Si votre projet utilise [uv](https://docs.astral.sh/uv/) :
 uv add apprise
 ```
 
-## Structure de la bibliothèque
+## Hello World
 
-La bibliothèque Python Apprise s'articule autour de quelques objets principaux :
+Le cœur de la bibliothèque est l'objet `Apprise`. Vous l'instanciez, ajoutez des URL, puis déclenchez les notifications.
 
-- `Apprise` pour enregistrer des services et envoyer des notifications
-- `AppriseConfig` pour charger une configuration depuis des fichiers ou des sources distantes
-- `AppriseAsset` pour définir le contexte global d'exécution
-- Les classes de plugins (`NotifyBase`) pour implémenter des services individuels
+```python
+import apprise
 
-## Pour commencer
+# 1. Instancier l'objet Apprise
+apobj = apprise.Apprise()
 
-Si vous débutez avec l'intégration Python d'Apprise :
+# 2. Ajouter une ou plusieurs URL de service
+apobj.add('mailto://myuser:mypass@hotmail.com')
+apobj.add('tgram://123456789:ABCDefghIJKLmnOPqrstUVwxyz')
 
-1. Commencez par le [démarrage rapide](./quick-start/)
-1. Explorez ensuite la [configuration](./configuration/)
-1. Consultez [les ressources et l'image de marque](./assets/) pour comprendre le contexte global d'exécution
-1. Lisez [l'inspection et le débogage](./inspection/) si vous construisez des outils ou avez besoin de diagnostics
-
-## Référence avancée
-
-Les pages de cette section couvrent aussi :
-
-- Les [pièces jointes](./attachments/)
-- Le [stockage persistant](./persistent-storage/)
-- Le [développement de plugins](./plugin/)
-- Les [points d'extension](./extending/)
-- Les [variables de substitution](../getting-started/template/)
-  pour fournir des valeurs YAML au moment de l'envoi
+# 3. Envoyer une notification à tous les services ajoutés
+apobj.notify(
+    body='Quel excellent service de notification !',
+    title='Titre de ma notification',
+)
+```

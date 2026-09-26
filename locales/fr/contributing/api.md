@@ -98,7 +98,7 @@ Dans les templates, utilisez `{% trans %}` pour une chaîne courte ou
 les valeurs d'énumération, les codes d'état ni les autres valeurs que les
 logiciels clients doivent interpréter de manière stable. Une valeur analysée
 par l'API, comme `success` ou `text`, reste en anglais même si les mots qui
-l'entourent sont traduits.
+l'entourent sont traduits. Dans les traductions, écrivez les apostrophes `’` et jamais `'` : de nombreuses traductions se trouvent dans des chaînes JavaScript, où une apostrophe droite casse la page, et le rapport de traduction le signale.
 
 Après avoir modifié un texte source, mettez à jour tous les catalogues :
 
@@ -116,13 +116,13 @@ lecture seule jusqu'à ce qu'il soit propre :
 tox -e translations
 ```
 
-Les entrées approximatives ne sont pas acceptées. Lorsque le rapport est
-propre, compilez les catalogues livrés dans les paquets et les images de
-conteneur :
+Les entrées approximatives ne sont pas acceptées. Lorsque le rapport est propre, compilez les catalogues pour les vérifier et les essayer localement :
 
 ```bash
 tox -e translations -- --compile
 ```
+
+Ne validez que les fichiers `.po`. Les fichiers `.mo` compilés sont ignorés par git et sont reconstruits automatiquement par `tox -e runserver`, par la suite de tests et à chaque construction de l'image Docker, si bien que chaque image publiée contient toutes les langues. Avec `docker compose up` en développement, votre dossier local `apprise_api/` est monté par-dessus l'image : lancez donc d'abord la commande de compilation ci-dessus une fois, sinon toutes les pages s'affichent en anglais.
 
 Lorsque vous modifiez la mise en page commune, testez une langue écrite de
 gauche à droite et l'arabe sur ordinateur ainsi que sur un téléphone étroit.

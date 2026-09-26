@@ -8,11 +8,11 @@ sidebar:
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
-    content: url("./images/apprise-overview-dark.svg");
+    content: url("/assets/apprise-overview-en-dark.svg");
   }
 
   :root[data-theme="light"] .apprise-flow img {
-    content: url("./images/apprise-overview-light.svg");
+    content: url("/assets/apprise-overview-en-light.svg");
   }
 `}</style>
 
@@ -22,11 +22,11 @@ The CLI is one of the ways into Apprise. It uses the same notification URLs as e
 
 <picture class="apprise-flow apprise-flow--cli">
   <source
-    srcset="./images/apprise-overview-dark.svg"
+    srcset="/assets/apprise-overview-en-dark.svg"
     media="(prefers-color-scheme: dark)"
   />
   <img
-    src="./images/apprise-overview-light.svg"
+    src="/assets/apprise-overview-en-light.svg"
     alt="The Apprise CLI highlighted among the ways to send notifications through Apprise."
     loading="lazy"
   />
@@ -57,7 +57,7 @@ To send a notification, provide a title (`-t`) and a body (`-b`), followed by on
 
 ```bash
 # Send a notification to Discord
-apprise -t "Task Complete" -b " The backup finished successfully." \
+apprise -t "Task Complete" -b "The backup finished successfully." \
     "discord://webhook_id/webhook_token"
 ```
 

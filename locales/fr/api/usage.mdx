@@ -418,7 +418,17 @@ Les indices chaînés permettent de traverser des tableaux imbriqués :
 # Clé source           Ce à quoi elle correspond
 items[0]               premier élément du tableau items
 items[0].objectURI     propriété .objectURI du premier élément
+matrix[0][1]           ligne 0, colonne 1 d'un tableau 2D
+a[0][1][2].value[3]    tableaux imbriqués -> dict -> tableau
 ```
+
+**Règles et limites :**
+
+- Seul le côté **source** peut utiliser la notation de chemin ; la cible doit être un champ Apprise simple (`title`, `body`, `type`, `format`, `tag`, etc.).
+- `N` dans `[N]` doit être un entier positif ou nul. `key[abc]` (non entier) comme `key[0` / `key0]` (crochet non fermé) sont rejetés avec un `WARNING`.
+- Si une étape du chemin ne peut pas être résolue (clé absente, index hors limites, ou nœud qui n'est pas une liste rencontré lors d'une étape d'index), le serveur renvoie **400** et journalise un `WARNING` — aucune notification n'est envoyée. Cela vous permet de repérer les règles mal configurées sans perdre des messages en silence.
+- La **profondeur** correspond au nombre total d'opérations de parcours individuelles — chaque recherche de clé de dictionnaire _et_ chaque déréférencement d'index de tableau compte pour une étape. Par exemple, `items[0].objectURI` représente **3** étapes (`items` -> `[0]` -> `objectURI`), et `a[0][1][2].b[3]` en représente **6**.
+- La profondeur de parcours maximale est de **5** par défaut. Ajustez-la avec la variable d'environnement `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH`.
 
 ## Langue
 

@@ -11,11 +11,11 @@ import "~/styles/mobile.css";
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
-    content: url("./images/apprise-overview-dark.svg");
+    content: url("/assets/apprise-overview-fr-dark.svg");
   }
 
   :root[data-theme="light"] .apprise-flow img {
-    content: url("./images/apprise-overview-light.svg");
+    content: url("/assets/apprise-overview-fr-light.svg");
   }
 `}</style>
 
@@ -63,11 +63,11 @@ import "~/styles/mobile.css";
   </p>
   <picture class="apprise-flow apprise-flow--mobile">
     <source
-      srcset="./images/apprise-overview-dark.svg"
+      srcset="/assets/apprise-overview-fr-dark.svg"
       media="(prefers-color-scheme: dark)"
     />
     <img
-      src="./images/apprise-overview-light.svg"
+      src="/assets/apprise-overview-fr-light.svg"
       alt="Apprise Mobile mis en évidence parmi les façons d’envoyer des notifications."
       loading="lazy"
     />

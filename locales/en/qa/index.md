@@ -34,3 +34,4 @@ The following topics have already been captured and documented here:
 - [Data Overflow](./data-overflow/)
 - [PyInstaller Support](./pyinstaller/)
 - [Resource Usage (RAM / Memory)](./resource-usage/)
+- [Apprise Mobile QR Codes and Passwords](./mobile-qr-password/)

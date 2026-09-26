@@ -8,11 +8,11 @@ sidebar:
 
 <style>{`
     :root[data-theme="dark"] .apprise-flow img {
-    content: url("./images/apprise-overview-dark.svg");
+    content: url("/assets/apprise-overview-en-dark.svg");
   }
 
   :root[data-theme="light"] .apprise-flow img {
-    content: url("./images/apprise-overview-light.svg");
+    content: url("/assets/apprise-overview-en-light.svg");
   }
 
   /* Companion app callout. Colours come from the theme so it follows the toggle. */
@@ -76,17 +76,17 @@ sidebar:
   }
 `}</style>
 
-The **Apprise API** turns Apprise into a service. You run it once, point your systems at it, and they can all send notifications over plain HTTP without installing Python, without the CLI, and without knowing anything about the services behind it.
+The **Apprise API** turns Apprise into a service. You run it once, point your systems at it, and they can all send notifications with simple HTTP(S) requests without installing Python, without the CLI, and without knowing anything about the services behind it.
 
 It is the middle box in the picture below: everything on the left hands it a message, and it takes care of delivering to everything on the right.
 
 <picture class="apprise-flow apprise-flow--api">
   <source
-    srcset="./images/apprise-overview-dark.svg"
+    srcset="/assets/apprise-overview-en-dark.svg"
     media="(prefers-color-scheme: dark)"
   />
   <img
-    src="./images/apprise-overview-light.svg"
+    src="/assets/apprise-overview-en-light.svg"
     alt="Sources on the left send to the Apprise API in the middle, which delivers to notification services on the right."
     loading="lazy"
   />
@@ -131,5 +131,5 @@ It is the middle box in the picture below: everything on the left hands it a mes
 [Deploy the server](/api/deployment/) · [See what it can do](/api/usage/) · [Browse the endpoints](/api/endpoints/)
 
 :::tip
-If your server is reachable from the internet, [enable authentication](/api/deployment/#authentication-and-access-control) and protect saved configurations through the web interface or `/auth/{KEY}`. A hard-to-guess key helps, but it is not a replacement for credentials.
+If your server is reachable from the internet, serve it over HTTPS through a [reverse proxy](/api/deployment/#reverse-proxies-and-base-paths), [enable authentication](/api/deployment/#authentication-and-access-control), and protect saved configurations through the web interface or `/auth/{KEY}`. A hard-to-guess key helps, but it is not a replacement for credentials.
 :::

@@ -94,7 +94,7 @@ wrap it with Django's `gettext` helpers. In templates, use `{% trans %}` for a
 short string or `{% blocktrans %}` for a longer passage. Do not translate JSON
 keys, enum values, status tokens, or other values that client software must
 interpret consistently. A value the API parses, such as `success` or `text`,
-stays English even where the words around it do not.
+stays English even where the words around it do not. Write apostrophes in translations as `’`, never `'`: many translations sit inside JavaScript strings, where a straight quote breaks the page, and the translation report flags it.
 
 After changing source text, update every catalog:
 
@@ -111,12 +111,13 @@ report until it is clean:
 tox -e translations
 ```
 
-Fuzzy entries are not accepted. Once the report is clean, compile the catalogs
-that are shipped in packages and container images:
+Fuzzy entries are not accepted. Once the report is clean, compile the catalogs to check them and to try them locally:
 
 ```bash
 tox -e translations -- --compile
 ```
+
+Only commit the `.po` files. The compiled `.mo` files are ignored by git and are rebuilt automatically by `tox -e runserver`, the test suite, and every Docker image build, so each published image includes every language. With `docker compose up` for development, your local `apprise_api/` folder is mounted over the image, so run the compile command above once first or every page shows in English.
 
 When changing the shared layout, test a left-to-right language and Arabic on
 both desktop and a narrow phone. Text direction may change, but branding and
