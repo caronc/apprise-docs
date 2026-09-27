@@ -74,6 +74,13 @@ sidebar:
   .api-mobile-callout a.api-mobile-cta:hover {
     filter: brightness(1.1);
   }
+
+  /* On narrow screens the button wraps to its own line; center it there. */
+  @media (max-width: 40rem) {
+    .api-mobile-callout a.api-mobile-cta {
+      margin: 0 auto;
+    }
+  }
 `}</style>
 
 The **Apprise API** turns Apprise into a service. You run it once, point your systems at it, and they can all send notifications with simple HTTP(S) requests without installing Python, without the CLI, and without knowing anything about the services behind it.
@@ -129,7 +136,3 @@ It is the middle box in the picture below: everything on the left hands it a mes
 3. **Send.** Point anything that speaks HTTP at your server and the message goes out.
 
 [Deploy the server](/api/deployment/) · [See what it can do](/api/usage/) · [Browse the endpoints](/api/endpoints/)
-
-:::tip
-If your server is reachable from the internet, serve it over HTTPS through a [reverse proxy](/api/deployment/#reverse-proxies-and-base-paths), [enable authentication](/api/deployment/#authentication-and-access-control), and protect saved configurations through the web interface or `/auth/{KEY}`. A hard-to-guess key helps, but it is not a replacement for credentials.
-:::

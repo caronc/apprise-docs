@@ -74,6 +74,13 @@ sidebar:
   .api-mobile-callout a.api-mobile-cta:hover {
     filter: brightness(1.1);
   }
+
+  /* On narrow screens the button wraps to its own line; center it there. */
+  @media (max-width: 40rem) {
+    .api-mobile-callout a.api-mobile-cta {
+      margin: 0 auto;
+    }
+  }
 `}</style>
 
 L’**API Apprise** transforme Apprise en service. Vous la lancez une fois, vous y dirigez vos systèmes, et tous peuvent envoyer des notifications par de simples requêtes HTTP(S), sans installer Python, sans la CLI et sans rien connaître des services situés derrière.
@@ -129,7 +136,3 @@ C’est la boîte centrale du schéma ci-dessous : tout ce qui se trouve à ga
 3. **Envoyez.** Dirigez vers votre serveur tout ce qui parle HTTP, et le message part.
 
 [Déployer le serveur](../deployment/) · [Voir ce qu’elle sait faire](../usage/) · [Parcourir les endpoints](../endpoints/)
-
-:::tip
-Si votre serveur est joignable depuis Internet, servez-le en HTTPS derrière un [reverse proxy](../deployment/#reverse-proxies-et-chemins-de-base), [activez l’authentification](../deployment/#authentification-et-contr%C3%B4le-dacc%C3%A8s) et protégez les configurations enregistrées via l’interface web ou `/auth/{KEY}`. Une clé difficile à deviner aide, mais ne remplace pas des identifiants.
-:::
