@@ -41,63 +41,63 @@ Sans format d'entrée, Apprise suppose que le corps convient déjà au format Te
 
 ## Configuration du Compte
 
-Telegram est un peu plus complexe que certains autres services de notification, voici donc un rapide apercu de ce que vous devez savoir et faire pour envoyer des notifications avec cet outil.
+Telegram est un peu plus complexe que certains autres services de notification, voici donc un rapide aperçu de ce que vous devez savoir et faire pour envoyer des notifications avec cet outil.
 
-Pour commencer, si vous n'avez pas encore de compte, vous devrez vous connecter avec un telephone. Le service utilise votre numero de telephone comme identifiant de connexion. Commencez donc par telecharger et installer l'application mobile sur [Android](https://telegram.org/dl/android) ou [Apple](https://telegram.org/dl/ios).
+Pour commencer, si vous n'avez pas encore de compte, vous devrez vous connecter avec un téléphone. Le service utilise votre numéro de téléphone comme identifiant de connexion. Commencez donc par télécharger et installer l'application mobile sur [Android](https://telegram.org/dl/android) ou [Apple](https://telegram.org/dl/ios).
 
-Une fois votre compte configure, il peut etre plus pratique d'utiliser l'interface web disponible [ici](https://telegram.org/dl/webogram) depuis un PC, surtout pour le developpement. Cette partie reste toutefois a votre convenance.
+Une fois votre compte configuré, il peut être plus pratique d'utiliser l'interface web disponible [ici](https://telegram.org/dl/webogram) depuis un PC, surtout pour le développement. Cette partie reste toutefois à votre convenance.
 
 ### Configuration du Robot
 
-Les notifications Telegram exigent que vous [creiez un robot](https://api.telegram.org). Ce n'est qu'apres cette etape que vous obtiendrez une information essentielle dont Apprise a besoin, appelee **identifiant de jeton** (ou **bot_token**).
+Les notifications Telegram exigent que vous [créiez un robot](https://api.telegram.org). Ce n'est qu'après cette étape que vous obtiendrez une information essentielle dont Apprise a besoin, appelée **identifiant de jeton** (ou **bot_token**).
 
-Pour cela, vous devez ouvrir une conversation dans Telegram avec **[BotFather](https://botsfortelegram.com/project/the-bot-father/)**. Il est accessible a tous les utilisateurs inscrits sur la plateforme. Une fois la boite de dialogue ouverte avec lui :
+Pour cela, vous devez ouvrir une conversation dans Telegram avec **[BotFather](https://botsfortelegram.com/project/the-bot-father/)**. Il est accessible à tous les utilisateurs inscrits sur la plateforme. Une fois la boîte de dialogue ouverte avec lui :
 
-1. Type: `/newbot`
-1. Repondez aux questions posees ensuite, notamment pour definir son nom, etc.
-1. Une fois l'etape 2 terminee, un _bot_token_ vous sera fourni, sous une forme ressemblant a `123456789:alphanumeric_characters`.
-1. Saisissez ensuite `/start` dans la meme boite de dialogue afin d'activer et d'initialiser votre tout nouveau robot.
+1. Tapez : `/newbot`
+1. Répondez aux questions posées ensuite, notamment pour définir son nom, etc.
+1. Une fois l'étape 2 terminée, un _bot_token_ vous sera fourni, sous une forme ressemblant à `123456789:alphanumeric_characters`.
+1. Saisissez ensuite `/start` dans la même boîte de dialogue afin d'activer et d'initialiser votre tout nouveau robot.
 
-La bonne nouvelle, c'est que cette procedure ne doit etre effectuee qu'une seule fois. Une fois votre **bot_token** obtenu, conservez-le et vous n'aurez plus a recommencer. C'est via ce robot qu'Apprise peut envoyer des notifications Telegram a differents utilisateurs.
+La bonne nouvelle, c'est que cette procédure ne doit être effectuée qu'une seule fois. Une fois votre **bot_token** obtenu, conservez-le et vous n'aurez plus à recommencer. C'est via ce robot qu'Apprise peut envoyer des notifications Telegram à différents utilisateurs.
 
 :::warning
 
-### Le Casse-Tete du Chat ID
+### Le Casse-Tête du Chat ID
 
-**Mise a jour du 2021.12.23** : les developpeurs de Telegram ont recemment facilite l'obtention de cet identifiant grace a leur propre outil integre, [explique ici](https://www.alphr.com/find-chat-id-telegram/). Merci a `@mattpackwood` pour cette astuce !
+**Mise à jour du 2021.12.23** : les développeurs de Telegram ont récemment facilité l'obtention de cet identifiant grâce à leur propre outil intégré, [expliqué ici](https://www.alphr.com/find-chat-id-telegram/). Merci à `@mattpackwood` pour cette astuce !
 :::
 
-En coulisses, Telegram notifie les utilisateurs a l'aide de leur **`{chat_id}`** et non de leur nom d'utilisateur, plus facile a retenir.
-Malheureusement, a l'heure actuelle, Telegram ne facilite pas vraiment la recuperation de ce **`{chat_id}`** sans quelques astuces ou contournements que l'on peut trouver en cherchant en ligne ou en contactant leur equipe de support.
+En coulisses, Telegram notifie les utilisateurs à l'aide de leur **`{chat_id}`** et non de leur nom d'utilisateur, plus facile à retenir.
+Malheureusement, à l'heure actuelle, Telegram ne facilite pas vraiment la récupération de ce **`{chat_id}`** sans quelques astuces ou contournements que l'on peut trouver en cherchant en ligne ou en contactant leur équipe de support.
 
-Cependant, Apprise peut simplifier cette tache si votre objectif est simplement de vous envoyer un message prive. Dans ce cas, il suffit d'envoyer un message prive au nouveau robot que vous venez de creer. C'est tout !
+Cependant, Apprise peut simplifier cette tâche si votre objectif est simplement de vous envoyer un message privé. Dans ce cas, il suffit d'envoyer un message privé au nouveau robot que vous venez de créer. C'est tout !
 
-En procedant ainsi, Apprise pourra detecter automatiquement _votre_ **`{chat_id}`** a partir du message envoye au robot.
+En procédant ainsi, Apprise pourra détecter automatiquement _votre_ **`{chat_id}`** à partir du message envoyé au robot.
 
 - **tgram**://**`{bot_token}`**/
 
-Lorsque vous utilisez la forme courte de l'URL Telegram/Apprise et que le proprietaire du robot, probablement vous, est detecte correctement, le **`{chat_id}`** trouve apparaitra dans les journaux apres l'envoi de la notification. Notez que l'**API Telegram ne conserve les messages entrants que pendant 24 heures**. Il est donc recommande de mettre a jour ensuite votre URL Apprise pour y faire explicitement reference.
+Lorsque vous utilisez la forme courte de l'URL Telegram/Apprise et que le propriétaire du robot, probablement vous, est détecté correctement, le **`{chat_id}`** trouvé apparaîtra dans les journaux après l'envoi de la notification. Notez que l'**API Telegram ne conserve les messages entrants que pendant 24 heures**. Il est donc recommandé de mettre à jour ensuite votre URL Apprise pour y faire explicitement référence.
 
 - **tgram**://**`{bot_token}`**/**`{chat_id}`**
 
-**Remarque** : vous pouvez aussi recuperer vous-meme le **`{chat_id}`** apres vous etre d'abord envoye un message, comme explique ci-dessus. Ensuite, il vous suffit de visiter `https://api.telegram.org/bot{bot_token}/getUpdates`.
+**Remarque** : vous pouvez aussi récupérer vous-même le **`{chat_id}`** après vous être d'abord envoyé un message, comme expliqué ci-dessus. Ensuite, il vous suffit de visiter `https://api.telegram.org/bot{bot_token}/getUpdates`.
 
-- _Remarque :_ le mot-cle `bot` doit figurer devant le **`{bot_token}`** reel qui vous a ete fourni par BotFather.
-- Le resultat contiendra le message que vous avez envoye. Vous y trouverez egalement une section intitulee `chat`, avec l'`id` indique. Il s'agit du **`{chat_id}`** que vous pouvez utiliser pour envoyer directement des messages via Apprise.
+- _Remarque :_ le mot-clé `bot` doit figurer devant le **`{bot_token}`** réel qui vous a été fourni par BotFather.
+- Le résultat contiendra le message que vous avez envoyé. Vous y trouverez également une section intitulée `chat`, avec l'`id` indiqué. Il s'agit du **`{chat_id}`** que vous pouvez utiliser pour envoyer directement des messages via Apprise.
 
 ## Syntaxe
 
 La syntaxe valide est la suivante :
 
 - `tgram://{bot_token}/`
-  - **Remarque** : comme indique plus haut, Apprise est suffisamment intelligent pour determiner le chat*id du proprietaire du bot, vous, \_uniquement si vous lui avez d'abord envoye au moins 1 message prive*.
+  - **Remarque** : comme indiqué plus haut, Apprise est suffisamment intelligent pour déterminer le `chat_id` du propriétaire du robot (vous), _uniquement si vous lui avez d'abord envoyé au moins 1 message privé_.
 
 - `tgram://{bot_token}/{chat_id}/`
 - `tgram://{bot_token}/{chat_id1}/{chat_id2}/{chat_id3}/`
 - `tgram://{bot_token}/{chat_id}:{topic}/`
-- `tgram://{bot_token}/{chat_id1}:topic1}/{chat_id2}:{topic2}/{chat_id3}:{topic3}/`
+- `tgram://{bot_token}/{chat_id1}:{topic1}/{chat_id2}:{topic2}/{chat_id3}:{topic3}/`
 
-Si vous souhaitez afficher l'icone ou l'image associee a la notification, vous pouvez l'activer en ajoutant **?image=yes** a votre URL, comme ceci :
+Si vous souhaitez afficher l'icône ou l'image associée à la notification, vous pouvez l'activer en ajoutant **?image=yes** à votre URL, comme ceci :
 
 - `tgram://{bot_token}/?image=Yes`
 - `tgram://{bot_token}/{chat_id}/?image=Yes`
@@ -107,17 +107,17 @@ Si vous souhaitez afficher l'icone ou l'image associee a la notification, vous p
 
 | Variable  | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| bot_token | Oui         | Jeton identifiant le robot que vous avez cree via _[BotFather](https://botsfortelegram.com/project/the-bot-father/)_.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| chat_id   | Oui         | Identifie les utilisateurs auxquels votre robot doit livrer les notifications. Vous devez indiquer au moins 1 _chat_id_. Si aucun chat_id n'est precise, le script de notification tentera de detecter celui du proprietaire du robot, vous, et l'utilisera.                                                                                                                                                                                                                                                                                                                |
-| image     | Non         | Vous pouvez ajouter l'argument **?image=Yes** a la fin de votre URL afin qu'un message Telegram soit genere avant l'avis principal pour televerser l'image associee. En raison des limitations du service, Telegram ne permet pas d'inclure une image directement dans un message texte. En revanche, vous pouvez envoyer un message contenant uniquement une image. Si ce drapeau est active, _apprise_ enverra d'abord une notification image, puis l'avis lui-meme. Comme recevoir 2 messages pour 1 seul avis peut etre genant, cette option est desactivee par defaut. |
+| bot_token | Oui         | Jeton identifiant le robot que vous avez créé via _[BotFather](https://botsfortelegram.com/project/the-bot-father/)_.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| chat_id   | Oui         | Identifie les utilisateurs auxquels votre robot doit livrer les notifications. Vous devez indiquer au moins 1 _chat_id_. Si aucun chat_id n'est précisé, le script de notification tentera de détecter celui du propriétaire du robot, vous, et l'utilisera.                                                                                                                                                                                                                                                                                                                |
+| image     | Non         | Vous pouvez ajouter l'argument **?image=Yes** à la fin de votre URL afin qu'un message Telegram soit généré avant l'avis principal pour téléverser l'image associée. En raison des limitations du service, Telegram ne permet pas d'inclure une image directement dans un message texte. En revanche, vous pouvez envoyer un message contenant uniquement une image. Si ce drapeau est activé, _apprise_ enverra d'abord une notification image, puis l'avis lui-même. Comme recevoir 2 messages pour 1 seul avis peut être gênant, cette option est désactivée par défaut. |
 | format    | Non         | La valeur par défaut est _html_. Définissez-la sur _markdown_ lorsque vous voulez utiliser le traitement Markdown de Telegram.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| silent    | Non         | Indicateur `yes/no` permettant d'envoyer la notification en mode silencieux. La valeur par defaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| preview   | Non         | Indicateur `yes/no` permettant d'afficher les apercus web de votre publication. La valeur par defaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| silent    | Non         | Indicateur `yes/no` permettant d'envoyer la notification en mode silencieux. La valeur par défaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| preview   | Non         | Indicateur `yes/no` permettant d'afficher les aperçus web de votre publication. La valeur par défaut est `no`.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | album     | Non         | Regroupe les photos et les vidéos dans des albums Telegram avec la valeur `yes`. Les GIF, les fichiers audio et les documents sont envoyés séparément dans leur ordre d'origine. Si Telegram refuse un album, chaque élément est envoyé séparément. Une photo ou une vidéo encore refusée est alors envoyée comme un fichier ordinaire. La valeur par défaut est `no`.                                                                                                                                                                                                      |
-| mdv       | Non         | Permet de definir la version de `markdown` a utiliser, soit `v1`, soit `v2`. La valeur par defaut est `v2` si rien n'est precise. Cette valeur n'est prise en compte que si `?format=markdown` a egalement ete defini.                                                                                                                                                                                                                                                                                                                                                      |
-| topic     | Non         | Identifiant du fil de sujet dans lequel vous souhaitez publier votre message. [Voici une publication StackOverflow expliquant comment recuperer le Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat).                                                                                                                                                                                                                                                                                                              |
-| template  | Non         | Chemin vers un fichier gabarit de Message Riche local. Lorsqu'il est defini, le contenu du fichier est utilise pour construire un Message Riche Telegram (`sendRichMessage`) a la place du message texte/Markdown/HTML par defaut. Le gabarit doit etre un fichier JSON dont l'objet racine contient une liste `"blocks"` non vide. Voir **Gabarits** ci-dessous.                                                                                                                                                                                                           |
-| :jeton    | Non         | Jeton(s) personnalise(s) pour la substitution dans le gabarit. Prefixez chaque nom de jeton par deux-points dans l'URL (par exemple `?:macle=mavaleur`). Tout jeton defini ici est disponible sous la forme `{{macle}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                                                            |
+| mdv       | Non         | Permet de définir la version de `markdown` à utiliser, soit `v1`, soit `v2`. La valeur par défaut est `v2` si rien n'est précisé. Cette valeur n'est prise en compte que si `?format=markdown` a également été défini.                                                                                                                                                                                                                                                                                                                                                      |
+| topic     | Non         | Identifiant du fil de sujet dans lequel vous souhaitez publier votre message. [Voici une publication StackOverflow expliquant comment récupérer le Topic Thread ID](https://stackoverflow.com/questions/74773675/how-to-get-topic-id-for-telegram-group-chat).                                                                                                                                                                                                                                                                                                              |
+| template  | Non         | Chemin vers un fichier gabarit de Message Riche local. Lorsqu'il est défini, le contenu du fichier est utilisé pour construire un Message Riche Telegram (`sendRichMessage`) à la place du message texte/Markdown/HTML par défaut. Le gabarit doit être un fichier JSON dont l'objet racine contient une liste `"blocks"` non vide. Voir **Gabarits** ci-dessous.                                                                                                                                                                                                           |
+| :jeton    | Non         | Jeton(s) personnalisé(s) pour la substitution dans le gabarit. Préfixez chaque nom de jeton par deux-points dans l'URL (par exemple `?:macle=mavaleur`). Tout jeton défini ici est disponible sous la forme `{{macle}}` dans le fichier gabarit.                                                                                                                                                                                                                                                                                                                            |
 
 :::note
 Telegram accepte les pièces jointes jusqu'à 50 Mo, et les photos jusqu'à 10 Mo. Une photo plus volumineuse est envoyée comme un fichier ordinaire. Un fichier de plus de 50 Mo ne peut pas être envoyé, et la notification est signalée en échec.
@@ -127,51 +127,51 @@ Telegram accepte les pièces jointes jusqu'à 50 Mo, et les photos jusqu'à 10 M
 
 ## Gabarits
 
-L'API Bot Telegram 10.1 a introduit les **Messages Riches**, une facon structuree, basee sur des `blocks`, de mettre en forme un message (titres de section, paragraphes, tableaux, citations, et plus) qui va bien au-dela de la prise en charge texte/Markdown/HTML decrite ci-dessus. Apprise ne tente pas de construire automatiquement ces blocs a votre place -- l'argument `?template=` vous permet plutot de fournir votre propre fichier JSON de Message Riche preconstruit. Apprise lit ce fichier, substitue les espaces reserves `{{jeton}}`, puis envoie le resultat directement, vous donnant un controle total sur la structure.
+L'API Bot Telegram 10.1 a introduit les **Messages Riches**, une façon structurée, basée sur des `blocks`, de mettre en forme un message (titres de section, paragraphes, tableaux, citations, et plus) qui va bien au-delà de la prise en charge texte/Markdown/HTML décrite ci-dessus. Apprise ne tente pas de construire automatiquement ces blocs à votre place -- l'argument `?template=` vous permet plutôt de fournir votre propre fichier JSON de Message Riche préconstruit. Apprise lit ce fichier, substitue les espaces réservés `{{jeton}}`, puis envoie le résultat directement, vous donnant un contrôle total sur la structure.
 
-Le gabarit doit etre un objet JSON valide avec une liste `"blocks"` non vide. Chaque bloc doit etre un objet JSON avec son propre champ `"type"` (par exemple `paragraph`, `section_heading`) ; Telegram valide lui-meme la structure exacte des blocs, donc un bloc invalide entrainera le rejet de la notification. Consultez la [documentation Telegram sur les Messages Riches](https://core.telegram.org/bots/features#rich-messages) pour la liste complete et a jour des types de blocs pris en charge et de leurs champs -- Apprise verifie seulement que chaque bloc est un objet muni d'un `"type"`, il ne valide pas les champs internes d'un type de bloc particulier.
+Le gabarit doit être un objet JSON valide avec une liste `"blocks"` non vide. Chaque bloc doit être un objet JSON avec son propre champ `"type"` (par exemple `paragraph`, `section_heading`) ; Telegram valide lui-même la structure exacte des blocs, donc un bloc invalide entraînera le rejet de la notification. Consultez la [documentation Telegram sur les Messages Riches](https://core.telegram.org/bots/features#rich-messages) pour la liste complète et à jour des types de blocs pris en charge et de leurs champs -- Apprise vérifie seulement que chaque bloc est un objet muni d'un `"type"`, il ne valide pas les champs internes d'un type de bloc particulier.
 
-Lorsqu'un gabarit est utilise, le `title` et le `body` de la notification ne sont **pas** fusionnes ni convertis de format comme c'est normalement le cas pour `tgram://` -- ils sont transmis tels quels sous forme de jetons de substitution `{{app_title}}`/`{{app_body}}` decrits ci-dessous, puisque c'est le gabarit lui-meme qui definit la structure du message. Les pieces jointes (`attach=`) ne sont quant a elles pas affectees : elles continuent toujours d'etre envoyees sous forme de messages de suivi separes, exactement comme decrit plus haut.
+Lorsqu'un gabarit est utilisé, le `title` et le `body` de la notification ne sont **pas** fusionnés ni convertis de format comme c'est normalement le cas pour `tgram://` -- ils sont transmis tels quels sous forme de jetons de substitution `{{app_title}}`/`{{app_body}}` décrits ci-dessous, puisque c'est le gabarit lui-même qui définit la structure du message. Les pièces jointes (`attach=`) ne sont quant à elles pas affectées : elles continuent toujours d'être envoyées sous forme de messages de suivi séparés, exactement comme décrit plus haut.
 
 :::note
-La diffusion progressive d'un message (le `sendRichMessageDraft` de Telegram) n'est pas prise en charge. Apprise envoie toujours un Message Riche sous la forme d'une seule publication complete.
+La diffusion progressive d'un message (le `sendRichMessageDraft` de Telegram) n'est pas prise en charge. Apprise envoie toujours un Message Riche sous la forme d'une seule publication complète.
 :::
 
-### Jetons integres
+### Jetons intégrés
 
 Les jetons suivants sont toujours disponibles dans votre gabarit :
 
 | Jeton           | Description                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------------- |
-| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                        |
-| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                          |
-| `app_color`     | Une chaine de couleur hexadecimale pour le type de message (par exemple `#3AA3E3` pour info). |
-| `app_color_hex` | Alias explicite de `app_color` ; meme chaine hexadecimale, nom auto-documente.                |
+| `app_id`        | L'identifiant de l'application ; par défaut `Apprise`.                                        |
+| `app_desc`      | La description de l'application ; par défaut `Apprise Notification`.                          |
+| `app_color`     | Une chaîne de couleur hexadécimale pour le type de message (par exemple `#3AA3E3` pour info). |
+| `app_color_hex` | Alias explicite de `app_color` ; même chaîne hexadécimale, nom auto-documenté.                |
 | `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                               |
 | `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                    |
 | `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                     |
-| `app_image_url` | L'URL de l'image associee au type de message, si `?image=yes` est defini.                     |
-| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                 |
+| `app_image_url` | L'URL de l'image associée au type de message, si `?image=yes` est défini.                     |
+| `app_url`       | L'URL de l'instance Apprise (par défaut `https://github.com/caronc/apprise`).                 |
 
-### Jetons personnalises
+### Jetons personnalisés
 
-Tout jeton que vous inventez au-dela de l'ensemble integre peut etre fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
+Tout jeton que vous inventez au-delà de l'ensemble intégré peut être fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
 
 ```text
 tgram://{bot_token}/{chat_id}/?template=/chemin/gabarit.json&:env=production
 ```
 
-Dans le gabarit, referenciez-le sous la forme `{{env}}`.
+Dans le gabarit, référencez-le sous la forme `{{env}}`.
 
 ### Exemples de gabarit
 
-Enregistrez l'un des exemples suivants sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Chacun est pret a etre copie-colle comme point de depart.
+Enregistrez l'un des exemples suivants sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Chacun est prêt à être copié-collé comme point de départ.
 
 <Tabs>
 
 <TabItem label="De base">
 
-Un titre de section construit a partir du titre, suivi d'un paragraphe construit a partir du corps :
+Un titre de section construit à partir du titre, suivi d'un paragraphe construit à partir du corps :
 
 ```json
 {
@@ -190,9 +190,9 @@ Un titre de section construit a partir du titre, suivi d'un paragraphe construit
 
 </TabItem>
 
-<TabItem label="Avec un separateur">
+<TabItem label="Avec un séparateur">
 
-Le meme titre et le meme corps, avec un separateur avant une petite ligne de signature :
+Le même titre et le même corps, avec un séparateur qui sépare le message d'une petite ligne de signature :
 
 ```json
 {
@@ -210,7 +210,7 @@ Le meme titre et le meme corps, avec un separateur avant une petite ligne de sig
     },
     {
       "type": "paragraph",
-      "text": "Envoye par {{app_id}}"
+      "text": "Envoyé par {{app_id}}"
     }
   ]
 }
@@ -218,16 +218,16 @@ Le meme titre et le meme corps, avec un separateur avant une petite ligne de sig
 
 </TabItem>
 
-<TabItem label="Jetons personnalises">
+<TabItem label="Jetons personnalisés">
 
-Un avis de deploiement qui injecte un jeton personnalise `env`. Envoyez-le avec `&:env=production` dans l'URL :
+Un avis de type déploiement qui injecte un jeton personnalisé `env`. Envoyez-le avec `&:env=production` dans l'URL :
 
 ```json
 {
   "blocks": [
     {
       "type": "section_heading",
-      "text": "Deploiement : {{app_title}}"
+      "text": "Déploiement : {{app_title}}"
     },
     {
       "type": "paragraph",
@@ -250,7 +250,7 @@ Un avis de deploiement qui injecte un jeton personnalise `env`. Envoyez-le avec 
 
 ## Exemples
 
-Envoyer une notification Telegram a lead2gold :
+Envoyer une notification Telegram à lead2gold :
 
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
@@ -259,7 +259,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/
 ```
 
-Vous voulez utiliser les fonctionnalites Markdown de Telegram ? Faites plutot ceci :
+Vous voulez utiliser les fonctionnalités Markdown de Telegram ? Faites plutôt ceci :
 
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
@@ -269,7 +269,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?format=markdown
 ```
 
-Vous avez un sujet precis a notifier ?
+Vous avez un sujet précis à notifier ?
 
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
@@ -279,7 +279,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?topic=1234567
 ```
 
-Les sujets peuvent egalement etre definis pour chaque chat_id :
+Les sujets peuvent également être définis pour chaque chat_id :
 
 ```bash
 # Supposons que notre {bot_token} soit 123456789:abcdefg_hijklmnop
@@ -302,10 +302,10 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    tgram://123456789:abcdefg_hijklmnop/12315544/?album=yes
 ```
 
-Envoyer une notification a l'aide d'un gabarit de Message Riche personnalise (voir **Gabarits** ci-dessus), en injectant un jeton personnalise avec le prefixe `:cle=valeur` :
+Envoyer une notification à l'aide d'un gabarit de Message Riche personnalisé (voir **Gabarits** ci-dessus), en injectant un jeton personnalisé avec le préfixe `:cle=valeur` :
 
 ```bash
-# Supposons que le gabarit soit enregistre a /etc/apprise/telegram-blocks.json
-apprise -vv -t "Deploiement" -b "v2.3.1 deploye" \
+# Supposons que le gabarit soit enregistré dans /etc/apprise/telegram-blocks.json
+apprise -vv -t "Déploiement" -b "v2.3.1 déployé" \
    "tgram://123456789:abcdefg_hijklmnop/12315544/?template=/etc/apprise/telegram-blocks.json&:env=production"
 ```

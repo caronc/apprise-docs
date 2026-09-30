@@ -27,9 +27,7 @@ limits:
 
 <!-- SERVICE:DETAILS -->
 
-Kook (anciennement Kaihei / 开黑啦) est une plateforme de communication
-axée sur les jeux vidéo similaire à Discord, proposant des canaux texte,
-des canaux vocaux et la messagerie directe.
+Kook (anciennement Kaihei / 开黑啦) est une plateforme de communication axée sur les jeux vidéo, similaire à Discord, proposant des canaux texte, des canaux vocaux et la messagerie directe.
 
 <!-- SPONSORS:BANNER -->
 
@@ -37,8 +35,7 @@ des canaux vocaux et la messagerie directe.
 
 ### Mode Bot (Recommandé)
 
-Le mode bot offre un accès complet à l'API, y compris la prise en charge
-des pièces jointes.
+Le mode bot offre un accès complet à l'API, y compris la prise en charge des pièces jointes.
 
 1. Rendez-vous sur [https://developer.kookapp.cn](https://developer.kookapp.cn) et connectez-vous.
 2. Cliquez sur **Créer une application** et donnez-lui un nom (ex. : « Apprise »).
@@ -50,7 +47,7 @@ des pièces jointes.
 
 ### Mode Webhook
 
-Le mode webhook est plus simple mais ne prend pas en charge les pièces jointes.
+Le mode webhook est plus simple, mais ne prend pas en charge les pièces jointes.
 
 1. Dans Kook, ouvrez **Paramètres du serveur > Intégrations > Webhooks**.
 2. Cliquez sur **Créer un webhook** pour le canal souhaité.
@@ -67,15 +64,14 @@ Les syntaxes valides sont les suivantes :
 - `kook://{webhook_key}?mode=webhook`
 
 :::note
-Préfixez une cible avec `@` pour envoyer un **message direct** à un
-utilisateur plutôt que de publier dans un canal.
+Préfixez une cible avec `@` pour envoyer un **message direct** à un utilisateur plutôt que de publier dans un canal.
 :::
 
-## Detail des parametres
+## Détail des paramètres
 
 | Variable     | Requis | Description                                                                       |
 | ------------ | ------ | --------------------------------------------------------------------------------- |
-| `token`      | \*Oui  | Votre token bot (mode bot) ou clé webhook (mode webhook).                         |
+| `token`      | \*Oui  | Votre token de bot (mode bot) ou clé webhook (mode webhook).                      |
 | `channel_id` | Non    | Identifiant numérique du canal cible. Peut être répété pour plusieurs canaux.     |
 | `user_id`    | Non    | Identifiant numérique d'un utilisateur pour un message direct. Préfixez avec `@`. |
 | `mode`       | Non    | Mode de fonctionnement : `bot` (par défaut) ou `webhook`.                         |
@@ -105,7 +101,7 @@ apprise -vv -t "MP" -b "Message privé" \
     kook://BOT_TOKEN/@USER_ID
 ```
 
-Envoyer via webhook entrant :
+Envoyer via un webhook entrant :
 
 ```bash
 apprise -vv -b "Notification webhook" \

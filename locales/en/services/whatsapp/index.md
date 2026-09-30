@@ -90,7 +90,7 @@ If you wish to assign the `body` or `type` from Apprise, these special keywords 
 1. The template header must be set to either '' (empty) or assigned content.
 1. Variables in the message body, if any, must use the number format, e.g. `{{1}}`, as opposed to the named variables format, e.g. `{{order_id}}`
 
-   :::
+:::
 
 ## Examples
 

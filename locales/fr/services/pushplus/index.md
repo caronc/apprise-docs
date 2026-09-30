@@ -133,10 +133,10 @@ La syntaxe valide est la suivante :
 
 ## Voir Aussi
 
-Apprise propose deux integrations WeCom/WeChat complementaires :
+Apprise propose deux intégrations WeCom/WeChat complémentaires :
 
-- **[WeChat (WeCom)](../wechat/)** -- envoie directement aux utilisateurs, departements et etiquettes WeCom via l'API de messages de l'application WeCom ; necessite un CorpID, un Secret d'Application et un AgentID depuis la console d'administration WeCom.
-- **[WeCom Bot](../wecombot/)** -- envoie dans un groupe WeCom via une cle de webhook ; plus simple a configurer, mais livre dans un groupe plutot qu'a des utilisateurs ou departements specifiques.
+- **[WeChat (WeCom)](../wechat/)** -- envoie directement aux utilisateurs, départements et étiquettes WeCom via l'API de messages de l'application WeCom ; nécessite un CorpID, un Secret d'Application et un AgentID depuis la console d'administration WeCom.
+- **[WeCom Bot](../wecombot/)** -- envoie dans un groupe WeCom via une clé de webhook ; plus simple à configurer, mais livre dans un groupe plutôt qu'à des utilisateurs ou départements spécifiques.
 
 ## Exemples
 

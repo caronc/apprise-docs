@@ -35,9 +35,9 @@ limits:
 
 ## Format du message
 
-Slack utilise `markdown` par défaut afin que les liens, le texte en gras et les listes simples s'affichent correctement. Définissez `?format=text` si vous voulez envoyer du texte brut à Slack. Dans ce mode, Apprise convertit `&`, `<` et `>` dans les codes attendus par Slack, afin qu'ils s'affichent exactement comme vous les avez tapés.
+Slack utilise `markdown` par défaut pour les liens, le texte en gras et les listes simples. Définissez `?format=text` pour envoyer du texte brut.
 
-Déclarer votre format d'entrée permet à Apprise de convertir le contenu pris en charge avant l'envoi. Sans format d'entrée, Apprise suppose que le corps convient déjà au format Slack choisi. `overflow=split` reste alors une solution au mieux ; utilisez `overflow=upstream` si le balisage ou le contenu structuré doit rester intact.
+Déclarer votre format d'entrée permet à Apprise de convertir le contenu pris en charge avant l'envoi. Sans format d'entrée, Apprise suppose que le corps convient déjà au format Slack choisi. Le résultat de `overflow=split` n'est alors pas garanti ; utilisez `overflow=upstream` si le balisage ou le contenu structuré doit rester intact.
 
 ## Configuration du compte
 
@@ -61,11 +61,11 @@ Cette URL correspond en pratique à :<br/>
 **Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la version 0.7.7_). Vous n'avez donc plus besoin de la reparser, même s'il y a un léger gain interne à le faire.
 
 Si vous voulez la convertir en URL Apprise, procédez comme suit :
-la dernière partie de l'URL qui vous est fournie contient les 3 jetons nécessaires à l'envoi des notifications. Dans l'exemple ci-dessus, ils sont les suivants :
+La dernière partie de l'URL qui vous est fournie contient les 3 jetons nécessaires à l'envoi des notifications. Soyez très attentif à ce point. Dans l'exemple ci-dessus, ils sont les suivants :
 
 1. **TokenA** est `T1JJ3T3L2`
 1. **TokenB** est `A1BRTD4JD`
-1. **TokenC** est `TIiajkdnlazkcOXrIdevi7F8`
+1. **TokenC** est `TIiajkdnlazkcOXrIdevi7F`
 
 ### Méthode 2 : Créer un Robot
 
@@ -73,10 +73,10 @@ Les bots offrent un peu plus de souplesse que les webhooks. La principale diffé
 
 1. Commencez par créer votre [Slack App ici](https://api.slack.com/apps?new_app=1).
 1. Choisissez un nom d'application, par exemple _Apprise_, sélectionnez votre espace de travail, puis cliquez sur **Create App**.
-1. Vous pourrez ensuite ouvrir la section **Bots**, ajouter un **utilisateur robot**, lui donner un nom, puis choisir \*_Add Bot User_.
+1. Vous pourrez ensuite ouvrir la section **Bots**, ajouter un **utilisateur robot**, lui donner un nom, puis choisir **Add Bot User**.
 1. Vous devrez fournir les bonnes permissions OAuth :<br/>![Autorisations minimales OAuth du robot Slack](./images/285847dfb5ef03ee.png)
 1. Sélectionnez ensuite **Install App**, puis **Install App to Workspace**.
-1. Vous devrez autoriser l'application lorsqu'on vous le demandera.
+1. Vous devrez autoriser l'application lorsqu'on vous le demandera ; cette étape est donc simple.
 1. Enfin, vous obtiendrez des informations très importantes pour Apprise. À partir de là, vous pourrez utiliser soit le **jeton d'accès OAuth**, soit le **jeton d'accès OAuth de l'utilisateur robot**, avec une syntaxe de type `slack://{OAuth Access Token}`.
 
 Votre URL Apprise Slack, pour accéder à votre bot, peut ressembler à ceci :
@@ -84,7 +84,7 @@ Votre URL Apprise Slack, pour accéder à votre bot, peut ressembler à ceci :
 - `slack://xoxp-1234-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d`
 - `slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d`
 
-Les deux jetons OAuth fournis permettent de publier du texte dans des canaux et de joindre des fichiers. Le choix de l'un ou de l'autre depend donc de votre preference.
+Les deux jetons OAuth fournis permettent de publier du texte dans des canaux et de joindre des fichiers. Le choix de l'un ou de l'autre dépend donc de votre préférence.
 
 ## Syntaxe
 
@@ -118,7 +118,7 @@ Si vous connaissez le `user_id` auquel vous souhaitez envoyer votre notification
 
 Vous pouvez également combiner librement toutes ces formes dans l'ordre de votre choix :
 
-- `slack://**{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
+- `slack://{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
 - `slack://{botname}@{OAuthToken}/@{user_id}/#{channel}/+{encoded_id}`
 
 ### Méthode 3 : Webhooks Slack Workflow Builder
@@ -159,39 +159,39 @@ Les deux formes envoient `{"text": "Titre : Corps"}` par défaut (le titre est o
 
 ## Gabarits
 
-L'argument `?template=` permet de fournir un fichier JSON Slack Block Kit preconstruit. Apprise lit le fichier, substitue les espaces reserves `{{jeton}}`, puis envoie le resultat directement -- vous donnant un controle total sur la mise en page sans modifier le code d'Apprise.
+L'argument `?template=` permet de fournir un fichier JSON Slack Block Kit préconstruit. Apprise lit le fichier, substitue les espaces réservés `{{jeton}}`, puis envoie le résultat directement -- vous donnant un contrôle total sur la mise en page sans modifier le code d'Apprise.
 
-Le gabarit doit etre un objet JSON valide avec une liste `"blocks"` non vide (format Slack Block Kit). La structure est validee par l'API Slack ; un format invalide entrainera le rejet de la notification.
+Le gabarit doit être un objet JSON valide avec une liste `"blocks"` non vide (format Slack Block Kit). La structure est validée par l'API Slack ; un format invalide entraînera le rejet de la notification.
 
-### Jetons integres
+### Jetons intégrés
 
 Les jetons suivants sont toujours disponibles dans votre gabarit :
 
 | Jeton           | Description                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------------- |
-| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                        |
-| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                          |
-| `app_color`     | Une chaine de couleur hexadecimale pour le type de message (par exemple `#3AA3E3` pour info). |
-| `app_color_hex` | Alias explicite de `app_color` ; meme chaine hexadecimale, nom auto-documenté.                |
+| `app_id`        | L'identifiant de l'application ; par défaut `Apprise`.                                        |
+| `app_desc`      | La description de l'application ; par défaut `Apprise Notification`.                          |
+| `app_color`     | Une chaîne de couleur hexadécimale pour le type de message (par exemple `#3AA3E3` pour info). |
+| `app_color_hex` | Alias explicite de `app_color` ; même chaîne hexadécimale, nom auto-documenté.                |
 | `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                               |
 | `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                    |
 | `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                     |
-| `app_image_url` | L'URL de l'image associee au type de message, si elle existe.                                 |
-| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                 |
+| `app_image_url` | L'URL de l'image associée au type de message, si elle existe.                                 |
+| `app_url`       | L'URL de l'instance Apprise (par défaut `https://github.com/caronc/apprise`).                 |
 
-### Jetons personnalises
+### Jetons personnalisés
 
-Tout jeton que vous inventez au-dela de l'ensemble integre peut etre fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
+Tout jeton que vous inventez au-delà de l'ensemble intégré peut être fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
 
 ```text
 slack://{tokenA}/{tokenB}/{tokenC}/?template=/chemin/gabarit.json&:env=production&:team=platform
 ```
 
-Dans le gabarit, referenciez-le sous la forme `{{env}}` ou `{{team}}`.
+Dans le gabarit, référencez-le sous la forme `{{env}}` ou `{{team}}`.
 
 ### Exemple de gabarit
 
-Enregistrez le contenu suivant sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Cet exemple produit un bloc d'en-tete avec le titre, un bloc de section avec le corps, et une barre laterale coloree via le champ `color` :
+Enregistrez le contenu suivant sous forme de fichier `.json` et pointez `?template=` vers ce fichier. Cet exemple produit un bloc d'en-tête avec le titre, un bloc de section avec le corps, et une barre latérale colorée via le champ `color` :
 
 ```json
 {
@@ -217,7 +217,7 @@ Envoyer une notification Slack vers le canal `#nuxref` :
 # Supposons que notre {tokenA} soit T1JJ3T3L2
 # Supposons que notre {tokenB} soit A1BRTD4JD
 # Supposons que notre {tokenC} soit TIiajkdnlazkcOXrIdevi7F
-# Notre canal nuxref est represente par #nuxref
+# Notre canal nuxref est représenté par #nuxref
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack:///T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/#nuxref
 ```
@@ -226,7 +226,7 @@ Autrement, si vous utilisez un bot, une notification Slack vers le canal `#gener
 
 ```bash
 # Supposons que notre {OAuthToken} soit xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d
-# Notre canal general est represente par #general
+# Notre canal general est représenté par #general
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/#general
 ```
@@ -235,16 +235,16 @@ Vous pouvez aussi désactiver le pied de page, par exemple ainsi :
 
 ```bash
 # Supposons que notre {OAuthToken} soit xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d
-# Nous voulons l'envoyer vers notre canal #general ; %23 est la forme encodee du symbole #
-# Nous definissons aussi footer sur no
+# Nous voulons l'envoyer vers notre canal #general ; %23 est la forme encodée du symbole #
+# Nous définissons aussi footer sur no
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23general?footer=no
 ```
 
-Envoyer une notification via un gabarit Block Kit personnalise (voir l'**Exemple de gabarit** ci-dessus), en injectant des jetons personnalises avec le prefixe `:cle=valeur` :
+Envoyer une notification via un gabarit Block Kit personnalisé (voir l'**Exemple de gabarit** ci-dessus), en injectant des jetons personnalisés avec le préfixe `:cle=valeur` :
 
 ```bash
-# Supposons que le gabarit soit enregistre sous /etc/apprise/slack-blocks.json
-apprise -vv -t "Deploiement" -b "v2.3.1 deploye" \
+# Supposons que le gabarit soit enregistré sous /etc/apprise/slack-blocks.json
+apprise -vv -t "Déploiement" -b "v2.3.1 déployé" \
    "slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/%23ops/?template=/etc/apprise/slack-blocks.json&:env=production&:team=platform"
 ```

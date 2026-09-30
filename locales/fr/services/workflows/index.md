@@ -44,7 +44,7 @@ Oui, l'URL est effectivement aussi longue... mais au final elle correspond à :
 - `workflows://{host}:{port}/{workflow}/{signature}`
 
 :::tip
-Apprise prend également cette URL en charge _telle quelle_ ; vous n'avez donc plus besoin de la reparser. Il existe toutefois un léger surcoût interne si vous l'utilisez ainsi. Parfois, le copier-coller reste malgré tout la solution la plus simple.
+Apprise prend également cette URL en charge _telle quelle_ ; vous n'avez donc plus besoin de la décomposer vous-même. Il existe toutefois un léger surcoût interne si vous l'utilisez ainsi. Parfois, le copier-coller reste malgré tout la solution la plus simple.
 :::
 
 ### URLs Power Automate
@@ -86,28 +86,28 @@ La syntaxe valide est la suivante :
 | ver       | Non    | Version d'API Power Automate à utiliser ; la valeur par défaut est `2016-06-01`. Cette valeur peut aussi être lue via le mot-clé `api-version` présent dans le lien webhook Azure.                                                                                                            |
 | pa        | Non    | À définir sur `yes` si votre webhook utilise la nouvelle structure d'URL Power Automate (`/powerautomate/automations/direct/...`). Aussi accepté sous le nom `powerautomate`. La valeur par défaut est `no`.                                                                                  |
 | route     | Non    | L'identifiant de routage Power Automate ; il s'agit de la valeur numérique trouvée après `cu/` dans les URLs webhook Power Automate récentes. Utilisé uniquement lorsque `pa=yes`. Aussi accepté sous le nom `routeid`.                                                                       |
-| template  | Non    | Permet d'indiquer le chemin vers un template que vous préférez utiliser à la place de la carte Adaptive choisie par Apprise. Utilisez des doubles accolades `{{token}}` pour marquer les jetons à remplacer avant soumission au service amont, par exemple `{{app_body}}` ou `{{app_title}}`. |
+| template  | Non    | Permet d'indiquer le chemin vers un modèle que vous préférez utiliser à la place de la carte adaptative choisie par Apprise. Utilisez des doubles accolades `{{token}}` pour marquer les jetons à remplacer avant soumission au service amont, par exemple `{{app_body}}` ou `{{app_title}}`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Mentions MS Teams
 
-Lorsque votre Workflow envoie des messages vers un canal **Microsoft Teams**, Apprise gere automatiquement les `@mentions`. Il suffit d'entourer l'adresse UPN (adresse e-mail) ou le nom d'affichage du destinataire avec des balises `<at>` directement dans le corps du message :
+Lorsque votre Workflow envoie des messages vers un canal **Microsoft Teams**, Apprise gère automatiquement les `@mentions`. Il suffit d'entourer l'adresse UPN (adresse e-mail) ou le nom d'affichage du destinataire avec des balises `<at>` directement dans le corps du message :
 
 ```text
-Bonjour <at>alice@example.com</at>, la compilation a echoue !
+Bonjour <at>alice@example.com</at>, la compilation a échoué !
 ```
 
-Apprise detecte chaque balise `<at>...</at>` dans le corps et injecte automatiquement la structure d'entite Teams requise dans la charge utile -- aucune configuration supplementaire n'est necessaire. Les mentions multiples et la suppression des doublons sont toutes deux gerees :
+Apprise détecte chaque balise `<at>...</at>` dans le corps et injecte automatiquement la structure d'entité Teams requise dans la charge utile -- aucune configuration supplémentaire n'est nécessaire. Les mentions multiples et la suppression des doublons sont toutes deux gérées :
 
 ```text
-<at>alice@example.com</at> et <at>bob@example.com</at>, merci de bien vouloir verifier.
+<at>alice@example.com</at> et <at>bob@example.com</at>, merci de bien vouloir vérifier.
 ```
 
 :::note
-La detection automatique des mentions ne s'applique qu'a la **charge utile par defaut** (sans argument `template=`). Si vous fournissez un modele personnalise, ajoutez `msteams.entities` manuellement dans votre JSON -- consultez [Prise en charge des mentions dans les cartes adaptatives](https://learn.microsoft.com/fr-fr/microsoftteams/platform/task-modules-and-cards/cards/cards-format#mention-support-within-adaptive-cards).
+La détection automatique des mentions ne s'applique qu'à la **charge utile par défaut** (sans argument `template=`). Si vous fournissez un modèle personnalisé, ajoutez `msteams.entities` manuellement dans votre JSON -- consultez [Prise en charge des mentions dans les cartes adaptatives](https://learn.microsoft.com/fr-fr/microsoftteams/platform/task-modules-and-cards/cards/cards-format#mention-support-within-adaptive-cards).
 
-Le corps doit egalement etre transmis au format **Markdown** (le format par defaut pour ce plugin). Si vous envoyez `body_format=html`, le convertisseur HTML supprime les balises `<at>` avant qu'Apprise ne les traite.
+Le corps doit également être transmis au format **Markdown** (le format par défaut pour ce plugin). Si vous envoyez `body_format=html`, le convertisseur HTML supprime les balises `<at>` avant qu'Apprise ne les traite.
 :::
 
 ## Modèles
@@ -146,14 +146,14 @@ Dans l'exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_ti
 - **app_id** : l'identifiant de l'application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
 - **app_desc** : la description de l'application, souvent une variante un peu plus explicite de `app_id`. Elle vaut généralement `Apprise Notification` sauf surcharge.
 - **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont souvent bleus, tandis que les messages `warning` sont orange.
-- **app_color_hex** : alias explicite de `app_color` ; meme valeur hexadecimale, fourni pour que les gabarits puissent utiliser un nom auto-documenté pour la variante hexadecimale.
+- **app_color_hex** : alias explicite de `app_color` ; même valeur hexadécimale, fourni pour que les modèles puissent utiliser un nom explicite pour la variante hexadécimale.
 - **app_type** : le type du message lui-même, comme `info`, `warning`, `success`, etc.
 - **app_title** : le titre réel transmis à la notification Apprise via `--title` ou `-t`.
 - **app_body** : le corps réel transmis à la notification Apprise via `--body` ou `-b`.
 - **app_image_url** : l'URL de l'image associée au type de message, par exemple `info` ou `warning`, si elle existe et n'a pas été désactivée dans l'URL via `image=no`.
 - **app_url** : l'URL associée à l'instance Apprise, trouvée dans l'objet **AppriseAsset()**. Sauf surcharge explicite, sa valeur est `https://github.com/caronc/apprise`.
 
-Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de template peuvent être définis dynamiquement en utilisant l'opérateur `:` devant les arguments d'URL de votre choix. Par exemple :
+Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de modèle peuvent être définis dynamiquement en utilisant l'opérateur `:` devant les arguments d'URL de votre choix. Par exemple :
 
 - `workflows://credentials/?template=/path/to/template.json&:target=Chris&:whence=this%20afternoon`
 - `workflows://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon`
@@ -161,13 +161,13 @@ Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `t
 Une notification comme celle-ci :
 
 ```bash
-# En utilisant des deux-points, nous pouvons definir dynamiquement
+# En utilisant des deux-points, nous pouvons définir dynamiquement
 # target et whence depuis la ligne de commande :
-apprise -t "Mon Titre va dans app_title" -b "Ceci est place dans app_body" \
+apprise -t "Mon Titre va dans app_title" -b "Ceci est placé dans app_body" \
    "workflows://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 
-Publierait dans MSTeams en suivant le template ci-dessus :
+Publierait dans MS Teams en suivant le modèle ci-dessus :
 
 ```json
 {
@@ -201,17 +201,17 @@ Publierait dans MSTeams en suivant le template ci-dessus :
 - Tous les jetons sont correctement échappés ; ne vous inquiétez donc pas si une valeur contient un guillemet double (`"`), il sera correctement échappé avant l'envoi en amont.
 - Les jetons sont **sensibles à la casse**. Ainsi, `{{Token}}` doit être alimenté par une valeur `:Token=` dans votre URL.
 - Les jetons qui ne correspondent à rien ne sont tout simplement pas remplacés, et `{{keyword}}` restera tel quel dans le message.
-- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé sous `{{app_body}}` dans votre template. Même si vous ne l'utilisez pas, vous devez tout de même fournir une valeur pour satisfaire cette exigence et utiliser les appels de template.
+- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé sous `{{app_body}}` dans votre modèle. Même si vous ne l'utilisez pas, vous devez tout de même fournir une valeur pour satisfaire cette exigence et utiliser les modèles.
 
 ## Exemples
 
 Envoyer une notification Microsoft Teams :
 
 ```bash
-# Assuming our {host} is prod-site.logic.azure.com
-# Assuming our {port} is 443
-# Assuming our {workflow} is T1JJ3T3L2@DEFK543
-# Assuming our {signature} is TIiajkdnlazkcOXrIdevi7F
+# Supposons que notre {host} soit prod-site.logic.azure.com
+# Supposons que notre {port} soit 443
+# Supposons que notre {workflow} soit T1JJ3T3L2@DEFK543
+# Supposons que notre {signature} soit TIiajkdnlazkcOXrIdevi7F
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    workflows:///prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
@@ -219,16 +219,16 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 Envoyer une notification Teams avec une @mention :
 
 ```bash
-apprise -vv -t "Compilation echouee" \
-   -b "Salut <at>alice@example.com</at>, la compilation nocturne necessite votre attention." \
+apprise -vv -t "Compilation échouée" \
+   -b "Salut <at>alice@example.com</at>, la compilation nocturne nécessite votre attention." \
    workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
 
 Mentionner plusieurs personnes dans un seul message :
 
 ```bash
-apprise -vv -t "Deploiement termine" \
-   -b "<at>alice@example.com</at> et <at>bob@example.com</at> -- deploye en production." \
+apprise -vv -t "Déploiement terminé" \
+   -b "<at>alice@example.com</at> et <at>bob@example.com</at> -- déployé en production." \
    workflows://prod-site.logic.azure.com:443/T1JJ3T3L2@DEFK543/TIiajkdnlazkcOXrIdevi7F/
 ```
 

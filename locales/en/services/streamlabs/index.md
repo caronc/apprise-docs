@@ -32,25 +32,25 @@ At the moment, the only service that has an open API to work with is Streamlabs,
 1. Fill out the form with anything it will accept as valid. Most fields can be gibberish, as the application is not supposed to ever move past the "testing" stage and is for your personal use only.
    In the "Whitelist Users" field, input the username of a Twitch account you control. While this feature is _technically_ limited to Twitch, you can use the alerts overlay for donations on YouTube and Facebook as well.
    For now, simply set the "Redirect URI" to `http://localhost`, you will change this soon.
-   Then, hit create:  
+   Then, hit **create**:  
    ![image](./images/127759264-ae91539a-5694-4096-a478-80eb02b7b594.png)
-1. Now we'll take the Client ID from the Streamlabs page and generate a code that will be used for apprise to communicate with Streamlabs
-   Replace the placeholders in the link below with your Client ID
+1. Now we'll take the Client ID from the Streamlabs page and generate a code that will be used by Apprise to communicate with Streamlabs.
+   Replace the placeholders in the link below with your Client ID:
    `https://www.streamlabs.com/api/v1.0/authorize?client_id=<YOURCLIENTID>&redirect_uri=http://localhost&response_type=code&scope=donations.read+donations.create+alerts.create`
-   You are redirected to localhost
-   copy the url param code that is specified in the browser url bar
+   You are redirected to localhost.
+   Copy the code URL parameter shown in the browser address bar:
    `http://localhost/?code=<YOURCODE>`
-1. Generate an access token using your code generated in the last step, your Client ID, and your Secret
-   Open a terminal and make a request to generate an access token that Apprise will utilize
+1. Generate an access token using your code generated in the last step, your Client ID, and your Secret.
+   Open a terminal and make a request to generate an access token that Apprise will use:
 
 ```bash
 curl --request POST --url 'https://streamlabs.com/api/v1.0/token' -d  'grant_type=authorization_code&code=<YOURCODE>&client_id=<YOURCLIENTID>&client_secret=<YOURSECRET>&redirect_uri=http%3A%2F%2Flocalhost'
 ```
 
-``Similar JSON should be returned`{"access_token":<YOURACCESSTOKEN>,"token_type":"Bearer","expires_in":3600,"refresh_token":""}`
-Note that the access token does not expire
+Similar JSON should be returned: `{"access_token":<YOURACCESSTOKEN>,"token_type":"Bearer","expires_in":3600,"refresh_token":""}`
+Note that the access token does not expire.
 
-1. Now copy and paste your access token to build the streamlabs url
+1. Now copy and paste your access token to build the Streamlabs URL:
    `strmlabs://<YOURACCESSTOKEN>/?call=DONATIONS`
 
 ## Syntax

@@ -53,14 +53,14 @@ Pour une connexion sécurisée, utilisez plutôt `apprises`.
 
 ## Détail des Paramètres
 
-| Variable | Obligatoire | Description                                                                                                                                                |
-| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| hostname | Oui         | Nom d'hôte du serveur Web.                                                                                                                                 |
-| port     | Non         | Port du serveur Web. La valeur par défaut est **80** pour **apprise://** et **443** pour **apprises://**.                                                  |
-| user     | Non         | Nom d'utilisateur employé lorsque le serveur exige HTTP Basic Auth.                                                                                        |
-| password | Non         | Mot de passe employé lorsque le serveur exige HTTP Basic Auth.                                                                                             |
-| tags     | Non         | Tags facultatifs envoyés avec la requête.                                                                                                                  |
-| version  | Non         | La version `2` envoie le jeton dans `X-Apprise-Config-ID` et est utilisée par défaut. La version `1` le conserve dans le chemin HTTP des anciens serveurs. |
+| Variable | Obligatoire | Description                                                                                                                                                      |
+| -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname | Oui         | Nom d'hôte du serveur Web.                                                                                                                                       |
+| port     | Non         | Port du serveur Web. La valeur par défaut est **80** pour **apprise://** et **443** pour **apprises://**.                                                        |
+| user     | Non         | Nom d'utilisateur employé lorsque le serveur exige HTTP Basic Auth.                                                                                              |
+| password | Non         | Mot de passe employé lorsque le serveur exige HTTP Basic Auth.                                                                                                   |
+| tags     | Non         | Tags facultatifs envoyés avec la requête.                                                                                                                        |
+| version  | Non         | La version `2` envoie le jeton dans `X-Apprise-Config-ID` et est utilisée par défaut. La version `1` le conserve dans le chemin HTTP, pour les anciens serveurs. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -86,7 +86,7 @@ apprise -vv --body="Message de Test" \
 
 ### Avec Authentification
 
-Placez le nom d'utilisateur et le mot de passe enregistrés avant le nom d'hôte. Une connexion administrateur avec mot de passe uniquement commence par deux-points. La version 2 envoie automatiquement la clé dans `X-Apprise-Config-ID`.
+Placez le nom d'utilisateur et le mot de passe enregistrés avant le nom d'hôte. Une connexion administrateur avec mot de passe uniquement commence par deux-points. La version 2 envoie automatiquement la clé de configuration dans `X-Apprise-Config-ID`.
 
 ```bash
 # Connexion de configuration avec nom d'utilisateur et mot de passe
@@ -108,7 +108,7 @@ apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=email"
 ```
 
-Vous pouvez aussi utiliser la logique ET et OU lorsque vous transmettez des tags :
+Les tags prennent en charge les expressions ET et OU :
 
 | Valeur `tags=`   | Services sélectionnés                        |
 | ---------------- | -------------------------------------------- |
@@ -129,7 +129,7 @@ apprise -vv --body="Message de Test" \
 apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=devops alerts"
 
-# Exemple mixte : (comment AND create) OR admin
+# Exemple mixte : (comment ET create) OU admin
 apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
@@ -175,7 +175,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "apprise://localhost:8080/path/apprise/?+X-Token=abcdefg&+X-Apprise=is%20great"
 ```
 
-**Remarque :** L'option `--config` de la CLI et la classe `AppriseConfig()` peuvent aussi charger la configuration depuis un serveur API Apprise.
+**Remarque :** l'option `--config` de la CLI et la classe `AppriseConfig()` peuvent aussi charger la configuration depuis un serveur API Apprise.
 
 ```bash
 # Exemple de la CLI chargeant une configuration déjà enregistrée :

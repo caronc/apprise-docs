@@ -27,17 +27,17 @@ sample_urls:
 
 ## Configuration du Compte
 
-Tout d'abord, vous devez disposer d'un compte Signal. Il est donc supposé que vous disposez de la version Apple ou Android du logiciel Signal.
+Tout d'abord, vous devez disposer d'un compte Signal. Il est donc supposé que vous possédez la version Apple ou Android du logiciel Signal.
 
 À partir de là, le plugin suppose que vous avez configuré le [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
 
 Une configuration simple pourrait ressembler à ceci :
 
 ```bash
-# Create a directory for our configuration to get stored into
+# Créer un répertoire pour y stocker notre configuration
 mkdir -p $HOME/.signal-api
 
-# Launch a Signal API instance that listens on port 9922
+# Lancer une instance Signal API qui écoute sur le port 9922
 docker run -d --name signal-api --restart=always -p 9922:8080 \
  -v $HOME/.signal-api:/home/.local/share/signal-cli \
    -e 'MODE=native' -e SIGNAL_CLI_UID=$(id -u) -e SIGNAL_CLI_GID=$(id -g) \
@@ -94,28 +94,21 @@ Un exemple de sortie est le suivant :
     "name": "Test Group",
     "id": "group.abcdefghijklmnop=",
     "internal_id": "aabbccdd/eeffgghh=",
-    "members": [
-      "+1555555551234
-      "+16666661234"
-    ],
-      "blocked": false,
-      "pending_invites": [],
-      "pending_requests": [],
-      "invite_link": "",
-      "admins": [
-      "+1555555551234"
-    ]
+    "members": ["+1555555551234", "+16666661234"],
+    "blocked": false,
+    "pending_invites": [],
+    "pending_requests": [],
+    "invite_link": "",
+    "admins": ["+1555555551234"]
   }
 ]
-
-The takeaway from the above is the group
 ```
 
-Exemple d'envoi d'une notification à un groupe : `group.aabbccdd/eeffgghh=` identifié par le champ `id`.
+La valeur à retenir est l'`id` du groupe (ici `group.abcdefghijklmnop=`). Utilisez-la comme cible pour envoyer une notification à ce groupe.
 
 ### Mise en Forme du Texte
 
-Ajoutez `?format=markdown` à l'URL pour envoyer des messages mis en forme. Apprise convertit votre Markdown ou votre HTML dans le style propre à Signal : **gras**, _italique_, ~~barré~~, `monospace` et `||spoiler||`. Signal n'a pas de titres de section, le titre est donc affiché en gras. Les messages en texte brut restent exactement tels que vous les avez écrits, même s'ils contiennent des caractères comme `*` ou `~`. En ligne de commande, ajoutez `-i markdown` lorsque votre message est écrit en Markdown.
+Ajoutez `?format=markdown` pour envoyer des messages mis en forme. Signal prend en charge le **gras**, l'_italique_, le ~~barré~~, le `monospace` et le `||spoiler||`. Signal n'a pas de titres de section : les titres apparaissent donc en gras.
 
 ```bash
 apprise -vv -i markdown -t "Rapport de Build" -b "**3** tests en _échec_" \
@@ -127,15 +120,16 @@ apprise -vv -i markdown -t "Rapport de Build" -b "**3** tests en _échec_" \
 Envoyer une notification Signal (via Signal API) :
 
 ```bash
-# Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
-# Assuming our {FromPhoneNo} is +1-900-555-9999
-# Assuming our {PhoneNo} - is in the US somewhere making our country code +1
-#                        - identifies as 800-555-1223
+# Supposons que notre {Hostname} soit localhost (qui héberge bbernhard/signal-cli-rest-api)
+# Supposons que notre {FromPhoneNo} soit +1-900-555-9999
+# Supposons que notre {PhoneNo}
+#  - se trouve aux États-Unis, donc avec l'indicatif +1
+#  - corresponde à 800-555-1223
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost/19005559999/18005551223"
 
-# the following would also have worked (spaces, brackets,
-# dashes are accepted in a phone no field):
+# l'exemple suivant aurait également fonctionné, les espaces,
+# parenthèses et tirets sont acceptés dans un numéro :
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost/1-(900) 555-9999/1-(800) 555-1223"
 ```
@@ -143,9 +137,9 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 D'après mon expérience personnelle, j'ai pu m'envoyer une notification à moi-même en procédant simplement comme suit :
 
 ```bash
-# Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
-# Assuming our {Port} is 9922
-# Assuming our {FromPhoneNo} is +1 555 555 1234
+# Supposons que notre {Hostname} soit localhost (qui héberge bbernhard/signal-cli-rest-api)
+# Supposons que notre {Port} soit 9922
+# Supposons que notre {FromPhoneNo} soit +1 555 555 1234
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "signal://localhost:9922/15555551234"
 ```
@@ -153,11 +147,11 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 Si vous connaissez l'identifiant du groupe auquel vous souhaitez envoyer une notification, vous pouvez également le spécifier sur la ligne de commande :
 
 ```bash
-# Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)
-# Assuming our {Port} is 9922
-# Assuming our {FromPhoneNo} is +1 555 555 1234
-# Assuming our {Group} is group.abcdefghijklmnop=
-apprise -vv -t "Group Message:" -b "Hello group members" \
+# Supposons que notre {Hostname} soit localhost (qui héberge bbernhard/signal-cli-rest-api)
+# Supposons que notre {Port} soit 9922
+# Supposons que notre {FromPhoneNo} soit +1 555 555 1234
+# Supposons que notre {Group} soit group.abcdefghijklmnop=
+apprise -vv -t "Message de Groupe :" -b "Bonjour aux membres du groupe" \
     "signal://localhost:9922/+1555555551234/group.abcdefghijklmnop="
 ```
 
