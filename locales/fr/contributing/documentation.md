@@ -32,7 +32,7 @@ locales/
     services/
       <service>/
         index.md
-        images/       # logos optionnels — logo.svg, logo-dark.svg, etc.
+        images/       # logos optionnels : logo.svg, logo-dark.svg, etc.
     config/
     qa/
     dev/
@@ -69,7 +69,7 @@ sponsorships/
 
 - **Sponsorships** (`sponsorships/`)
   Entrées de sponsors d'entreprise, chacune contenant un fichier `meta.json` et des logos optionnels.
-  Ce répertoire est **géré par les mainteneurs** — n'y ajoutez ou modifiez rien sans en avoir été
+  Ce répertoire est **géré par les mainteneurs**. N'y ajoutez ou ne modifiez rien sans en avoir été
   expressément chargé. Consultez `sponsorships/README.md` pour le schéma complet et les conventions
   de nommage des logos.
 
@@ -197,8 +197,8 @@ apprise -vv -t "Mon Titre" -b "Corps du Message" \
 ```
 ````
 
-> Les marqueurs de page de service ci-dessus — `<!-- SPONSORS:BANNER -->`,
-> `<!-- SERVICE:DETAILS -->` et `<!-- TEMPLATE:SERVICE-PARAMS -->` — sont
+> Les marqueurs de page de service ci-dessus (`<!-- SPONSORS:BANNER -->`,
+> `<!-- SERVICE:DETAILS -->` et `<!-- TEMPLATE:SERVICE-PARAMS -->`) sont
 > intentionnels et doivent rester en place. Ils sont remplacés automatiquement
 > lors du rendu de la documentation.
 
@@ -261,7 +261,7 @@ L'exemple ci-dessus présente les champs courants. Une page de service peut éga
 
 ```md
 ---
-# Indicateurs de capacité — mettre à true si le service prend en charge la fonctionnalité
+# Indicateurs de capacité : mettre à true si le service prend en charge la fonctionnalité
 has_attachments: false
 has_image: false
 has_sms: false
@@ -290,11 +290,11 @@ limits:
 #   - html: default
 #   - text
 
-# Services retirés — indiquer la date à laquelle le service a cessé d'être disponible
+# Services retirés : indiquer la date à laquelle le service a cessé d'être disponible
 # ended: YYYY-MM-DD
 
 # -----------------------------------------------------------------------
-# Champs de parrainage — RÉSERVÉ AUX MAINTENEURS. Ne pas ajouter ni modifier.
+# Champs de parrainage : RÉSERVÉ AUX MAINTENEURS. Ne pas ajouter ni modifier.
 # -----------------------------------------------------------------------
 # sponsorship_level: 50   # Entier 1–100 ; contrôle le niveau de visibilité sur le site
 # sponsorship_weight: 1   # Optionnel 1–5 ; poids de rotation de la bannière pour le niveau 75+
@@ -352,7 +352,7 @@ Règles, dans l'ordre :
    service texte uniquement ; cela équivaut à `body_formats: [text]`.
 2. **Au plus une entrée peut être marquée `: default`.** Déclarer deux
    valeurs par défaut ou plus est un échec de validation de la
-   documentation — il n'existe aucun moyen d'honorer deux valeurs par
+   documentation. Il n'existe aucun moyen d'honorer deux valeurs par
    défaut sur le même service.
 3. **Si aucune entrée n'est marquée `: default`, la première entrée de la
    liste devient la valeur par défaut implicite.** Ceci est valide et ne
@@ -394,7 +394,7 @@ filtre `attachments` dans `?f=attachments`.
 | ----------------- | ------------------- | ----------------------------------------------------------------- |
 | `has_sms`         | `sms`               | Service axé sur la livraison SMS/MMS.                             |
 | `has_chat`        | `chat`              | Service ciblant salons, canaux ou messages directs.               |
-| `has_email`       | `email`             | Service axé sur l’envoi d’e-mails.                                |
+| `has_email`       | `email`             | Service axé sur l'envoi d'e-mails.                                |
 | `has_local`       | `local`             | Service ciblant un système ou appareil local/natif.               |
 | `has_selfhosted`  | `selfhosted`        | Service prenant en charge un déploiement auto-hébergé.            |
 | `has_attachments` | `attachments`       | Service prenant en charge les pièces jointes.                     |
@@ -406,7 +406,7 @@ la visibilité des sponsors plutôt qu'une capacité générale du service.
 
 > **N'ajoutez ni ne modifiez les champs de parrainage** sauf si vous êtes mainteneur du projet
 > ou si vous en avez été explicitement chargé. Ces champs ont une portée commerciale.
-> Un `sponsor_message: ""` vide est intentionnel — il supprime le message de bannière sans retirer
+> Un `sponsor_message: ""` vide est intentionnel. Il supprime le message de bannière sans retirer
 > le créneau de bannière du sponsor. Consultez [CONTRIBUTING.md](../../../CONTRIBUTING.md)
 > pour le tableau complet des niveaux de parrainage et les règles de validation.
 

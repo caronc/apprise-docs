@@ -71,7 +71,7 @@ has_selfhosted: false
 # do not duplicate the title or schemas.
 # keywords: "alias, legacy-name"
 
-# Define any message limits — only applicable when the user specifies
+# Define any message limits. Only applicable when the user specifies
 # ?overflow=truncate or ?overflow=split; otherwise the upstream service handles
 # content beyond these values.  Remove this block entirely if the service has no
 # known limits.
@@ -87,7 +87,7 @@ has_selfhosted: false
 #    ended: YYYY-MM
 #    ended: YYYY
 
-# Sponsorship (do not set manually — maintainer use only)
+# Sponsorship (do not set manually, maintainer use only)
 # sponsorship_level: 50   # Integer 1-100; unlocks site features at each tier
 # sponsorship_weight: 1   # Optional integer 1-5; banner ticket count for level 75+
 # sponsor_since: 2026-06  # Optional YYYY-MM; maintainer note for sponsorship start
@@ -102,10 +102,10 @@ has_selfhosted: false
 
 <!--
   LOGO FILES (place in the images/ directory alongside this file):
-    logo.svg            — default logo, shown in light and dark mode
-    logo.png / .jpg     — bitmap fallback when SVG is unavailable
-    logo-light.svg      — optional explicit light-mode variant
-    logo-dark.svg       — optional dark-mode variant (e.g. white logos)
+    logo.svg            default logo, shown in light and dark mode
+    logo.png / .jpg     bitmap fallback when SVG is unavailable
+    logo-light.svg      optional explicit light-mode variant
+    logo-dark.svg       optional dark-mode variant (e.g. white logos)
   The sync pipeline publishes all images/ files automatically.
 -->
 

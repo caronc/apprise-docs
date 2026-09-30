@@ -84,9 +84,9 @@ Pass an `http://` or `https://` URL as a string. Apprise downloads the file at r
 
 Filename resolution follows this priority order:
 
-1. `?name=` query parameter — append it to the URL to force a specific name.
-2. Filename from the URL path — extracted from the last path segment (e.g. `photo.jpg` from `/images/photo.jpg`).
-3. Fallback — `attachment.001`, `attachment.002`, … when no name can be determined.
+1. `?name=` query parameter: append it to the URL to force a specific name.
+2. Filename from the URL path: extracted from the last path segment (e.g. `photo.jpg` from `/images/photo.jpg`).
+3. Fallback: `attachment.001`, `attachment.002`, ... when no name can be determined.
 
 ```text
 # Filename resolved from URL path: photo.jpg

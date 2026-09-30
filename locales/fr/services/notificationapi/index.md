@@ -63,9 +63,9 @@ Les **cibles** peuvent être combinées dans un seul chemin et sont regroupées 
 
 Exemples de cibles groupées :
 
-- `userid/test@example.com` → id + email
-- `userid/+15551234567` → id + SMS
-- `userid/+15551234567/test@example.com` → id + SMS + email
+- `userid/test@example.com`: id + email
+- `userid/+15551234567`: id + SMS
+- `userid/+15551234567/test@example.com`: id + SMS + email
 
 ## Détail des Paramètres
 

@@ -40,8 +40,8 @@ votre `tenant_id`, `client_id` et `client_secret`.
 
 <TabItem label="Personnel">
 
-Les comptes consommateurs personnels — `@outlook.com`, `@hotmail.com`,
-`@live.com`, `@msn.com` et les variantes régionales Hotmail/Live — utilisent
+Les comptes consommateurs personnels (`@outlook.com`, `@hotmail.com`,
+`@live.com`, `@msn.com` et les variantes régionales Hotmail/Live) utilisent
 un flux par **jeton de rafraîchissement** à la place du flux client credentials
 organisationnel.
 
@@ -200,7 +200,7 @@ curl -s -X POST \
   --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}"
 ```
 
-Repérez `"refresh_token"` dans la réponse JSON — cette valeur est celle à
+Repérez `"refresh_token"` dans la réponse JSON. Cette valeur est celle à
 placer dans votre URL Apprise.
 
 :::tip[Préférer une attente automatique ?]
@@ -470,7 +470,7 @@ même l'enregistrement d'une carte bancaire. Pour créer un abonnement :
    - devient masquée après avoir quitté la page ;
    - correspond au véritable mot de passe.
 
-   En cas de doute, régénérez simplement le secret — supprimez l'ancien puis
+   En cas de doute, régénérez simplement le secret. Supprimez l'ancien puis
    créez-en un nouveau.
    :::
 
@@ -493,12 +493,12 @@ même l'enregistrement d'une carte bancaire. Pour créer un abonnement :
 :::caution[Licence Exchange Online requise]
 
 La permission applicative `Mail.Send` exige que la boîte aux lettres
-expéditrice soit hébergée dans **Exchange Online** — disponible uniquement
+expéditrice soit hébergée dans **Exchange Online**, disponible uniquement
 dans les offres Microsoft 365 Business payantes (E1, E3, E5, Apps for
 Business, etc.).
 
 Les domaines personnalisés hébergés dans Microsoft 365 Business
-(ex. `user@votreentreprise.com`) fonctionnent correctement — ils sont
+(ex. `user@votreentreprise.com`) fonctionnent correctement. Ils sont
 adossés à Exchange Online comme n'importe quel autre tenant organisationnel.
 
 **Si vous obtenez une erreur `401`**, vérifiez que :

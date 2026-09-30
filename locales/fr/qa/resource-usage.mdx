@@ -92,7 +92,7 @@ L'allocateur interne de Python conserve une partie de la mémoire libérée au l
 `APPRISE_WORKER_MAX_REQUESTS_JITTER` ajoute un décalage aléatoire au seuil de redémarrage de chaque worker afin d'éviter qu'ils se recyclent tous en même temps.
 
 - **Déploiements à un seul worker** : le jitter n'a pas d'effet. La valeur par défaut `50` est sans danger, ou vous pouvez la fixer à `0`.
-- **Déploiements à plusieurs workers** : laissez le jitter à sa valeur par défaut `50`, ou réduisez-le proportionnellement si vous baissez fortement `APPRISE_WORKER_MAX_REQUESTS` (par ex. `MAX_REQUESTS=50` → `JITTER=10`).
+- **Déploiements à plusieurs workers** : laissez le jitter à sa valeur par défaut `50`, ou réduisez-le proportionnellement si vous baissez fortement `APPRISE_WORKER_MAX_REQUESTS` (par ex. `MAX_REQUESTS=50` avec `JITTER=10`).
 
 Le jitter n'affecte pas l'usage mémoire ; seuls `APPRISE_WORKER_COUNT` et `APPRISE_WORKER_MAX_REQUESTS` ont un impact direct.
 

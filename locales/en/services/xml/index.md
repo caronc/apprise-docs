@@ -60,7 +60,7 @@ The _MessageType_ will be one of the following:
 
 ### Message Format
 
-The `Message` field is delivered exactly as you provide it — this service is a pass-through and supports `text`, `html`, and `markdown` alike. If you don't specify `?format=`, plain text is assumed and delivered as-is.
+The `Message` field is delivered exactly as you provide it. This service is a pass-through and supports `text`, `html`, and `markdown` alike. If you don't specify `?format=`, plain text is assumed and delivered as-is.
 
 ## Syntax
 

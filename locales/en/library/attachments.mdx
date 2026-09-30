@@ -73,10 +73,10 @@ the same API surface.
 <Tabs>
 <TabItem value="file" label="Local File (file://)">
 
-**`AttachFile`** — local files reference server-side paths. The simplest usage is passing a path string directly — Apprise converts it to a `file://` URL internally:
+**`AttachFile`**: local files reference server-side paths. The simplest usage is passing a path string directly, which Apprise converts to a `file://` URL internally:
 
 ```python
-# Single path — Apprise wraps it in AttachFile automatically
+# Single path. Apprise wraps it in AttachFile automatically
 apobj.notify(body="See log", attach="/var/log/syslog")
 
 # Multiple paths
@@ -90,7 +90,7 @@ apobj.notify(
 `file://` is the default schema if one isn't provided. The path `/var/log/syslog` is treated identically to `file:///var/log/syslog`.
 :::
 
-**Direct constructor** — use `AttachFile` when you need to override the filename or MIME type presented to the upstream service without renaming the file on disk:
+**Direct constructor**: use `AttachFile` when you need to override the filename or MIME type presented to the upstream service without renaming the file on disk:
 
 ```python
 from apprise.attachment import AttachFile
@@ -107,7 +107,7 @@ apobj.notify(body="Nightly log", attach=a)
 
 **Key Behaviours:**
 
-- Content is validated in-place — it is not copied or moved.
+- Content is validated in-place. It is not copied or moved.
 - `name=` and `mimetype=` override what the plugin sends upstream; the file on disk is unchanged.
 - Size limits are enforced via `max_file_size` (defaults to 1 GB).
 - `attachment.path` returns the absolute path to the file.
@@ -117,7 +117,7 @@ apobj.notify(body="Nightly log", attach=a)
 
 <TabItem value="http" label="Hosted URL (http://, https://)">
 
-**`AttachHTTP`** — hosted URLs are fetched to a temporary file before being provided to plugins. Pass a URL string directly — Apprise creates an `AttachHTTP` internally:
+**`AttachHTTP`**: hosted URLs are fetched to a temporary file before being provided to plugins. Pass a URL string directly and Apprise creates an `AttachHTTP` internally:
 
 ```python
 # Single URL
@@ -136,7 +136,7 @@ apobj.notify(
 )
 ```
 
-**Authenticated fetch** — embed credentials directly in the URL:
+**Authenticated fetch**: embed credentials directly in the URL:
 
 ```python
 # Apprise authenticates before downloading
@@ -150,7 +150,7 @@ apobj.notify(
 Treat attachment URLs with embedded credentials as secrets. Never log or commit them.
 :::
 
-**Direct constructor** — use `AttachHTTP` when you need fine-grained control over caching, timeouts, or custom headers:
+**Direct constructor**: use `AttachHTTP` when you need fine-grained control over caching, timeouts, or custom headers:
 
 ```python
 from apprise.attachment import AttachHTTP
@@ -165,7 +165,7 @@ a = AttachHTTP(
 apobj.notify(body="Fresh report", attach=a)
 ```
 
-**Custom HTTP headers** — use the `+Key=Value` URL syntax to forward headers with the fetch request:
+**Custom HTTP headers**: use the `+Key=Value` URL syntax to forward headers with the fetch request:
 
 ```python
 # Bearer token forwarded when downloading the asset
@@ -263,7 +263,7 @@ notification sends.
 
 <TabItem value="memory" label="In-Memory (memory://)">
 
-**`AttachMemory`** — stores content entirely in a `BytesIO` buffer, with no temporary files written to disk. This is the right choice when you generate content on the fly — reports, rendered HTML, chart images, or any bytes you already have in memory.
+**`AttachMemory`**: stores content entirely in a `BytesIO` buffer, with no temporary files written to disk. This is the right choice when you generate content on the fly: reports, rendered HTML, chart images, or any bytes you already have in memory.
 
 `AttachMemory` must always be constructed directly; there is no URL shorthand for it.
 
@@ -286,7 +286,7 @@ apobj.notify(
 )
 ```
 
-**From a `str` object** — encoded to UTF-8 automatically:
+**From a `str` object**: encoded to UTF-8 automatically:
 
 ```python
 csv_text = "date,value\n2026-03-20,42\n"
@@ -301,7 +301,7 @@ apobj.notify(
 )
 ```
 
-**From a `BytesIO` buffer** — read the buffer before passing:
+**From a `BytesIO` buffer**: read the buffer before passing:
 
 ```python
 import io
@@ -332,7 +332,7 @@ apobj.notify(
 )
 ```
 
-**Practical example — Plotly / Matplotlib chart:**
+**Practical example, a Plotly or Matplotlib chart:**
 
 ```python
 import io
@@ -366,7 +366,7 @@ apobj.notify(
 
 **Key Behaviours:**
 
-- Accepts `bytes`, `str` (encoded to UTF-8 by default), but **not** a `BytesIO` directly — call `.read()` or `.getvalue()` first.
+- Accepts `bytes`, `str` (encoded to UTF-8 by default), but **not** a `BytesIO` directly. Call `.read()` or `.getvalue()` first.
 - `name=` defaults to a UUID-based filename if omitted; always set it explicitly so the service receives a meaningful filename.
 - `mimetype=` defaults to `text/plain` for strings and `application/octet-stream` for bytes if not set; set it explicitly when the upstream service inspects MIME type (e.g. Telegram routes images and documents differently).
 - No disk I/O occurs at any point. `attachment.open()` returns the internal `BytesIO` directly.
@@ -412,7 +412,7 @@ An attachment can fail because it is missing, exceeds size limits, is inaccessib
 
 ### Prefer `attachment.open()` for Upload APIs
 
-Many services require multipart uploads. Use `attachment.open()` to get a file-like object — this works correctly for **all** attachment types, including `AttachMemory` which has no path on disk:
+Many services require multipart uploads. Use `attachment.open()` to get a file-like object. This works correctly for **all** attachment types, including `AttachMemory` which has no path on disk:
 
 ```python
 filename = attachment.name
@@ -435,7 +435,7 @@ with attachment as f:
 ```
 
 :::caution
-Do **not** call `open(attachment.path, "rb")` directly. `attachment.path` returns `None` for remote attachments that have not yet been downloaded, and returns only a bare filename (not a full path) for `AttachMemory` objects — both will raise an `OSError`. Always use `attachment.open()` or `with attachment as f:` instead.
+Do **not** call `open(attachment.path, "rb")` directly. `attachment.path` returns `None` for remote attachments that have not yet been downloaded, and returns only a bare filename (not a full path) for `AttachMemory` objects. Both will raise an `OSError`. Always use `attachment.open()` or `with attachment as f:` instead.
 :::
 
 ### Base64 When the Service Requires It

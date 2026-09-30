@@ -332,13 +332,13 @@ mailtos://user:pass@example.com?pgp=sign&pgpprv=/path/to/my-prv.asc
 
 If no private key is found at send time, the notification fails. If the key exists but is passphrase-protected, Apprise rejects it (passphrase-protected keys are not supported).
 
-Apprise also searches the persistent storage directory automatically — it looks for a file named `{email}-prv.asc`, `pgp-prv.asc`, `prv.asc`, or `pgp-private.asc`. This means if you have previously placed a key there, no `pgpprv=` parameter is needed.
+Apprise also searches the persistent storage directory automatically. It looks for a file named `{email}-prv.asc`, `pgp-prv.asc`, `prv.asc`, or `pgp-private.asc`. This means if you have previously placed a key there, no `pgpprv=` parameter is needed.
 
 ### Sign + Encrypt (Opportunistic)
 
-When `pgp=sign` is active and a recipient public key is also available, Apprise goes further: it signs the message first, then encrypts the signed result. The output is `multipart/encrypted` — the recipient gets end-to-end protection along with proof of sender authenticity.
+When `pgp=sign` is active and a recipient public key is also available, Apprise goes further: it signs the message first, then encrypts the signed result. The output is `multipart/encrypted`, so the recipient gets end-to-end protection along with proof of sender authenticity.
 
-Encryption is opportunistic — it only happens when a public key is found. If no public key is available, the email is sent as `multipart/signed` only, without encryption. Send never fails silently due to a missing public key in sign mode.
+Encryption is opportunistic. It only happens when a public key is found. If no public key is available, the email is sent as `multipart/signed` only, without encryption. Send never fails silently due to a missing public key in sign mode.
 
 To trigger sign + encrypt, combine `pgp=sign` with WKD lookup or an explicit public key:
 
@@ -429,14 +429,14 @@ Priority 1 entries are generated for each recipient in order; the baseline filen
 
 Private keys are matched against the **sender** (From) address (first match wins):
 
-| Priority | Filename example                                                      |
-| -------- | --------------------------------------------------------------------- |
-| 1        | `{sender@domain.com}-prv.asc` (full address, lowercased)              |
-| 1        | `{sender}-prv.asc` (local part only — this is what `keygen()` writes) |
-| 2        | `pgp-private.asc`                                                     |
-| 2        | `pgp-prv.asc`                                                         |
-| 2        | `private.asc`                                                         |
-| 2        | `prv.asc`                                                             |
+| Priority | Filename example                                                     |
+| -------- | -------------------------------------------------------------------- |
+| 1        | `{sender@domain.com}-prv.asc` (full address, lowercased)             |
+| 1        | `{sender}-prv.asc` (local part only, this is what `keygen()` writes) |
+| 2        | `pgp-private.asc`                                                    |
+| 2        | `pgp-prv.asc`                                                        |
+| 2        | `private.asc`                                                        |
+| 2        | `prv.asc`                                                            |
 
 Passphrase-protected private keys are rejected regardless of how they are discovered.
 
@@ -461,7 +461,7 @@ This is especially useful when key paths are long or contain characters that wou
 
 #### Placing a Key in the Cache
 
-The simplest way to supply a key without using `pgppub=` or `pgpprv=` is to copy it into the cache namespace directory using one of the filenames from the search order tables above. Apprise picks it up automatically on the next send — no URL change required.
+The simplest way to supply a key without using `pgppub=` or `pgpprv=` is to copy it into the cache namespace directory using one of the filenames from the search order tables above. Apprise picks it up automatically on the next send, with no URL change required.
 
 To find the namespace directory for a given URL, use `apprise storage list`:
 
@@ -469,7 +469,7 @@ To find the namespace directory for a given URL, use `apprise storage list`:
 apprise storage list "mailtos://user:pass@example.com"
 ```
 
-The uid column in the output (e.g. `2a3f8b1c`) is the 8-character namespace hash for that URL — the same identifier shown on the Apprise-API review tab. The full cache directory is `{storage-path}/2a3f8b1c/`. Copy your key file into that directory with a matching name — for example `user@example.com-pub.asc` for a public key, or `user-prv.asc` for a private key — and Apprise will find it without any `pgppub=` or `pgpprv=` parameter.
+The uid column in the output (e.g. `2a3f8b1c`) is the 8-character namespace hash for that URL, the same identifier shown on the Apprise-API review tab. The full cache directory is `{storage-path}/2a3f8b1c/`. Copy your key file into that directory with a matching name, such as `user@example.com-pub.asc` for a public key or `user-prv.asc` for a private key, and Apprise will find it without any `pgppub=` or `pgpprv=` parameter.
 
 #### Per-Recipient Keys (Multiple Recipients)
 
@@ -480,7 +480,7 @@ For example, to send a signed+encrypted email to both `alice@example.com` and `b
 ```bash
 # First, find the namespace directory for your sending URL
 apprise storage list "mailtos://user:pass@smtp.example.com"
-# Output: uid 2a3f8b1c  → cache dir is {storage-path}/2a3f8b1c/
+# Output: uid 2a3f8b1c, so the cache dir is {storage-path}/2a3f8b1c/
 ```
 
 Copy each recipient's public key into that directory using the full-address filename format:
@@ -502,7 +502,7 @@ Apprise sends two separate emails:
 - Alice receives a `multipart/signed+encrypted` message encrypted with `alice@example.com-pub.asc`.
 - Bob receives a `multipart/signed+encrypted` message encrypted with `bob@example.com-pub.asc`.
 
-If a key file is missing for a particular recipient, the opportunistic fallback applies: that recipient receives a signed-only (unencrypted) copy. No other recipients are affected — each send is independent.
+If a key file is missing for a particular recipient, the opportunistic fallback applies: that recipient receives a signed-only (unencrypted) copy. No other recipients are affected. Each send is independent.
 
 ## Parameter Breakdown
 
@@ -643,7 +643,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "mailtos://user:pass@example.com?pgp=sign&wkd=yes&pgpprv=/home/user/.gnupg/my-prv.asc"
 ```
 
-Sign only — no public key lookup, always delivers a signed plain-text email:
+Sign only, with no public key lookup. Always delivers a signed plain-text email:
 
 ```bash
 apprise -vv -t "Test Message Title" -b "Test Message Body" \

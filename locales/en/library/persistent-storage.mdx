@@ -94,7 +94,7 @@ The store behaves like a dictionary, but with expiry, persistence, and safety se
 
 ## Cache Identity and `url_identifier`
 
-Persistent storage is scoped using a plugin’s **URL identity**. The identity is derived from what your plugin returns in `url_identifier`.
+Persistent storage is scoped using a plugin's **URL identity**. The identity is derived from what your plugin returns in `url_identifier`.
 
 When you think of the [Universal URL Syntax](../../getting-started/universal-syntax/), you are ONLY building a url_identifier using the `service://` and `credentials`, for the best results, e.g:
 
@@ -324,7 +324,7 @@ The following core plugins already leverage:
 
 - [**Matrix**](https://github.com/caronc/apprise/blob/master/apprise/plugins/matrix.py): Uses persistent storage to cache Matrix session and discovery metadata, including the `access_token`, `home_server`, and `user_id` obtained during login or registration. It also stores a `transaction_id` to prevent duplicate message handling, caches room alias resolution results (mapping aliases to resolved `room_id` and `home_server`), and persists `.well-known` discovery results. This avoids repeated authentication, discovery, and room resolution calls across executions.
 
-- [**Nextcloud**](https://github.com/caronc/apprise/blob/master/apprise/plugins/nextcloud.py): Uses persistent storage to cache recipient discovery results. Group name resolution and “all users” lookups are cached to avoid repeated API calls when the same groups are referenced frequently. Cache lifetime is controlled via the plugin’s group discovery cache configuration.
+- [**Nextcloud**](https://github.com/caronc/apprise/blob/master/apprise/plugins/nextcloud.py): Uses persistent storage to cache recipient discovery results. Group name resolution and "all users" lookups are cached to avoid repeated API calls when the same groups are referenced frequently. Cache lifetime is controlled via the plugin's group discovery cache configuration.
 
 - [**Office365**](https://github.com/caronc/apprise/blob/master/apprise/plugins/office365.py): Uses persistent storage to cache resolved sender identity metadata. When the configured sender is not a fully qualified email address, the plugin resolves the correct `from` address and display name via Microsoft Graph and stores the result so subsequent notifications do not need to repeat the lookup.
 

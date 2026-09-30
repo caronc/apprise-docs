@@ -33,7 +33,7 @@ locales/
     services/
       <service>/
         index.md
-        images/       # optional logos — logo.svg, logo-dark.svg, etc.
+        images/       # optional logos: logo.svg, logo-dark.svg, etc.
     config/
     qa/
     dev/
@@ -71,7 +71,7 @@ sponsorships/
 
 - **Sponsorships** (`sponsorships/`)
   Company-level sponsor entries, each containing a `meta.json` and optional logo
-  files. This directory is **maintainer-managed** — do not add or modify entries
+  files. This directory is **maintainer-managed**. Do not add or modify entries
   unless you have been asked to do so. See `sponsorships/README.md` for the full
   schema and logo naming conventions.
 
@@ -199,8 +199,8 @@ apprise -vv -t "My Title" -b "Message Body" \
 ```
 ````
 
-> The service-page markers shown above — `<!-- SPONSORS:BANNER -->`,
-> `<!-- SERVICE:DETAILS -->`, and `<!-- TEMPLATE:SERVICE-PARAMS -->` — are
+> The service-page markers shown above (`<!-- SPONSORS:BANNER -->`,
+> `<!-- SERVICE:DETAILS -->`, and `<!-- TEMPLATE:SERVICE-PARAMS -->`) are
 > intentional and must be left in place. They are replaced automatically when
 > the documentation is rendered.
 
@@ -263,7 +263,7 @@ optional fields:
 
 ```md
 ---
-# Capability flags — set to true when the service supports the feature
+# Capability flags: set to true when the service supports the feature
 has_attachments: false
 has_image: false
 has_sms: false
@@ -292,11 +292,11 @@ limits:
 #   - html: default
 #   - text
 
-# Retired services — set to the date the service stopped being available
+# Retired services: set to the date the service stopped being available
 # ended: YYYY-MM-DD
 
 # -----------------------------------------------------------------------
-# Sponsorship fields — MAINTAINER USE ONLY. Do not add or change these.
+# Sponsorship fields: MAINTAINER USE ONLY. Do not add or change these.
 # -----------------------------------------------------------------------
 # sponsorship_level: 50   # Integer 1–100; controls site visibility tier
 # sponsorship_weight: 1   # Optional 1–5; banner rotation weight for level 75+
@@ -352,7 +352,7 @@ Rules, in order:
 1. **`body_formats` is optional.** Omit it entirely for a text-only
    service; this is equivalent to `body_formats: [text]`.
 2. **At most one entry may be marked `: default`.** Declaring two or more
-   defaults is a documentation validation failure — there is no way to
+   defaults is a documentation validation failure. There is no way to
    honor two defaults on the same service.
 3. **If no entry is marked `: default`, the first entry listed is the
    implicit default.** This is valid and will not fail validation, but
@@ -402,7 +402,7 @@ a general service capability.
 
 > **Do not add or modify sponsorship fields** unless you are the project maintainer
 > or have been explicitly asked to do so. These fields have commercial significance.
-> An empty `sponsor_message: ""` is intentional — it suppresses the banner message
+> An empty `sponsor_message: ""` is intentional. It suppresses the banner message
 > without removing the sponsor's banner slot. See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
 > for the full sponsorship level table and validation rules.
 

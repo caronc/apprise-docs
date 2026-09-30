@@ -36,7 +36,7 @@ La configuration de l'API Cloud WhatsApp de Meta est repartie entre deux portail
    - Cliquez sur **Ajouter des ressources**, selectionnez votre application WhatsApp et activez la permission `whatsapp_business_messaging` (et optionnellement `whatsapp_business_management`).
    - Cliquez sur **Generer un jeton**, selectionnez votre application, confirmez les permissions et copiez le jeton obtenu. Ce jeton permanent n'expire pas sauf revocation et est utilise dans le champ Apprise `token`.
 1. **Recuperer votre `From Phone Number ID`**
-   Retournez sur le [tableau de bord Meta Developer](https://developers.facebook.com/), ouvrez votre application, puis naviguez vers **WhatsApp** > **API Setup** (ou **Premiers pas**). Votre numero expediteur et son **Phone Number ID** y sont affiches. Cet identifiant n'est pas votre vrai numero de telephone — il s'agit d'un ID numerique distinct (environ 14 chiffres) attribue par Meta.
+   Retournez sur le [tableau de bord Meta Developer](https://developers.facebook.com/), ouvrez votre application, puis naviguez vers **WhatsApp** > **API Setup** (ou **Premiers pas**). Votre numero expediteur et son **Phone Number ID** y sont affiches. Cet identifiant n'est pas votre vrai numero de telephone. Il s'agit d'un ID numerique distinct (environ 14 chiffres) attribue par Meta.
 1. **Enregistrer les numeros destinataires**
    - Pendant les tests en sandbox, vous devez verifier chaque numero que vous souhaitez contacter via l'interface Meta.
    - En production, votre entreprise devra etre verifiee et disposer du niveau de messagerie approprie.
@@ -56,12 +56,12 @@ La syntaxe valide est la suivante :
 
 Les cibles peuvent etre des numeros de telephone, des identifiants de groupe, ou un melange des deux :
 
-- `+{phone}` — numero de telephone au format E.164 (le prefixe `+` est requis ; les chiffres seuls sont aussi acceptes)
-- `#{group_id}` — identifiant de groupe WhatsApp (numerique, prefixe `#` obligatoire)
+- `+{phone}` : numero de telephone au format E.164 (le prefixe `+` est requis ; les chiffres seuls sont aussi acceptes)
+- `#{group_id}` : identifiant de groupe WhatsApp (numerique, prefixe `#` obligatoire)
 
 :::caution
 
-**La messagerie de groupe necessite un niveau de compte Meta qualifiant.** Au moment de la redaction, Meta restreint l'API WhatsApp Groups aux entreprises ayant au moins 100 000 conversations initiees par l'entreprise par mois. Consultez la [documentation Meta Groups API](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups) pour les conditions d'eligibilite actuelles. Les identifiants de groupe sont retournes par l'API Groups lors de la creation d'un groupe — ils ne sont pas generes manuellement.
+**La messagerie de groupe necessite un niveau de compte Meta qualifiant.** Au moment de la redaction, Meta restreint l'API WhatsApp Groups aux entreprises ayant au moins 100 000 conversations initiees par l'entreprise par mois. Consultez la [documentation Meta Groups API](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups) pour les conditions d'eligibilite actuelles. Les identifiants de groupe sont retournes par l'API Groups lors de la creation d'un groupe. Ils ne sont pas generes manuellement.
 
 :::
 
@@ -71,7 +71,7 @@ Les cibles peuvent etre des numeros de telephone, des identifiants de groupe, ou
 | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | token    | Oui         | **Jeton d'acces** associe a votre application Meta WhatsApp.                                                                                                                                               |
 | from     | Oui         | **From Phone ID** associe a votre application Meta WhatsApp ; il ne faut pas le confondre avec votre vrai numero de telephone. Il s'agit d'un identifiant distinct, d'environ 14 chiffres.                 |
-| targets  | Oui         | Un ou plusieurs destinataires — numeros de telephone (`+{phone}` ou `@{phone}`) et/ou identifiants de groupe (`#{group_id}`). Au moins une cible doit etre fournie.                                        |
+| targets  | Oui         | Un ou plusieurs destinataires : numeros de telephone (`+{phone}` ou `@{phone}`) et/ou identifiants de groupe (`#{group_id}`). Au moins une cible doit etre fournie.                                        |
 | template | Non         | Vous pouvez facultativement specifier ici un `template_name`, comme `hello_world`, le modele par defaut cree lors de la configuration de votre application Meta. Apprise utilisera alors le modele defini. |
 | lang     | Non         | Si vous utilisez un modele, vous pouvez facultativement surcharger la langue par defaut, `en_US`, afin de pointer vers une autre version du modele specifie.                                               |
 

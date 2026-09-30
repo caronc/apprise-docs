@@ -25,8 +25,8 @@ Juste après avoir défini ou modifié un mot de passe sur la page **Authentific
   />
   <figcaption>
     Exemple pour <code>apprise://user:password@example.ca/my-config-id</code>. Le
-    badge en forme de clé signale le code QR qui contient le mot de passe. Il n’est
-    affiché qu’une seule fois, mais reste valable jusqu’au changement du mot de passe.
+    badge en forme de clé signale le code QR qui contient le mot de passe. Il n'est
+    affiché qu'une seule fois, mais reste valable jusqu'au changement du mot de passe.
   </figcaption>
 </figure>
 

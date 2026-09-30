@@ -32,6 +32,14 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 <!-- SERVICE:DETAILS -->
 
+## Format du Message
+
+Pushover envoie du texte brut par défaut. Définissez `?format=html` ou `?format=markdown` pour autoriser la mise en forme.
+
+Pushover ne comprend que quelques balises HTML : gras, italique, souligné, couleur de police et liens. Lorsque votre format d'entrée est déclaré, Apprise convertit tout le reste : les titres deviennent des lignes en gras, les éléments de liste deviennent des lignes `-`, et les paragraphes, citations et blocs de code deviennent de simples lignes de texte. Sans format d'entrée, le corps est envoyé tel quel.
+
+La mise en forme n'apparaît qu'une fois le message ouvert dans l'application Pushover ; la notification affichée à l'écran montre du texte brut.
+
 ## Configuration du Compte
 
 La configuration des notifications Pushover est assez simple. Le message est essentiellement transmis a votre compte Pushover en ligne, puis redirige vers les appareils que vous y avez configures.

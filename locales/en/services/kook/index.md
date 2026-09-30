@@ -45,14 +45,14 @@ Bot mode gives you full API access including file attachment support.
 4. Click **Add Bot** and then copy the **Token** shown on the Bot page.
 5. Invite the bot to your server using the **OAuth2** page and grant it the
    required permissions (at minimum: **Send Messages**).
-6. Enable Developer Mode in Kook: **Settings → Others → Developer Mode**.
+6. Enable Developer Mode in Kook: **Settings > Others > Developer Mode**.
 7. Right-click any channel and select **Copy ID** to get its numeric ID.
 
 ### Webhook Mode
 
 Webhook mode is simpler but does not support file attachments.
 
-1. In Kook, open **Server Settings → Integrations → Webhooks**.
+1. In Kook, open **Server Settings > Integrations > Webhooks**.
 2. Click **Create Webhook** for the desired channel.
 3. Copy the **webhook key** from the generated URL (the part after `/incoming/`).
 

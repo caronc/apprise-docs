@@ -148,16 +148,16 @@ Le `template=` vers lequel vous pointez peut soit être déjà entièrement remp
 
 Dans l'exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_title`, `target` et `whence`. Certaines entrées seront TOUJOURS définies et ne peuvent pas être surchargées :
 
-- **app_id** : l’identifiant de l’application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
-- **app_desc** : la description de l’application, souvent une variante un peu plus explicite de `app_id`. Elle vaut en général `Apprise Notification` sauf surcharge.
+- **app_id** : l'identifiant de l'application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
+- **app_desc** : la description de l'application, souvent une variante un peu plus explicite de `app_id`. Elle vaut en général `Apprise Notification` sauf surcharge.
 - **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont généralement bleus tandis que les messages `warning` sont orange.
 - **app_type** : le type du message lui-même, par exemple `info`, `warning`, `success`, etc.
 - **app_title** : le titre réel transmis à la notification Apprise (`--title` ou `-t` en ligne de commande).
 - **app_body** : le corps réel transmis à la notification Apprise (`--body` ou `-b` en ligne de commande).
-- **app_image_url** : l’URL d’image associée au type de message (`info`, `warning`, etc.) si elle existe et si elle n’a pas été désactivée dans l’URL (`image=no`).
-- **app_url** : l’URL associée à l’instance Apprise, trouvée dans l’objet **AppriseAsset()**. Sauf surcharge explicite, sa valeur est `https://github.com/caronc/apprise`.
+- **app_image_url** : l'URL d'image associée au type de message (`info`, `warning`, etc.) si elle existe et si elle n'a pas été désactivée dans l'URL (`image=no`).
+- **app_url** : l'URL associée à l'instance Apprise, trouvée dans l'objet **AppriseAsset()**. Sauf surcharge explicite, sa valeur est `https://github.com/caronc/apprise`.
 
-Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de template peuvent être définis dynamiquement en utilisant l’opérateur `:` devant tout argument d’URL que vous choisissez. Par exemple :
+Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `target` et `whence`. Les jetons de template peuvent être définis dynamiquement en utilisant l'opérateur `:` devant tout argument d'URL que vous choisissez. Par exemple :
 
 - `msteams://credentials/?template=/path/to/template.json&:target=Chris&:whence=this%20afternoon`
 - `msteams://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon`
@@ -248,8 +248,8 @@ payload = {
 
 #### Remarques Supplémentaires sur les Modèles
 
-- Les jetons peuvent contenir des espaces autour d’eux pour améliorer la lisibilité. Ainsi, `{{ token }}` n’est pas différent de `{{token}}`.
-- Tous les jetons sont correctement échappés ; ne vous inquiétez donc pas si une valeur contient un guillemet double (`"`), il sera correctement échappé avant l’envoi en amont.
+- Les jetons peuvent contenir des espaces autour d'eux pour améliorer la lisibilité. Ainsi, `{{ token }}` n'est pas différent de `{{token}}`.
+- Tous les jetons sont correctement échappés ; ne vous inquiétez donc pas si une valeur contient un guillemet double (`"`), il sera correctement échappé avant l'envoi en amont.
 - Les jetons sont **sensibles à la casse**. Ainsi, `{{Token}}` doit être alimenté par une valeur `:Token=` dans votre URL.
 - Les jetons qui ne correspondent à rien ne sont tout simplement pas remplacés, et `{{keyword}}` restera tel quel dans le message.
-- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé en tant que `{{app_body}}` dans votre template. Même si vous ne l’utilisez pas, vous devez quand même fournir quelque chose pour satisfaire cette exigence et tirer parti des appels de template.
+- Apprise exige toujours au minimum un `--body` (`-b`), qui peut éventuellement être référencé en tant que `{{app_body}}` dans votre template. Même si vous ne l'utilisez pas, vous devez quand même fournir quelque chose pour satisfaire cette exigence et tirer parti des appels de template.

@@ -43,7 +43,7 @@ pushplus://{token}
 PushPlus prend également en charge l'envoi d'une notification à tous les membres abonnés à un groupe nommé.
 
 1. Ouvrez la section **Group Push** de la console PushPlus.
-2. Créez un groupe et notez son **code de groupe** — c'est la valeur du topic.
+2. Créez un groupe et notez son **code de groupe**. C'est la valeur du topic.
 3. Les abonnés rejoignent le groupe dans WeChat ; lorsque vous envoyez au topic, tous les membres reçoivent le message.
 
 Placez un ou plusieurs codes de groupe directement dans le chemin de l'URL :
@@ -61,10 +61,10 @@ Par défaut, les notifications arrivent via WeChat. Vous pouvez les rediriger ve
 
 | Valeur `?channel=` | Canal                                   |
 | ------------------ | --------------------------------------- |
-| `wechat`           | WeChat (défaut — peut être omis)        |
+| `wechat`           | WeChat (défaut, peut être omis)         |
 | `webhook`          | Point de terminaison webhook configuré  |
 | `cp`               | WeCom (WeChat Work / Enterprise WeChat) |
-| `wecom`            | Alias convivial pour `cp` — même canal  |
+| `wecom`            | Alias convivial pour `cp`, même canal   |
 | `mail`             | Adresse e-mail enregistrée              |
 | `sms`              | SMS                                     |
 
@@ -77,7 +77,7 @@ pushplus://{token}/{topic}?channel=cp
 
 #### Alias de Schéma
 
-Apprise accepte également `wecom://` comme préfixe de schéma pour les utilisateurs WeCom. Il définit automatiquement le canal de livraison à `cp` — aucun paramètre de requête supplémentaire n'est nécessaire :
+Apprise accepte également `wecom://` comme préfixe de schéma pour les utilisateurs WeCom. Il définit automatiquement le canal de livraison à `cp`, aucun paramètre de requête supplémentaire n'est donc nécessaire :
 
 | Schéma            | Équivalent à                    |
 | ----------------- | ------------------------------- |
@@ -100,9 +100,9 @@ Le corps du message est rendu par PushPlus sur leurs serveurs en utilisant un te
 
 | `?format=` Apprise | PushPlus rend comme                       |
 | ------------------ | ----------------------------------------- |
-| `html` (défaut)    | HTML — gras, liens et images fonctionnent |
-| `markdown`         | Markdown — titres, gras, listes, etc.     |
-| `text`             | Texte brut — sans mise en forme           |
+| `html` (défaut)    | HTML : gras, liens et images fonctionnent |
+| `markdown`         | Markdown : titres, gras, listes, etc.     |
+| `text`             | Texte brut, sans mise en forme            |
 
 Il n'y a pas de paramètre spécifique à PushPlus ; définissez `?format=markdown` (ou l'équivalent dans votre YAML/config) de la même manière que pour tout autre service Apprise.
 

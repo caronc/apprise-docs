@@ -27,7 +27,7 @@ Do not assume prior knowledge of Apprise unless stated.
 
 - Use a calm, confident tone
 - Avoid sarcasm or humour that may not translate well
-- Use second person (“you”) when appropriate
+- Use second person ("you") when appropriate
 - Avoid imperative commands unless giving instructions
 
 ## Structure and Formatting
@@ -66,7 +66,7 @@ Avoid:
 ## Terminology
 
 - Use consistent terminology across pages
-- Prefer “notification service” over shorthand
+- Prefer "notification service" over shorthand
 - Avoid abbreviations unless commonly understood
 
 ## Service Documentation

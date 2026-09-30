@@ -165,7 +165,7 @@ to Apprise fields using query parameters prefixed with a colon (`:`).
 | `?:incoming_field=`              | Remove `incoming_field` from the payload    |
 | `?:apprise_field=literal value`  | Hard-code `apprise_field` to a fixed string |
 
-**Flat field example** — a tool sends `{"message": "Server Down"}`:
+**Flat field example**: a tool sends `{"message": "Server Down"}`:
 
 ```text
 POST /notify/{KEY}?:message=body
@@ -228,8 +228,8 @@ Quick-reference for path expressions:
   Apprise field (`title`, `body`, `type`, `format`, `tag`, etc.).
 - `N` in `[N]` must be a non-negative integer. Both `key[abc]` (non-integer) and
   `key[0` / `key0]` (unmatched bracket) are rejected immediately.
-- If any step is unresolvable — missing key, index out of range, or a non-list node at
-  an index step — the server returns **400** and logs a `WARNING`. No notification is sent,
+- If any step is unresolvable (missing key, index out of range, or a non-list node at
+  an index step), the server returns **400** and logs a `WARNING`. No notification is sent,
   so misconfigured rules are visible in logs rather than silently dropped.
 - **Depth** is the total number of traversal operations: each dict-key lookup _and_ each
   array-index dereference counts as one step. `items[0].objectURI` = 3 steps;

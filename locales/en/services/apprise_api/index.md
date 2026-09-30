@@ -134,6 +134,20 @@ apprise -vv --body="Test Message" \
    "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
 
+### Message Formats
+
+This service hands your message to another Apprise server, which then formats it for its own services. To avoid changing your message twice, the title and body are always forwarded exactly as you wrote them. Nothing is converted along the way.
+
+- When you tell Apprise what your message is written in, that format is passed along to the server with the message. The `apprise` command line tool always does this: it uses `text` unless you pick another one with `--input-format` (or `-i`).
+- When the message has no format of its own (for example a Python `notify()` call without `body_format`), you can add `?format=` to the URL (`text`, `html` or `markdown`) to tell the server what your message is written in. The message itself is still sent unchanged.
+- When neither is set, no format is passed along and the server uses its own default.
+
+```bash
+# Our message is written in Markdown; let the server know
+apprise -vv --input-format=markdown --body="**Server** is back up" \
+   "apprise://apprise.server.local/token"
+```
+
 ### Header Manipulation
 
 Prefix a URL parameter with a plus sign (**+**) to send it as an HTTP header.

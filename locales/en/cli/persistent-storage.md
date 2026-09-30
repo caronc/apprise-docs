@@ -76,7 +76,7 @@ You can filter the listing by UID prefix or by passing a full Apprise URL:
 # Filter by 8-char UID prefix (closest match)
 apprise storage list abc1
 
-# Filter by full URL — resolved to its namespace automatically
+# Filter by full URL, resolved to its namespace automatically
 apprise storage list "mailtos://user:pass@example.com"
 ```
 
@@ -95,7 +95,7 @@ By default, Apprise removes data older than 30 days. You can adjust the threshol
 apprise storage prune --storage-prune-days 7
 ```
 
-You can scope a prune to a specific URL, UID prefix, or tag — only storage belonging to the matched plugins is eligible for removal:
+You can scope a prune to a specific URL, UID prefix, or tag. Only storage belonging to the matched plugins is eligible for removal:
 
 ```bash
 # Prune only storage belonging to a specific URL
@@ -116,13 +116,13 @@ To erase all cached data immediately (regardless of age), use the `clear` comman
 apprise storage clear
 ```
 
-You can be more specific by targeting a specific UID, a full URL, or a tag — only the matched plugins' namespaces are cleared:
+You can be more specific by targeting a specific UID, a full URL, or a tag. Only the matched plugins' namespaces are cleared:
 
 ```bash
 # Clear a specific UID (e.g. found via 'apprise storage list')
 apprise storage clear abc123xy
 
-# Clear using a full URL — resolved to its namespace automatically
+# Clear using a full URL, resolved to its namespace automatically
 apprise storage clear "mailtos://user:pass@example.com"
 
 # Clear all URLs associated with the 'family' tag

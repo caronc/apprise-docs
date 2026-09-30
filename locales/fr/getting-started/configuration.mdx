@@ -143,7 +143,7 @@ Prenons l'exemple d'une URL SMTP avec un mot de passe complexe, une adresse d'ex
 mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User%3Cjoe%40example.com%3E&pgp=sign&pgpprv=%2Fhome%2Fjoe%2FMes+Cles%2Fprivate.asc
 ```
 
-**En YAML — sans encodage, immédiatement lisible :**
+**En YAML, sans encodage et immédiatement lisible :**
 
 ```yaml
 urls:
@@ -155,11 +155,11 @@ urls:
       pgpprv: "/home/joe/Mes Clés/private.asc"
 ```
 
-Les sous-clés YAML suivent une priorité à trois niveaux — le niveau le plus haut l'emporte lorsque le même champ est défini par plusieurs sources :
+Les sous-clés YAML suivent une priorité à trois niveaux. Le niveau le plus haut l'emporte lorsque le même champ est défini par plusieurs sources :
 
-1. **Sous-clés YAML** (le plus haut) — remplacent toujours tout le reste.
-2. **Paramètres de requête de l'URL** (ex. `?smtp=...`, `?user=abc`) — remplacent les valeurs du chemin d'URL.
-3. **Valeurs du chemin d'URL** (le plus bas) — `user`, `password`, `host` et `port` extraits de l'URL elle-même (ex. `user:pass@host:port`).
+1. **Sous-clés YAML** (le plus haut) : remplacent toujours tout le reste.
+2. **Paramètres de requête de l'URL** (ex. `?smtp=...`, `?user=abc`) : remplacent les valeurs du chemin d'URL.
+3. **Valeurs du chemin d'URL** (le plus bas) : `user`, `password`, `host` et `port` extraits de l'URL elle-même (ex. `user:pass@host:port`).
 
 Les composants courants d'une URL, comme `user`, `password`, `host`, `port` et `verify`, peuvent être fournis comme sous-clés. Il en va de même pour les paramètres propres au service qui figurent dans le tableau `## Détail des Paramètres` du plugin, y compris les éléments nommés de l'URL comme le `botname:` de Discord.
 

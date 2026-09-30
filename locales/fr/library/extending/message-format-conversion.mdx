@@ -22,9 +22,9 @@ Le format d'entrée dépend de la façon dont la notification a été envoyée :
 
 | Interface                  | Valeur par défaut lorsqu'aucun format n'est déclaré                                                                                   |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)          | `text` — la CLI définit toujours un format d'entrée ; remplacez-le avec `--input-format`                                              |
-| [Bibliothèque Python](../) | `none` — sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset`                                                |
-| [Apprise API](../../api/)  | `none` — le formatage est entièrement optionnel ; définissez `format` dans la charge utile de la requête pour changer ce comportement |
+| [CLI](../../cli/)          | `text` : la CLI définit toujours un format d'entrée ; remplacez-le avec `--input-format`                                              |
+| [Bibliothèque Python](../) | `none` : sauf si `body_format` est passé à `notify()` ou prédéfini dans `AppriseAsset`                                                |
+| [Apprise API](../../api/)  | `none` : le formatage est entièrement optionnel ; définissez `format` dans la charge utile de la requête pour changer ce comportement |
 
 Consultez [Formatage](../../getting-started/formatting/) pour le comportement visible par l'utilisateur.
 
@@ -218,10 +218,10 @@ La plupart des plugins n'ont pas besoin de suivre cette information séparément
 
 Au moment où `send()` s'exécute, Apprise a préparé les valeurs suivantes :
 
-- **`body`** — converti et dimensionné selon `overflow_mode`. Apprise peut ajouter des caractères Markdown de fermeture lorsqu'il découpe du texte mis en forme.
-- **`title`** — tronqué à `title_maxlen` caractères. Lorsque `title_maxlen <= 0`, le titre a été fusionné dans `body` par la classe de base et arrive sous forme de chaîne vide.
-- **`body_format`** — le format de `body`, par exemple `NotifyFormat.HTML` ; il n'est jamais `None` à ce stade.
-- **`body_passthrough`** — `True` lorsqu'aucun format d'entrée n'a été déclaré et que la conversion automatique a été ignorée. Le traitement normal du titre et du dépassement s'applique toujours.
+- **`body`** : converti et dimensionné selon `overflow_mode`. Apprise peut ajouter des caractères Markdown de fermeture lorsqu'il découpe du texte mis en forme.
+- **`title`** : tronqué à `title_maxlen` caractères. Lorsque `title_maxlen <= 0`, le titre a été fusionné dans `body` par la classe de base et arrive sous forme de chaîne vide.
+- **`body_format`** : le format de `body`, par exemple `NotifyFormat.HTML` ; il n'est jamais `None` à ce stade.
+- **`body_passthrough`** : `True` lorsqu'aucun format d'entrée n'a été déclaré et que la conversion automatique a été ignorée. Le traitement normal du titre et du dépassement s'applique toujours.
 
 Utilisez `body_format` pour choisir le bon mode d'envoi. N'utilisez `body_passthrough` que si votre plugin doit distinguer une entrée intacte d'un contenu préparé par Apprise.
 

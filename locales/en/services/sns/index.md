@@ -86,6 +86,8 @@ The mode is **auto-detected** from your URL: if all targets are topics, `topic` 
 
 :::note
 In `topic` mode, the title becomes the SNS **Subject** field. Email subscribers to the topic will receive a proper subject line. SMS endpoints subscribed to the topic do not receive a subject field -- that is an AWS API constraint.
+
+AWS only accepts a single-line subject shorter than 100 characters, so Apprise turns any line breaks in your title into spaces and shortens it to 99 characters when needed.
 :::
 
 ## Parameter Breakdown

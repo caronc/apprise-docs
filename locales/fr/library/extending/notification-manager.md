@@ -203,7 +203,7 @@ N_MGR.evict_on_disable = True
 
 Une fois défini, l'éviction se produit automatiquement dès que `disable()` ou `enable_only()` fait tomber le compteur de références d'une bibliothèque à zéro.
 
-### Déclarer les dépendances — `runtime_deps()`
+### Déclarer les dépendances avec `runtime_deps()`
 
 Chaque classe de service de notification peut annoncer ses dépendances optionnelles à l'exécution en surchargeant la méthode statique `runtime_deps()` sur `NotifyBase` :
 

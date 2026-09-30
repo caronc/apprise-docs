@@ -143,7 +143,7 @@ Consider an SMTP email URL with a complex password, a display-name sender addres
 mailtos://joe:myP%40ss%23w0rd%21@example.com?smtp=smtp.example.com&from=Joe+User%3Cjoe%40example.com%3E&pgp=sign&pgpprv=%2Fhome%2Fjoe%2FMy+Keys%2Fprivate.asc
 ```
 
-**As YAML — no encoding, immediately readable:**
+**As YAML, with no encoding and immediately readable:**
 
 ```yaml
 urls:
@@ -155,11 +155,11 @@ urls:
       pgpprv: "/home/joe/My Keys/private.asc"
 ```
 
-YAML sub-keys follow a strict three-level priority — the highest level wins when the same field is set by more than one source:
+YAML sub-keys follow a strict three-level priority. The highest level wins when the same field is set by more than one source:
 
-1. **YAML token sub-keys** (highest) — always override everything else.
-2. **URL query-string parameters** (e.g. `?smtp=...`, `?user=abc`) — override URL-path values.
-3. **URL-path values** (lowest) — the `user`, `password`, `host`, and `port` parsed from the URL itself (e.g. `user:pass@host:port`).
+1. **YAML token sub-keys** (highest): always override everything else.
+2. **URL query-string parameters** (e.g. `?smtp=...`, `?user=abc`): override URL-path values.
+3. **URL-path values** (lowest): the `user`, `password`, `host`, and `port` parsed from the URL itself (e.g. `user:pass@host:port`).
 
 Common URL components such as `user`, `password`, `host`, `port`, and `verify` can be supplied as sub-keys. The same applies to service-specific parameters from the plugin's `## Parameter Breakdown` table, including named URL parts such as Discord's `botname:`.
 

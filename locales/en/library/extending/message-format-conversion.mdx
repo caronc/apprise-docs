@@ -20,11 +20,11 @@ Inside `send()`, `body_format` is the format of the body you received. It is no 
 
 The input format depends on how the notification was sent:
 
-| Interface                 | Default when no format is declared                                                         |
-| ------------------------- | ------------------------------------------------------------------------------------------ |
-| [CLI](../../cli/)         | `text` — the CLI always sets an input format; override with `--input-format`               |
-| [Python Library](../)     | `none` — unless `body_format` is passed to `notify()` or preset in `AppriseAsset`          |
-| [Apprise API](../../api/) | `none` — formatting is entirely opt-in; set `format` in the request payload to change this |
+| Interface                 | Default when no format is declared                                                        |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| [CLI](../../cli/)         | `text`: the CLI always sets an input format; override with `--input-format`               |
+| [Python Library](../)     | `none`: unless `body_format` is passed to `notify()` or preset in `AppriseAsset`          |
+| [Apprise API](../../api/) | `none`: formatting is entirely opt-in; set `format` in the request payload to change this |
 
 See [Formatting](../../getting-started/formatting/) for the user-facing behavior.
 
@@ -218,10 +218,10 @@ Most plugins do not need to track this separately.
 
 By the time `send()` runs, Apprise has prepared these values:
 
-- **`body`** — converted and sized according to `overflow_mode`. Apprise may add closing Markdown characters when it splits formatted text.
-- **`title`** — truncated to `title_maxlen` characters. When `title_maxlen <= 0`, the title has been folded into `body` by the base class and arrives as an empty string.
-- **`body_format`** — the format of `body`, such as `NotifyFormat.HTML`; it is never `None` here.
-- **`body_passthrough`** — `True` when no input format was declared and automatic format conversion was skipped. Normal title and overflow handling still applies.
+- **`body`**: converted and sized according to `overflow_mode`. Apprise may add closing Markdown characters when it splits formatted text.
+- **`title`**: truncated to `title_maxlen` characters. When `title_maxlen <= 0`, the title has been folded into `body` by the base class and arrives as an empty string.
+- **`body_format`**: the format of `body`, such as `NotifyFormat.HTML`; it is never `None` here.
+- **`body_passthrough`**: `True` when no input format was declared and automatic format conversion was skipped. Normal title and overflow handling still applies.
 
 Use `body_format` to choose the correct delivery path. Use `body_passthrough` only when your plugin must distinguish untouched input from content prepared by Apprise.
 

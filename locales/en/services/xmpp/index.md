@@ -175,7 +175,7 @@ Alternatively, use the `to=` query argument, which eliminates the need to URL-en
 :::
 
 :::note[Multi-User Chat (MUC)]
-MUC is the XMPP group chat protocol ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)). A MUC room JID typically looks like `roomname@conference.example.com`. Apprise identifies MUC targets by the `#` prefix — the same convention used by IRC and many chat applications. When Apprise joins a room it uses the sender's username as the nickname.
+MUC is the XMPP group chat protocol ([XEP-0045](https://xmpp.org/extensions/xep-0045.html)). A MUC room JID typically looks like `roomname@conference.example.com`. Apprise identifies MUC targets by the `#` prefix, the same convention used by IRC and many chat applications. When Apprise joins a room it uses the sender's username as the nickname.
 :::
 
 | URL                                                                      | Targets Notified                                  |

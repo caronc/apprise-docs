@@ -49,7 +49,7 @@ Valid syntax is as follows:
 
 - `chime://{WebhookID}/{Token}`
 
-You can also pass the Chime webhook URL directly — Apprise will parse it automatically:
+You can also pass the Chime webhook URL directly, and Apprise will parse it automatically:
 
 - `https://hooks.chime.aws/incomingwebhooks/{WebhookID}?token={Token}`
 

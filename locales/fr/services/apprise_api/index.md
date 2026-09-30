@@ -134,6 +134,20 @@ apprise -vv --body="Message de Test" \
    "apprise://apprise.server.local/token?tags=comment create,admin"
 ```
 
+### Formats des Messages
+
+Ce service transmet votre message à un autre serveur Apprise, qui le met ensuite en forme pour ses propres services. Pour éviter de modifier votre message deux fois, le titre et le corps sont toujours transmis exactement tels que vous les avez écrits. Aucune conversion n'est faite en chemin.
+
+- Lorsque vous indiquez à Apprise le format de votre message, ce format est transmis au serveur avec le message. L'outil en ligne de commande `apprise` le fait toujours : il utilise `text`, sauf si vous en choisissez un autre avec `--input-format` (ou `-i`).
+- Lorsque le message n'a pas de format propre (par exemple un appel Python à `notify()` sans `body_format`), vous pouvez ajouter `?format=` à l'URL (`text`, `html` ou `markdown`) pour indiquer au serveur dans quel format votre message est écrit. Le message lui-même est toujours envoyé sans modification.
+- Si aucun des deux n'est défini, aucun format n'est transmis et le serveur utilise son propre format par défaut.
+
+```bash
+# Notre message est écrit en Markdown ; on l'indique au serveur
+apprise -vv --input-format=markdown --body="**Le serveur** est de nouveau en ligne" \
+   "apprise://apprise.server.local/token"
+```
+
 ### Manipulation des En-Têtes
 
 Ajoutez un signe plus (**+**) devant un paramètre d'URL pour l'envoyer comme en-tête HTTP.

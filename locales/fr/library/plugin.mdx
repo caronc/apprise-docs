@@ -1438,7 +1438,7 @@ métadonnées bien formées offrent une expérience plus propre et conviviale.
 | `required: True` sur les tokens obligatoires | Marque les champs d'un astérisque (`*`) et bloque la génération d'URL tant qu'ils ne sont pas remplis.                             |
 | `regex` sur les tokens validés               | Fournit des indications de format côté client (non imposées dans le navigateur, mais exposées dans les métadonnées du schéma).     |
 | `default` sur les args optionnels            | Affiché comme texte indicatif dans les listes déroulantes et les champs numériques.                                                |
-| `templates` ordonnés simple → complexe       | Le générateur d'URL utilise par défaut le template le plus complexe afin que tous les champs soient visibles dès le départ.        |
+| `templates` ordonnés du simple au complexe   | Le générateur d'URL utilise par défaut le template le plus complexe afin que tous les champs soient visibles dès le départ.        |
 
 ### Ordre des Templates
 
@@ -1451,7 +1451,7 @@ Ordonnez votre tuple `templates` du plus simple au plus complexe :
 
 ```python
 templates = (
-    "{schema}://{token}",                           # simplest — no targets
+    "{schema}://{token}",                           # simplest, no targets
     "{schema}://{token}/{targets}",                 # adds optional targets
     "{schema}://{botname}@{token}/{targets}",       # most complex
 )

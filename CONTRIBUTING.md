@@ -169,12 +169,12 @@ Service logos live in `locales/<locale>/services/<slug>/images/` and use a consi
 
 | Filename                              | Purpose                                                                                                              |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `logo.svg`                            | Default logo — shown in both light and dark mode unless a variant exists. Preferred format.                          |
+| `logo.svg`                            | Default logo, shown in both light and dark mode unless a variant exists. Preferred format.                           |
 | `logo.png` / `logo.jpg` / `logo.jpeg` | Bitmap fallback when an SVG is not available.                                                                        |
 | `logo-light.svg` (or `.png`, `.jpg`)  | Explicit light-mode variant. Takes precedence over `logo.*` in light mode.                                           |
 | `logo-dark.svg` (or `.png`, `.jpg`)   | Dark-mode variant. When present, `logo.*` / `logo-light.*` is used in light mode and this file is used in dark mode. |
 
-**Recommended:** provide `logo.svg` for most services. Only add `logo-dark.svg` if the default logo is not legible on a dark background (e.g. white logos). Bitmap fallbacks are checked in the order `.png` → `.jpg` → `.jpeg`.
+**Recommended:** provide `logo.svg` for most services. Only add `logo-dark.svg` if the default logo is not legible on a dark background (e.g. white logos). Bitmap fallbacks are checked in the order `.png`, `.jpg`, then `.jpeg`.
 
 For simple SVG wordmarks, you may embed a small `@media (prefers-color-scheme: dark)` rule inside `logo.svg` to swap fills between light and dark browser/OS themes. Use explicit `logo-light.*` and `logo-dark.*` files when the logo must track the documentation site's manual theme toggle exactly.
 
@@ -281,7 +281,7 @@ keywords: "alias, legacy-name"
 
 - Separate multiple terms with commas or spaces. Dots are allowed so that domain-style names survive as a single token rather than being split into fragments.
 - Keywords are case-insensitive and matched as substrings, so list the most specific recognizable form and let the search engine handle prefix/partial matching.
-- Only add terms a real user would type. Do not duplicate terms that already appear in the title or schema strings — they are already indexed.
+- Only add terms a real user would type. Do not duplicate terms that already appear in the title or schema strings. They are already indexed.
 - Do not use `keywords:` as a general tag list or marketing label.
 
 The `keywords:` field is validated by the docs linter (`pnpm lint`). Any unsupported frontmatter key will fail the check, so no additional configuration is needed.

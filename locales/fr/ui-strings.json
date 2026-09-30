@@ -31,7 +31,7 @@
       "mobile": "Apprise Mobile"
     },
     "url_builder": {
-      "title": "Générateur d’URL"
+      "title": "Générateur d'URL"
     }
   },
   "common": {
@@ -79,13 +79,13 @@
       "image": "Prise en charge des images"
     },
     "feature_description": {
-      "sms": "Propose un service de notification axé sur l’envoi de SMS/MMS.",
+      "sms": "Propose un service de notification axé sur l'envoi de SMS/MMS.",
       "chat": "Propose un service de notification axé sur les salons, canaux ou messages directs.",
-      "email": "Propose un service de notification axé sur l’envoi d’e-mails.",
+      "email": "Propose un service de notification axé sur l'envoi d'e-mails.",
       "local": "Propose un service de notification ciblant un système ou appareil local/natif.",
       "selfhosted": "Propose un service de notification compatible avec une solution auto-hébergée.",
       "attachments": "Ce service de notification prend en charge les pièces jointes.",
-      "image": "Ce service de notification prend en charge l’envoi de messages sous forme d’images."
+      "image": "Ce service de notification prend en charge l'envoi de messages sous forme d'images."
     },
     "reference_break": {
       "default": "Fin de la liste des services",
@@ -95,12 +95,12 @@
       "heading": "Référence",
       "trigger": "Référence et légende",
       "close": "Fermer",
-      "features_intro": "La colonne Fonctionnalités met en évidence quelques informations utiles en un coup d’œil pour vous aider à comparer les URL des services listés sur cette page.",
-      "protocols_intro": "Les protocoles définis sont également accompagnés d’une icône pour indiquer rapidement s’ils utilisent ou non le chiffrement SSL/TLS :"
+      "features_intro": "La colonne Fonctionnalités met en évidence quelques informations utiles en un coup d'œil pour vous aider à comparer les URL des services listés sur cette page.",
+      "protocols_intro": "Les protocoles définis sont également accompagnés d'une icône pour indiquer rapidement s'ils utilisent ou non le chiffrement SSL/TLS :"
     },
     "filter_badge": {
       "sponsored_label": "Parrainé",
-      "sponsored_description": "Ce service bénéficie d’un parrainage actif soutenant le développement open source d’Apprise.",
+      "sponsored_description": "Ce service bénéficie d'un parrainage actif soutenant le développement open source d'Apprise.",
       "popular_label": "Populaire",
       "popular_description": "Un service de notification populaire sélectionné par la communauté."
     },
@@ -126,13 +126,13 @@
   },
   "components": {
     "myip": {
-      "detecting": "Détection de votre IP…",
-      "unavailable": "Impossible de détecter l’IP"
+      "detecting": "Détection de votre IP...",
+      "unavailable": "Impossible de détecter l'IP"
     }
   },
   "support": {
     "title": "Soutenir Apprise",
-    "description": "Apprise facilite l’intégration des notifications tout en restant gratuit pour tout le monde. Si ce projet vous a fait gagner du temps ou a amélioré votre flux de travail, envisagez une contribution ponctuelle ou mensuelle pour l’aider à continuer de grandir.",
+    "description": "Apprise facilite l'intégration des notifications tout en restant gratuit pour tout le monde. Si ce projet vous a fait gagner du temps ou a amélioré votre flux de travail, envisagez une contribution ponctuelle ou mensuelle pour l'aider à continuer de grandir.",
     "banner_message": "Si Apprise vous aide, pensez à soutenir le projet : {github} ou {paypal}.",
     "banner_dismiss_aria": "Masquer ce message pendant un an",
     "banner_dismiss_title": "Masquer pendant 1 an",
@@ -143,20 +143,20 @@
   },
   "staging": {
     "label": "Aperçu",
-    "summary": "Vous consultez l’aperçu de développement de la prochaine documentation Apprise. Consultez {live} pour la documentation publiée actuelle.",
-    "details": "Ce site sert à relire la documentation avant sa promotion vers le site public d’Apprise. Certaines pages peuvent décrire des changements non publiés, des mises à jour provisoires ou du contenu encore en cours de révision.",
-    "expand": "Afficher les détails de l’aperçu"
+    "summary": "Vous consultez l'aperçu de développement de la prochaine documentation Apprise. Consultez {live} pour la documentation publiée actuelle.",
+    "details": "Ce site sert à relire la documentation avant sa promotion vers le site public d'Apprise. Certaines pages peuvent décrire des changements non publiés, des mises à jour provisoires ou du contenu encore en cours de révision.",
+    "expand": "Afficher les détails de l'aperçu"
   },
   "errors": {
-    "return_home": "Retour à l’accueil",
+    "return_home": "Retour à l'accueil",
     "try_again": "Réessayer",
     "403": {
       "title": "403 Accès refusé",
-      "tagline": "Vous n’êtes pas autorisé à accéder à cette ressource."
+      "tagline": "Vous n'êtes pas autorisé à accéder à cette ressource."
     },
     "404": {
       "title": "404 Introuvable",
-      "tagline": "Nous n’avons pas trouvé la page recherchée. Vérifiez l’URL ou essayez la barre de recherche."
+      "tagline": "Nous n'avons pas trouvé la page recherchée. Vérifiez l'URL ou essayez la barre de recherche."
     },
     "429": {
       "title": "429 Trop de requêtes",
@@ -164,7 +164,7 @@
     },
     "500": {
       "title": "500 Erreur serveur",
-      "tagline": "Une erreur s’est produite de notre côté. Nous suivons le problème."
+      "tagline": "Une erreur s'est produite de notre côté. Nous suivons le problème."
     },
     "502": {
       "title": "502 Mauvaise passerelle",
@@ -178,7 +178,7 @@
   "donate": {
     "cancelled_title": "Don annulé",
     "cancelled_heading": "Aucun souci !",
-    "cancelled_tagline": "C’est l’intention qui compte. Apprise restera disponible gratuitement chaque fois que vous en aurez besoin. Merci d’avoir pensé à nous !",
+    "cancelled_tagline": "C'est l'intention qui compte. Apprise restera disponible gratuitement chaque fois que vous en aurez besoin. Merci d'avoir pensé à nous !",
     "success_title": "Merci",
     "success_heading": "Merci !",
     "success_tagline": "Votre don compte énormément pour nous. Votre soutien permet à Apprise de rester open source, en ligne et en constante évolution."

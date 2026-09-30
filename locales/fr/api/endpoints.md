@@ -84,9 +84,9 @@ Passez une URL `http://` ou `https://` sous forme de chaîne. Apprise téléchar
 
 La résolution du nom de fichier suit cet ordre de priorité :
 
-1. Paramètre de requête `?name=` — ajoutez-le à l'URL pour imposer un nom précis.
-2. Nom de fichier extrait du chemin de l'URL — dernier segment du chemin (ex. `photo.jpg` depuis `/images/photo.jpg`).
-3. Repli — `attachment.001`, `attachment.002`, … lorsqu'aucun nom ne peut être déterminé.
+1. Paramètre de requête `?name=` : ajoutez-le à l'URL pour imposer un nom précis.
+2. Nom de fichier extrait du chemin de l'URL : dernier segment du chemin (ex. `photo.jpg` depuis `/images/photo.jpg`).
+3. Repli : `attachment.001`, `attachment.002`, ... lorsqu'aucun nom ne peut être déterminé.
 
 ```text
 # Nom résolu depuis le chemin de l'URL : photo.jpg

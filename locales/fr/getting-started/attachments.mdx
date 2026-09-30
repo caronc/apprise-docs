@@ -67,12 +67,12 @@ Si l'URL d'une pièce jointe distante contient des identifiants, traitez-la comm
 
 ## Pièces Jointes en Mémoire (AttachMemory)
 
-Lorsque vous générez du contenu à la volée — HTML rendu, graphiques, CSV, PDF — vous pouvez le transmettre directement sous forme d'objet `AttachMemory` sans écrire quoi que ce soit sur disque.
+Lorsque vous générez du contenu à la volée (HTML rendu, graphiques, CSV, PDF), vous pouvez le transmettre directement sous forme d'objet `AttachMemory` sans écrire quoi que ce soit sur disque.
 
 <Tabs>
 <TabItem label="CSV (général)">
 
-Passez directement une chaîne ou des `bytes` — aucun fichier temporaire n'est créé :
+Passez directement une chaîne ou des `bytes`, aucun fichier temporaire n'est créé :
 
 ```python
 import apprise

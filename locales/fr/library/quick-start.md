@@ -171,7 +171,7 @@ apobj.notify(
     attach="/chemin/vers/rapport.pdf",
 )
 
-# URL distante — nom de fichier déduit automatiquement depuis le chemin (photo.jpg)
+# URL distante, nom de fichier déduit automatiquement depuis le chemin (photo.jpg)
 apobj.notify(
     body="Jetez un œil à ça.",
     attach="https://example.com/images/photo.jpg",
@@ -197,7 +197,7 @@ Lorsqu'une URL `http://` ou `https://` est utilisée comme pièce jointe, Appris
 
 1. Paramètre de requête `?name=` (s'il est présent et non vide).
 2. Composant nom de fichier du chemin de l'URL (`photo.jpg` depuis `/images/photo.jpg`).
-3. Repli : `attachment.001`, `attachment.002`, …
+3. Repli : `attachment.001`, `attachment.002`, ...
 
 ### Charger des fichiers de configuration
 

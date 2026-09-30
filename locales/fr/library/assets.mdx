@@ -71,12 +71,12 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 
 ### Aides de Correspondance de Type
 
-| Champ                 | Type                   |  Valeur par défaut | Utilisé par | Notes                                                      |
-| --------------------- | ---------------------- | -----------------: | ----------- | ---------------------------------------------------------- |
-| `html_notify_map`     | `dict[NotifyType,str]` |   mappage type→hex | `color()`   | Mappage couleur par défaut pour les services HTML.         |
-| `default_html_color`  | `str`                  |          `#888888` | `color()`   | Utilisé lorsqu'un mappage est absent.                      |
-| `ascii_notify_map`    | `dict[NotifyType,str]` | mappage type→jeton | `ascii()`   | Jetons ASCII par défaut pour les contextes purement texte. |
-| `default_ascii_chars` | `str`                  |              `[?]` | `ascii()`   | Utilisé lorsqu'un mappage est absent.                      |
+| Champ                 | Type                   |       Valeur par défaut | Utilisé par | Notes                                                      |
+| --------------------- | ---------------------- | ----------------------: | ----------- | ---------------------------------------------------------- |
+| `html_notify_map`     | `dict[NotifyType,str]` |   mappage type vers hex | `color()`   | Mappage couleur par défaut pour les services HTML.         |
+| `default_html_color`  | `str`                  |               `#888888` | `color()`   | Utilisé lorsqu'un mappage est absent.                      |
+| `ascii_notify_map`    | `dict[NotifyType,str]` | mappage type vers jeton | `ascii()`   | Jetons ASCII par défaut pour les contextes purement texte. |
+| `default_ascii_chars` | `str`                  |                   `[?]` | `ascii()`   | Utilisé lorsqu'un mappage est absent.                      |
 
 ### Interprétation du Contenu
 
@@ -124,8 +124,8 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 
 Quand `pgp_autogen = True`, un auto-envoi avec `pgp=encrypt` peut générer **les deux** fichiers de clés de l'expéditeur si aucune clé n'est trouvée :
 
-- `{localpart}-pub.asc` — clé publique RSA-2048 utilisée pour l'auto-envoi
-- `{localpart}-prv.asc` — clé privée RSA-2048 utilisée pour les réponses et les signatures ultérieures
+- `{localpart}-pub.asc` : clé publique RSA-2048 utilisée pour l'auto-envoi
+- `{localpart}-prv.asc` : clé privée RSA-2048 utilisée pour les réponses et les signatures ultérieures
 
 `{localpart}` est dérivé de l'adresse From de l'expéditeur (tout ce qui précède le `@`, en minuscules).
 

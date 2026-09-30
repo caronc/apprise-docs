@@ -336,9 +336,9 @@ Apprise recherche aussi automatiquement dans le répertoire de stockage persista
 
 ### Signer + Chiffrer (Opportuniste)
 
-Lorsque `pgp=sign` est actif et qu'une clé publique du destinataire est disponible, Apprise va plus loin : il signe d'abord le message, puis chiffre le résultat signé. Le résultat est un `multipart/encrypted` — le destinataire bénéficie d'une protection de bout en bout ainsi que d'une preuve d'authenticité de l'expéditeur.
+Lorsque `pgp=sign` est actif et qu'une clé publique du destinataire est disponible, Apprise va plus loin : il signe d'abord le message, puis chiffre le résultat signé. Le résultat est un `multipart/encrypted`, le destinataire bénéficie donc d'une protection de bout en bout ainsi que d'une preuve d'authenticité de l'expéditeur.
 
-Le chiffrement est opportuniste — il ne se produit que si une clé publique est trouvée. Si aucune clé publique n'est disponible, l'e-mail est envoyé uniquement en `multipart/signed`, sans chiffrement. L'envoi n'échoue jamais silencieusement à cause d'une clé publique manquante en mode signature.
+Le chiffrement est opportuniste. Il ne se produit que si une clé publique est trouvée. Si aucune clé publique n'est disponible, l'e-mail est envoyé uniquement en `multipart/signed`, sans chiffrement. L'envoi n'échoue jamais silencieusement à cause d'une clé publique manquante en mode signature.
 
 Pour déclencher la signature + chiffrement, combinez `pgp=sign` avec la découverte WKD ou une clé publique explicite :
 
@@ -429,14 +429,14 @@ Les entrées de priorité 1 sont générées pour chaque destinataire dans l'ord
 
 Les clés privées sont recherchées en fonction de l'adresse **expéditeur** (From) (premier résultat trouvé est utilisé) :
 
-| Priorité | Exemple de nom de fichier                                                        |
-| -------- | -------------------------------------------------------------------------------- |
-| 1        | `{expediteur@domaine.com}-prv.asc` (adresse complète, en minuscules)             |
-| 1        | `{expediteur}-prv.asc` (partie locale seulement — c'est ce que `keygen()` écrit) |
-| 2        | `pgp-private.asc`                                                                |
-| 2        | `pgp-prv.asc`                                                                    |
-| 2        | `private.asc`                                                                    |
-| 2        | `prv.asc`                                                                        |
+| Priorité | Exemple de nom de fichier                                                       |
+| -------- | ------------------------------------------------------------------------------- |
+| 1        | `{expediteur@domaine.com}-prv.asc` (adresse complète, en minuscules)            |
+| 1        | `{expediteur}-prv.asc` (partie locale seulement, c'est ce que `keygen()` écrit) |
+| 2        | `pgp-private.asc`                                                               |
+| 2        | `pgp-prv.asc`                                                                   |
+| 2        | `private.asc`                                                                   |
+| 2        | `prv.asc`                                                                       |
 
 Les clés privées protégées par une phrase de passe sont rejetées, quelle que soit leur méthode de découverte.
 
@@ -461,7 +461,7 @@ C'est particulièrement utile lorsque les chemins de clé sont longs ou contienn
 
 #### Placer une Clé dans le Cache
 
-La façon la plus simple de fournir une clé sans utiliser `pgppub=` ou `pgpprv=` est de la copier dans le répertoire d'espace de noms du cache en utilisant l'un des noms de fichiers des tableaux de priorité ci-dessus. Apprise la détecte automatiquement au prochain envoi — aucune modification d'URL n'est nécessaire.
+La façon la plus simple de fournir une clé sans utiliser `pgppub=` ou `pgpprv=` est de la copier dans le répertoire d'espace de noms du cache en utilisant l'un des noms de fichiers des tableaux de priorité ci-dessus. Apprise la détecte automatiquement au prochain envoi, sans aucune modification d'URL.
 
 Pour trouver le répertoire d'espace de noms associé à une URL donnée, utilisez `apprise storage list` :
 
@@ -469,7 +469,7 @@ Pour trouver le répertoire d'espace de noms associé à une URL donnée, utilis
 apprise storage list "mailtos://user:pass@example.com"
 ```
 
-La colonne uid dans la sortie (ex. `2a3f8b1c`) est le hash d'espace de noms à 8 caractères de cette URL — le même identifiant affiché dans l'onglet de révision d'Apprise-API. Le répertoire de cache complet est `{storage-path}/2a3f8b1c/`. Copiez votre fichier de clé dans ce répertoire avec un nom correspondant — par exemple `user@example.com-pub.asc` pour une clé publique, ou `user-prv.asc` pour une clé privée — et Apprise la trouvera sans paramètre `pgppub=` ni `pgpprv=`.
+La colonne uid dans la sortie (ex. `2a3f8b1c`) est le hash d'espace de noms à 8 caractères de cette URL, le même identifiant affiché dans l'onglet de révision d'Apprise-API. Le répertoire de cache complet est `{storage-path}/2a3f8b1c/`. Copiez votre fichier de clé dans ce répertoire avec un nom correspondant, par exemple `user@example.com-pub.asc` pour une clé publique ou `user-prv.asc` pour une clé privée, et Apprise la trouvera sans paramètre `pgppub=` ni `pgpprv=`.
 
 #### Clés par Destinataire (Destinataires Multiples)
 
@@ -480,7 +480,7 @@ Par exemple, pour envoyer un e-mail signé+chiffré à `alice@example.com` et `b
 ```bash
 # Trouvez d'abord le répertoire d'espace de noms pour votre URL d'envoi
 apprise storage list "mailtos://user:pass@smtp.example.com"
-# Sortie : uid 2a3f8b1c  → répertoire de cache : {storage-path}/2a3f8b1c/
+# Sortie : uid 2a3f8b1c, donc répertoire de cache : {storage-path}/2a3f8b1c/
 ```
 
 Copiez la clé publique de chaque destinataire dans ce répertoire en utilisant le format de nom complet :
@@ -502,7 +502,7 @@ Apprise envoie deux e-mails séparés :
 - Alice reçoit un message `multipart/signed+encrypted` chiffré avec `alice@example.com-pub.asc`.
 - Bob reçoit un message `multipart/signed+encrypted` chiffré avec `bob@example.com-pub.asc`.
 
-Si un fichier de clé est manquant pour un destinataire particulier, le repli opportuniste s'applique : ce destinataire reçoit une copie signée uniquement (non chiffrée). Les autres destinataires ne sont pas affectés — chaque envoi est indépendant.
+Si un fichier de clé est manquant pour un destinataire particulier, le repli opportuniste s'applique : ce destinataire reçoit une copie signée uniquement (non chiffrée). Les autres destinataires ne sont pas affectés. Chaque envoi est indépendant.
 
 ## Détail des Paramètres
 
@@ -643,7 +643,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "mailtos://user:pass@example.com?pgp=sign&wkd=yes&pgpprv=/home/user/.gnupg/ma-clé-prv.asc"
 ```
 
-Signer uniquement — sans recherche de clé publique, l'e-mail signé en texte clair est toujours envoyé :
+Signer uniquement, sans recherche de clé publique. L'e-mail signé en texte clair est toujours envoyé :
 
 ```bash
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \

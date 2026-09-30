@@ -50,7 +50,7 @@ Full deployment instructions and docker-compose examples are available in the [o
 
 ### 3. Obtain your API key
 
-The API key is displayed in the instance settings page of the dashboard. Copy it — you will use it as `{apikey}` in the Apprise URL.
+The API key is displayed in the instance settings page of the dashboard. Copy it. You will use it as `{apikey}` in the Apprise URL.
 
 ### Phone number format
 

@@ -67,12 +67,12 @@ If a remote attachment URL includes credentials, treat it like a secret. Avoid c
 
 ## In-Memory Attachments (AttachMemory)
 
-When you generate content on the fly — rendered HTML, chart images, CSVs, PDFs — you can pass it directly as an `AttachMemory` object without writing anything to disk.
+When you generate content on the fly (rendered HTML, chart images, CSVs, PDFs), you can pass it directly as an `AttachMemory` object without writing anything to disk.
 
 <Tabs>
 <TabItem label="CSV (general)">
 
-Pass a string or `bytes` directly — no temporary file is created:
+Pass a string or `bytes` directly, and no temporary file is created:
 
 ```python
 import apprise

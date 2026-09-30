@@ -36,7 +36,7 @@ other services (email, Telegram, etc.), see the
 1. Log into your Home Assistant instance and navigate to your **Profile** page.
 2. Scroll to the very bottom and click **Create Token** under
    **Long-Lived Access Tokens**.
-3. Give it a name (e.g. _Apprise_) and copy the generated token — you
+3. Give it a name (e.g. _Apprise_) and copy the generated token. You
    will not be able to view it again.
 
 ## Syntax
@@ -95,7 +95,7 @@ The **default domain** is `notify` when none is specified, so
 `hassio://host/token/notify.mobile_app_phone`.
 
 :::tip[Finding your service name]
-In Home Assistant, go to **Developer Tools → Services**. The service
+In Home Assistant, go to **Developer Tools > Services**. The service
 names listed there map directly to `{domain}.{service}` in the Apprise
 URL. For mobile app push notifications the service is usually named
 `notify.mobile_app_{device_name}` where `{device_name}` matches what
@@ -158,7 +158,7 @@ apprise -vv -t "Alert" -b "Garage door left open" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_phone1/notify.mobile_app_phone2'
 ```
 
-Send using a secure connection (`hassios://` → HTTPS on port 443):
+Send using a secure connection (`hassios://` uses HTTPS on port 443):
 
 ```bash
 apprise -vv -t "Test" -b "Secure message" \
@@ -174,11 +174,11 @@ apprise -vv -t "Test" -b "Hello" \
 
 ## Troubleshooting
 
-- **401 Unauthorized** — Your token is invalid or has expired. Generate
+- **401 Unauthorized**: Your token is invalid or has expired. Generate
   a new one from the Home Assistant profile page.
-- **400 Bad Request** — A service target was specified that does not
+- **400 Bad Request**: A service target was specified that does not
   exist, or the payload contained unsupported parameters for that
   service domain. Verify the domain and service name against your HA
   instance.
-- **Self-signed certificate** — Add `?verify=no` to skip SSL
+- **Self-signed certificate**: Add `?verify=no` to skip SSL
   verification: `hassios://myserver/{token}?verify=no`

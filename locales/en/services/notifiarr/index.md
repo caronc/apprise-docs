@@ -16,7 +16,7 @@ sample_urls:
 
 ## Account Setup
 
-You need to first set up an account with [Notifiarr](https://notifiarr.com) if you don't have one already. From there you can generate yourself your `{api_key}`. You will need to use your “global” API key, the integration-specific Notifiarr API keys do not work with Apprise.
+You need to first set up an account with [Notifiarr](https://notifiarr.com) if you don't have one already. From there you can generate yourself your `{api_key}`. You will need to use your "global" API key, the integration-specific Notifiarr API keys do not work with Apprise.
 
 ### Discord Channel IDs
 

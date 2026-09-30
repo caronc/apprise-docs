@@ -45,14 +45,14 @@ des pièces jointes.
 3. Sous votre nouvelle application, cliquez sur **Bot** dans la barre latérale gauche.
 4. Cliquez sur **Ajouter un bot** puis copiez le **Token** affiché.
 5. Invitez le bot sur votre serveur via la page **OAuth2** en lui accordant les permissions requises (au minimum : **Envoyer des messages**).
-6. Activez le mode développeur dans Kook : **Paramètres → Autres → Mode développeur**.
+6. Activez le mode développeur dans Kook : **Paramètres > Autres > Mode développeur**.
 7. Faites un clic droit sur un canal et sélectionnez **Copier l'ID** pour obtenir son identifiant numérique.
 
 ### Mode Webhook
 
 Le mode webhook est plus simple mais ne prend pas en charge les pièces jointes.
 
-1. Dans Kook, ouvrez **Paramètres du serveur → Intégrations → Webhooks**.
+1. Dans Kook, ouvrez **Paramètres du serveur > Intégrations > Webhooks**.
 2. Cliquez sur **Créer un webhook** pour le canal souhaité.
 3. Copiez la **clé webhook** depuis l'URL générée (la partie après `/incoming/`).
 

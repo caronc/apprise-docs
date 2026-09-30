@@ -26,7 +26,7 @@ module.exports = {
       tags: ["mdx", "links", "services"],
       parser: "none",
       function: function (params, onError) {
-        // Only enforce on service index files — they all get promoted to .mdx.
+        // Only enforce on service index files; they all get promoted to .mdx.
         if (!params.name.includes("/services/")) return;
 
         let inFence = false;
@@ -90,12 +90,12 @@ module.exports = {
         "Service docs are promoted to .mdx by the sync pipeline when they contain " +
         "SPONSORS:BANNER. Bare {expr} in prose is parsed as a JSX expression by the " +
         "MDX compiler and will break the build if not valid JavaScript. " +
-        "The most common trigger is the {#heading-id} anchor syntax — remove it and " +
+        "The most common trigger is the {#heading-id} anchor syntax. Remove it and " +
         "rely on Starlight's auto-generated heading IDs instead.",
       tags: ["mdx", "services"],
       parser: "none",
       function: function (params, onError) {
-        // Only enforce on service index files — they all get promoted to .mdx.
+        // Only enforce on service index files; they all get promoted to .mdx.
         if (!params.name.includes("/services/")) return;
 
         let inFence = false;
@@ -112,7 +112,7 @@ module.exports = {
             return " ".repeat(m.length);
           });
 
-          // Flag {#id} heading anchor syntax — invalid as a JSX expression.
+          // Flag {#id} heading anchor syntax; invalid as a JSX expression.
           let pos = 0;
           while (pos < stripped.length) {
             const i = stripped.indexOf("{#", pos);
@@ -126,7 +126,7 @@ module.exports = {
                 detail:
                   expr +
                   " uses {#id} heading-anchor syntax which is invalid in MDX. " +
-                  "Remove it — Starlight auto-generates matching IDs from the heading text.",
+                  "Remove it. Starlight auto-generates matching IDs from the heading text.",
                 range: [i + 1, end - i + 1],
                 fixInfo: {
                   editColumn: i + 1,
@@ -151,7 +151,7 @@ module.exports = {
       tags: ["mdx", "services"],
       parser: "none",
       function: function (params, onError) {
-        // Only enforce on service files — they all get promoted to .mdx.
+        // Only enforce on service files; they all get promoted to .mdx.
         if (!params.name.includes("/services/")) return;
 
         let inFrontmatter = false;
@@ -184,7 +184,7 @@ module.exports = {
             return " ".repeat(m.length);
           });
 
-          // Flag bare {identifier} patterns (plain identifiers — {#id} is
+          // Flag bare {identifier} patterns (plain identifiers; {#id} is
           // handled by CDM002 and excluded here because # is not [a-zA-Z_]).
           let pos = 0;
           while (pos < stripped.length) {

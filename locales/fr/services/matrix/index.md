@@ -38,28 +38,28 @@ limits:
 
 ## Configuration du compte
 
-Par défaut, Apprise communique directement avec votre serveur Matrix via l’API Client officielle.
+Par défaut, Apprise communique directement avec votre serveur Matrix via l'API Client officielle.
 
-Vous pouvez aussi utiliser le mode webhook à la place de l’API Client Matrix. Ce mode est activé en précisant **?mode=matrix**, **?mode=slack** ou **?mode=hookshot**, selon le service webhook que vous avez configuré.
+Vous pouvez aussi utiliser le mode webhook à la place de l'API Client Matrix. Ce mode est activé en précisant **?mode=matrix**, **?mode=slack** ou **?mode=hookshot**, selon le service webhook que vous avez configuré.
 
 ## Format et taille des messages
 
-Matrix accepte le texte brut, le HTML et le Markdown. Les messages HTML et Markdown incluent une version texte pour les clients qui ne peuvent pas afficher le contenu mis en forme. Les webhooks compatibles avec Slack reçoivent le Markdown inchangé afin que Slack puisse l’afficher.
+Matrix accepte le texte brut, le HTML et le Markdown. Les messages HTML et Markdown incluent une version texte pour les clients qui ne peuvent pas afficher le contenu mis en forme. Avec **?mode=slack**, le Markdown est envoyé inchangé et le HTML est converti en texte brut, car ce webhook affiche son texte tel quel.
 
-Matrix limite l’événement complet à 65 536 octets, y compris les métadonnées ajoutées par le homeserver. Les limites ci-dessus sont des valeurs de repli prudentes pour le corps du message, et non des tailles d’événement fixes. Pour les envois directs, Apprise calcule chaque fragment selon son titre, son format, l’expansion UTF-8 et JSON ainsi que le surcoût E2EE éventuel ; le nombre réel de caractères peut donc être inférieur.
+Matrix limite l'événement complet à 65 536 octets, y compris les métadonnées ajoutées par le homeserver. Les limites ci-dessus sont des valeurs de repli prudentes pour le corps du message, et non des tailles d'événement fixes. Pour les envois directs, Apprise calcule chaque fragment selon son titre, son format, l'expansion UTF-8 et JSON ainsi que le surcoût E2EE éventuel ; le nombre réel de caractères peut donc être inférieur.
 
-Si vous ne déclarez aucun format d'entrée, Apprise ne devine ni ne répare le balisage. Un réglage explicite `?format=html` ou `?format=markdown` signifie que le corps est déjà prêt pour cette sortie. Avec `overflow=split`, le découpage d'un contenu inconnu ou structuré reste une solution au mieux ; consultez [Pass-Through et Dépassement](../../getting-started/formatting/#pass-through-et-dépassement).
+Si vous ne déclarez aucun format d'entrée, Apprise ne devine ni ne répare le balisage. Un réglage explicite `?format=html` envoie le corps tel quel dans le message mis en forme, tandis que `?format=markdown` interprète le corps comme du Markdown pour produire le message mis en forme. La version texte conserve alors votre texte d'origine. Les titres sont toujours traités comme du texte brut : des caractères comme `<` et `&` s'affichent donc exactement tels que vous les avez saisis. Avec `overflow=split`, le découpage d'un contenu inconnu ou structuré reste une solution au mieux ; consultez [Pass-Through et Dépassement](../../getting-started/formatting/#pass-through-et-dépassement).
 
 ## Syntaxe
 
 La syntaxe valide est la suivante :
 
-Avec un nom d’utilisateur et un mot de passe :
+Avec un nom d'utilisateur et un mot de passe :
 
 - `matrix://{user}:{password}@{hostname}/#{room_alias}`
 - `matrixs://{user}:{password}@{hostname}/!{room_id}`
 
-Avec un jeton d’accès pré-généré, sans nom d’utilisateur ni mot de passe :
+Avec un jeton d'accès pré-généré, sans nom d'utilisateur ni mot de passe :
 
 - `matrix://{token}@{hostname}/#{room_alias}`
 - `matrixs://{token}@{hostname}/!{room_id}`
@@ -99,19 +99,19 @@ Vous pouvez notifier plusieurs utilisateurs en DM dans une seule URL :
 - `matrixs://{token}@{hostname}/@{user1}/@{user2}`
 
 :::note
-Lorsque vous écrivez `@alice` sans préciser de serveur, Apprise le renseigne automatiquement avec votre homeserver. Pour contacter quelqu’un sur un autre serveur, indiquez son adresse complète : `@alice:otherhost.com`. Si vos messages directs ne sont pas transmis, essayez d’ajouter `?hsreq=no` à votre URL -- cela aide sur certaines installations de serveurs auto-hébergés (voir ci-dessous).
+Lorsque vous écrivez `@alice` sans préciser de serveur, Apprise le renseigne automatiquement avec votre homeserver. Pour contacter quelqu'un sur un autre serveur, indiquez son adresse complète : `@alice:otherhost.com`. Si vos messages directs ne sont pas transmis, essayez d'ajouter `?hsreq=no` à votre URL -- cela aide sur certaines installations de serveurs auto-hébergés (voir ci-dessous).
 :::
 
 ### Mélanger les Types de Cibles
 
-Les alias de salon (`#`), les room IDs (`!`) et les utilisateurs DM (`@`) peuvent être librement combinés dans n’importe quel ordre au sein d’une même URL :
+Les alias de salon (`#`), les room IDs (`!`) et les utilisateurs DM (`@`) peuvent être librement combinés dans n'importe quel ordre au sein d'une même URL :
 
 - `matrixs://{user}:{password}@{hostname}/#{room_alias}/@{target_user}`
 - `matrixs://{user}:{password}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
 - `matrixs://{token}@{hostname}/#{room_alias}/!{room_id}/@{target_user}`
 
 :::note
-Si aucun utilisateur et/ou mot de passe n’est précisé, le processus d’enregistrement Matrix peut être déclenché. Certains serveurs Matrix autorisent l’enregistrement automatique d’utilisateurs temporaires, selon leur configuration. Dans la plupart des environnements de production, vous devriez toujours fournir **`{user}`** et **`{password}`**, ou bien un **`{token}`** pré-généré.
+Si aucun utilisateur et/ou mot de passe n'est précisé, le processus d'enregistrement Matrix peut être déclenché. Certains serveurs Matrix autorisent l'enregistrement automatique d'utilisateurs temporaires, selon leur configuration. Dans la plupart des environnements de production, vous devriez toujours fournir **`{user}`** et **`{password}`**, ou bien un **`{token}`** pré-généré.
 :::
 
 ## Identifiants de Salon et Comportement du Homeserver
@@ -132,7 +132,7 @@ Exemples:
 
 ### Comportement par Défaut (Recommandé)
 
-Par défaut, Apprise **impose** la présence d’un homeserver sur les identifiants de salon lorsqu’il manque.
+Par défaut, Apprise **impose** la présence d'un homeserver sur les identifiants de salon lorsqu'il manque.
 
 Si vous fournissez :
 
@@ -143,12 +143,12 @@ Si vous incluez explicitement un homeserver, Apprise le respecte exactement tel 
 
 ### Désactivation de ce Comportement (Mode Compatibilité)
 
-La plupart des utilisateurs n’auront jamais besoin de cette option. Si vos notifications fonctionnent, passez à la suite.
+La plupart des utilisateurs n'auront jamais besoin de cette option. Si vos notifications fonctionnent, passez à la suite.
 
-Si les choses ne fonctionnent pas -- notamment si vous observez des erreurs 404 lorsqu’Apprise tente de rejoindre un salon -- essayez d’ajouter `?hsreq=no` à votre URL. Cela indique à Apprise d’utiliser les noms et identifiants de salon exactement tels que vous les avez saisis, sans y ajouter automatiquement le nom de votre serveur :
+Si les choses ne fonctionnent pas -- notamment si vous observez des erreurs 404 lorsqu'Apprise tente de rejoindre un salon -- essayez d'ajouter `?hsreq=no` à votre URL. Cela indique à Apprise d'utiliser les noms et identifiants de salon exactement tels que vous les avez saisis, sans y ajouter automatiquement le nom de votre serveur :
 
-- `#room` est utilise exactement tel qu’il est fourni.
-- `!room` est utilise exactement tel qu’il est fourni.
+- `#room` est utilise exactement tel qu'il est fourni.
+- `!room` est utilise exactement tel qu'il est fourni.
 
 Avec cette URL :
 
@@ -170,11 +170,11 @@ matrix://user:pass@localhost/#room/!abc123?hsreq=no
 - `#room` reste `#room`
 - `!abc123` reste `!abc123`
 
-Cela s’applique aussi aux cibles DM. La personne à qui vous écrivez est toujours recherchée avec son adresse complète (par exemple `@alice:localhost`) -- cela ne change pas. Mais si la livraison des messages directs échoue quand même, ajouter `?hsreq=no` peut aider sur certains serveurs. C’est la première chose à essayer.
+Cela s'applique aussi aux cibles DM. La personne à qui vous écrivez est toujours recherchée avec son adresse complète (par exemple `@alice:localhost`) -- cela ne change pas. Mais si la livraison des messages directs échoue quand même, ajouter `?hsreq=no` peut aider sur certains serveurs. C'est la première chose à essayer.
 
 ## Mode Webhook
 
-Lorsque vous précisez l’argument **?mode=**, le plugin bascule entièrement en comportement webhook et la syntaxe change :
+Lorsque vous précisez l'argument **?mode=**, le plugin bascule entièrement en comportement webhook et la syntaxe change :
 
 - `matrix://{user}:{token}@{hostname}?mode=matrix`
 - `matrixs://{token}@{hostname}:{port}?mode=matrix`
@@ -202,10 +202,10 @@ Ou directement :
 | Variable            | Requis | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | hostname            | \*Oui  | Le serveur Matrix auquel vous souhaitez vous connecter.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| t2bot_webhook_token | \*Oui  | Utilisé en mode webhook t2bot. Dans ce cas, il tient lieu de nom d’hôte.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| user                | Non    | L’utilisateur à authentifier, et éventuellement à enregistrer, auprès du serveur Matrix.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| password            | Non    | Le mot de passe à utiliser pour l’authentification, et éventuellement l’enregistrement, auprès du serveur Matrix.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| token               | Non    | Jeton d’accès Matrix pré-généré. Utilisez-le à la place de **user** et **password** lorsque votre serveur désactive la connexion par mot de passe, par exemple dans un déploiement SSO uniquement. Peut aussi être fourni avec `?token=`. Lorsqu’il est utilisé sans nom d’utilisateur, placez-le dans la position utilisateur : `matrix://{token}@{hostname}/`.                                                                                                                                                                                                                                                                                                                                                                                                   |
+| t2bot_webhook_token | \*Oui  | Utilisé en mode webhook t2bot. Dans ce cas, il tient lieu de nom d'hôte.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| user                | Non    | L'utilisateur à authentifier, et éventuellement à enregistrer, auprès du serveur Matrix.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| password            | Non    | Le mot de passe à utiliser pour l'authentification, et éventuellement l'enregistrement, auprès du serveur Matrix.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| token               | Non    | Jeton d'accès Matrix pré-généré. Utilisez-le à la place de **user** et **password** lorsque votre serveur désactive la connexion par mot de passe, par exemple dans un déploiement SSO uniquement. Peut aussi être fourni avec `?token=`. Lorsqu'il est utilisé sans nom d'utilisateur, placez-le dans la position utilisateur : `matrix://{token}@{hostname}/`.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | port                | Non    | Port sur lequel le serveur Matrix écoute. Par défaut, **matrixs://** utilise le port **443** tandis que **matrix://** utilise le port **80**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | room_alias          | Non    | Alias du salon à rejoindre et notifier. Il est recommandé de le préfixer avec **#**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | room_id             | Non    | Identifiant du salon à rejoindre et notifier. Il doit être préfixé avec **!**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -214,18 +214,18 @@ Ou directement :
 | path                | Non    | Utilisé avec le mode **hookshot** pour définir le chemin webhook public. La valeur par défaut est **/webhook**. Par exemple, si votre instance hookshot est exposée à `https://hookshot.example/public-hooks/{token}`, alors utilisez `?mode=hookshot&path=/public-hooks`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | format              | Non    | Sélectionne le format de sortie Matrix : **text**, **html** ou **markdown**. Apprise v1 utilise un seul format de sortie par URL. La valeur par défaut est **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | msgtype             | Non    | Type de message Matrix : **text** ou **notice**. La valeur par défaut est **text**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| version             | Non    | Surcharge la version de l’API Client Matrix. Les valeurs prises en charge sont **2** et **3**. La valeur par défaut est **3**. Peut aussi être fournie avec `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| hsreq               | Non    | Lorsqu’il est activé, ce qui est le cas par défaut, Apprise ajoute automatiquement le homeserver authentifié aux identifiants de salon qui n’en contiennent pas déjà un. Par exemple, `#room` devient `#room:hostname`. Définissez `no` pour désactiver ce comportement et utiliser les identifiants exactement tels qu’ils sont fournis.                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| e2ee                | Non    | Contrôle le chiffrement de bout en bout via le protocole Matrix Olm/MegOLM. Lorsqu’il est activé, ce qui est le cas par défaut, Apprise détecte automatiquement si chaque salon est configuré pour le chiffrement et chiffre alors les messages comme les pièces jointes pour ceux qui le prennent en charge, tout en envoyant les autres en texte brut. Lorsqu’Apprise crée un nouveau salon avec `e2ee=yes`, il définit l’état `m.room.encryption` dès la création afin que le salon soit chiffré dès le premier message. Cela exige le paquet Python `cryptography` et une connexion **matrixs://**. Non pris en charge en mode webhook. Définissez `no` pour toujours envoyer en clair et éviter la création de salons E2EE. La valeur par défaut est **yes**. |
-| autoverify          | Non    | Active la vérification automatique de l’appareil avec le protocole SAS de Matrix. Lors de la première utilisation, Apprise attend jusqu’à deux minutes une demande provenant d’une autre session connectée au même compte. Une vérification réussie est mémorisée. Définir `autoverify=yes` active automatiquement `e2ee=yes` aussi ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez tout de même désactiver le chiffrement. Nécessite également une connexion **matrixs://**. La valeur par défaut est **no**.                                                                                                                                                                                                                     |
+| version             | Non    | Surcharge la version de l'API Client Matrix. Les valeurs prises en charge sont **2** et **3**. La valeur par défaut est **3**. Peut aussi être fournie avec `?v=`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| hsreq               | Non    | Lorsqu'il est activé, ce qui est le cas par défaut, Apprise ajoute automatiquement le homeserver authentifié aux identifiants de salon qui n'en contiennent pas déjà un. Par exemple, `#room` devient `#room:hostname`. Définissez `no` pour désactiver ce comportement et utiliser les identifiants exactement tels qu'ils sont fournis.                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| e2ee                | Non    | Contrôle le chiffrement de bout en bout via le protocole Matrix Olm/MegOLM. Lorsqu'il est activé, ce qui est le cas par défaut, Apprise détecte automatiquement si chaque salon est configuré pour le chiffrement et chiffre alors les messages comme les pièces jointes pour ceux qui le prennent en charge, tout en envoyant les autres en texte brut. Lorsqu'Apprise crée un nouveau salon avec `e2ee=yes`, il définit l'état `m.room.encryption` dès la création afin que le salon soit chiffré dès le premier message. Cela exige le paquet Python `cryptography` et une connexion **matrixs://**. Non pris en charge en mode webhook. Définissez `no` pour toujours envoyer en clair et éviter la création de salons E2EE. La valeur par défaut est **yes**. |
+| autoverify          | Non    | Active la vérification automatique de l'appareil avec le protocole SAS de Matrix. Lors de la première utilisation, Apprise attend jusqu'à deux minutes une demande provenant d'une autre session connectée au même compte. Une vérification réussie est mémorisée. Définir `autoverify=yes` active automatiquement `e2ee=yes` aussi ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez tout de même désactiver le chiffrement. Nécessite également une connexion **matrixs://**. La valeur par défaut est **no**.                                                                                                                                                                                                                     |
 | target_user         | Non    | Identifiant utilisateur Matrix à notifier en message direct. Doit être préfixé par **@**, par exemple **@alice** ou **@alice:homeserver**. Apprise cherche, ou crée, automatiquement un salon DM avec cet utilisateur. Non pris en charge en mode webhook.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| discovery           | Non    | Lorsqu’elle est activée (par défaut), Apprise utilise `.well-known/matrix/client` au premier usage pour trouver l’adresse du homeserver. Définissez `no` pour vous connecter directement au nom d’hôte de votre URL Apprise. L’adresse découverte doit utiliser `https://` et ne doit contenir ni nom d’utilisateur ni mot de passe. Sinon, la découverte échoue et rien n’est envoyé. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                |
+| discovery           | Non    | Lorsqu'elle est activée (par défaut), Apprise utilise `.well-known/matrix/client` au premier usage pour trouver l'adresse du homeserver. Définissez `no` pour vous connecter directement au nom d'hôte de votre URL Apprise. L'adresse découverte doit utiliser `https://` et ne doit contenir ni nom d'utilisateur ni mot de passe. Sinon, la découverte échoue et rien n'est envoyé. Désactivé automatiquement en mode webhook. La valeur par défaut est **yes**.                                                                                                                                                                                                                                                                                                |
 
 :::note
-Si ni **`{room_alias}`**, ni **`{room_id}`**, ni **`{target_user}`** n’est précisé, Apprise interrogera le serveur pour récupérer les salons actuellement rejoints et les notifiera tous.
+Si ni **`{room_alias}`**, ni **`{room_id}`**, ni **`{target_user}`** n'est précisé, Apprise interrogera le serveur pour récupérer les salons actuellement rejoints et les notifiera tous.
 :::
 :::note
-Lors d’un envoi vers un **`{target_user}`**, Apprise recherche un salon DM existant via les données de compte `m.direct`, ou en crée un si nécessaire. Si l’utilisateur cible quitte ensuite ce salon, Apprise continuera à y envoyer les messages, qui seront acceptés par le serveur mais ne seront plus visibles pour l’utilisateur. Il n’existe pas de réinvitation automatique. Pour corriger cela, l’utilisateur doit rejoindre à nouveau le salon, ou vous devez effacer le stockage persistant Apprise afin qu’un nouveau salon DM soit créé lors du prochain envoi.
+Lors d'un envoi vers un **`{target_user}`**, Apprise recherche un salon DM existant via les données de compte `m.direct`, ou en crée un si nécessaire. Si l'utilisateur cible quitte ensuite ce salon, Apprise continuera à y envoyer les messages, qui seront acceptés par le serveur mais ne seront plus visibles pour l'utilisateur. Il n'existe pas de réinvitation automatique. Pour corriger cela, l'utilisateur doit rejoindre à nouveau le salon, ou vous devez effacer le stockage persistant Apprise afin qu'un nouveau salon DM soit créé lors du prochain envoi.
 :::
 :::note
 E2EE exige à la fois une URL **matrixs://**, donc HTTPS, et le paquet Python `cryptography`, installé par exemple via `pip install cryptography`. Avec une connexion **matrix://** en HTTP simple, E2EE est silencieusement ignoré et les messages sont envoyés en clair, quelle que soit la valeur de `e2ee`.
@@ -233,30 +233,30 @@ E2EE exige à la fois une URL **matrixs://**, donc HTTPS, et le paquet Python `c
 :::caution[La vérification automatique peut retarder votre première notification]
 `autoverify=yes` active automatiquement `e2ee=yes` ; inutile de définir les deux. Passez `e2ee=no` explicitement si vous souhaitez conserver le chiffrement désactivé malgré tout.
 
-Avec `autoverify=yes`, la première notification attend jusqu’à deux minutes une demande de vérification. Dans un autre client Matrix connecté au même compte, choisissez **Vérifier la session**, puis sélectionnez l’appareil Apprise.
+Avec `autoverify=yes`, la première notification attend jusqu'à deux minutes une demande de vérification. Dans un autre client Matrix connecté au même compte, choisissez **Vérifier la session**, puis sélectionnez l'appareil Apprise.
 
-Apprise inscrit un code à trois nombres dans ses journaux. Vérifiez qu’il correspond au code de votre autre client avant d’y approuver la vérification.
+Apprise inscrit un code à trois nombres dans ses journaux. Vérifiez qu'il correspond au code de votre autre client avant d'y approuver la vérification.
 
-Si la vérification n’aboutit pas à temps, la notification chiffrée est tout de même envoyée. Apprise attend environ 15 minutes avant de réessayer. Après une vérification réussie, les notifications suivantes n’attendent pas.
+Si la vérification n'aboutit pas à temps, la notification chiffrée est tout de même envoyée. Apprise attend environ 15 minutes avant de réessayer. Après une vérification réussie, les notifications suivantes n'attendent pas.
 :::
 :::tip
-Apprise met en cache les clés de session E2EE ainsi que l’état de chiffrement des salons dans son stockage persistant afin d’éviter des allers-retours réseau inutiles. Si la configuration de chiffrement d’un salon change après le premier envoi, par exemple si le chiffrement est activé sur un salon auparavant non chiffré, Apprise continuera à utiliser l’état mis en cache jusqu’à réinitialisation du stockage. Pour forcer un nouvel échange de clés et une nouvelle lecture de l’état du salon, effacez le stockage persistant Apprise de cette instance du plugin.
+Apprise met en cache les clés de session E2EE ainsi que l'état de chiffrement des salons dans son stockage persistant afin d'éviter des allers-retours réseau inutiles. Si la configuration de chiffrement d'un salon change après le premier envoi, par exemple si le chiffrement est activé sur un salon auparavant non chiffré, Apprise continuera à utiliser l'état mis en cache jusqu'à réinitialisation du stockage. Pour forcer un nouvel échange de clés et une nouvelle lecture de l'état du salon, effacez le stockage persistant Apprise de cette instance du plugin.
 :::
 :::note[Salons créés par Apprise lorsque `e2ee=yes`]
-Lorsque `e2ee=yes`, ce qui est la valeur par défaut, et qu’Apprise crée un nouveau salon, soit parce qu’un alias n’existe pas encore, soit parce qu’un nouveau salon DM est nécessaire, Apprise crée ce salon **avec** l’événement d’état `m.room.encryption` défini sur `m.megolm.v1.aes-sha2`.
+Lorsque `e2ee=yes`, ce qui est la valeur par défaut, et qu'Apprise crée un nouveau salon, soit parce qu'un alias n'existe pas encore, soit parce qu'un nouveau salon DM est nécessaire, Apprise crée ce salon **avec** l'événement d'état `m.room.encryption` défini sur `m.megolm.v1.aes-sha2`.
 
 - Le chiffrement est **irréversible** une fois activé sur un salon ; Apprise chiffre donc les nouveaux salons dès leur création afin que chaque message, y compris le tout premier, soit protégé.
 - Les clients ne prenant pas en charge E2EE, anciens ou non standard, peuvent toujours **rejoindre** le salon, mais ils ne pourront pas lire les messages chiffrés.
-- Si vous avez besoin d’un salon lisible par des clients non E2EE, précréez-le dans votre client Matrix sans activer le chiffrement avant de le cibler avec Apprise, ou utilisez `e2ee=no` dans votre URL Apprise.
+- Si vous avez besoin d'un salon lisible par des clients non E2EE, précréez-le dans votre client Matrix sans activer le chiffrement avant de le cibler avec Apprise, ou utilisez `e2ee=no` dans votre URL Apprise.
 
-Pour les salons qu’Apprise n’a **pas** créés, il vérifie l’état `m.room.encryption` à chaque envoi et chiffre automatiquement les messages pour les salons qui l’ont déjà défini, quelle que soit leur origine. Les salons sans état de chiffrement reçoivent toujours des messages en clair, même lorsque `e2ee=yes`.
+Pour les salons qu'Apprise n'a **pas** créés, il vérifie l'état `m.room.encryption` à chaque envoi et chiffre automatiquement les messages pour les salons qui l'ont déjà défini, quelle que soit leur origine. Les salons sans état de chiffrement reçoivent toujours des messages en clair, même lorsque `e2ee=yes`.
 :::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Exemples
 
-Envoyer une notification Matrix sécurisée avec nom d’utilisateur et mot de passe :
+Envoyer une notification Matrix sécurisée avec nom d'utilisateur et mot de passe :
 
 ```bash
 # Supposons que {hostname} soit matrix.example.com
@@ -267,7 +267,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/#general/#apprise
 ```
 
-Envoyer une notification avec un jeton d’accès pré-généré, pratique lorsque
+Envoyer une notification avec un jeton d'accès pré-généré, pratique lorsque
 la connexion par mot de passe est désactivée sur le serveur :
 
 ```bash
@@ -289,7 +289,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/@bob?hsreq=no
 ```
 
-Utiliser l’API v2, requise pour les pièces jointes sur certains déploiements :
+Utiliser l'API v2, requise pour les pièces jointes sur certains déploiements :
 
 ```bash
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
@@ -303,7 +303,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "matrixs://nuxref:abc123@matrix.example.com/#general?e2ee=no"
 ```
 
-Activer la vérification automatique de l’appareil par SAS (ceci active aussi
+Activer la vérification automatique de l'appareil par SAS (ceci active aussi
 le chiffrement E2EE, inutile de passer également `e2ee=yes`). Lors du premier
 envoi, lancez **Vérifier cet appareil** pour la session Apprise depuis un autre
 client connecté au même compte :
@@ -323,7 +323,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    matrixs://nuxref:abc123@matrix.example.com/@bob
 ```
 
-Envoyer un message direct avec un jeton d’accès pré-généré :
+Envoyer un message direct avec un jeton d'accès pré-généré :
 
 ```bash
 # Supposons que {hostname} soit matrix.example.com

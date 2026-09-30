@@ -84,10 +84,10 @@ import apprise
 # Instancier Apprise
 apobj = apprise.Apprise()
 
-# Chaîne JSON compacte — utile pour une API, du cache, etc.
+# Chaîne JSON compacte, utile pour une API, du cache, etc.
 payload: str = apobj.json()
 
-# JSON indenté — utile pour le débogage ou pour générer des squelettes de config
+# JSON indenté, utile pour le débogage ou pour générer des squelettes de config
 payload: str = apobj.json(indent=2)
 ```
 
@@ -115,7 +115,7 @@ apobj = apprise.Apprise()
 
 ok: bool = apobj.json(path="/var/cache/apprise/details.json")
 if not ok:
-    print("Échec de l'écriture des détails — consultez les logs pour connaître la raison")
+    print("Échec de l'écriture des détails, consultez les logs pour connaître la raison")
 ```
 
 ### Inclure dépendances et plugins désactivés
@@ -125,7 +125,7 @@ import apprise
 
 apobj = apprise.Apprise()
 
-# Dump complet d'audit — chaque plugin, même ceux sans dépendances installées
+# Dump complet d'audit : chaque plugin, même ceux sans dépendances installées
 payload: str = apobj.json(
     show_requirements=True,
     show_disabled=True,

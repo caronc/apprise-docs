@@ -1,6 +1,6 @@
 # Sponsorships Directory
 
-This directory holds **company-level sponsorship entries** — organizations that sponsor Apprise as a whole, independent of any specific notification service.
+This directory holds **company-level sponsorship entries**, meaning organizations that sponsor Apprise as a whole, independent of any specific notification service.
 
 For **service-level sponsorships** (a company sponsoring a specific notification plugin), use `sponsorship_level:` in that service's `locales/en/services/<slug>/index.md` frontmatter instead.
 
@@ -10,7 +10,7 @@ For **service-level sponsorships** (a company sponsoring a specific notification
 sponsorships/
   <id>/                    # Stable identifier (lowercase, no spaces, e.g. "acme-corp")
     meta.json              # Required: level, name, website
-    logo.svg               # Preferred: default logo — shown in light and dark mode
+    logo.svg               # Preferred: default logo, shown in light and dark mode
     logo.png               # Bitmap fallback when SVG unavailable (.jpg / .jpeg also accepted)
     logo-512px.png         # Optional legacy-style bitmap fallback (.jpg / .jpeg also accepted)
     logo-light.svg         # Optional explicit light-mode variant
@@ -19,7 +19,7 @@ sponsorships/
     logo-dark.png          # Optional bitmap dark-mode variant (.jpg / .jpeg also accepted)
 ```
 
-Logo resolution mirrors service-page logos. Light/default mode uses `logo-light.*` first, then `logo.*`, then `logo-512px.*`. Dark mode uses `logo-dark.*` only when it exists; otherwise the light/default asset remains visible. Formats are checked in the order `.svg` → `.png` → `.jpg` → `.jpeg` for themed logos, with `logo-512px.png` → `.jpg` → `.jpeg` as the final default fallback.
+Logo resolution mirrors service-page logos. Light/default mode uses `logo-light.*` first, then `logo.*`, then `logo-512px.*`. Dark mode uses `logo-dark.*` only when it exists; otherwise the light/default asset remains visible. Formats are checked in the order `.svg`, `.png`, `.jpg`, then `.jpeg` for themed logos. The final default fallback is `logo-512px.png`, then `.jpg`, then `.jpeg`.
 
 SVG logos may also self-theme with an embedded `@media (prefers-color-scheme: dark)` rule, which is useful for simple wordmarks that only need a different text fill. This follows the browser/OS color scheme. If the logo must match the site theme toggle exactly, provide explicit `logo-light.*` and `logo-dark.*` files instead.
 
@@ -55,7 +55,7 @@ only the locales you have reviewed.
 | `name`            | string                     | Yes      | Display name of the company or individual                                                                                                                             |
 | `website`         | string                     | No       | Primary website URL                                                                                                                                                   |
 | `since`           | string                     | No       | Optional sponsorship start date as `YYYY-MM`; shown as a small note on sponsor cards                                                                                  |
-| `level`           | integer 1–100              | Yes      | Visibility level — see below                                                                                                                                          |
+| `level`           | integer 1–100              | Yes      | Visibility level (see below)                                                                                                                                          |
 | `weight`          | integer 1–5                | No       | Optional maintainer-controlled rotating banner ticket count. Omit it to derive the weight from `level`.                                                               |
 | `description`     | string or localized object | No       | Short sentence shown on the sponsors page                                                                                                                             |
 | `sponsor_message` | string or localized object | No       | Short sponsor message shown in level 75+ banners; falls back to English, then a default support message when omitted. Set to an empty string to suppress the message. |
@@ -93,4 +93,4 @@ If a locale is missing, the sync pipeline falls back to English. If `sponsor_mes
 
 ## How the Site Uses This Data
 
-The site build scans this directory and generates localized sponsor metadata automatically. You do not need to edit `sponsors.mdx` manually when adding a sponsor — just create the entry here and submit the pull request.
+The site build scans this directory and generates localized sponsor metadata automatically. You do not need to edit `sponsors.mdx` manually when adding a sponsor. Just create the entry here and submit the pull request.

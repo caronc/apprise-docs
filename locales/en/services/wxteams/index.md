@@ -37,7 +37,7 @@ no attachments) and **Bot** (full API access with file attachment support).
 The mode is auto-detected from the token format, or you can force it with
 the `mode=` URL parameter.
 
-### Mode 1 — Webhook (default)
+### Mode 1: Webhook (default)
 
 To use webhook mode, first access [https://teams.webex.com](https://teams.webex.com) and create an
 account if you don't already have one. You'll want to create at least one
@@ -68,7 +68,7 @@ The last part of the URL is your `{token}`:
 > **Limitation:** Incoming webhooks do **not** support file attachments.
 > Use Bot mode (below) if you need to send files.
 
-### Mode 2 — Bot (API token + Room ID, supports attachments)
+### Mode 2: Bot (API token + Room ID, supports attachments)
 
 1. Visit [https://developer.webex.com/my-apps](https://developer.webex.com/my-apps) and create a new **Bot**.
 2. After creating the bot, copy the **Bot Access Token** shown on the

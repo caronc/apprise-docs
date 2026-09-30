@@ -86,6 +86,8 @@ Le mode est **auto-detecte** a partir de votre URL : si toutes les cibles sont d
 
 :::note
 En mode `topic`, le titre devient le champ SNS **Subject**. Les abonnes par e-mail au topic recevront une ligne d'objet appropriee. Les points de terminaison SMS abonnes au topic ne recoivent pas de champ Subject -- il s'agit d'une contrainte de l'API AWS.
+
+AWS n'accepte qu'un objet sur une seule ligne et de moins de 100 caractères : Apprise remplace donc les retours à la ligne de votre titre par des espaces et le raccourcit à 99 caractères si nécessaire.
 :::
 
 ## Detail des Parametres

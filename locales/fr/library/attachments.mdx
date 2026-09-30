@@ -73,12 +73,12 @@ normalisées vers la même surface d'API.
 <Tabs>
 <TabItem value="file" label="Fichier Local (file://)">
 
-**`AttachFile`** — les fichiers locaux référencent des chemins côté serveur. L'usage
+**`AttachFile`** : les fichiers locaux référencent des chemins côté serveur. L'usage
 le plus simple consiste à passer directement une chaîne de chemin : Apprise
 la convertit en URL `file://` en interne :
 
 ```python
-# Single path — Apprise wraps it in AttachFile automatically
+# Single path. Apprise wraps it in AttachFile automatically
 apobj.notify(body="See log", attach="/var/log/syslog")
 
 # Multiple paths
@@ -93,7 +93,7 @@ apobj.notify(
 `/var/log/syslog` est traité exactement comme `file:///var/log/syslog`.
 :::
 
-**Constructeur direct** — utilisez `AttachFile` lorsque vous devez surcharger
+**Constructeur direct** : utilisez `AttachFile` lorsque vous devez surcharger
 le nom de fichier ou le type MIME présenté au service distant, sans renommer
 le fichier sur le disque :
 
@@ -122,7 +122,7 @@ apobj.notify(body="Nightly log", attach=a)
 
 <TabItem value="http" label="URL Hébergée (http://, https://)">
 
-**`AttachHTTP`** — les URL hébergées sont téléchargées dans un fichier temporaire
+**`AttachHTTP`** : les URL hébergées sont téléchargées dans un fichier temporaire
 avant d'être fournies aux plugins. Passez directement une chaîne URL :
 Apprise crée alors un `AttachHTTP` en interne :
 
@@ -143,7 +143,7 @@ apobj.notify(
 )
 ```
 
-**Téléchargement authentifié** — intégrez les identifiants directement dans l'URL :
+**Téléchargement authentifié** : intégrez les identifiants directement dans l'URL :
 
 ```python
 # Apprise authenticates before downloading
@@ -158,7 +158,7 @@ Traitez les URL de pièces jointes contenant des identifiants comme des secrets.
 Ne les journalisez jamais et ne les versionnez jamais.
 :::
 
-**Constructeur direct** — utilisez `AttachHTTP` lorsque vous avez besoin
+**Constructeur direct** : utilisez `AttachHTTP` lorsque vous avez besoin
 d'un contrôle fin sur le cache, les timeouts ou les en-têtes personnalisés :
 
 ```python
@@ -174,7 +174,7 @@ a = AttachHTTP(
 apobj.notify(body="Fresh report", attach=a)
 ```
 
-**En-têtes HTTP personnalisés** — utilisez la syntaxe d'URL `+Clé=Valeur`
+**En-têtes HTTP personnalisés** : utilisez la syntaxe d'URL `+Clé=Valeur`
 pour transmettre des en-têtes avec la requête de téléchargement :
 
 ```python
@@ -273,7 +273,7 @@ sur plusieurs envois de notifications.
 
 <TabItem value="memory" label="En Mémoire (memory://)">
 
-**`AttachMemory`** — stocke entièrement le contenu dans un tampon `BytesIO`,
+**`AttachMemory`** : stocke entièrement le contenu dans un tampon `BytesIO`,
 sans écrire de fichiers temporaires sur disque. C'est le bon choix lorsque
 vous générez du contenu à la volée : rapports, HTML rendu, graphiques ou
 octets déjà présents en mémoire.
@@ -299,7 +299,7 @@ apobj.notify(
 )
 ```
 
-**À partir d'un objet `str`** — encodé automatiquement en UTF-8 :
+**À partir d'un objet `str`** : encodé automatiquement en UTF-8 :
 
 ```python
 csv_text = "date,value\n2026-03-20,42\n"
@@ -314,7 +314,7 @@ apobj.notify(
 )
 ```
 
-**À partir d'un tampon `BytesIO`** — lisez le tampon avant de le passer :
+**À partir d'un tampon `BytesIO`** : lisez le tampon avant de le passer :
 
 ```python
 import io

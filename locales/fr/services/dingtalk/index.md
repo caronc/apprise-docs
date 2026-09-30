@@ -61,8 +61,7 @@ choisit le bon format pour vous :
 - Vous pouvez forcer l'un ou l'autre avec `?format=text` ou `?format=markdown`.
 
 :::note
-Un message Markdown sur DingTalk doit comporter un titre. Si vous n'en
-fournissez pas, Apprise y place le nom de votre application.
+Un message Markdown sur DingTalk doit comporter un titre. Apprise utilise votre titre comme aperçu dans la liste des conversations et le place aussi en en-tête au début du message. Si vous ne fournissez pas de titre, l'aperçu affiche le nom de votre application et aucun en-tête n'est ajouté.
 :::
 
 ## Exemples

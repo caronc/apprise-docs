@@ -27,7 +27,7 @@ limits:
 
 ## Service End Reason
 
-NotificationAPI rebranded to [Pingram](https://www.pingram.io) in 2026. This is not a shutdown — the underlying service is alive and well, just renamed. Apprise's `napi://`/`notificationapi://` integration has been retired in favor of a dedicated [`pingram://`](/services/pingram/) plugin built for the current API.
+NotificationAPI rebranded to [Pingram](https://www.pingram.io) in 2026. This is not a shutdown. The underlying service is alive and well, just renamed. Apprise's `napi://`/`notificationapi://` integration has been retired in favor of a dedicated [`pingram://`](/services/pingram/) plugin built for the current API.
 
 If you still have a `clientId`/`clientSecret` pair issued before the rebrand, it may continue to work if you call the Pingram API directly, but it is no longer supported through this Apprise plugin. New Pingram accounts issue a single API key instead, which the `pingram://` plugin uses in place of the retired credential pair.
 :::
@@ -46,7 +46,7 @@ NotificationAPI lets you trigger email, SMS, calls, push, and in‑app notificat
    - **Email** notifications require an email address on the `to` object.
    - **SMS** notifications require a phone number in **E.164** format, for example `+15005550006`.
    - You can also address users by a NotificationAPI **user id**.
-5. If you are hosted outside the US, note your region’s API host (US default, CA, or EU).
+5. If you are hosted outside the US, note your region's API host (US default, CA, or EU).
 
 ## Syntax
 
@@ -63,9 +63,9 @@ Valid syntax is as follows (both `napi://` and `notificationapi://` are accepted
 
 Examples of grouped targets:
 
-- `userid/test@example.com` → id + email
-- `userid/+15551234567` → id + SMS
-- `userid/+15551234567/test@example.com` → id + SMS + email
+- `userid/test@example.com`: id + email
+- `userid/+15551234567`: id + SMS
+- `userid/+15551234567/test@example.com`: id + SMS + email
 
 ## Parameter Breakdown
 

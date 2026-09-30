@@ -29,7 +29,7 @@ Lark (also known as Feishu in China) allows you to create **custom bots** that c
 1. Visit the [Lark Developer Console](https://open.larksuite.com/) and create or access your app.
 2. Under **Features**, enable **Bot** and turn on the **Custom Bot** feature.
 3. From the app's **Bot settings**, generate a **Webhook URL**.
-4. Copy the webhook — it will look like this:
+4. Copy the webhook. It will look like this:
 
    ```text
    https://open.larksuite.com/open-apis/bot/v2/hook/abcdef1234567890abcdef1234567890

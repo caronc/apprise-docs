@@ -35,7 +35,7 @@ limits:
 
 ## Message Format
 
-Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead.
+Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead. In that mode Apprise turns `&`, `<` and `>` into the codes Slack expects, so they show up exactly as you typed them.
 
 Declaring your input format lets Apprise convert supported content before sending it. Without one, Apprise assumes the body is already suitable for the selected Slack format. `overflow=split` is then best effort, so use `overflow=upstream` when markup or structured content must remain intact.
 

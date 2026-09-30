@@ -1,6 +1,6 @@
 ---
 title: Intégrations
-description: Appeler l’API Apprise depuis curl, Go, Rust, JavaScript, TypeScript, PHP ou Python.
+description: Appeler l'API Apprise depuis curl, Go, Rust, JavaScript, TypeScript, PHP ou Python.
 sidebar:
   order: 5
 ---
@@ -92,7 +92,7 @@ Pour les notifications avec état, recommandées pour la plupart des intégratio
 Ici, `{KEY}` identifie une configuration enregistrée sur le serveur.
 Votre code client reste petit et stable, tandis que l'instance API Apprise conserve les véritables URL de notification ainsi que les éventuels tags de routage.
 
-## Construire l’URL de Requête
+## Construire l'URL de Requête
 
 Étant donné :
 
@@ -160,7 +160,7 @@ Si un outil tiers ne peut pas modifier ses clés JSON, l'API Apprise peut faire 
 | `?:incoming_field=`              | Supprime `incoming_field` du payload        |
 | `?:apprise_field=literal value`  | Force `apprise_field` à une chaîne fixe     |
 
-**Exemple de champ plat** — un outil envoie `{"message": "Server Down"}` :
+**Exemple de champ plat** : un outil envoie `{"message": "Server Down"}` :
 
 ```text
 POST /notify/{KEY}?:message=body
@@ -218,7 +218,7 @@ Référence rapide des expressions de chemin :
 
 - Seul le côté **source** de la règle peut utiliser la notation de chemin ; la cible doit être un champ Apprise plat (`title`, `body`, `type`, `format`, `tag`, etc.).
 - `N` dans `[N]` doit être un entier positif ou nul. Les formes `key[abc]` (non entière) et `key[0` / `key0]` (crochet non apparié) sont rejetées immédiatement.
-- Si une étape est introuvable — clé absente, index hors limites ou nœud non liste à une étape d'index — le serveur renvoie **400** et journalise un `WARNING`. Aucune notification n'est envoyée, ce qui rend les règles mal configurées visibles dans les logs au lieu d'être ignorées silencieusement.
+- Si une étape est introuvable (clé absente, index hors limites ou nœud non liste à une étape d'index), le serveur renvoie **400** et journalise un `WARNING`. Aucune notification n'est envoyée, ce qui rend les règles mal configurées visibles dans les logs au lieu d'être ignorées silencieusement.
 - La **profondeur** correspond au nombre total d'opérations de traversée : chaque recherche de clé dans un dict _et_ chaque déréférencement d'index dans un tableau comptent pour une étape. `items[0].objectURI` = 3 étapes ; `a[0][1][2].value[3]` = 6 étapes.
 - La profondeur maximale de traversée est de **5** par défaut. Définissez `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH` pour modifier cette limite.
 

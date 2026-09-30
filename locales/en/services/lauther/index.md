@@ -26,7 +26,7 @@ Lauther is a push notification and anonymous identity app for your phone.
 
 1. Install the [Lauther app](https://lauther.app/) on your device.
 2. Inside the app, go to **Apps** and tap **+** to create a **New Token**.
-3. Copy the token that is generated — it will look like this:
+3. Copy the token that is generated. It will look like this:
 
    ```text
    lpt_AbCdEf1234567890

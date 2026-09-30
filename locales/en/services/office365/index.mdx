@@ -40,8 +40,8 @@ the `client_credentials` flow with your `tenant_id`, `client_id`, and
 
 <TabItem label="Personal">
 
-Personal consumer accounts — `@outlook.com`, `@hotmail.com`, `@live.com`,
-`@msn.com`, and regional Hotmail/Live variants — use a **refresh token** flow
+Personal consumer accounts (`@outlook.com`, `@hotmail.com`, `@live.com`,
+`@msn.com`, and regional Hotmail/Live variants) use a **refresh token** flow
 instead of the organizational client credentials flow.
 
 This involves two phases:
@@ -192,7 +192,7 @@ curl -s -X POST \
   --data "client_id=${CLIENT_ID}&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=${DEVICE_CODE}"
 ```
 
-Look for `"refresh_token"` in the JSON response — that value is what goes into
+Look for `"refresh_token"` in the JSON response. That value is what goes into
 your Apprise URL.
 
 :::tip[Prefer to wait automatically?]
@@ -449,7 +449,7 @@ create a subscription:
    - Becomes masked after you leave the page
    - Is the actual password
 
-   If unsure, simply regenerate the secret — delete the old one and create a
+   If unsure, simply regenerate the secret. Delete the old one and create a
    new one.
    :::
 
@@ -472,11 +472,11 @@ create a subscription:
 :::caution[Exchange Online license required]
 
 The `Mail.Send` **application permission** requires the sender mailbox to
-be backed by **Exchange Online** — available only in paid Microsoft 365
+be backed by **Exchange Online**, available only in paid Microsoft 365
 Business plans (E1, E3, E5, Apps for Business, etc.).
 
 Custom domains hosted under Microsoft 365 Business (e.g.
-`user@yourcompany.com`) work correctly — they are backed by Exchange Online
+`user@yourcompany.com`) work correctly. They are backed by Exchange Online
 like any other organizational tenant.
 
 **If you receive a `401` error**, verify that:

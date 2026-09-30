@@ -205,7 +205,7 @@ N_MGR.evict_on_disable = True
 
 Once set, eviction happens automatically whenever `disable()` or `enable_only()` brings a library's reference count to zero.
 
-### Declaring Dependencies — `runtime_deps()`
+### Declaring Dependencies With `runtime_deps()`
 
 Each notification service class can advertise its optional runtime dependencies by overriding the `runtime_deps()` static method on `NotifyBase`:
 
@@ -222,7 +222,7 @@ class NotifyMyService(NotifyBase):
     # ...
 ```
 
-The return value is a tuple of **top-level importable package names** (the same string you would pass to `import`). The manager uses these at load time to build a reference counter across all enabled services. When the counter for a library reaches zero, that library — and all of its submodules — is removed from `sys.modules`.
+The return value is a tuple of **top-level importable package names** (the same string you would pass to `import`). The manager uses these at load time to build a reference counter across all enabled services. When the counter for a library reaches zero, that library, and all of its submodules, is removed from `sys.modules`.
 
 :::note
 Native C extensions (for example, `cryptography`'s OpenSSL backend) release their Python wrapper objects when evicted, but the underlying shared library (`.so`) remains mapped by the OS for the lifetime of the process. This is a Python / OS constraint, not an Apprise limitation.
@@ -232,7 +232,7 @@ Native C extensions (for example, `cryptography`'s OpenSSL backend) release thei
 
 1. After all built-in plugins are loaded, the manager counts how many **enabled** services declare each library in `runtime_deps()`.
 2. When a service is disabled, its libraries are decremented.
-3. When a library's count reaches zero **and** `evict_on_disable` is `True`, the manager removes every matching entry from `sys.modules` (e.g., `slixmpp`, `slixmpp.stanza`, `slixmpp.xmlstream`, …).
+3. When a library's count reaches zero **and** `evict_on_disable` is `True`, the manager removes every matching entry from `sys.modules` (e.g., `slixmpp`, `slixmpp.stanza`, `slixmpp.xmlstream`, ...).
 4. When a service is re-enabled, its libraries are incremented back. Re-import happens automatically the next time that service's code path runs.
 
 Eviction attempts are always made for the full `runtime_deps()` tuple, in order. A missing entry (e.g., a library that was never imported) is skipped with a trace-level log and does not interrupt the remaining evictions.

@@ -67,6 +67,14 @@ Valid syntax is as follows:
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+:::note
+How your title and body are shown depends on the call type:
+
+- **Alerts**: the title is the main heading and the body appears below it. Without a title, the body becomes the main heading.
+- **Donations**: there is no title field, so the title is placed on the first line of the donation message. The whole message is kept under 255 characters.
+
+  :::
+
 ## Examples
 
 Send a Streamlabs notification:

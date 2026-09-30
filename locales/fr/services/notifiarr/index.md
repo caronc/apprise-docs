@@ -16,7 +16,7 @@ sample_urls:
 
 ## Configuration du Compte
 
-Vous devez d'abord creer un compte chez [Notifiarr](https://notifiarr.com) si vous n'en avez pas deja un. A partir de la, vous pourrez generer votre `{api_key}`. Vous devrez utiliser votre cle API “globale” ; les cles API Notifiarr specifiques aux integrations ne fonctionnent pas avec Apprise.
+Vous devez d'abord creer un compte chez [Notifiarr](https://notifiarr.com) si vous n'en avez pas deja un. A partir de la, vous pourrez generer votre `{api_key}`. Vous devrez utiliser votre cle API "globale" ; les cles API Notifiarr specifiques aux integrations ne fonctionnent pas avec Apprise.
 
 ### Identifiants de Canal Discord
 

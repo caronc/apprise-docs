@@ -113,6 +113,15 @@ The takeaway from the above is the group
 
 Exemple d'envoi d'une notification à un groupe : `group.aabbccdd/eeffgghh=` identifié par le champ `id`.
 
+### Mise en Forme du Texte
+
+Ajoutez `?format=markdown` à l'URL pour envoyer des messages mis en forme. Apprise convertit votre Markdown ou votre HTML dans le style propre à Signal : **gras**, _italique_, ~~barré~~, `monospace` et `||spoiler||`. Signal n'a pas de titres de section, le titre est donc affiché en gras. Les messages en texte brut restent exactement tels que vous les avez écrits, même s'ils contiennent des caractères comme `*` ou `~`. En ligne de commande, ajoutez `-i markdown` lorsque votre message est écrit en Markdown.
+
+```bash
+apprise -vv -i markdown -t "Rapport de Build" -b "**3** tests en _échec_" \
+   "signal://localhost:9922/15555551234?format=markdown"
+```
+
 ## Exemples
 
 Envoyer une notification Signal (via Signal API) :

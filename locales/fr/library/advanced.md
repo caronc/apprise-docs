@@ -130,7 +130,7 @@ export HTTP_PROXY="http://127.0.0.1:3128"
 python3 my_script.py
 ```
 
-Si vous souhaitez que seul Apprise passe par le proxy (et non le reste de votre application), limitez la variable au sous-processus ou à l'environnement qui exécute Apprise plutôt que de l'exporter globalement — par exemple en la définissant pour une seule commande, ou dans la directive `Environment=` d'une unité systemd pour un service de longue durée.
+Si vous souhaitez que seul Apprise passe par le proxy (et non le reste de votre application), limitez la variable au sous-processus ou à l'environnement qui exécute Apprise plutôt que de l'exporter globalement. Définissez-la par exemple pour une seule commande, ou dans la directive `Environment=` d'une unité systemd pour un service de longue durée.
 
 `NO_PROXY` est également respectée, ce qui permet d'exempter certains hôtes :
 
@@ -140,5 +140,5 @@ export NO_PROXY="localhost,127.0.0.1,internal.example.com"
 ```
 
 :::note
-Les proxys SOCKS (`socks5h://...`) nécessitent le paquet optionnel [PySocks](https://pypi.org/project/PySocks/) (`pip install pysocks`) — `requests` en a besoin pour comprendre les URL de proxy SOCKS. Sans lui, une valeur `socks5h://` dans `HTTP_PROXY`/`HTTPS_PROXY` échouera.
+Les proxys SOCKS (`socks5h://...`) nécessitent le paquet optionnel [PySocks](https://pypi.org/project/PySocks/) (`pip install pysocks`). `requests` en a besoin pour comprendre les URL de proxy SOCKS. Sans lui, une valeur `socks5h://` dans `HTTP_PROXY`/`HTTPS_PROXY` échouera.
 :::

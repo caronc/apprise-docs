@@ -76,7 +76,7 @@ Vous pouvez filtrer la liste par préfixe d'UID ou en passant une URL Apprise co
 # Filtrer par préfixe d'UID sur 8 caractères (correspondance la plus proche)
 apprise storage list abc1
 
-# Filtrer par URL complète — résolue automatiquement vers son espace de noms
+# Filtrer par URL complète, résolue automatiquement vers son espace de noms
 apprise storage list "mailtos://user:pass@example.com"
 ```
 
@@ -95,7 +95,7 @@ Par défaut, Apprise supprime les données de plus de 30 jours. Vous pouvez ajus
 apprise storage prune --storage-prune-days 7
 ```
 
-Vous pouvez limiter la purge à une URL spécifique, un préfixe d'UID ou un tag — seul le stockage appartenant aux plugins correspondants est éligible à la suppression :
+Vous pouvez limiter la purge à une URL spécifique, un préfixe d'UID ou un tag. Seul le stockage appartenant aux plugins correspondants est éligible à la suppression :
 
 ```bash
 # Purger uniquement le stockage d'une URL spécifique
@@ -116,13 +116,13 @@ Pour effacer immédiatement toutes les données en cache (quelle que soit leur a
 apprise storage clear
 ```
 
-Vous pouvez être plus précis en ciblant un UID spécifique, une URL complète ou un tag — seuls les espaces de noms des plugins correspondants sont effacés :
+Vous pouvez être plus précis en ciblant un UID spécifique, une URL complète ou un tag. Seuls les espaces de noms des plugins correspondants sont effacés :
 
 ```bash
 # Effacer un UID spécifique (par ex. trouvé via 'apprise storage list')
 apprise storage clear abc123xy
 
-# Effacer via une URL complète — résolue automatiquement vers son espace de noms
+# Effacer via une URL complète, résolue automatiquement vers son espace de noms
 apprise storage clear "mailtos://user:pass@example.com"
 
 # Effacer toutes les URL associées au tag 'family'

@@ -24,7 +24,7 @@ Choisissez la méthode de configuration qui correspond le mieux à votre usage.
 
 <Tabs>
 <TabItem label="Méthode 1 : Inline (Démarrage Rapide)">
-Cette méthode convient bien pour une configuration rapide ou lorsque vous n'avez pas besoin de cibler différents services individuellement. Le paramètre `url` accepte une seule URL ou une liste d'URL — toutes sont notifiées ensemble à chaque appel.
+Cette méthode convient bien pour une configuration rapide ou lorsque vous n'avez pas besoin de cibler différents services individuellement. Le paramètre `url` accepte une seule URL ou une liste d'URL, et toutes sont notifiées ensemble à chaque appel.
 
 **Modifiez `configuration.yaml`**
 
@@ -51,7 +51,7 @@ notify:
 ```
 
 :::note[Pas de ciblage sélectif avec `url`]
-Chaque service listé sous `url` est déclenché ensemble à chaque appel de notification. Si vous devez envoyer des alertes différentes à des services différents, utilisez plutôt la Méthode 2 ou 3 — elles prennent en charge le ciblage par tags via le champ `target`.
+Chaque service listé sous `url` est déclenché ensemble à chaque appel de notification. Si vous devez envoyer des alertes différentes à des services différents, utilisez plutôt la Méthode 2 ou 3. Elles prennent en charge le ciblage par tags via le champ `target`.
 :::
 
 </TabItem>
@@ -229,13 +229,13 @@ apprise -vv -t "Test" -b "Bonjour depuis la CLI" \
     tgram://YOUR_BOT_TOKEN/YOUR_CHAT_ID
 ```
 
-Confirmez ensuite que Home Assistant peut joindre le même service en déclenchant manuellement le service `notify.apprise` depuis **Outils de développement → Services**.
+Confirmez ensuite que Home Assistant peut joindre le même service en déclenchant manuellement le service `notify.apprise` depuis **Outils de développement > Services**.
 
 ## 5. Découvrir les Services `notify` Disponibles
 
 Si vous souhaitez qu'Apprise appelle Home Assistant lui-même en retour, par exemple pour envoyer une notification push vers un appareil mobile enregistré dans l'application compagnon HA, vous pouvez utiliser le plugin `hassio://` dans vos URL Apprise. Pour trouver le nom exact du service :
 
-1. Dans Home Assistant, ouvrez **Outils de développement → Services**.
+1. Dans Home Assistant, ouvrez **Outils de développement > Services**.
 2. Filtrez sur le domaine **notify**. Vous verrez des entrées comme `notify.mobile_app_johns_phone`.
 3. La partie située après `notify.` correspond au nom de service à utiliser dans l'URL Apprise :
 

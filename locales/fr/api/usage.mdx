@@ -369,7 +369,7 @@ Les clés de mapping passent dans la query string et doivent être encodées URL
 | `?:incoming_field=`              | Supprime `incoming_field` du payload           |
 | `?:apprise_field=literal value`  | Force `apprise_field` à une chaîne fixe        |
 
-**Exemple** — votre outil envoie `{"message": "Server Down", "severity": "high"}`, mais Apprise attend `body` et `type` :
+**Exemple** : votre outil envoie `{"message": "Server Down", "severity": "high"}`, mais Apprise attend `body` et `type` :
 
 ```bash
 curl -X POST \
@@ -426,8 +426,8 @@ a[0][1][2].value[3]    tableaux imbriqués -> dict -> tableau
 
 - Seul le côté **source** peut utiliser la notation de chemin ; la cible doit être un champ Apprise simple (`title`, `body`, `type`, `format`, `tag`, etc.).
 - `N` dans `[N]` doit être un entier positif ou nul. `key[abc]` (non entier) comme `key[0` / `key0]` (crochet non fermé) sont rejetés avec un `WARNING`.
-- Si une étape du chemin ne peut pas être résolue (clé absente, index hors limites, ou nœud qui n'est pas une liste rencontré lors d'une étape d'index), le serveur renvoie **400** et journalise un `WARNING` — aucune notification n'est envoyée. Cela vous permet de repérer les règles mal configurées sans perdre des messages en silence.
-- La **profondeur** correspond au nombre total d'opérations de parcours individuelles — chaque recherche de clé de dictionnaire _et_ chaque déréférencement d'index de tableau compte pour une étape. Par exemple, `items[0].objectURI` représente **3** étapes (`items` -> `[0]` -> `objectURI`), et `a[0][1][2].b[3]` en représente **6**.
+- Si une étape du chemin ne peut pas être résolue (clé absente, index hors limites, ou nœud qui n'est pas une liste rencontré lors d'une étape d'index), le serveur renvoie **400** et journalise un `WARNING`. Aucune notification n'est envoyée. Cela vous permet de repérer les règles mal configurées sans perdre des messages en silence.
+- La **profondeur** correspond au nombre total d'opérations de parcours individuelles : chaque recherche de clé de dictionnaire _et_ chaque déréférencement d'index de tableau compte pour une étape. Par exemple, `items[0].objectURI` représente **3** étapes (`items` -> `[0]` -> `objectURI`), et `a[0][1][2].b[3]` en représente **6**.
 - La profondeur de parcours maximale est de **5** par défaut. Ajustez-la avec la variable d'environnement `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH`.
 
 ## Langue

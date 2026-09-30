@@ -37,13 +37,13 @@ Zoom Team Chat notifications are delivered through the **Incoming Webhook** app 
    ```
 
    Follow the on-screen prompts. When complete, Zoom provides two values:
-   - **Endpoint URL** — for example:
+   - **Endpoint URL**, for example:
 
      ```text
      https://inbots.zoom.us/incoming/hook/AbCdEfGhIjKl
      ```
 
-   - **Verification Token** — a short alphanumeric string used to authenticate requests.
+   - **Verification Token**: a short alphanumeric string used to authenticate requests.
 
 5. The Webhook ID is the final path segment of the endpoint URL (`AbCdEfGhIjKl` in the example above).
 

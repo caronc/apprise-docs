@@ -53,16 +53,16 @@ La syntaxe valide est la suivante :
 
 Les **cibles** peuvent être combinées dans un seul chemin. Chaque segment `{Target}` peut être :
 
-- un identifiant utilisateur (`userid` ou `@userid`) — toujours facultatif
+- un identifiant utilisateur (`userid` ou `@userid`), toujours facultatif
 - une adresse e-mail (`name@example.com`)
 - un numéro de téléphone au format E.164 (`+15551234567`)
 
 Un id de destinataire n'est jamais obligatoire pour accompagner un e-mail ou un numéro de téléphone ; un e-mail ou un numéro seul suffit à identifier un nouveau destinataire. Si vous en fournissez un malgré tout, il est associé au prochain e-mail/numéro rencontré dans le chemin :
 
-- `test@example.com` → e-mail seul, sans id
-- `userid/test@example.com` → id + email
-- `userid/+15551234567` → id + SMS
-- `+15551234567/test@example.com` → deux destinataires distincts (SMS, puis email)
+- `test@example.com`: e-mail seul, sans id
+- `userid/test@example.com`: id + email
+- `userid/+15551234567`: id + SMS
+- `+15551234567/test@example.com`: deux destinataires distincts (SMS, puis email)
 
 ## Détail des Paramètres
 

@@ -170,7 +170,7 @@ apobj.notify(
     attach="/path/to/report.pdf",
 )
 
-# Remote URL — filename derived from the URL path automatically (photo.jpg)
+# Remote URL, filename derived from the URL path automatically (photo.jpg)
 apobj.notify(
     body="Check this out.",
     attach="https://example.com/images/photo.jpg",
@@ -196,7 +196,7 @@ When an `http://` or `https://` URL is used as an attachment, Apprise resolves t
 
 1. `?name=` query parameter (if provided and non-empty).
 2. Filename component of the URL path (`photo.jpg` from `/images/photo.jpg`).
-3. Fallback: `attachment.001`, `attachment.002`, …
+3. Fallback: `attachment.001`, `attachment.002`, ...
 
 ### Loading Configuration Files
 

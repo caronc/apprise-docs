@@ -39,7 +39,7 @@ Secure connections (via https) should be referenced using **embys://**, whereas 
 
 ## Jellyfin Compatibility
 
-Apprise’s **Emby** notification plugin also works with **Jellyfin**.
+Apprise's **Emby** notification plugin also works with **Jellyfin**.
 
 If you prefer to make your intent clearer in configuration files, you can alias your notification entry name to Emby, for example:
 

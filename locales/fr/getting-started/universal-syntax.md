@@ -19,9 +19,9 @@ service://credentials/direction/?parameter=value
 
 Le `schema` détermine quel plugin Apprise doit charger.
 
-- **`mailto://`** → Email
-- **`tgram://`** → Telegram
-- **`slack://`** → Slack
+- **`mailto://`** : Email
+- **`tgram://`** : Telegram
+- **`slack://`** : Slack
 
 [Voir la liste complète des services pris en charge](../services/).
 

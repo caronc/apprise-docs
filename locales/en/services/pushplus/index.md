@@ -43,7 +43,7 @@ pushplus://{token}
 PushPlus also supports sending a single notification to everyone subscribed to a named group.
 
 1. Open the **Group Push** section of the PushPlus console.
-2. Create a group and note its **group code** — this is the topic value.
+2. Create a group and note its **group code**. This is the topic value.
 3. Subscribers join the group inside WeChat; when you send to the topic all members receive the message.
 
 Place one or more group codes directly in the URL path:
@@ -61,10 +61,10 @@ By default notifications arrive via WeChat. You can redirect them to a different
 
 | `?channel=` value | Channel                                 |
 | ----------------- | --------------------------------------- |
-| `wechat`          | WeChat (default — may be omitted)       |
+| `wechat`          | WeChat (default, may be omitted)        |
 | `webhook`         | Configured webhook endpoint             |
 | `cp`              | WeCom (WeChat Work / Enterprise WeChat) |
-| `wecom`           | Friendly alias for `cp` — same channel  |
+| `wecom`           | Friendly alias for `cp`, same channel   |
 | `mail`            | Email address on file                   |
 | `sms`             | SMS                                     |
 
@@ -77,7 +77,7 @@ pushplus://{token}/{topic}?channel=cp
 
 #### Schema Alias
 
-Apprise also accepts `wecom://` as a schema prefix for WeCom users. It automatically sets the delivery channel to `cp` — no extra query parameter needed:
+Apprise also accepts `wecom://` as a schema prefix for WeCom users. It automatically sets the delivery channel to `cp`, so no extra query parameter is needed:
 
 | Schema            | Equivalent to                   |
 | ----------------- | ------------------------------- |
@@ -98,11 +98,11 @@ In the second form (`schema://{name}@{token}`) the webhook channel is implied --
 
 The message body is rendered by PushPlus on their servers using a template that matches the standard Apprise format parameter:
 
-| Apprise `?format=` | PushPlus renders as                    |
-| ------------------ | -------------------------------------- |
-| `html` (default)   | HTML — bold, links, and images work    |
-| `markdown`         | Markdown — headings, bold, lists, etc. |
-| `text`             | Plain text — no formatting             |
+| Apprise `?format=` | PushPlus renders as                   |
+| ------------------ | ------------------------------------- |
+| `html` (default)   | HTML: bold, links, and images work    |
+| `markdown`         | Markdown: headings, bold, lists, etc. |
+| `text`             | Plain text, no formatting             |
 
 There is no separate PushPlus-specific parameter; set `?format=markdown` (or the equivalent in your YAML/config) the same way you would for any other Apprise service.
 

@@ -37,7 +37,7 @@ Les notifications Webex Teams peuvent être envoyées selon deux modes :
 prise en charge des pièces jointes). Le mode est détecté automatiquement à
 partir du format du jeton, ou vous pouvez le forcer avec le paramètre d'URL `mode=`.
 
-### Mode 1 — Webhook (par défaut)
+### Mode 1 : Webhook (par défaut)
 
 Pour utiliser le mode webhook, accédez d'abord à [https://teams.webex.com](https://teams.webex.com)
 et créez un compte si vous n'en avez pas encore. Vous devrez créer au moins
@@ -69,7 +69,7 @@ La dernière partie de l'URL est votre `{token}` :
 > **Limitation :** les incoming webhooks ne prennent **pas** en charge les pièces jointes.
 > Utilisez le mode robot (ci-dessous) si vous devez envoyer des fichiers.
 
-### Mode 2 — Robot (Jeton API + Identifiant de Salon, avec pièces jointes)
+### Mode 2 : Robot (Jeton API + Identifiant de Salon, avec pièces jointes)
 
 1. Rendez-vous sur [https://developer.webex.com/my-apps](https://developer.webex.com/my-apps) et créez un nouveau **robot**.
 2. Après création du robot, copiez le **jeton d'accès du robot** affiché sur la page

@@ -30,7 +30,7 @@ To use it with Apprise, you'll need to register and obtain a personal **Token**.
 
 1. Visit [qmsg.zendee.cn](https://qmsg.zendee.cn/) and sign in using your QQ account.
 2. Once logged in, generate and copy your **token**.
-3. You’ll receive a webhook URL like this:
+3. You'll receive a webhook URL like this:
 
 ```text
 https://qmsg.zendee.cn/send/abc123def456ghi789jkl012mno345pq

@@ -35,6 +35,8 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 Telegram uses HTML by default and also supports Markdown. Declaring your input format lets Apprise convert and repair supported markup before sending it.
 
+Telegram only accepts a small set of HTML tags. When your input format is declared, Apprise swaps the others for something Telegram can show: headings become bold lines, list items become `-` lines, table rows become lines with cells split by `|`, and any other unsupported tag is removed while its text is kept.
+
 Without an input format, Apprise assumes the body is already suitable for the chosen Telegram format. `overflow=split` is then best effort and may divide markup at an unsafe place, so use `overflow=upstream` when the message must remain intact.
 
 ## Account Setup

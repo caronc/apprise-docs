@@ -117,7 +117,7 @@ these methods still raise for.
 
 ## Proxy Support
 
-Apprise sends every notification over [requests](https://requests.readthedocs.io/), which honours the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables automatically. No Apprise-specific configuration is required — set the variable before your process starts (or export it in the environment Apprise runs under) and every outbound request routes through the proxy:
+Apprise sends every notification over [requests](https://requests.readthedocs.io/), which honours the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables automatically. No Apprise-specific configuration is required. Set the variable before your process starts (or export it in the environment Apprise runs under) and every outbound request routes through the proxy:
 
 ```bash
 export HTTPS_PROXY="http://127.0.0.1:3128"
@@ -126,7 +126,7 @@ export HTTP_PROXY="http://127.0.0.1:3128"
 python3 my_script.py
 ```
 
-If you only want Apprise to proxy (and not the rest of your application), scope the variable to the subprocess or environment that runs Apprise rather than exporting it globally — for example, setting it inline for a single command, or in a systemd unit's `Environment=` directive for a long-running service.
+If you only want Apprise to proxy (and not the rest of your application), scope the variable to the subprocess or environment that runs Apprise rather than exporting it globally. Set it inline for a single command, for example, or in a systemd unit's `Environment=` directive for a long-running service.
 
 `NO_PROXY` is also honoured, letting you exempt specific hosts:
 
@@ -136,5 +136,5 @@ export NO_PROXY="localhost,127.0.0.1,internal.example.com"
 ```
 
 :::note
-SOCKS proxies (`socks5h://...`) require the optional [PySocks](https://pypi.org/project/PySocks/) package (`pip install pysocks`) — `requests` needs it to understand SOCKS proxy URLs. Without it, a `socks5h://` value in `HTTP_PROXY`/`HTTPS_PROXY` will fail.
+SOCKS proxies (`socks5h://...`) require the optional [PySocks](https://pypi.org/project/PySocks/) package (`pip install pysocks`). `requests` needs it to understand SOCKS proxy URLs. Without it, a `socks5h://` value in `HTTP_PROXY`/`HTTPS_PROXY` will fail.
 :::

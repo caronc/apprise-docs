@@ -69,12 +69,12 @@ This table documents the **actual defaults** from the implementation, plus where
 
 ### Type Mapping Helpers
 
-| Field                 | Type                   |        Default | Used by   | Notes                                             |
-| --------------------- | ---------------------- | -------------: | --------- | ------------------------------------------------- |
-| `html_notify_map`     | `dict[NotifyType,str]` |   type→hex map | `color()` | Default colour mapping for HTML-capable services. |
-| `default_html_color`  | `str`                  |      `#888888` | `color()` | Used when a mapping is missing.                   |
-| `ascii_notify_map`    | `dict[NotifyType,str]` | type→token map | `ascii()` | Default ASCII tokens for text-only contexts.      |
-| `default_ascii_chars` | `str`                  |          `[?]` | `ascii()` | Used when a mapping is missing.                   |
+| Field                 | Type                   |           Default | Used by   | Notes                                             |
+| --------------------- | ---------------------- | ----------------: | --------- | ------------------------------------------------- |
+| `html_notify_map`     | `dict[NotifyType,str]` |   type-to-hex map | `color()` | Default colour mapping for HTML-capable services. |
+| `default_html_color`  | `str`                  |         `#888888` | `color()` | Used when a mapping is missing.                   |
+| `ascii_notify_map`    | `dict[NotifyType,str]` | type-to-token map | `ascii()` | Default ASCII tokens for text-only contexts.      |
+| `default_ascii_chars` | `str`                  |             `[?]` | `ascii()` | Used when a mapping is missing.                   |
 
 ### Content Interpretation
 
@@ -122,8 +122,8 @@ This table documents the **actual defaults** from the implementation, plus where
 
 When `pgp_autogen = True`, a `pgp=encrypt` self-send may generate **both** sender key files when no key is found:
 
-- `{localpart}-pub.asc` — RSA-2048 public key used for the self-send
-- `{localpart}-prv.asc` — RSA-2048 private key used for replies and later signing
+- `{localpart}-pub.asc`: RSA-2048 public key used for the self-send
+- `{localpart}-prv.asc`: RSA-2048 private key used for replies and later signing
 
 `{localpart}` is derived from the sender's From address (everything before `@`, lowercased).
 

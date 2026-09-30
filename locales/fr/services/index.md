@@ -18,7 +18,7 @@ La colonne Fonctionnalites met en avant quelques informations utiles en un coup 
 | ----- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | 📱    | `has_sms`         | Propose un service de notification axe sur les messages SMS/MMS                                                                        |
 | 💬    | `has_chat`        | Propose un service de notification axe sur les salons, canaux ou messages directs                                                      |
-| 📧    | `has_email`       | Propose un service de notification axe sur l’envoi d’e-mails                                                                           |
+| 📧    | `has_email`       | Propose un service de notification axe sur l'envoi d'e-mails                                                                           |
 | 🖥️    | `has_local`       | Propose un service de notification ciblant un systeme ou appareil local/natif                                                          |
 | 🏠    | `has_selfhosted`  | Propose un service de notification compatible avec une solution **auto-hebergee**                                                      |
 | 📎    | `has_attachments` | Le service de notification prend en charge les pieces jointes                                                                          |

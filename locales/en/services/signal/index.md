@@ -113,6 +113,15 @@ The takeaway from the above is the group
 
 Example sending a notification to a group: `group.aabbccdd/eeffgghh=` identified by the `id`.
 
+### Text Formatting
+
+Add `?format=markdown` to the URL to send styled messages. Apprise turns your Markdown or HTML into Signal's own styling: **bold**, _italic_, ~~strikethrough~~, `monospace`, and `||spoiler||`. Signal has no headings, so a title is shown in bold instead. Plain text messages stay exactly as you wrote them, even if they contain characters like `*` or `~`. On the command line, add `-i markdown` when your message is written in Markdown.
+
+```bash
+apprise -vv -i markdown -t "Build Report" -b "**3** tests _failed_" \
+   "signal://localhost:9922/15555551234?format=markdown"
+```
+
 ## Examples
 
 Send a Signal Notification (via Signal API):

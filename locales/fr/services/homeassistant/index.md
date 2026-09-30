@@ -96,7 +96,7 @@ ainsi, `hassio://host/token/mobile_app_phone` est équivalent à
 `hassio://host/token/notify.mobile_app_phone`.
 
 :::tip[Trouver le nom de votre service]
-Dans Home Assistant, ouvrez **Developer Tools → Services**. Les noms de
+Dans Home Assistant, ouvrez **Developer Tools > Services**. Les noms de
 service listés ici correspondent directement à `{domain}.{service}` dans
 l'URL Apprise. Pour les notifications push de l'application mobile, le service
 porte généralement le nom `notify.mobile_app_{device_name}`, où `{device_name}`
@@ -158,7 +158,7 @@ apprise -vv -t "Alert" -b "La porte du garage est restee ouverte" \
     'hassio://myserver.local/4b4f2918fd-dk5f-8f91f/notify.mobile_app_phone1/notify.mobile_app_phone2'
 ```
 
-Envoyer via une connexion sécurisée (`hassios://` → HTTPS sur le port 443) :
+Envoyer via une connexion sécurisée (`hassios://` utilise HTTPS sur le port 443) :
 
 ```bash
 apprise -vv -t "Test" -b "Secure message" \
@@ -174,10 +174,10 @@ apprise -vv -t "Test" -b "Hello" \
 
 ## Dépannage
 
-- **401 Unauthorized** — Votre jeton est invalide ou a expiré. Générez-en
+- **401 Unauthorized** : votre jeton est invalide ou a expiré. Générez-en
   un nouveau depuis la page de profil Home Assistant.
-- **400 Bad Request** — Une cible de service inexistante a été fournie, ou
+- **400 Bad Request** : une cible de service inexistante a été fournie, ou
   la charge utile contenait des paramètres non pris en charge pour ce domaine
   de service. Vérifiez le domaine et le nom du service dans votre instance HA.
-- **Certificat auto-signé** — Ajoutez `?verify=no` pour ignorer la
+- **Certificat auto-signé** : ajoutez `?verify=no` pour ignorer la
   vérification SSL : `hassios://myserver/{token}?verify=no`

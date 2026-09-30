@@ -84,12 +84,12 @@ The `action` parameter controls what Jira operation is performed when a notifica
 
 When `action=map` (the default), the following mapping is applied:
 
-| Apprise Type | Default Action | Rationale                                           |
-| ------------ | -------------- | --------------------------------------------------- |
-| `failure`    | `new`          | Something went wrong — open a new alert.            |
-| `warning`    | `new`          | Something may go wrong — open a new alert.          |
-| `success`    | `close`        | Issue resolved — close the associated alert.        |
-| `info`       | `note`         | Informational context — annotate an existing alert. |
+| Apprise Type | Default Action | Rationale                                          |
+| ------------ | -------------- | -------------------------------------------------- |
+| `failure`    | `new`          | Something went wrong. Open a new alert.            |
+| `warning`    | `new`          | Something may go wrong. Open a new alert.          |
+| `success`    | `close`        | Issue resolved. Close the associated alert.        |
+| `info`       | `note`         | Informational context. Annotate an existing alert. |
 
 :::note
 Actions other than `new` require a stored request ID from a prior `new` notification with the same `entity`, `alias`, or title. Apprise caches these IDs automatically for up to 60 days.

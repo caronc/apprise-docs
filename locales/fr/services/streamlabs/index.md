@@ -67,6 +67,14 @@ La syntaxe valide est la suivante :
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+:::note
+L'affichage de votre titre et de votre corps de message dépend du type d'appel :
+
+- **Alertes** : le titre est l'en-tête principal et le corps s'affiche en dessous. Sans titre, le corps devient l'en-tête principal.
+- **Dons** : il n'existe pas de champ titre, le titre est donc placé sur la première ligne du message de don. Le message complet reste sous la limite de 255 caractères.
+
+  :::
+
 ## Exemples
 
 Envoyer une notification Streamlabs :

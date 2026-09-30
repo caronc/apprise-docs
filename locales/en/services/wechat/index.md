@@ -61,7 +61,7 @@ Valid syntax is as follows:
 :::note
 **`@all` is a reserved keyword** that broadcasts to every member of the organisation. The bare form `all` (without `@`) is also accepted and treated identically. Both forms send to everyone, not to a user named "all".
 
-The `@` prefix on regular user IDs is **optional when typing a URL by hand** — `johndoe` and `@johndoe` are both accepted. Apprise always emits the `@` prefix in generated URLs to keep all target types visually distinct.
+The `@` prefix on regular user IDs is **optional when typing a URL by hand**. Both `johndoe` and `@johndoe` are accepted. Apprise always emits the `@` prefix in generated URLs to keep all target types visually distinct.
 :::
 
 You can combine multiple recipients of different types in a single URL. At least one recipient must be specified.

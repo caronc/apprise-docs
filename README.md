@@ -15,7 +15,7 @@ In addition to this, a **development hosting of the same site** (live copy of th
 
 👉 <https://dev.appriseit.com/>
 
-This repository exists so that **anyone who can write Markdown** can help improve Apprise’s
+This repository exists so that **anyone who can write Markdown** can help improve Apprise's
 documentation, while providing a **single, authoritative source** for all
 Apprise and Apprise-API documentation.
 
@@ -167,7 +167,7 @@ instead of falling back to the default English route.
 
 > If linting fails, it will tell you exactly what needs attention.
 
-Before writing new content, skim [`STYLE_GUIDE.md`](STYLE_GUIDE.md) — it
+Before writing new content, skim [`STYLE_GUIDE.md`](STYLE_GUIDE.md). It
 covers heading conventions, frontmatter requirements, and Markdown formatting
 rules used across the project.
 

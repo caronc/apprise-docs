@@ -68,7 +68,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
 Certaines versions de Growl n'affichent pas correctement l'image ou l'icone ; vous pouvez aussi essayer ce qui suit pour voir si cela resout le probleme :
 
 ```bash
-# Envoyer une notification Growl en utilisant une image binaire brute (au lieu d’une URL, en interne)
+# Envoyer une notification Growl en utilisant une image binaire brute (au lieu d'une URL, en interne)
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    growl://growl.server.local?version=1
 ```

@@ -78,7 +78,7 @@ address. This is a handy way to send yourself a personal alert or test a
 setup without needing a second Delta Chat contact.
 
 `{host}` should be your bot's own address domain (it becomes part of your
-Delta Chat identity)—not necessarily the SMTP server you actually
+Delta Chat identity), not necessarily the SMTP server you actually
 connect to. If those differ, such as a corporate or third-party relay,
 add `?smtp={smtp-host}` to specify the real submission server while
 keeping your identity's domain in `{host}`:
@@ -163,7 +163,7 @@ signed message when no recipient key is known and encrypts when one is found.
 bot authenticates against a relay whose domain differs from its own
 address (e.g. `bot@example.com` sending through
 `smtp-relay.company.com`), put your identity's domain in `{host}` and the
-relay in `?smtp=`—see the note in [Syntax](#syntax). Putting the
+relay in `?smtp=`. See the note in [Syntax](#syntax). Putting the
 relay's hostname directly in `{host}` makes Apprise treat _that_ domain
 as your identity, which breaks both login and the `From:` address.
 

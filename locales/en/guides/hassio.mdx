@@ -28,7 +28,7 @@ Choose the configuration method that best fits your needs.
 
 <Tabs>
 <TabItem label="Method 1: Inline (Quick Start)">
-This method works well for a quick setup or when you don't need to target different services individually. The `url` parameter accepts a single URL or a list of URLs — all of them are notified together on every call.
+This method works well for a quick setup or when you don't need to target different services individually. The `url` parameter accepts a single URL or a list of URLs, and all of them are notified together on every call.
 
 **Edit `configuration.yaml`**
 
@@ -55,7 +55,7 @@ notify:
 ```
 
 :::note[No selective targeting with `url`]
-Every service listed under `url` fires together on every notification call. If you need to send different alerts to different services, use Method 2 or 3 instead — those support tag-based targeting via the `target` field.
+Every service listed under `url` fires together on every notification call. If you need to send different alerts to different services, use Method 2 or 3 instead. Those support tag-based targeting via the `target` field.
 :::
 
 </TabItem>
@@ -235,7 +235,7 @@ apprise -vv -t "Test" -b "Hello from the CLI" \
 ```
 
 Then confirm Home Assistant can reach the same service by triggering
-the `notify.apprise` service manually from **Developer Tools →
+the `notify.apprise` service manually from **Developer Tools >
 Services**.
 
 ## 5. Discovering Available Notify Services
@@ -245,8 +245,8 @@ example, to push to a mobile device registered in the HA companion
 app), you can use the `hassio://` plugin in your Apprise URLs. To find
 the exact service name:
 
-1. In Home Assistant, open **Developer Tools → Services**.
-2. Filter by domain **notify** — you will see entries like
+1. In Home Assistant, open **Developer Tools > Services**.
+2. Filter by domain **notify**. You will see entries like
    `notify.mobile_app_johns_phone`.
 3. The portion after `notify.` is the service name to use in the
    Apprise URL:

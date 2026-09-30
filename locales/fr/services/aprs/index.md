@@ -51,6 +51,7 @@ La syntaxe valide est la suivante :
 
 - Les caracteres de controle APRS, `{}|~`, [voir APRS101.pdf chapitre 14 page 71](http://www.aprs.org/doc/APRS101.PDF), seront supprimes du corps du message s'ils sont presents.
 - Si votre message depasse 67 caracteres, le plugin tronquera automatiquement le contenu a la longueur maximale de message APRS.
+- Un message APRS tient sur une seule ligne : le titre et chaque ligne de votre message sont donc reunis, separes par un espace, avant que la limite de 67 caracteres ne soit appliquee.
 - Pour les messages, il est recommande de rester sur l'alphabet anglais car APRS est limite a l'ASCII 7 bits. Le plugin essaiera de "traduire" tout message UTF-8 en ASCII simple a l'aide du module [unidecode](https://pypi.org/project/Unidecode/), mais rien ne garantit que le resultat sera exploitable.
 - Ce plugin respecte bien les SSID des indicatifs, ce qui signifie que des cibles comme DF1JSL-1 et DF1JSL-9 ne sont pas identiques et produiront deux messages APRS distincts.
 - Tous les messages generes par ce plugin seront depourvus d'identifiant de message APRS, [voir APRS101.pdf chapitre 14 page 71](http://www.aprs.org/doc/APRS101.PDF). Comme la communication de ce plugin avec APRS-IS est unidirectionnelle, Apprise ne pourra pas tenir compte des reponses APRS ack ou rej envoyees par l'indicatif cible, c'est-a-dire l'equipement radioamateur destinataire.

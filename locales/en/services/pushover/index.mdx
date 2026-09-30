@@ -32,6 +32,14 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 <!-- SERVICE:DETAILS -->
 
+## Message Format
+
+Pushover sends plain text by default. Set `?format=html` or `?format=markdown` to allow formatting.
+
+Pushover only understands a few HTML tags: bold, italic, underline, font color and links. When your input format is declared, Apprise converts everything else: headings become bold lines, list items become `-` lines, and paragraphs, quotes and code become plain lines of text. Without an input format, the body is sent exactly as given.
+
+Formatting only shows once you open the message in the Pushover app; the pop-up notification shows plain text.
+
 ## Account Setup
 
 There isn't too much configuration for Pushover notifications. The message is basically just passed to your online Pushover account and then gets relayed to your device(s) you've setup from there.
