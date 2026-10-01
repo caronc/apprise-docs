@@ -31,26 +31,32 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 ## Configuration du Compte
 
-Creer un compte Discord est simple. La seule etape demandant un peu plus de travail intervient une fois votre salon configure, Discord vous place par defaut dans un salon `#General`. Cliquez sur l'icone en forme d'engrenage, Settings, puis activez les webhooks a partir de la.
+Créer un compte Discord est simple. La seule étape demandant un peu plus de travail intervient une fois votre salon configuré (par défaut, Discord vous place dans un salon `#General`). Cliquez sur l'icône en forme d'engrenage (Settings), puis activez les webhooks à partir de là.
 
-Le webhook ressemblera a quelque chose comme ceci :
+Le webhook ressemblera à quelque chose comme ceci :
 `https://discordapp.com/api/webhooks/4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js`
 
-Cela correspond en pratique a :
+Cela correspond en pratique à :
 `https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}`
 
-La derniere partie de l'URL fournie constitue les 2 jetons dont vous avez besoin pour envoyer des notifications. Dans l'exemple ci-dessus, les jetons sont les suivants :
+La dernière partie de l'URL fournie constitue les 2 jetons dont vous avez besoin pour envoyer des notifications. Dans l'exemple ci-dessus, les jetons sont les suivants :
 
 1. **WebhookID** est `4174216298`
 2. **WebhookToken** est `JHMHI8qBe7bk2ZwO5U711o3dV_js`
 
-### Mentionner des roles, tags et utilisateurs
+### Mentionner des rôles, tags et utilisateurs
 
-Le corps du message Discord peut contenir des elements comme les suivants pour declencher les pings appropries :
+Les mentions s'écrivent de la même façon que dans Discord :
 
 - **utilisateur** : `<@123>`
-- **role** : `<@&456>`
-- **tag** : `@everyone`
+- **rôle** : `<@&456>`
+- **tag** : `@everyone` ou `@here`
+
+Leur effet dépend de la façon dont le message est envoyé :
+
+- **Messages normaux** (par défaut) : votre message est envoyé tel quel, donc toute mention que vous y écrivez notifie normalement.
+- **Embeds** (`format=markdown`, ou lorsque `url=` ou `thread=` est défini) : le texte d'un embed ne peut pas notifier, donc Apprise recopie les mentions trouvées dans votre message sur une ligne `👉` qui, elle, notifie.
+- **`ping=`** : notifie toujours les mentions que vous indiquez, dans les deux modes, au moyen de cette même ligne `👉`. Séparez-les par une virgule et, dans l'URL, écrivez le `&` d'un rôle sous la forme `%26`, par exemple `ping=<@123>,<@%26456>,@here`.
 
 ## Syntaxe
 
@@ -60,76 +66,76 @@ La syntaxe valide est la suivante :
 - `discord://{WebhookID}/{WebhookToken}/`
 - `discord://{botname}@{WebhookID}/{WebhookToken}/`
 
-Discord prend egalement en charge differents arguments web. Les valeurs ci-dessous correspondent aux valeurs par defaut et n'ont donc pas besoin d'etre precisees, sauf si vous souhaitez les remplacer :
+Discord prend également en charge différents arguments web. Les valeurs ci-dessous correspondent aux valeurs par défaut et n'ont donc pas besoin d'être précisées, sauf si vous souhaitez les remplacer :
 
 - `discord://{WebhookID}/{WebhookToken}/?tts=No&avatar=Yes&footer=No&image=Yes&batch=Yes`
 
-## Detail des Parametres
+## Détail des Paramètres
 
-| Variable     | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| WebhookID    | Oui         | Premiere partie des 2 jetons qui vous sont fournis apres la creation d'un `incoming-webhook`.                                                                                                                                                                                                                                                                                                          |
-| WebhookToken | Oui         | Seconde partie des 2 jetons qui vous sont fournis apres la creation d'un `incoming-webhook`.                                                                                                                                                                                                                                                                                                           |
-| botname      | Non         | Nom du robot qui doit publier le message. Si aucune valeur n'est fournie, la valeur par defaut consiste a utiliser simplement votre compte, associe a l'`incoming-webhook`.                                                                                                                                                                                                                            |
-| tts          | Non         | Active le Text-To-Speech. La valeur par defaut est **No**.                                                                                                                                                                                                                                                                                                                                             |
-| footer       | Non         | Inclut un pied de message. La valeur par defaut est **No**.                                                                                                                                                                                                                                                                                                                                            |
-| image        | Non         | Inclut une image dans le message afin de representer le type de notification. La valeur par defaut est **Yes**.                                                                                                                                                                                                                                                                                        |
-| avatar       | Non         | Remplace l'icone d'avatar Discord par defaut par une icone identifiant le type de notification. La valeur par defaut est **Yes**.                                                                                                                                                                                                                                                                      |
-| avatar_url   | Non         | Remplace l'URL de l'icone d'avatar Discord par defaut. Si elle n'est pas definie, Apprise choisit dynamiquement l'URL en fonction du type de message, info, success, warning ou error.                                                                                                                                                                                                                 |
-| format       | Non         | Discord envoie du texte brut par défaut. Définissez cette valeur sur `markdown` lorsque vous voulez qu'Apprise utilise les embeds Discord pour une mise en page plus riche.                                                                                                                                                                                                                            |
-| href         | Non         | Definit une URL vers laquelle le titre doit pointer lors de la publication de la notification Discord. Cela force le message au format `markdown` afin de tirer parti de la section `embeds` de Discord. Vous pouvez aussi utiliser `url=` comme alias.                                                                                                                                                |
-| thread       | Non         | Permet facultativement de definir le `thread_id` auquel appliquer votre message.                                                                                                                                                                                                                                                                                                                       |
-| ping         | Non         | Permet facultativement d'indiquer un role, un utilisateur ou un nom interprete, comme `everyone`, qui devra toujours etre pingue lors de l'envoi du message. Suivez la syntaxe [identifiee ci-dessus](#mentionner-des-roles-tags-et-utilisateurs) pour le format attendu.                                                                                                                              |
-| batch        | Non         | Lorsque defini sur **Yes** (valeur par defaut), plusieurs pieces jointes sont regroupees en un seul message Discord dans la limite du nombre et de la taille autorises par message. Definir sur **No** pour envoyer une piece jointe par message, ce qui correspondait au seul comportement pris en charge avant l'ajout de cette fonctionnalite.                                                      |
-| template     | Non         | Fournit le chemin vers un fichier JSON a utiliser a la place du payload Discord construit par defaut par Apprise. Utilisez des doubles accolades `\{\{jeton\}\}` pour indiquer les valeurs a substituer avant l'envoi (par exemple `\{\{app_body\}\}` ou `\{\{app_title\}\}`). Le fichier doit produire un objet JSON Discord valide avec un champ `content` non vide ou un tableau `embeds` non vide. |
+| Variable     | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WebhookID    | Oui         | Première partie des 2 jetons qui vous sont fournis après la création d'un `incoming-webhook`.                                                                                                                                                                                                                                                                                                                     |
+| WebhookToken | Oui         | Seconde partie des 2 jetons qui vous sont fournis après la création d'un `incoming-webhook`.                                                                                                                                                                                                                                                                                                                      |
+| botname      | Non         | Nom du robot qui doit publier le message. Si aucune valeur n'est fournie, la valeur par défaut consiste à utiliser simplement votre compte, associé à l'`incoming-webhook`.                                                                                                                                                                                                                                       |
+| tts          | Non         | Active le Text-To-Speech. La valeur par défaut est **No**.                                                                                                                                                                                                                                                                                                                                                        |
+| footer       | Non         | Inclut un pied de message. La valeur par défaut est **No**.                                                                                                                                                                                                                                                                                                                                                       |
+| image        | Non         | Inclut une image dans le message afin de représenter le type de notification. La valeur par défaut est **Yes**.                                                                                                                                                                                                                                                                                                   |
+| avatar       | Non         | Remplace l'icône d'avatar Discord par défaut par une icône identifiant le type de notification. La valeur par défaut est **Yes**.                                                                                                                                                                                                                                                                                 |
+| avatar_url   | Non         | Remplace l'URL de l'icône d'avatar Discord par défaut. Si elle n'est pas définie, Apprise choisit dynamiquement l'URL en fonction du type de message (info, success, warning ou error).                                                                                                                                                                                                                           |
+| format       | Non         | Discord envoie du texte brut par défaut. Définissez cette valeur sur `markdown` lorsque vous voulez qu'Apprise utilise les embeds Discord pour une mise en page plus riche.                                                                                                                                                                                                                                       |
+| href         | Non         | Définit une URL vers laquelle le titre doit pointer lors de la publication de la notification Discord. Cela force le message au format `markdown` afin de tirer parti de la section `embeds` de Discord. Vous pouvez aussi utiliser `url=` comme alias.                                                                                                                                                           |
+| thread       | Non         | Permet facultativement de définir le `thread_id` auquel appliquer votre message.                                                                                                                                                                                                                                                                                                                                  |
+| ping         | Non         | Mentions à notifier avec chaque message, comme un utilisateur, un rôle, `@everyone` ou `@here`. Consultez [Mentionner des rôles, tags et utilisateurs](#mentionner-des-rôles-tags-et-utilisateurs) pour le format.                                                                                                                                                                                                |
+| batch        | Non         | Lorsque défini sur **Yes** (valeur par défaut), plusieurs pièces jointes sont regroupées en un seul message Discord dans la limite du nombre de pièces jointes par message et de la taille totale autorisés. Définir sur **No** pour envoyer une pièce jointe par message, ce qui correspondait au seul comportement pris en charge avant l'ajout de cette fonctionnalité.                                        |
+| template     | Non         | Fournit le chemin vers un fichier JSON à utiliser à la place du payload Discord construit par défaut par Apprise. Utilisez des doubles accolades `\{\{jeton\}\}` pour indiquer les valeurs à substituer avant l'envoi (par exemple `\{\{app_body\}\}` ou `\{\{app_title\}\}`). Le fichier doit produire un objet JSON de webhook Discord valide avec un champ `content` non vide ou un tableau `embeds` non vide. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
-## Modeles
+## Modèles
 
-L'argument `?template=` permet de fournir un fichier JSON de webhook Discord preconstruit. Apprise lit le fichier, substitue les espaces reserves `\{\{jeton\}\}`, valide le resultat, puis l'envoie -- vous donnant un controle total sur la structure du payload sans modifier le code d'Apprise.
+L'argument `?template=` permet de fournir un fichier JSON de webhook Discord préconstruit. Apprise lit le fichier, substitue les espaces réservés `\{\{jeton\}\}`, valide le résultat, puis l'envoie -- vous donnant un contrôle total sur la structure du payload sans modifier le code d'Apprise.
 
-Le fichier doit etre un objet JSON valide contenant au moins l'un des elements suivants :
+Le fichier doit être un objet JSON valide contenant au moins l'un des éléments suivants :
 
 - un champ `content` non vide (message en texte brut), ou
-- un tableau `embeds` non vide (chaque entree doit etre un objet JSON)
+- un tableau `embeds` non vide (chaque entrée doit être un objet JSON)
 
 :::caution
-Le fichier de gabarit est lu et valide a chaque envoi. Les fichiers qui ne sont pas du JSON valide, ou qui ne contiennent ni champ `content` non vide ni tableau `embeds` non vide, feront echouer la notification immediatement. Cela inclut toute tentative de pointer `template=` vers un fichier non-JSON comme `/etc/passwd`.
+Le fichier de gabarit est lu et validé à chaque envoi. Les fichiers qui ne sont pas du JSON valide, ou qui ne contiennent ni champ `content` non vide ni tableau `embeds` non vide, feront échouer la notification immédiatement. Cela inclut toute tentative de pointer `template=` vers un fichier non-JSON comme `/etc/passwd`.
 :::
 
-### Jetons integres
+### Jetons intégrés
 
-Les jetons suivants sont toujours disponibles dans votre gabarit et ne peuvent pas etre remplaces :
+Les jetons suivants sont toujours disponibles dans votre gabarit et ne peuvent pas être remplacés :
 
 | Jeton           | Description                                                                                                                              |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `app_id`        | L'identifiant de l'application ; par defaut `Apprise`.                                                                                   |
-| `app_desc`      | La description de l'application ; par defaut `Apprise Notification`.                                                                     |
-| `app_color`     | La couleur sous forme de chaine hexadecimale (par ex. `#3AA3E3` pour info). Utile dans les valeurs de chaine JSON.                       |
-| `app_color_hex` | Alias explicite de `app_color` ; meme chaine hexadecimale. A utiliser lorsque vous souhaitez nommer clairement la variante hexadecimale. |
-| `app_color_int` | La couleur sous forme d'entier decimal brut (par ex. `3842019`). A utiliser dans le champ `"color"` des embeds Discord.                  |
+| `app_id`        | L'identifiant de l'application ; par défaut `Apprise`.                                                                                   |
+| `app_desc`      | La description de l'application ; par défaut `Apprise Notification`.                                                                     |
+| `app_color`     | La couleur sous forme de chaîne hexadécimale (par ex. `#3AA3E3` pour info). Utile dans les valeurs de chaîne JSON.                       |
+| `app_color_hex` | Alias explicite de `app_color` ; même chaîne hexadécimale. À utiliser lorsque vous souhaitez nommer clairement la variante hexadécimale. |
+| `app_color_int` | La couleur sous forme d'entier décimal brut (par ex. `3842019`). À utiliser dans le champ `"color"` des embeds Discord.                  |
 | `app_type`      | Le type de message : `info`, `warning`, `success` ou `failure`.                                                                          |
 | `app_title`     | Le titre de la notification transmis via `--title` / `-t`.                                                                               |
 | `app_body`      | Le corps de la notification transmis via `--body` / `-b`.                                                                                |
-| `app_image_url` | L'URL de l'image associee au type de message, si elle existe.                                                                            |
-| `app_url`       | L'URL de l'instance Apprise (par defaut `https://github.com/caronc/apprise`).                                                            |
+| `app_image_url` | L'URL de l'image associée au type de message, si elle existe.                                                                            |
+| `app_url`       | L'URL de l'instance Apprise (par défaut `https://github.com/caronc/apprise`).                                                            |
 
-### Jetons personnalises
+### Jetons personnalisés
 
-Tout jeton que vous inventez au-dela de l'ensemble integre peut etre fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
+Tout jeton que vous inventez au-delà de l'ensemble intégré peut être fourni lors de l'envoi via la syntaxe `:cle=valeur` dans l'URL Apprise :
 
 ```text
 discord://{WebhookID}/{WebhookToken}/?template=/chemin/gabarit.json&:service=api-gw&:env=prod
 ```
 
-Dans le gabarit, referenciez-le sous la forme `{{service}}` ou `{{env}}`.
+Dans le gabarit, référencez-le sous la forme `{{service}}` ou `{{env}}`.
 
 :::tip
-Toutes les valeurs substituees sont echappees automatiquement en JSON. Les guillemets, barres obliques inverses, sauts de ligne et autres caracteres speciaux presents dans votre titre ou corps sont geres en toute securite, sans echappement manuel.
+Toutes les valeurs substituées sont échappées automatiquement en JSON. Les guillemets, barres obliques inverses, sauts de ligne et autres caractères spéciaux présents dans votre titre ou corps sont gérés en toute sécurité, sans échappement manuel.
 :::
 
-### Gabarits prets a l'emploi
+### Gabarits prêts à l'emploi
 
 Choisissez l'un des gabarits ci-dessous, enregistrez-le sous forme de fichier `.json`, et pointez `?template=` vers ce fichier.
 
@@ -149,7 +155,7 @@ Publie un message en texte brut via le champ `content` de Discord. Le gabarit le
 
 <TabItem label="Embed simple">
 
-Un embed minimal avec un titre et une description. La couleur reflete le type de notification Apprise.
+Un embed minimal avec un titre et une description. La couleur reflète le type de notification Apprise.
 
 ```json
 {
@@ -167,7 +173,7 @@ Un embed minimal avec un titre et une description. La couleur reflete le type de
 
 <TabItem label="Embed enrichi">
 
-Un embed avec barre laterale coloree, credit en pied de message, et l'image de statut Apprise en miniature.
+Un embed stylisé avec une barre colorée à gauche, un crédit en pied de message et l'image de statut Apprise en miniature.
 
 ```json
 {
@@ -180,7 +186,7 @@ Un embed avec barre laterale coloree, credit en pied de message, et l'image de s
         "url": "{{app_image_url}}"
       },
       "footer": {
-        "text": "Envoye via {{app_id}}"
+        "text": "Envoyé via {{app_id}}"
       }
     }
   ]
@@ -191,7 +197,7 @@ Un embed avec barre laterale coloree, credit en pied de message, et l'image de s
 
 <TabItem label="Champs CI/CD">
 
-Un embed avec champs en ligne pour les details de deploiement. Renseignez `{{service}}`, `{{environnement}}` et `{{version}}` via des jetons `:cle=valeur` dans votre URL Apprise.
+Un embed avec champs en ligne pour les détails de déploiement. Renseignez `{{service}}`, `{{environnement}}` et `{{version}}` via des jetons `:cle=valeur` dans votre URL Apprise.
 
 ```json
 {
@@ -234,7 +240,7 @@ apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
-Pour utiliser votre propre URL d'avatar deja hebergee sur un autre site :
+Pour utiliser votre propre URL d'avatar déjà hébergée sur un autre site :
 
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
@@ -249,11 +255,20 @@ Envoyer une notification qui mentionne `@everyone` dans le salon :
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
-apprise -vv -t "Bonjour a Tous" -b "Message de Test that pings @everyone" \
+apprise -vv -t "Bonjour à tous" -b "Message de test qui mentionne @everyone" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
-Envoyer plusieurs pieces jointes dans un seul message Discord (comportement par defaut) :
+Toujours notifier `@here`, sans l'écrire dans le message :
+
+```bash
+# Supposons que notre {WebhookID} soit 4174216298
+# Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
+apprise -vv -t "Attention" -b "Déploiement terminé" \
+   "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?ping=@here"
+```
+
+Envoyer plusieurs pièces jointes dans un seul message Discord (comportement par défaut) :
 
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
@@ -265,7 +280,7 @@ apprise -vv -t "Titre du Test" -b "Corps du Test" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js"
 ```
 
-Envoyer plusieurs pieces jointes une par message (comportement precedent) :
+Envoyer plusieurs pièces jointes une par message (comportement précédent) :
 
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
@@ -276,7 +291,7 @@ apprise -vv -t "Titre du Test" -b "Corps du Test" \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?batch=no"
 ```
 
-Envoyer une notification exploitant la prise en charge integree de `markdown` par Discord :
+Envoyer une notification exploitant la prise en charge intégrée de `markdown` par Discord :
 
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
@@ -290,12 +305,12 @@ cat << _EOF | apprise -vv "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?for
 _EOF
 ```
 
-Envoyer une notification via un gabarit personnalise (voir l'onglet **Champs CI/CD** ci-dessus) :
+Envoyer une notification via un gabarit personnalisé (voir l'onglet **Champs CI/CD** ci-dessus) :
 
 ```bash
 # Supposons que notre {WebhookID} soit 4174216298
 # Supposons que notre {WebhookToken} soit JHMHI8qBe7bk2ZwO5U711o3dV_js
-# Supposons que le gabarit CI/CD soit enregistre sous /etc/apprise/deploy.json
-apprise -vv -t "Deploiement termine" -b "Tous les controles sont passes." \
+# Supposons que le gabarit CI/CD soit enregistré sous /etc/apprise/deploy.json
+apprise -vv -t "Déploiement terminé" -b "Tous les contrôles sont passés." \
    "discord://4174216298/JHMHI8qBe7bk2ZwO5U711o3dV_js?template=/etc/apprise/deploy.json&:service=api-gateway&:environnement=production&:version=v2.3.1"
 ```

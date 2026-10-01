@@ -27,9 +27,9 @@ sample_urls:
 
 ## Configuration du Compte
 
-Tout d'abord, vous devez disposer d'un compte Signal. Il est donc supposé que vous possédez la version Apple ou Android du logiciel Signal.
+Vous avez besoin d'un compte Signal et de l'application Signal pour [iOS](https://signal.org/download/ios/) ou [Android](https://signal.org/download/android/).
 
-À partir de là, le plugin suppose que vous avez configuré le [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
+Vous devez également configurer le [service API REST Signal](https://github.com/bbernhard/signal-cli-rest-api).
 
 Une configuration simple pourrait ressembler à ceci :
 

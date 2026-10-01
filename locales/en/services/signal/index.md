@@ -27,9 +27,9 @@ sample_urls:
 
 ## Account Setup
 
-First of all, you need a Signal account. So it is presumed you've either got the Apple or Android version of the Signal software.
+You need a Signal account and the Signal app for [iOS](https://signal.org/download/ios/) or [Android](https://signal.org/download/android/).
 
-From here, the plugin assumes you have configured yourself up with the [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
+You must also configure the [Signal REST API service](https://github.com/bbernhard/signal-cli-rest-api).
 
 A simple setup might be:
 
