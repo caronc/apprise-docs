@@ -1,20 +1,29 @@
 ---
-title: "SimplePush Notifications"
-description: "Send SimplePush notifications."
+title: "Simplepush Notifications"
+description: "Send Simplepush tasks to your own devices, to topics, or to an organization."
 sidebar:
-  label: "SimplePush"
+  label: "Simplepush"
 
-source: https://simplepush.io/
+source: https://simplepu.sh/
 
 schemas:
+  - spush
   - simplepush
 
+has_attachments: true
+
+body_formats:
+  - markdown
+
 sample_urls:
-  - spush://{apikey}/
-  - spush://{salt}:{password}@{apikey}/
+  - spush://{api_token}
+  - spush://{api_token}/{topic}
+  - spush://{password}@{api_token}/{topic}
+  - spush://{integration_token}/@{member}
+  - spush://{integration_token}/?broadcast=yes
 
 limits:
-  max_chars: 10000
+  max_chars: 7000
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -22,48 +31,110 @@ limits:
 
 ## Account Setup
 
-SimplePush is a pretty straight forward messaging system you can get for your Android Device through their App [here](https://play.google.com/store/apps/details?id=io.tymm.simplepush).
+Simplepush delivers tasks and notifications to your phone. Every message Apprise sends arrives as a task in the Simplepush app, so it stays there after the push.
 
-You can optionally add additional notification encryption in the settings where it provides you with a **`{salt}`** value and allows you to configure/set your own encryption **`{password}`**.
+1. Install the Simplepush app and open its settings. Your **API Token** is listed there.
+2. To send to a topic, create the topic in the app and have the recipients join it.
+3. To send as an organization, an organization admin creates an integration token:
 
-### 🔒 AES-CBC-128 Encryption Weakness
+   ```bash
+   sp integration create --scopes send
+   ```
 
-The Apprise team recognizes that the encryption used by this plugin is AES-CBC-128 which has been identified to have weaknesses including being vulnerable to the padding oracle attack ([Reference](https://soatok.blog/2020/07/12/comparison-of-symmetric-encryption-methods/#aes-gcm-vs-aes-cbc)).
+   The token looks like `spi_<credential>.<seed>`. Use it in place of the API Token.
 
-If the level of encryption is not satisfactory to you, your options are:
+:::caution
+URLs written for the previous Simplepush service (`spush://{apikey}`, `spush://{salt}:{password}@{apikey}` and the `event=` option) no longer work. Get a new API Token from the current Simplepush app and update your URLs.
+:::
 
-1. Reach out to SimplePush and ask for them to improve their security (to which Apprise will gladly accomodate) ...or
-1. Choose not to use Simple Push and select one of the [many other options available](https://github.com/caronc/apprise/wiki#notification-services).
+### End-to-End Encryption
 
-What is important to identify is this weak encryption used by Apprise to access SimplePush is in place for compliance only. This will never have any cascading effect or impact any other secure notification service also supported by Apprise.
+Messages, links and attachments can be end-to-end encrypted with XChaCha20-Poly1305, the same scheme the Simplepush apps use:
 
-Below is a screenshot from [https://simplepush.io/features](https://simplepush.io/features) explaining the defined encryption setting from the upstream source:<br/>![Screenshot from 2024-10-03 21-52-46](./images/624566e31f044891.png)
+- **Topic send with a password:** encrypted with that topic's password.
+- **Send to your own devices with a password:** encrypted with your Personal Password.
+- **Organization send:** encrypted with the organization key whenever the organization has encryption turned on. Organization sends do not take a password.
+
+:::note
+Encryption requires the `PyNaCl` Python package:
+
+```bash
+pip install PyNaCl
+```
+
+Without it, Apprise refuses to load a URL that has a password, and an organization send with encryption turned on fails. Apprise never falls back to sending your message unencrypted. Sends without encryption do not need PyNaCl.
+:::
 
 ## Syntax
 
 Valid syntax is as follows:
 
-- `spush://{apikey}/`
-- `spush://{salt}:{password}@{apikey}/`
+- `spush://{api_token}`
+- `spush://{api_token}/{topic}`
+- `spush://{api_token}/{topic1}/{topic2}/{topicN}`
+- `spush://{password}@{api_token}`
+- `spush://{password}@{api_token}/{topic}`
+- `spush://{integration_token}/{topic}`
+- `spush://{integration_token}/@{member}`
+- `spush://{integration_token}/{topic}/@{member1}/@{member2}`
+- `spush://{integration_token}/?broadcast=yes`
+
+`simplepush://` can be used in place of `spush://` in any of these.
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                                                                                                                                  |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| apikey   | Yes      | This is required for your account to work. You will be provided one from your SimplePush account.                                                                                                                                                            |
-| event    | No       | Optionally specify an event on the URL.                                                                                                                                                                                                                      |
-| password | No       | SimplePush offers a method of further encrypting the message and title during transmission (on top of the secure channel it's already sent on). This is the Encryption password set. You must provide the `salt` value with the `password` in order to work. |
-| salt     | No       | The salt is provided to you by SimplePush and is the second part of the additional encryption you can use with this service. You must provide a `password` with the `salt` value in order to work.                                                           |
+| Variable         | Required | Description                                                                                                                                               |
+| ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| api_token        | Yes      | Your API Token from the app settings, or an organization integration token (`spi_...`).                                                                   |
+| password         | No       | Encrypts the message. With a topic it is the topic password, otherwise it is your Personal Password. Not allowed with an integration token.               |
+| topic            | No       | One or more topics. Each topic receives its own task.                                                                                                     |
+| @member          | No       | An organization member, prefixed with `@`. Requires an integration token.                                                                                 |
+| to               | No       | Topics and `@members` as a comma separated list. An alternative to placing them in the URL path.                                                          |
+| broadcast        | No       | Set to `yes` to send to every member of the organization. Requires an integration token and can not be combined with topics or members.                   |
+| shared           | No       | Set to `yes` to send one task that all recipients see, where the first answer resolves it. By default every recipient gets their own copy.                |
+| priority         | No       | `1` (silent) to `5` (critical, sounds even on a muted phone). The names `minimal`, `low`, `default`, `high` and `critical` also work. The default is `3`. |
+| critical_volume  | No       | The volume of the iOS critical alert sound, greater than `0` and at most `1`. Requires `priority=5`.                                                      |
+| sptag            | No       | The Simplepush tag shown on the task.                                                                                                                     |
+| links            | No       | Links to attach to the task, separated by spaces. At most 25.                                                                                             |
+| topic_auth_token | No       | The auth token of a protected topic.                                                                                                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
 ## Examples
 
-Send a SimplePush notification:
+Send a task to your own devices:
 
 ```bash
 # Assume:
-#  - our {apikey} is ABC123
+#  - our {api_token} is abcdefghijklmn
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   spush://ABC123
+   spush://abcdefghijklmn
+```
+
+Send to a topic, encrypted with the topic password:
+
+```bash
+# Assume:
+#  - our {api_token} is abcdefghijklmn
+#  - our {topic} is deploys
+#  - the topic password is s3cret
+apprise -vv -t "Deploy done" -b "Version 2.4 is live" \
+   "spush://s3cret@abcdefghijklmn/deploys"
+```
+
+Send a critical alert with an attachment:
+
+```bash
+apprise -vv -t "Database down" -b "Primary is unreachable" \
+   --attach /var/log/postgres.log \
+   "spush://abcdefghijklmn/oncall?priority=5&critical_volume=0.5"
+```
+
+Send to two organization members:
+
+```bash
+# Assume:
+#  - our {integration_token} is spi_cred.seed
+apprise -vv -t "Site visit" -b "Please check the north gate" \
+   "spush://spi_cred.seed/@Alice/@Bob"
 ```
