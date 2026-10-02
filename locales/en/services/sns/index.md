@@ -33,11 +33,11 @@ You'll need to create an account with Amazon Web Service (AWS) first to use this
 The next thing you'll need to do is generate an _Access Key ID_ and _Secret Access Key_:
 
 1. From the [AWS Management Console](https://console.aws.amazon.com) search for **IAM** under the _AWS services_ section or simply click [here](https://console.aws.amazon.com/iam/home?#/security_credentials).
-1. Expand the section reading **Access keys (access key ID and secret access key)**
-1. Click on **Create New Access Key**
+1. Expand the section reading **Access keys (access key ID and secret access key)**.
+1. Click on **Create New Access Key**.
 1. It will present the information to you on screen and let you download a file containing the same information. I suggest you do so since there is no way to retrieve this key again later on (unless you delete it and create a new one).
 
-So at this point, it is presumed you're set up, and you got your _Access Key ID_ and _Secret Access Key_ on hand.
+So at this point, it is presumed you're set up, and you have your _Access Key ID_ and _Secret Access Key_ on hand.
 
 You now have all the tools you need to send SMS messages.
 
@@ -71,7 +71,7 @@ You can mix and match phone numbers and topics:
 
 - `sns://{AccessKeyID}/{AccessKeySecret}/{Region}/+{PhoneNo1}/#{Topic1}`
 
-Enforcing a hashtag (`#`) for _topics_ and a plus sign (`+`) in front of phone numbers helps eliminate cases where ambiguity could be an issue, such as a _topic_ that is comprised of all numbers. These characters are purely optional.
+Enforcing a hashtag (`#`) for _topics_ and a plus sign (`+`) in front of phone numbers helps eliminate cases where ambiguity could be an issue, such as a _topic_ that is made up of only numbers. These characters are purely optional.
 
 ### Operating Modes
 

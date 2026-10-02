@@ -39,6 +39,8 @@ For each plugin, Apprise:
 
 If the caller did not declare a source format, Apprise leaves the body unchanged. In that case, `body_passthrough` is `True`. Otherwise it is `False`.
 
+When enabled, emoji shortcodes and escape sequences (`interpret_escapes`) are applied before conversion.
+
 ```text
 Apprise.notify(body=..., body_format=HTML)
          |
@@ -55,6 +57,8 @@ plugin.notify(
 
 When a service has no separate title field (`title_maxlen <= 0`), Apprise adds the title to the body before delivery. Otherwise, the title is passed separately.
 
+A separate title remains plain text. Escape and place it in each output format as needed.
+
 ### Reading `body_format` and `body_passthrough` in `send()`
 
 Accept `body_format` and `body_passthrough` in `send()`. Apprise has already calculated both values:
@@ -66,7 +70,7 @@ def send(self, body, title="", notify_type=..., body_format=None,
         ...
 ```
 
-You normally do not need to call `resolve_format()` yourself. Direct calls to `plugin.notify()` or `plugin.send()` are the exception: they do not run Apprise's conversion step. If you call a plugin directly, prepare the body in the format that plugin expects.
+You normally do not need to call `resolve_format()` yourself. A direct `plugin.notify(body_format=...)` call performs the normal conversion, while `plugin.send()` expects content already prepared for that plugin.
 
 ## When No Input Format Is Declared
 
@@ -114,12 +118,12 @@ Markdown-to-text has no conversion step today, so the Markdown characters arrive
 
 Set `notify_format = NotifyFormat.MARKDOWN` when the service accepts Markdown.
 
-| Source `body_format` | Body delivered to the plugin                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `TEXT`               | CommonMark-significant characters (`*`, `_`, `` ` ``, `#`, etc.) are backslash-escaped so the text reads literally |
-| `MARKDOWN`           | Unchanged Markdown                                                                                                 |
-| `HTML`               | Converted to standard Markdown                                                                                     |
-| `None`               | Body unchanged; no conversion performed                                                                            |
+| Source `body_format` | Body delivered to the plugin                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `TEXT`               | CommonMark-significant characters (`*`, `_`, `` ` ``, `#`, `&`, etc.) are backslash-escaped so the text reads literally |
+| `MARKDOWN`           | Unchanged Markdown                                                                                                      |
+| `HTML`               | Converted to standard Markdown                                                                                          |
+| `None`               | Body unchanged; no conversion performed                                                                                 |
 
 HTML and plain text are converted to **standard Markdown**. Services such as Telegram, Slack, WhatsApp, and Google Chat use their own Markdown-like syntax. Their plugins must perform one more service-specific conversion; see [Service-Specific Adaptation](#service-specific-adaptation-in-plugins).
 
@@ -181,7 +185,9 @@ class NotifyExample(NotifyBase):
     # send() can still be used as a fallback.
 ```
 
-Most plugins only need one format and can ignore this section. Relay plugins such as Custom JSON/XML/Form and Apprise API may support all three. A relay should forward a `format` field only when `body_passthrough` is `False`; otherwise it would choose a format on the caller's behalf.
+Most plugins only need one format and can ignore this section. Relay plugins such as Custom JSON/XML/Form and Apprise API may support all three.
+
+The Apprise API relay (`apprise://`) forwards content unchanged because the destination server handles conversion. It includes a declared source format, or an explicit `?format=` value when no source format was given.
 
 Tooling that introspects `Apprise().details()` (a URL builder, for example) can read a service's declared formats from `args.format.supported` -- see [The `format` Argument](../inspection/#the-format-argument) for the full schema shape.
 

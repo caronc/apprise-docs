@@ -1,6 +1,6 @@
 ---
 title: Utilisation de l'API
-description: Apprenez à envoyer des notifications stateless et stateful via l'API Apprise.
+description: Apprenez à envoyer des notifications sans état et avec état via l'API Apprise.
 sidebar:
   order: 3
 ---
@@ -70,7 +70,7 @@ event: result
 data: {"status": "SUCCESS"}
 ```
 
-Le flux commence avec le code HTTP `200`, avant la fin de l'envoi. Consultez le statut du dernier événement `result` (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL` ou `TIMEOUT`) au lieu d'attendre le code HTTP `424`.
+Le flux commence avec le code HTTP `200`, avant la fin de l'envoi. Consultez le statut du dernier événement `result` (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL` ou `TIMEOUT`) au lieu de compter sur le code HTTP `424`.
 
 Chaque connexion conserve jusqu'à 2 Mo de journaux en attente en mémoire. Si le
 client prend du retard, jusqu'à 256 Mo supplémentaires peuvent être conservés
@@ -125,45 +125,45 @@ laquelle le proxy attend une activité du flux. La valeur par défaut est de
   />
 </picture>
 
-Les notifications stateless sont idéales pour un usage de type « sidecar » lorsque vous ne voulez pas gérer de configuration persistante sur le serveur. Vous devez fournir le paramètre `urls` à chaque requête.
+Les notifications sans état sont idéales pour un usage de type « sidecar » lorsque vous ne voulez pas gérer de configuration persistante sur le serveur. Vous devez fournir le paramètre `urls` à chaque requête.
 
-Lorsque l'authentification est activée, utilisez les identifiants administrateur, ou envoyez des `urls` explicites avec les identifiants d'un utilisateur de configuration et l'en-tête `X-Apprise-Config-ID` correspondant. L'accès doit être `user` ; `locked`, `public` et `disabled` ne peuvent pas envoyer de notifications stateless. Pour rester compatible avec l'API Apprise v2, l'en-tête sans `urls` conserve l'envoi stateful avec la configuration enregistrée.
+Lorsque l'authentification est activée, utilisez les identifiants administrateur ou envoyez des `urls` explicites avec les identifiants d'un utilisateur de configuration et l'en-tête `X-Apprise-Config-ID` correspondant. L'accès de cet utilisateur doit être `user` ; `locked`, `public` et `disabled` ne peuvent pas envoyer de notifications sans état. Pour rester compatible avec l'API Apprise v2, l'en-tête envoyé sans `urls` reste un envoi avec état via la configuration enregistrée.
 
 ### Requête JSON de Base
 
 La méthode la plus courante consiste à envoyer une charge utile JSON à `/notify`.
 
-**Endpoint :** `POST /notify`
+**Point de terminaison :** `POST /notify`
 
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
     "urls": "mailto://user:pass@gmail.com",
-    "body": "Backup completed successfully.",
-    "title": "System Status"
+    "body": "Sauvegarde terminée avec succès.",
+    "title": "État du système"
   }' \
   http://localhost:8000/notify
 ```
 
 ### Pièces Jointes
 
-Pour envoyer des pièces jointes, utilisez `multipart/form-data`. L'API accepte les uploads de fichiers classiques ainsi que les URL distantes. Utilisez `attach` comme nom de champ recommandé. Les alias `attachment` et `attachments` sont également acceptés.
+Pour envoyer des pièces jointes, utilisez `multipart/form-data`. L'API accepte les envois de fichiers classiques ainsi que les URL distantes. Utilisez `attach` comme nom de champ recommandé. Les alias `attachment` et `attachments` sont également acceptés.
 
 Pour les charges utiles JSON qui fournissent des pièces jointes distantes ou encodées, utilisez les mêmes noms de champ.
 
 ```bash
-# Uploader un fichier local
+# Envoyer un fichier local
 curl -X POST \
     -F "urls=discord://webhook_id/token" \
-    -F "body=See attached log." \
+    -F "body=Voir le journal joint." \
     -F "attach=@/var/log/syslog" \
     http://localhost:8000/notify
 
 # Référencer une URL distante (Apprise la téléchargera puis la transmettra)
 curl -X POST \
     -F "urls=discord://webhook_id/token" \
-    -F "body=Security Camera Snapshot" \
+    -F "body=Instantané de la caméra de sécurité" \
     -F "attach=http://camera-ip/snapshot.jpg" \
     http://localhost:8000/notify
 ```
@@ -191,9 +191,9 @@ local. Voir [Variables d'environnement](/api/reference/environment/).
   />
 </picture>
 
-Les notifications stateful vous permettent de simplifier votre code client. Vous stockez une fois sur le serveur les URL complexes, associées à une **clé**, puis votre client référence simplement cette clé.
+Les notifications avec état vous permettent de simplifier votre code client. Vous stockez une fois sur le serveur les URL complexes, associées à une **clé**, puis votre client référence simplement cette clé.
 
-**Endpoint :** `POST /notify/{KEY}`
+**Point de terminaison :** `POST /notify/{KEY}`
 
 ### Envoyer vers une Clé
 
@@ -203,7 +203,7 @@ Si vous avez enregistré une configuration sous la clé `my-alerts` :
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "body": "Database connection failed",
+    "body": "Échec de la connexion à la base de données",
     "type": "warning"
   }' \
   http://localhost:8000/notify/my-alerts
@@ -214,7 +214,7 @@ Lorsque l'authentification est activée, conservez la même URL avec la clé et 
 ```bash
 curl -u "user:password" -X POST \
   -H "Content-Type: application/json" \
-  -d '{"body": "Database connection failed", "type": "warning"}' \
+  -d '{"body": "Échec de la connexion à la base de données", "type": "warning"}' \
   http://localhost:8000/notify/my-alerts
 ```
 
@@ -226,7 +226,7 @@ Le mode `disabled` bloque l'accès de l'utilisateur sans supprimer sa configurat
 
 ### Tags
 
-Les configurations stateful prennent en charge les tags, ce qui vous permet de notifier des sous-groupes spécifiques de vos URL enregistrées.
+Les configurations avec état prennent en charge les tags, ce qui vous permet de notifier des sous-groupes spécifiques de vos URL enregistrées.
 
 La valeur passée dans le champ `tag` suit les règles suivantes :
 
@@ -251,7 +251,7 @@ curl -X POST -d '{"tag": "devops critical", "body": "..."}' ...
 curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 ```
 
-### Fournir des valeurs de substitution
+### Fournir des Valeurs de Substitution
 
 Si une configuration enregistrée utilise des marqueurs `${NOM}`, les URL qui en
 dépendent ne sont pas utilisées tant qu'une valeur n'est pas disponible. Vous
@@ -327,7 +327,7 @@ enregistrée. Ce niveau exige les droits d'administrateur ou l'accès `user`.
 Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 :::
 
-### Voir ce dont une configuration a besoin
+### Voir ce dont une Configuration a Besoin
 
 `GET /json/urls/{KEY}` liste chaque URL enregistrée avec les noms de substitution qu'elle utilise :
 
@@ -346,19 +346,19 @@ Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 
 Les marqueurs présents dans `url` sont laissés exactement tels qu'ils ont été écrits :
 
-- Ils ne sont jamais encodés en pourcentage ni masqués, un client peut donc les rechercher et y substituer ses propres valeurs.
+- Ils ne sont jamais encodés en pourcentage ni masqués. Un client peut donc les rechercher et y substituer ses propres valeurs.
 - Les noms des marqueurs sont en majuscules alors que les clés de `template` sont en minuscules. Comparez-les sans tenir compte de la casse.
 
-Chaque `url` reprend aussi les paramètres écrits sous elle dans la configuration : en substituant les marqueurs, vous obtenez donc une URL qui envoie comme le fait l'entrée enregistrée. Seule exception, un paramètre pour lequel le service n'a aucun argument d'URL est omis, car une URL ne peut pas l'exprimer.
+Chaque `url` reprend aussi les paramètres écrits sous elle dans la configuration : en substituant les marqueurs, vous obtenez donc une URL qui envoie comme le fait l'entrée enregistrée. Seule exception : un paramètre pour lequel le service n'a aucun argument d'URL est omis, car une URL ne peut pas l'exprimer.
 
 Avec `privacy=1`, le texte autour de chaque marqueur est masqué et toutes les valeurs par défaut sont retirées. Cette liste convient à l'affichage, mais ne permet pas d'envoyer.
 
-## Mapping du Payload (Hooks)
+## Mapping de la Charge Utile (Hooks)
 
-Parfois, vous ne pouvez pas changer le format du payload envoyé par un outil tiers (par ex. Grafana, Prometheus). L'API Apprise permet de faire correspondre les champs entrants avec les champs compatibles Apprise via des paramètres de requête préfixés par deux-points (`:`).
+Parfois, vous ne pouvez pas changer le format de la charge utile envoyée par un outil tiers (par ex. Grafana, Prometheus). L'API Apprise permet de faire correspondre les champs entrants avec les champs compatibles Apprise via des paramètres de requête préfixés par deux-points (`:`).
 
 :::note
-Les clés de mapping passent dans la query string et doivent être encodées URL si elles contiennent des caractères spéciaux.
+Les clés de mapping passent dans la chaîne de requête et doivent être encodées pour une URL si elles contiennent des caractères spéciaux.
 :::
 
 ### Règles de Mapping
@@ -366,7 +366,7 @@ Les clés de mapping passent dans la query string et doivent être encodées URL
 | Syntaxe                          | Effet                                          |
 | -------------------------------- | ---------------------------------------------- |
 | `?:incoming_field=apprise_field` | Renomme `incoming_field` vers le champ Apprise |
-| `?:incoming_field=`              | Supprime `incoming_field` du payload           |
+| `?:incoming_field=`              | Supprime `incoming_field` de la charge utile   |
 | `?:apprise_field=literal value`  | Force `apprise_field` à une chaîne fixe        |
 
 **Exemple** : votre outil envoie `{"message": "Server Down", "severity": "high"}`, mais Apprise attend `body` et `type` :
@@ -379,14 +379,14 @@ curl -X POST \
 
 ### Mapping de Champs Imbriqués
 
-Lorsque le payload entrant utilise des objets imbriqués ou des tableaux, référencez-les côté source de la règle avec une **notation pointée** pour les objets imbriqués et une **notation entre crochets** pour les éléments de tableau. Les deux peuvent être combinés librement.
+Lorsque la charge utile entrante utilise des objets imbriqués ou des tableaux, référencez-les côté source de la règle avec une **notation pointée** pour les objets imbriqués et une **notation entre crochets** pour les éléments de tableau. Les deux peuvent être combinés librement.
 
 #### Objets Imbriqués (Notation Pointée)
 
 Utilisez un chemin séparé par des points pour parcourir des dictionnaires imbriqués :
 
 ```bash
-# Payload provenant d'un outil de supervision :
+# Charge utile provenant d'un outil de supervision :
 # { "event": { "title": "CPU spike", "state": "critical" },
 #   "component": { "name": "web-server-01" } }
 curl -X POST \
@@ -400,7 +400,7 @@ curl -X POST \
 Ajoutez `[N]` juste après le nom de clé pour déréférencer l'index `N` dans ce tableau. Les indices multiples et le mélange avec la notation pointée sont pris en charge :
 
 ```bash
-# Payload provenant d'un webhook forum / gestion de projet (ex. Scoold / Para) :
+# Charge utile provenant d'un webhook de forum ou de gestion de projet (ex. Scoold / Para) :
 # { "items": [ { "title": "New post", "objectURI": "https://example.com/q/1234" } ] }
 curl -g -X POST \
   -H "Content-Type: application/json" \
@@ -425,7 +425,7 @@ a[0][1][2].value[3]    tableaux imbriqués -> dict -> tableau
 **Règles et limites :**
 
 - Seul le côté **source** peut utiliser la notation de chemin ; la cible doit être un champ Apprise simple (`title`, `body`, `type`, `format`, `tag`, etc.).
-- `N` dans `[N]` doit être un entier positif ou nul. `key[abc]` (non entier) comme `key[0` / `key0]` (crochet non fermé) sont rejetés avec un `WARNING`.
+- `N` dans `[N]` doit être un entier positif ou nul. `key[abc]` (non entier), tout comme `key[0` / `key0]` (crochet non fermé), sont rejetés avec un `WARNING`.
 - Si une étape du chemin ne peut pas être résolue (clé absente, index hors limites, ou nœud qui n'est pas une liste rencontré lors d'une étape d'index), le serveur renvoie **400** et journalise un `WARNING`. Aucune notification n'est envoyée. Cela vous permet de repérer les règles mal configurées sans perdre des messages en silence.
 - La **profondeur** correspond au nombre total d'opérations de parcours individuelles : chaque recherche de clé de dictionnaire _et_ chaque déréférencement d'index de tableau compte pour une étape. Par exemple, `items[0].objectURI` représente **3** étapes (`items` -> `[0]` -> `objectURI`), et `a[0][1][2].b[3]` en représente **6**.
 - La profondeur de parcours maximale est de **5** par défaut. Ajustez-la avec la variable d'environnement `APPRISE_WEBHOOK_MAPPING_MAX_DEPTH`.
@@ -435,11 +435,11 @@ a[0][1][2].value[3]    tableaux imbriqués -> dict -> tableau
 L'interface Web choisit une langue pour chaque page qu'elle affiche, dans cet ordre :
 
 1. La langue que vous sélectionnez dans le menu en haut de la page. Elle est conservée dans un cookie pendant un an et l'emporte toujours.
-2. Sinon l'en-tête `Accept-Language` envoyé par votre navigateur, selon l'ordre de préférence qu'il contient. Une langue que votre navigateur signale comme non souhaitée (`q=0`) est ignorée.
+2. Sinon, l'en-tête `Accept-Language` envoyé par votre navigateur, selon l'ordre de préférence qu'il contient. Une langue que votre navigateur signale comme non souhaitée (`q=0`) est ignorée.
 3. Chaque tag complet de cet en-tête est essayé avant tout tag raccourci. Demander `pt-BR, de` essaie `pt-BR`, puis `de`, et seulement ensuite `pt`.
-4. L'anglais, lorsque aucune de vos langues n'est disponible.
+4. L'anglais, lorsqu'aucune de vos langues n'est disponible.
 
-### Demander une langue depuis votre propre code
+### Demander une Langue depuis Votre Propre Code
 
 Cet en-tête n'est pas réservé aux navigateurs. N'importe quel client peut l'envoyer, et les étapes 2 à 4 ci-dessus s'appliquent de la même manière :
 

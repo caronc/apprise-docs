@@ -27,9 +27,9 @@ sample_urls:
 
 ## Account Setup
 
-First of all you need a Signal account. So it is presumed you've either got the Apple or Android version of the Signal software.
+You need a Signal account and the Signal app for [iOS](https://signal.org/download/ios/) or [Android](https://signal.org/download/android/).
 
-From here, the plugin assumes you have configured yourself up with the [Signal Rest API Service](https://github.com/bbernhard/signal-cli-rest-api).
+You must also configure the [Signal REST API service](https://github.com/bbernhard/signal-cli-rest-api).
 
 A simple setup might be:
 
@@ -64,16 +64,16 @@ You can post in multiple chats by simply chaining them at the end of the URL.
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                                                                                      |
-| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname | Yes      | The Web Server's hostname                                                                                                                        |
-| port     | No       | The port our Web server is listening on. By default the port is **80** for **signal://** and **443** for all **signals://** references.          |
-| user     | No       | If you're system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                                |
-| password | No       | If you're system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                                |
-| from     | Yes      | This must be a _From Phone Number_ you've added to the API service.                                                                              |
-| to       | **\*No** | A phone number or group id you wish to send your notification to. If one isn't specified, then the `from` is used instead.                       |
-| batch    | No       | Send multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.                     |
-| status   | No       | Optionally include a small little ASCII string representing the notification status being sent (inline with it) by default this is set to `yes`. |
+| Variable | Required | Description                                                                                                                                |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname | Yes      | The Web Server's hostname                                                                                                                  |
+| port     | No       | The port our Web server is listening on. By default the port is **80** for **signal://** and **443** for all **signals://** references.    |
+| user     | No       | If your system is set up to use HTTP-AUTH, you can provide _username_ for authentication to it.                                            |
+| password | No       | If your system is set up to use HTTP-AUTH, you can provide _password_ for authentication to it.                                            |
+| from     | Yes      | This must be a _From Phone Number_ you've added to the API service.                                                                        |
+| to       | **\*No** | A phone number or group id you wish to send your notification to. If one isn't specified, then the `from` is used instead.                 |
+| batch    | No       | Send multiple specified notifications in a single batch (1 upstream post to the end server). By default this is set to `no`.               |
+| status   | No       | Optionally include a small ASCII string representing the notification status being sent (inline with it). By default this is set to `yes`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -94,28 +94,21 @@ Example output is as follows:
     "name": "Test Group",
     "id": "group.abcdefghijklmnop=",
     "internal_id": "aabbccdd/eeffgghh=",
-    "members": [
-      "+1555555551234
-      "+16666661234"
-    ],
-      "blocked": false,
-      "pending_invites": [],
-      "pending_requests": [],
-      "invite_link": "",
-      "admins": [
-      "+1555555551234"
-    ]
+    "members": ["+1555555551234", "+16666661234"],
+    "blocked": false,
+    "pending_invites": [],
+    "pending_requests": [],
+    "invite_link": "",
+    "admins": ["+1555555551234"]
   }
 ]
-
-The takeaway from the above is the group
 ```
 
-Example sending a notification to a group: `group.aabbccdd/eeffgghh=` identified by the `id`.
+The value you need is the group's `id` (here `group.abcdefghijklmnop=`). Use it as a target to send a notification to that group.
 
 ### Text Formatting
 
-Add `?format=markdown` to the URL to send styled messages. Apprise turns your Markdown or HTML into Signal's own styling: **bold**, _italic_, ~~strikethrough~~, `monospace`, and `||spoiler||`. Signal has no headings, so a title is shown in bold instead. Plain text messages stay exactly as you wrote them, even if they contain characters like `*` or `~`. On the command line, add `-i markdown` when your message is written in Markdown.
+Add `?format=markdown` to send styled messages. Signal supports **bold**, _italic_, ~~strikethrough~~, `monospace`, and `||spoiler||`. Signal has no headings, so titles appear in bold.
 
 ```bash
 apprise -vv -i markdown -t "Build Report" -b "**3** tests _failed_" \
@@ -150,7 +143,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "signal://localhost:9922/15555551234"
 ```
 
-If you know the Group ID you want to notify, you can idenify it as well on the command line:
+If you know the Group ID you want to notify, you can identify it as well on the command line:
 
 ```bash
 # Assuming our {Hostname} is localhost (hosting the bbernhard/signal-cli-rest-api)

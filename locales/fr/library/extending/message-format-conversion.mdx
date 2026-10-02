@@ -39,6 +39,8 @@ Pour chaque plugin, Apprise :
 
 Si l'appelant n'a déclaré aucun format source, Apprise laisse le corps inchangé. Dans ce cas, `body_passthrough` vaut `True`. Sinon, il vaut `False`.
 
+Lorsqu'ils sont activés, les codes courts d'émoji et les séquences d'échappement (`interpret_escapes`) sont appliqués avant la conversion.
+
 ```text
 Apprise.notify(body=..., body_format=HTML)
          |
@@ -55,6 +57,8 @@ plugin.notify(
 
 Lorsqu'un service ne possède pas de champ distinct pour le titre (`title_maxlen <= 0`), Apprise ajoute le titre au corps avant l'envoi. Sinon, le titre est transmis séparément.
 
+Un titre transmis séparément reste en texte brut. Échappez-le et placez-le dans chaque format de sortie selon les besoins.
+
 ### Lire `body_format` et `body_passthrough` dans `send()`
 
 Acceptez `body_format` et `body_passthrough` dans `send()`. Apprise a déjà calculé ces deux valeurs :
@@ -66,7 +70,7 @@ def send(self, body, title="", notify_type=..., body_format=None,
         ...
 ```
 
-Vous n'avez normalement pas besoin d'appeler `resolve_format()` vous-même. Les appels directs à `plugin.notify()` ou `plugin.send()` constituent l'exception : ils ne passent pas par l'étape de conversion d'Apprise. Si vous appelez un plugin directement, préparez le corps dans le format attendu par ce plugin.
+Vous n'avez normalement pas besoin d'appeler `resolve_format()` vous-même. Un appel direct à `plugin.notify(body_format=...)` effectue la conversion normale, tandis que `plugin.send()` attend un contenu déjà préparé pour le plugin.
 
 ## Lorsqu'Aucun Format d'Entrée N'est Déclaré
 
@@ -107,21 +111,21 @@ La plupart des plugins prennent en charge un seul format. Dans ce cas, `self.not
 | `HTML`               | Balises supprimées ; structure de bloc réduite en texte brut |
 | `None`               | Corps inchangé ; aucune conversion effectuée                 |
 
-La conversion Markdown vers texte ne modifie pas les caractères Markdown. Si le service les interprète, échappez-les dans `send()`.
+Il n'existe pour l'instant aucune étape de conversion du Markdown vers le texte : les caractères Markdown arrivent donc inchangés. Si le service interprète ces caractères, échappez-les dans `send()`.
 
 </TabItem>
 <TabItem value="markdown" label="MARKDOWN">
 
 Définissez `notify_format = NotifyFormat.MARKDOWN` lorsque le service accepte Markdown.
 
-| Source `body_format` | Corps transmis au plugin                                                                                                                           |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TEXT`               | Les caractères significatifs pour CommonMark (`*`, `_`, `` ` ``, `#`, etc.) sont échappés par une barre oblique inverse pour se lire littéralement |
-| `MARKDOWN`           | Markdown inchangé                                                                                                                                  |
-| `HTML`               | Converti en Markdown standard                                                                                                                      |
-| `None`               | Corps inchangé ; aucune conversion effectuée                                                                                                       |
+| Source `body_format` | Corps transmis au plugin                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TEXT`               | Les caractères significatifs pour CommonMark (`*`, `_`, `` ` ``, `#`, `&`, etc.) sont échappés par une barre oblique inverse pour se lire littéralement |
+| `MARKDOWN`           | Markdown inchangé                                                                                                                                       |
+| `HTML`               | Converti en Markdown standard                                                                                                                           |
+| `None`               | Corps inchangé ; aucune conversion effectuée                                                                                                            |
 
-Le HTML et le texte brut sont convertis en **Markdown standard**. Telegram, Slack, WhatsApp et Google Chat utilisent une syntaxe différente. Leurs plugins doivent donc effectuer une conversion supplémentaire propre au service ; consultez [Adaptation propre au service](#adaptation-propre-au-service-dans-les-plugins).
+Le HTML et le texte brut sont convertis en **Markdown standard**. Des services comme Telegram, Slack, WhatsApp et Google Chat utilisent leur propre syntaxe proche du Markdown. Leurs plugins doivent donc effectuer une conversion supplémentaire propre au service ; consultez [Adaptation propre au service](#adaptation-propre-au-service-dans-les-plugins).
 
 </TabItem>
 <TabItem value="html" label="HTML">
@@ -181,7 +185,9 @@ class NotifyExample(NotifyBase):
     # send() peut toujours servir de méthode de repli.
 ```
 
-La plupart des plugins n'ont besoin que d'un format et peuvent ignorer cette section. Les plugins de relais, comme Custom JSON/XML/Form et Apprise API, peuvent prendre en charge les trois formats. Un relais ne doit transmettre le champ `format` que si `body_passthrough` vaut `False` ; sinon, il choisirait un format à la place de l'appelant.
+La plupart des plugins n'ont besoin que d'un format et peuvent ignorer cette section. Les plugins de relais, comme Custom JSON/XML/Form et Apprise API, peuvent prendre en charge les trois formats.
+
+Le relais Apprise API (`apprise://`) transmet le contenu sans le modifier, car le serveur de destination effectue la conversion. Il inclut le format source déclaré ou une valeur `?format=` explicite lorsqu'aucun format source n'est fourni.
 
 Un outil qui explore `Apprise().details()` (un générateur d'URL, par exemple) peut lire les formats déclarés d'un service via `args.format.supported` -- voir [L'argument `format`](../inspection/#largument-format) pour le détail complet du schéma.
 
@@ -203,7 +209,7 @@ example://host/token?format=html
 
 Pour un plugin à format unique, le remplacement devient le format de cette instance. Pour un plugin multi-format, la valeur demandée doit apparaître dans `notify_format`. Une valeur non prise en charge produit un avertissement, puis Apprise applique ses règles de sélection habituelles.
 
-Lorsque la logique du plugin doit distinguer un remplacement URL de la valeur par défaut de la classe, capturez la présence de `format` avant d'appeler `NotifyBase.__init__` :
+Lorsque la logique du plugin doit distinguer un remplacement URL de la valeur par défaut de la classe, inspectez `kwargs` avant d'appeler le `__init__` de la classe de base :
 
 ```python
 def __init__(self, **kwargs):
@@ -286,7 +292,7 @@ Ce choix dépend du service. Apprise sélectionne le format principal ; le plugi
 </TabItem>
 </Tabs>
 
-## Gestion du Débordement avant l'Adaptation au Service
+## Gestion du Dépassement avant l'Adaptation au Service
 
 Définissez `overflow_mode` pour choisir le comportement appliqué lorsque le contenu dépasse `body_maxlen` ou `title_maxlen`. Apprise s'en charge avant l'exécution de `send()`.
 

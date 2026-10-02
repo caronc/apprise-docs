@@ -65,7 +65,7 @@ Par comparaison, l'ancienne URL ressemblait à ceci, avec `outlook` comme nom d'
 # https://outlook.office.com/webhook/ABCD/IncomingWebhook/DEFG/HIJK
 #           ^                         ^                    ^    ^
 #           |                         |                    |    |
-#   ancienne reference d'equipe : 'outlook' |             |    |
+#   ancienne référence d'équipe : 'outlook' |             |    |
 #                                     |                    |    |
 #  Ces éléments sont importants <------^--------------------^----^
 ```
@@ -76,7 +76,7 @@ Comme vous pouvez le voir, nous avons 3 jetons distincts. Ce sont eux qui vous s
 2. **TokenB** est `DEFG`
 3. **TokenC** est `HIJK`
 
-**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la version 0.7.7_). Vous n'avez donc plus besoin de la reparser davantage. Il y a toutefois un léger surcoût interne si vous l'utilisez de cette manière.
+**Remarque :** Apprise prend en charge cette URL _telle quelle_ (_depuis la version 0.7.7_). Vous n'avez donc plus besoin de la découper vous-même. Il y a toutefois un léger surcoût interne si vous l'utilisez de cette manière.
 
 ## Syntaxe
 
@@ -150,7 +150,7 @@ Dans l'exemple ci-dessus, nous introduisons plusieurs jetons : `app_id`, `app_ti
 
 - **app_id** : l'identifiant de l'application, généralement défini à `Apprise`, même si un développeur peut le surcharger.
 - **app_desc** : la description de l'application, souvent une variante un peu plus explicite de `app_id`. Elle vaut en général `Apprise Notification` sauf surcharge.
-- **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont généralement bleus tandis que les messages `warning` sont orange.
+- **app_color** : un code hexadécimal représentant la couleur associée au message. Par exemple, les messages `info` sont généralement bleus, tandis que les messages `warning` sont orange.
 - **app_type** : le type du message lui-même, par exemple `info`, `warning`, `success`, etc.
 - **app_title** : le titre réel transmis à la notification Apprise (`--title` ou `-t` en ligne de commande).
 - **app_body** : le corps réel transmis à la notification Apprise (`--body` ou `-b` en ligne de commande).
@@ -165,9 +165,9 @@ Tout ce que vous inventez en dehors de cela vous appartient. Revenons donc à `t
 Une notification comme celle-ci :
 
 ```bash
-# En utilisant des deux-points, nous pouvons definir dynamiquement
+# En utilisant des deux-points, nous pouvons définir dynamiquement
 # target et whence depuis la ligne de commande :
-apprise -t "Mon Titre" -b "Ceci est Ignore" \
+apprise -t "Mon Titre" -b "Ceci est ignoré" \
    "msteams://credentials/?template=http://host/to/template.json&:target=Chris&:whence=this%20afternoon"
 ```
 
@@ -182,7 +182,7 @@ Publierait dans MSTeams, sur la base du template ci-dessus :
     {
       "activityImage": null,
       "activityTitle": "Mon Titre",
-      "text": "Bonjour Chris, comment allez-vous cet apres-midi ?"
+      "text": "Hello Chris, how are you this afternoon?"
     }
   ]
 }

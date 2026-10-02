@@ -35,13 +35,13 @@ limits:
 
 ## Message Format
 
-Slack uses `markdown` by default so links, bold text, and simple lists can render nicely. Set `?format=text` if you want Slack to receive plain text instead. In that mode Apprise turns `&`, `<` and `>` into the codes Slack expects, so they show up exactly as you typed them.
+Slack uses `markdown` by default for links, bold text, and simple lists. Set `?format=text` to send plain text instead.
 
 Declaring your input format lets Apprise convert supported content before sending it. Without one, Apprise assumes the body is already suitable for the selected Slack format. `overflow=split` is then best effort, so use `overflow=upstream` when markup or structured content must remain intact.
 
 ## Account Setup
 
-Slack is slightly more complicated then some of the other notification services, so here is quick breakdown of what you need to know and do in order to send Notifications through it using this tool:
+Slack is slightly more complicated than some of the other notification services, so here is a quick breakdown of what you need to know and do in order to send notifications through it using this tool:
 
 ### Method 1: Incoming Webhook
 
@@ -61,23 +61,23 @@ This URL effectively equates to:<br/>
 **Note:** Apprise supports this URL _as-is_ (_as of v0.7.7_); you no longer need to parse the URL any further. However there is slightly less overhead (internally) if you do.
 
 If you want to convert this to an Apprise URL, do the following:
-The last part of the URL you're given make up the 3 tokens you need to send notifications with It's very important to pay attention. In the above example the tokens are as follows:
+The last part of the URL you're given makes up the 3 tokens you need to send notifications with. It's very important to pay attention. In the above example the tokens are as follows:
 
 1. **TokenA** is `T1JJ3T3L2`
 1. **TokenB** is `A1BRTD4JD`
-1. **TokenC** is `TIiajkdnlazkcOXrIdevi7F8`
+1. **TokenC** is `TIiajkdnlazkcOXrIdevi7F`
 
 ### Method 2: Create a Bot
 
-Bots offer you slightly more flexibility then Webhooks do. The main difference is _Slack Bots_ can support attachments allowing you to leverage this in Apprise!
+Bots offer you slightly more flexibility than Webhooks do. The main difference is _Slack Bots_ can support attachments allowing you to leverage this in Apprise!
 
 1. First create your [Slack App here](https://api.slack.com/apps?new_app=1).
-1. Pick an App Name (such as _Apprise_) and select your workspace; click on the **Create App**
-1. You'll be able to click on **Bots** menu selection from here where you can then choose to add a **Bot User**. Give it a name and then choose \*_Add Bot User_.
+1. Pick an App Name (such as _Apprise_) and select your workspace; click on **Create App**.
+1. You'll be able to click on **Bots** menu selection from here where you can then choose to add a **Bot User**. Give it a name and then choose **Add Bot User**.
 1. You'll need to provide the proper OAuth permissions:<br/>![Slack Bot OAuth Min Permissions](./images/285847dfb5ef03ee.png)
 1. Now choose **Install App** to which you can choose **Install App to Workspace**.
 1. You will need to authorize the app which you get prompted to do; so this step is easy.
-1. Finally you'll get some very important information you will need for Apprise. From this point on you can either used the **OAuth Access Token** or the **Bot User OAuth Access Token** using the syntax `slack://{OAuth Access Token}`.
+1. Finally you'll get some very important information you will need for Apprise. From this point on you can either use the **OAuth Access Token** or the **Bot User OAuth Access Token** using the syntax `slack://{OAuth Access Token}`.
 
 Your Apprise Slack URL (for accessing your Bot) might look something like:
 
@@ -118,7 +118,7 @@ If you know the user_id you wish to transmit your slack notification to (instead
 
 You can freely mix and match all of the combinations in any order as well:
 
-- `slack://**{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
+- `slack://{botname}@{tokenA}/{tokenB}/{tokenC}/@{user_id}/#{channel}/+{encoded_id}`
 - `slack://{botname}@{OAuthToken}/@{user_id}/#{channel}/+{encoded_id}`
 
 ### Method 3: Slack Workflow Builder Webhooks
@@ -141,10 +141,10 @@ Both forms post `{"text": "Title: Body"}` by default (title omitted when blank).
 
 | Variable   | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| tokenA     | Yes      | The first part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                               |
-| tokenB     | Yes      | The second part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                              |
-| tokenC     | Yes      | The last part of 3 tokens provided to you after creating a _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                                |
-| OAuthToken | Yes      | The OAuth Token provided to you through the Slack App when using a a _Bot_ instead of a Webhook. Token A, B and C are not used when using Bots.                                                                                                                                                                                                                                                                                                                                          |
+| tokenA     | Yes      | The first part of 3 tokens provided to you after creating an _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                              |
+| tokenB     | Yes      | The second part of 3 tokens provided to you after creating an _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                             |
+| tokenC     | Yes      | The last part of 3 tokens provided to you after creating an _incoming-webhook_. The OAuthToken is not required if using the Slack Webhook.                                                                                                                                                                                                                                                                                                                                               |
+| OAuthToken | Yes      | The OAuth Token provided to you through the Slack App when using a _Bot_ instead of a Webhook. Token A, B and C are not used when using Bots.                                                                                                                                                                                                                                                                                                                                            |
 | channel    | No       | Channels must be prefixed with a hash tag **#**! You can specify as many channels as you want by delimiting each of them by a forward slash (/) in the url.                                                                                                                                                                                                                                                                                                                              |
 | encoded_id | No       | Slack allows you to represent channels and private channels by an _encoded_id_. If you know what they are, you can use this instead of the channel to send your notifications to. All encoded_id's must be prefixed with a plus symbol **+**!                                                                                                                                                                                                                                            |
 | user_id    | No       | Users must be prefixed with an at symbol **@**! You can specify as many users as you want by delimiting each of them by a forward slash (/) in the url.                                                                                                                                                                                                                                                                                                                                  |
@@ -222,7 +222,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    slack:///T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7F/#nuxref
 ```
 
-Alternatively, if you're using the Bot; a Slack notification sent to the channel `#general` might look like this:
+Alternatively, if you're using the Bot, a Slack notification sent to the channel `#general` might look like this:
 
 ```bash
 # Assuming our {OAuthToken} is xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d
@@ -231,7 +231,7 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    slack://xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d/#general
 ```
 
-Perhaps you want to disable the footer, you can do so like so:
+If you want to disable the footer, you can do so like this:
 
 ```bash
 # Assuming our {OAuthToken} is xoxb-1234-1234-4ddbc191d40ee098cbaae6f3523ada2d

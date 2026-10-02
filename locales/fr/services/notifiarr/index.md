@@ -16,25 +16,25 @@ sample_urls:
 
 ## Configuration du Compte
 
-Vous devez d'abord creer un compte chez [Notifiarr](https://notifiarr.com) si vous n'en avez pas deja un. A partir de la, vous pourrez generer votre `{api_key}`. Vous devrez utiliser votre cle API "globale" ; les cles API Notifiarr specifiques aux integrations ne fonctionnent pas avec Apprise.
+Vous devez d'abord créer un compte chez [Notifiarr](https://notifiarr.com) si vous n'en avez pas déjà un. À partir de là, vous pourrez générer votre `{api_key}`. Vous devrez utiliser votre clé API "globale" ; les clés API Notifiarr spécifiques aux intégrations ne fonctionnent pas avec Apprise.
 
 ### Identifiants de Canal Discord
 
-Pour utiliser Notifiarr, vous avez besoin de votre identifiant de canal Discord. **Il doit s'agir de sa version numerique**. [Voici de bonnes instructions pour le recuperer](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
+Pour utiliser Notifiarr, vous avez besoin de votre identifiant de canal Discord. **Il doit s'agir de sa version numérique**. [Voici de bonnes instructions pour le récupérer](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
 
 En bref :
 
-- **Activez le mode developpeur** en allant dans les _parametres Discord_, puis dans **Appearance**.
+- **Activez le mode développeur** en allant dans les _paramètres Discord_, puis dans **Appearance**.
 
-### Mentionner des roles, tags et utilisateurs
+### Mentionner des rôles, tags et utilisateurs
 
-Le corps du message Notifiarr peut contenir des elements comme les suivants pour declencher les pings appropries :
+Le corps du message Notifiarr peut contenir des éléments comme les suivants pour déclencher les pings appropriés :
 
 - **user** : `<@123>`
 - **role** : `<@&456>`
 - **tag** : `@everyone`
 
-**Remarque :** a la date du 28 juillet 2024, le webhook amont vers Notifiarr ne prend en charge qu'un seul utilisateur ou role dans la charge utile. Si vous en fournissez plusieurs, seul le premier sera transmis en amont.
+**Remarque :** à la date du 28 juillet 2024, le webhook amont vers Notifiarr ne prend en charge qu'un seul utilisateur ou rôle dans la charge utile. Si vous en fournissez plusieurs, seul le premier sera transmis en amont.
 
 ## Syntaxe
 
@@ -47,9 +47,9 @@ La syntaxe valide est la suivante :
 
 | Variable | Obligatoire | Description                                                                                                                                                              |
 | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| api_key  | Oui         | Votre cle API Notifiarr globale, et non specifique a une integration.                                                                                                    |
-| source   | Non         | Permet facultativement de fournir la source de la notification sous forme de chaine descriptive, vous pouvez aussi utiliser `from` comme alias.                          |
-| event    | Non         | Permet facultativement de specifier l'identifiant d'evenement Notifiarr que vous souhaitez mettre a jour. Si aucun n'est precise, une nouvelle notification est generee. |
+| api_key  | Oui         | Votre clé API Notifiarr globale, et non spécifique à une intégration.                                                                                                    |
+| source   | Non         | Permet facultativement de fournir la source de la notification sous forme de chaîne descriptive ; vous pouvez aussi utiliser `from` comme alias.                         |
+| event    | Non         | Permet facultativement de spécifier l'identifiant d'événement Notifiarr que vous souhaitez mettre à jour. Si aucun n'est précisé, une nouvelle notification est générée. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -66,7 +66,7 @@ apprise -t "Titre de Test" -b "Message de Test" \
 
 ```
 
-Si vous avez un Discord Event ID que vous souhaitez reutiliser, vous pouvez faire ceci :
+Si vous avez un Discord Event ID que vous souhaitez réutiliser, vous pouvez faire ceci :
 
 ```bash
 # Supposons que notre {APIKey} soit 4174216298
