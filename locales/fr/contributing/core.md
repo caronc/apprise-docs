@@ -128,6 +128,15 @@ Vous pouvez utiliser `-k test_foobar_urls` pour ne lancer qu'un seul test préci
 
 :::
 
+:::tip
+Les tests s'exécutent en parallèle sur un maximum de 8 cœurs de votre processeur, si bien qu'une exécution complète ne prend que quelques minutes. Lorsque vous devez suivre un test pas à pas avec `print()` ou un débogueur, ajoutez `-n 0` pour tout exécuter dans un seul processus :
+
+```bash
+tox -e minimal -- -n 0 -k "test_foobar"
+```
+
+:::
+
 ## Assurance Qualité et Tests
 
 Gardez un linting et un formatage cohérents d'un environnement contributeur à l'autre :

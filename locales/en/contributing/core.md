@@ -128,6 +128,15 @@ You could add `-k test_foobar_urls` to just test 1 specific test:
 
 :::
 
+:::tip
+Tests run in parallel across up to 8 of your CPU cores, so a full run only takes a few minutes. When you need to step through a test with `print()` or a debugger, add `-n 0` to run everything in one process:
+
+```bash
+tox -e minimal -- -n 0 -k "test_foobar"
+```
+
+:::
+
 ## Quality Assurance and Testing
 
 Keep linting and formatting consistent across contributor environments:
