@@ -182,5 +182,10 @@
     "success_title": "Merci",
     "success_heading": "Merci !",
     "success_tagline": "Votre don compte énormément pour nous. Votre soutien permet à Apprise de rester open source, en ligne et en constante évolution."
+  },
+  "mobileStore": {
+    "download": "Télécharger Apprise Mobile",
+    "appStore": "Télécharger dans l'App Store",
+    "googlePlay": "Disponible sur Google Play"
   }
 }

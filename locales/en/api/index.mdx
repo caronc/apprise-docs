@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import { Icon } from "@astrojs/starlight/components";
+
 <style>{`
     :root[data-theme="dark"] .apprise-flow img {
     content: url("/assets/apprise-overview-en-dark.svg");
@@ -17,43 +19,83 @@ sidebar:
 
   /* Companion app callout. Colours come from the theme so it follows the toggle. */
   .api-mobile-callout {
+    position: relative;
+    isolation: isolate;
     display: flex;
-    align-items: center;
-    gap: 1.1rem;
     flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    overflow: hidden;
     margin: 1.75rem 0;
-    padding: 1.15rem 1.3rem;
-    border-radius: 0.9rem;
+    padding: clamp(1.2rem, 3vw, 1.65rem);
+    border-radius: 1rem;
     border: 1px solid
-      color-mix(in srgb, var(--sl-color-accent) 24%, var(--sl-color-gray-5) 76%);
+      color-mix(in srgb, var(--sl-color-accent) 32%, var(--sl-color-gray-5) 68%);
     background: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--sl-color-accent) 10%, var(--sl-color-bg) 90%),
-      color-mix(in srgb, var(--sl-color-accent) 3%, var(--sl-color-bg) 97%)
+      color-mix(in srgb, var(--sl-color-accent) 13%, var(--sl-color-bg) 87%),
+      color-mix(in srgb, var(--sl-color-accent) 4%, var(--sl-color-bg) 96%)
     );
   }
 
-  .api-mobile-callout img {
-    width: 58px;
-    height: 58px;
-    flex: 0 0 58px;
+  .api-mobile-callout__copy {
+    flex: 1 1 36rem;
+    min-width: 0;
+    max-width: 42rem;
   }
 
-  .api-mobile-callout__copy {
-    flex: 1 1 18rem;
+  .api-mobile-callout__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .api-mobile-callout__icon {
+    display: grid;
+    flex: 0 0 2.25rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    color: var(--sl-color-text-accent);
+  }
+
+  .api-mobile-callout__icon svg {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .api-mobile-callout__title {
     min-width: 0;
+  }
+
+  .api-mobile-callout__eyebrow {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--sl-color-text-accent);
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .api-mobile-callout__copy strong {
     display: block;
-    font-size: 1.05rem;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
+    color: var(--sl-color-text);
+    font-size: 1.1rem;
+    line-height: 1.3;
   }
 
   .api-mobile-callout__copy p {
-    margin: 0;
+    margin: 0.8rem 0 0;
     color: var(--sl-color-gray-2);
     font-size: 0.95rem;
+  }
+
+  .api-mobile-callout__action {
+    display: flex;
+    flex: 1 0 12.5rem;
+    justify-content: center;
   }
 
   .api-mobile-callout a.api-mobile-cta {
@@ -67,20 +109,40 @@ sidebar:
     background: var(--sl-color-text-accent);
     color: var(--sl-color-black);
     font-weight: 650;
+    line-height: 1.2;
     text-decoration: none;
     white-space: nowrap;
+    box-shadow: 0 0.4rem 1rem
+      color-mix(in srgb, var(--sl-color-accent) 13%, transparent);
+    transition:
+      box-shadow 150ms ease,
+      transform 150ms ease;
   }
 
-  .api-mobile-callout a.api-mobile-cta:hover {
-    filter: brightness(1.1);
+  .api-mobile-callout a.api-mobile-cta:hover,
+  .api-mobile-callout a.api-mobile-cta:focus-visible {
+    color: var(--sl-color-black);
+    box-shadow: 0 0.55rem 1.3rem
+      color-mix(in srgb, var(--sl-color-accent) 22%, transparent);
+    transform: translateY(-1px);
   }
 
-  /* On narrow screens the button wraps to its own line; center it there. */
-  @media (max-width: 40rem) {
+  @media (max-width: 30rem) {
+    .api-mobile-callout__action {
+      flex-basis: 100%;
+    }
+
     .api-mobile-callout a.api-mobile-cta {
-      margin: 0 auto;
+      width: 100%;
     }
   }
+
+  @media (max-width: 22rem) {
+    .api-mobile-callout__icon {
+      display: none;
+    }
+  }
+
 `}</style>
 
 The **Apprise API** turns Apprise into a service. You run it once, point your systems at it, and they can all send notifications with simple HTTP(S) requests without installing Python, without the CLI, and without knowing anything about the services behind it.
@@ -109,30 +171,32 @@ It is the middle box in the picture below: everything on the left hands it a mes
 - **Runs anywhere.** A small container that is at home under Docker, Docker Compose, or Kubernetes.
 
 <div class="api-mobile-callout">
-  <img src="/assets/google-play.svg" alt="" width="58" height="58" />
   <div class="api-mobile-callout__copy">
-    <strong>Add your phone to the picture</strong>
+    <div class="api-mobile-callout__heading">
+      <span class="api-mobile-callout__icon" aria-hidden="true">
+        <Icon name="mobile-android" />
+      </span>
+      <div class="api-mobile-callout__title">
+        <span class="api-mobile-callout__eyebrow">Android / iOS App</span>
+        <strong>Add Your Phone to the Picture</strong>
+      </div>
+    </div>
     <p>
-      Apprise Mobile is the official Android companion for a server you already
-      run. Scan a QR code from the web interface to connect, then send
+      Apprise Mobile is the official Android and iOS companion for a server you
+      already run. Scan a QR code from the web interface to connect, then send
       notifications, share a photo, and check what was delivered, all from your
       phone.
     </p>
   </div>
-  <a
-    class="api-mobile-cta"
-    href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Get It on Google Play
-  </a>
+  <div class="api-mobile-callout__action">
+    <a class="api-mobile-cta" href="/mobile/">
+      Get Apprise Mobile
+    </a>
+  </div>
 </div>
 
-## Getting Started
+## Next Steps
 
-1. **Deploy it.** Start the container with [Docker or Kubernetes](/api/deployment/).
-2. **Add your destinations.** Use the web interface to save your notification URLs and give them a key.
-3. **Send.** Point anything that speaks HTTP at your server and the message goes out.
-
-[Deploy the server](/api/deployment/) · [See what it can do](/api/usage/) · [Browse the endpoints](/api/endpoints/)
+- **[Run the Server](/api/deployment/):** Choose Docker, Docker Compose, or Kubernetes and bring up your Apprise API instance.
+- **[Address Destinations](/api/usage/):** Use a saved configuration key, provide notification URLs with each request, or combine the two approaches.
+- **[Send Your First Notification](/api/endpoints/):** Pick the endpoint that fits your application and make a standard HTTP request.
