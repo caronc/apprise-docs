@@ -31,16 +31,20 @@ sample_urls:
 
 ## Configuration du compte
 
-AMQP permet à Apprise de publier votre notification sous forme de message sur un courtier (broker) comme [RabbitMQ](https://www.rabbitmq.com/), Apache ActiveMQ Artemis, Apache Qpid ou Azure Service Bus. Ce qui lit cette file d'attente la reçoit.
+AMQP permet à Apprise de publier des notifications par l'intermédiaire d'un courtier de messages comme [RabbitMQ](https://www.rabbitmq.com/), Apache ActiveMQ Artemis, Apache Qpid ou Azure Service Bus. Les consommateurs connectés à la destination reçoivent chaque message.
 
 Deux protocoles très différents portent le nom AMQP. Installez la bibliothèque correspondant à celui que parle votre courtier (ou les deux) :
 
 | Version | Utilisée par                                                             | Installation                     |
 | ------- | ------------------------------------------------------------------------ | -------------------------------- |
 | 0.9.1   | RabbitMQ (par défaut) et la plupart des courtiers qui se disent « AMQP » | `pip install pika`               |
-| 1.0     | ActiveMQ Artemis, Qpid, Azure Service Bus, RabbitMQ 4.0 et plus récent   | `pip install python-qpid-proton` |
+| 1.0     | ActiveMQ Artemis, Qpid, Azure Service Bus, RabbitMQ 4.0 et versions ultérieures | `pip install python-qpid-proton` |
 
 Si vous ne précisez pas `?version=`, Apprise utilise **0.9.1** lorsque `pika` est installé, et **1.0** sinon.
+
+:::caution
+Utilisez `amqps://` pour les courtiers situés hors d'un réseau de confiance. Le schéma `amqp://` ne chiffre ni les identifiants ni les messages.
+:::
 
 :::note
 Sous Linux, `python-qpid-proton` est compilé à partir des sources. Il faut donc un compilateur C ainsi que les paquets de développement de Python et d'OpenSSL (par exemple `gcc`, `python3-devel` et `openssl-devel` sous Fedora). Sous Fedora, vous pouvez plutôt installer `python3-qpid-proton` avec votre gestionnaire de paquets. RHEL, Rocky Linux et les systèmes similaires le trouvent dans EPEL.
@@ -48,9 +52,9 @@ Sous Linux, `python-qpid-proton` est compilé à partir des sources. Il faut don
 
 ### AMQP 0.9.1
 
-Chaque cible est une **clé de routage** (routing key). Avec l'échange (exchange) par défaut du courtier, qui est utilisé par défaut, la clé de routage est simplement le nom de la file d'attente à laquelle livrer le message. La file d'attente doit déjà exister.
+Chaque cible est une **clé de routage** (routing key). Avec l'échange (exchange) par défaut, utilisez le nom d'une file d'attente existante.
 
-Pour publier vers un autre échange, ajoutez `?exchange=`. Par exemple, `?exchange=amq.topic` avec la cible `alerts.disk` atteint toutes les files d'attente liées à ce sujet. Un échange de type fanout n'a besoin d'aucune cible.
+Pour publier vers un autre échange, ajoutez `?exchange=`. Par exemple, `?exchange=amq.topic` avec la cible `alerts.disk` atteint toutes les files d'attente liées à ce sujet. Un échange de type fanout diffuse le message et n'a besoin d'aucune cible.
 
 Chaque message doit atteindre au moins une file d'attente, sinon la notification est signalée comme ayant échoué. Ajoutez `?mandatory=no` si vous voulez seulement que le courtier l'accepte.
 
@@ -58,7 +62,7 @@ Chaque message doit atteindre au moins une file d'attente, sinon la notification
 
 Chaque cible est une **adresse** (le nom d'une file d'attente ou d'un sujet). Les échanges n'existent pas en AMQP 1.0, donc `?exchange=` et `?mandatory=` sont ignorés (avec un avertissement) lorsque `?version=1.0` est défini.
 
-RabbitMQ 4.0 et plus récent attend des adresses comme `/queues/alerts` ou `/exchanges/amq.topic/alerts.disk`. Une barre oblique couperait l'adresse en morceaux dans le chemin de l'URL. Placez donc ces adresses dans `?to=`, séparées par des virgules : `?to=/queues/alerts,/queues/backup`.
+RabbitMQ 4.0 et les versions ultérieures utilisent des adresses comme `/queues/alerts` ou `/exchanges/amq.topic/alerts.disk`. Les barres obliques divisent un chemin d'URL normal. Placez donc ces adresses dans `?to=` et séparez plusieurs adresses par des virgules : `?to=/queues/alerts,/queues/backup`.
 
 Pour choisir un hôte virtuel RabbitMQ en AMQP 1.0, utilisez `?vhost=vhost:nom`.
 
@@ -78,7 +82,7 @@ Pour une connexion sécurisée (TLS), utilisez plutôt `amqps://` :
 - `amqps://{user}:{password}@{host}/{target}`
 - `amqps://{user}:{password}@{host}:{port}/{target1}/{target2}/{targetN}`
 
-## Détail des Paramètres
+## Détail des paramètres
 
 | Variable   | Requis | Description                                                                                                                                                                                                                                                      |
 | ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -86,7 +90,7 @@ Pour une connexion sécurisée (TLS), utilisez plutôt `amqps://` :
 | port       | Non    | Le port sur lequel le courtier écoute. Par défaut **5672** pour `amqp://` et **5671** pour `amqps://`.                                                                                                                                                           |
 | user       | Non    | L'utilisateur avec lequel se connecter. Sans utilisateur, AMQP 0.9.1 utilise le compte `guest` du courtier et AMQP 1.0 se connecte de façon anonyme.                                                                                                             |
 | password   | Non    | Le mot de passe de votre utilisateur.                                                                                                                                                                                                                            |
-| target     | Non    | Une ou plusieurs clés de routage (AMQP 0.9.1) ou adresses (AMQP 1.0) vers lesquelles publier. Une cible n'est facultative que lors d'une publication vers un `exchange`.                                                                                         |
+| target     | Non    | Une ou plusieurs clés de routage (AMQP 0.9.1) ou adresses (AMQP 1.0) vers lesquelles publier. Une cible n'est facultative que lorsqu'AMQP 0.9.1 publie vers un `exchange`.                                                                                      |
 | to         | Non    | Un alias de `target`. Utilisez-le pour les cibles qui contiennent une barre oblique.                                                                                                                                                                             |
 | version    | Non    | La version d'AMQP à utiliser : `0.9.1` ou `1.0`. Les formes courtes comme `0.9` et `1` fonctionnent aussi. `ver` est un alias. Par défaut `0.9.1` lorsque `pika` est installé, sinon `1.0`. Utiliser `exchange` ou `mandatory` sans version sélectionne `0.9.1`. |
 | exchange   | Non    | AMQP 0.9.1 uniquement. L'échange vers lequel publier. Par défaut, l'échange par défaut du courtier, qui livre directement à la file d'attente nommée par chaque cible.                                                                                           |
@@ -108,7 +112,7 @@ apprise -vv -t "Espace disque" -b "Le disque de sauvegarde est plein à 90 %" \
    "amqp://guest:guest@localhost/alerts"
 ```
 
-Publier vers deux files d'attente en TLS, avec un message de haute priorité qui expire au bout d'une minute :
+Publier un message de haute priorité vers deux files d'attente avec TLS et le faire expirer au bout d'une minute :
 
 ```bash
 apprise -vv -b "Le disque de sauvegarde est plein à 90 %" \
@@ -136,9 +140,9 @@ apprise -vv -b "Le disque de sauvegarde est plein à 90 %" \
    "amqp://user:pass@localhost/alerts?version=1.0"
 ```
 
-## Test
+## Tests
 
-RabbitMQ 4.0 et plus récent parle à la fois AMQP 0.9.1 et AMQP 1.0 dès l'installation, ce qui permet d'essayer facilement les deux versions en local (avec docker) :
+RabbitMQ 4.0 et les versions ultérieures prennent en charge AMQP 0.9.1 et AMQP 1.0 dès l'installation. Vous pouvez donc essayer facilement les deux versions en local avec Docker :
 
 ```bash
 # Démarrer RabbitMQ ; la console web est sur http://localhost:15672 (guest/guest)

@@ -31,16 +31,20 @@ sample_urls:
 
 ## Account Setup
 
-AMQP lets Apprise publish your notification as a message on a broker such as [RabbitMQ](https://www.rabbitmq.com/), Apache ActiveMQ Artemis, Apache Qpid or Azure Service Bus. Whatever reads from that queue receives it.
+AMQP lets Apprise publish notifications through a message broker such as [RabbitMQ](https://www.rabbitmq.com/), Apache ActiveMQ Artemis, Apache Qpid, or Azure Service Bus. Consumers connected to the destination receive each message.
 
 Two very different protocols share the AMQP name. Install the library for the one your broker speaks (or both):
 
 | Version | Used by                                                             | Install                          |
 | ------- | ------------------------------------------------------------------- | -------------------------------- |
 | 0.9.1   | RabbitMQ (its default) and most brokers that call themselves "AMQP" | `pip install pika`               |
-| 1.0     | ActiveMQ Artemis, Qpid, Azure Service Bus, RabbitMQ 4.0 and newer   | `pip install python-qpid-proton` |
+| 1.0     | ActiveMQ Artemis, Qpid, Azure Service Bus, RabbitMQ 4.0 and later   | `pip install python-qpid-proton` |
 
 When you do not set `?version=`, Apprise uses **0.9.1** if `pika` is installed and **1.0** otherwise.
+
+:::caution
+Use `amqps://` for brokers outside a trusted network. The `amqp://` scheme does not encrypt credentials or messages.
+:::
 
 :::note
 `python-qpid-proton` is built from source on Linux, so it needs a C compiler and the Python and OpenSSL development packages (for example `gcc`, `python3-devel` and `openssl-devel` on Fedora). On Fedora you can install `python3-qpid-proton` with your package manager instead. RHEL, Rocky Linux and similar systems get it from EPEL.
@@ -48,9 +52,9 @@ When you do not set `?version=`, Apprise uses **0.9.1** if `pika` is installed a
 
 ### AMQP 0.9.1
 
-Each target is a **routing key**. With the broker's default exchange (the default), the routing key is simply the name of the queue to deliver to. The queue must already exist.
+Each target is a **routing key**. With the default exchange, use the name of an existing queue.
 
-To publish to another exchange, add `?exchange=`. For example, `?exchange=amq.topic` with a target of `alerts.disk` reaches every queue bound to that topic. A fanout exchange needs no target at all.
+To publish to another exchange, add `?exchange=`. For example, `?exchange=amq.topic` with a target of `alerts.disk` reaches every queue bound to that topic. A fanout exchange broadcasts the message and needs no target.
 
 Each message must reach at least one queue, otherwise the notification is reported as failed. Add `?mandatory=no` if you only want the broker to accept it.
 
@@ -58,7 +62,7 @@ Each message must reach at least one queue, otherwise the notification is report
 
 Each target is an **address** (a queue or topic name). Exchanges do not exist in AMQP 1.0, so `?exchange=` and `?mandatory=` are ignored (with a warning) when `?version=1.0` is set.
 
-RabbitMQ 4.0 and newer expect addresses such as `/queues/alerts` or `/exchanges/amq.topic/alerts.disk`. A slash would split the address apart in the URL path, so put these addresses in `?to=` instead, separated by commas: `?to=/queues/alerts,/queues/backup`.
+RabbitMQ 4.0 and later expect addresses such as `/queues/alerts` or `/exchanges/amq.topic/alerts.disk`. Slashes split a normal URL path, so place these addresses in `?to=` and separate multiple addresses with commas: `?to=/queues/alerts,/queues/backup`.
 
 To pick a RabbitMQ virtual host over AMQP 1.0, use `?vhost=vhost:name`.
 
@@ -86,7 +90,7 @@ For a secure (TLS) connection, use `amqps://` instead:
 | port       | No       | The port the broker is listening on. The default is **5672** for `amqp://` and **5671** for `amqps://`.                                                                                                                                           |
 | user       | No       | The user to log in with. Without one, AMQP 0.9.1 uses the broker's `guest` account and AMQP 1.0 logs in anonymously.                                                                                                                              |
 | password   | No       | The password for your user.                                                                                                                                                                                                                       |
-| target     | No       | One or more routing keys (AMQP 0.9.1) or addresses (AMQP 1.0) to publish to. A target is only optional when publishing to an `exchange`.                                                                                                          |
+| target     | No       | One or more routing keys (AMQP 0.9.1) or addresses (AMQP 1.0) to publish to. A target is optional only when AMQP 0.9.1 publishes to an `exchange`.                                                                                               |
 | to         | No       | An alias of `target`. Use it for targets that contain a slash.                                                                                                                                                                                    |
 | version    | No       | The AMQP version to use: `0.9.1` or `1.0`. Shorter forms such as `0.9` and `1` also work. `ver` is an alias. The default is `0.9.1` when `pika` is installed, otherwise `1.0`. Using `exchange` or `mandatory` without a version selects `0.9.1`. |
 | exchange   | No       | AMQP 0.9.1 only. The exchange to publish to. The default is the broker's default exchange, which delivers straight to the queue named by each target.                                                                                             |
@@ -108,7 +112,7 @@ apprise -vv -t "Disk Space" -b "The backup disk is 90% full" \
    "amqp://guest:guest@localhost/alerts"
 ```
 
-Publish to two queues over TLS, as a high priority message that expires after one minute:
+Publish a high-priority message to two queues over TLS and expire it after one minute:
 
 ```bash
 apprise -vv -b "The backup disk is 90% full" \
@@ -138,7 +142,7 @@ apprise -vv -b "The backup disk is 90% full" \
 
 ## Testing
 
-RabbitMQ 4.0 and newer speaks both AMQP 0.9.1 and AMQP 1.0 out of the box, which makes it easy to try both versions locally (using docker):
+RabbitMQ 4.0 and later support both AMQP 0.9.1 and AMQP 1.0, making it easy to try both versions locally with Docker:
 
 ```bash
 # Start RabbitMQ; the web console is at http://localhost:15672 (guest/guest)
