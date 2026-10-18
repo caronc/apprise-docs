@@ -1,0 +1,281 @@
+---
+title: "GitHub Notifications"
+description: "Open GitHub issues and discussions, or comment on issues, pull requests and discussions."
+sidebar:
+  label: "GitHub"
+
+source: https://github.com/
+
+schemas:
+  - github
+
+body_formats:
+  - markdown: default
+
+limits:
+  max_chars: 65536
+
+sample_urls:
+  - github://{token}@{owner}/{repo}
+  - github://{token}@{owner}/{repo}/issues/{number}
+  - github://{token}@{owner}/{repo}/pull/{number}
+  - github://{token}@{owner}/{repo}/discussions
+  - github://{token}@{owner}/{repo}/discussions/{number}
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<!-- SPONSORS:BANNER -->
+<!-- SERVICE:DETAILS -->
+
+## Account Setup
+
+Apprise connects to GitHub with an access token.
+
+For notifications from GitHub Actions to the same repository, use the workflow's built-in token. See [GitHub Actions](#github-actions).
+
+### Creating a Token
+
+1. Visit [https://github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens) and click **Generate new token**. This creates a **fine-grained token**, which can only touch the repositories you pick.
+2. Give it a name you will recognize later, such as `Apprise`, and choose an **Expiration**. GitHub will email you before it expires.
+3. Set **Resource owner** to the user or organization that owns the repository.
+4. Under **Repository access**, choose **Only select repositories** and pick the repository you want to notify.
+5. Under **Permissions**, add the ones you need from the table below. **Metadata: Read-only** is added for you.
+6. Click **Generate token** and copy it right away. It starts with `github_pat_` and is only shown once.
+
+| What you want Apprise to do | Permission to add                                                 |
+| --------------------------- | ----------------------------------------------------------------- |
+| Open new issues             | **Issues**: Read and write                                        |
+| Comment on issues           | **Issues**: Read and write                                        |
+| Comment on pull requests    | **Pull requests**: Read and write (or **Issues**: Read and write) |
+| Start new discussions       | **Discussions**: Read and write                                   |
+| Comment on discussions      | **Discussions**: Read and write                                   |
+
+A classic token (starting with `ghp_`) also works. Give it the `repo` scope, or just `public_repo` if the repository is public.
+
+:::caution
+Treat your token like a password. Anyone who has it can do whatever its permissions allow.
+:::
+
+### Choosing a Target
+
+Replace `https://github.com/` with `github://{token}@` to turn a GitHub page into an Apprise URL. The examples below show the matching GitHub page above each command.
+
+The repository root opens a new issue, while `/discussions` starts a new discussion. Add an issue, pull request or discussion number to comment on that item.
+
+Paths ending in `/new`, such as `/issues/new`, also create a new item. Pull requests always need a number because Apprise can comment on them but cannot create them.
+
+To notify more than one place, add one URL for each. A URL with two numbers in it, such as `/issues/12/23`, is refused.
+
+Discussions must be turned on for the repository first: open its **Settings**, then under **Features** tick **Discussions**.
+
+For a job that runs every night, pointing at one issue (`/issues/42`) keeps all of its reports in one thread, instead of opening a new issue each time.
+
+GitHub has no way to add file attachments through its API, so attachments are not supported.
+
+## Syntax
+
+Valid syntax is as follows:
+
+- `github://{token}@{owner}/{repo}`
+- `github://{token}@{owner}/{repo}/issues/{number}`
+- `github://{token}@{owner}/{repo}/pull/{number}`
+- `github://{token}@{owner}/{repo}/discussions`
+- `github://{token}@{owner}/{repo}/discussions/{number}`
+- `github://{owner}/{repo}/?token={token}`
+
+## Parameter Breakdown
+
+| Variable  | Required | Description                                                                                                                                                          |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token     | Yes      | Your GitHub access token.                                                                                                                                            |
+| owner     | Yes      | The user or organization that owns the repository.                                                                                                                   |
+| repo      | Yes      | The repository name.                                                                                                                                                 |
+| kind      | No       | What the URL points at: `issues` (the default), `pull` or `discussions`.                                                                                             |
+| number    | No       | The issue, pull request or discussion number to comment on. Leave it out to open a new issue or start a new discussion. A pull request always needs one.             |
+| labels    | No       | A comma-separated list of labels to add to a new issue. The labels must already exist in the repository.                                                             |
+| assignees | No       | A comma-separated list of GitHub usernames to assign a new issue to.                                                                                                 |
+| category  | No       | The category to start a new discussion in. Both the name (`Show and tell`) and the short name used in GitHub links (`show-and-tell`) work. The default is `General`. |
+
+When a new issue or discussion is opened, the notification title becomes its title. If there is no title, `Apprise Notifications` is used. When commenting, the title is placed at the top of the comment.
+
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Examples
+
+Open a new issue:
+
+```bash
+# GitHub page: https://github.com/caronc/apprise
+apprise -vv -t "Nightly load failed" -b "The **load** step failed." \
+   "github://github_pat_abc123@caronc/apprise"
+```
+
+Open a new issue with labels, assigned to a user:
+
+```bash
+# GitHub page: https://github.com/caronc/apprise
+apprise -vv -t "Nightly load failed" -b "The **load** step failed." \
+   "github://github_pat_abc123@caronc/apprise?labels=bug,nightly&assignees=caronc"
+```
+
+Comment on an existing issue or pull request:
+
+```bash
+# GitHub page: https://github.com/caronc/apprise/issues/42
+apprise -vv -t "Nightly load failed" -b "The **load** step failed." \
+   "github://github_pat_abc123@caronc/apprise/issues/42"
+
+# GitHub page: https://github.com/caronc/apprise/pull/1807
+apprise -vv -b "The build passed." \
+   "github://github_pat_abc123@caronc/apprise/pull/1807"
+```
+
+Start a new discussion, or comment on an existing one:
+
+```bash
+# GitHub page: https://github.com/caronc/apprise/discussions
+apprise -vv -t "Version 2.0 is out" -b "Read the **release notes** for details." \
+   "github://github_pat_abc123@caronc/apprise/discussions?category=Announcements"
+
+# GitHub page: https://github.com/caronc/apprise/discussions/7
+apprise -vv -b "This is now fixed." \
+   "github://github_pat_abc123@caronc/apprise/discussions/7"
+```
+
+## GitHub Actions
+
+GitHub Actions can send directly through `github://`, or call a self-hosted Apprise API server. Keep tokens and API credentials in GitHub secrets; GitHub masks registered secret values in workflow logs.
+
+The built-in `secrets.GITHUB_TOKEN` works only with the repository running the workflow. Choose its access with a `permissions:` block:
+
+| What you want Apprise to do     | Permission in the workflow |
+| ------------------------------- | -------------------------- |
+| Open new issues                 | `issues: write`            |
+| Comment on issues               | `issues: write`            |
+| Comment on pull requests        | `pull-requests: write`     |
+| Start or comment on discussions | `discussions: write`       |
+
+`${{ github.repository }}` already holds `owner/repo`, so it slots straight into the Apprise URL.
+
+<Tabs syncKey="github-actions-delivery">
+<TabItem label="Direct with github://">
+
+This workflow uses the built-in token to comment on a pull request when its tests fail:
+
+```yaml
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Run the tests
+        run: ./run-tests.sh
+
+      - name: Comment on the pull request
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          pip install apprise
+          apprise -vv -t "Tests failed" -b "See the [workflow run]($RUN_URL) for details." \
+            "github://${GH_TOKEN}@${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+```
+
+To notify a different repository, create a token as described in [Creating a Token](#creating-a-token), then store it as a repository or environment secret:
+
+1. Open the repository that runs the workflow and click **Settings**.
+2. In the sidebar, under **Security**, click **Secrets and variables**, then **Actions**.
+3. Click **New repository secret**.
+4. Enter a name such as `APPRISE_GITHUB_TOKEN`, paste your token as the value, and click **Add secret**.
+
+If you use the [GitHub CLI](https://cli.github.com/), `gh secret set APPRISE_GITHUB_TOKEN` does the same thing.
+
+Secret names cannot start with `GITHUB_`, so a name like `GITHUB_TOKEN_APPRISE` is refused.
+
+Use that secret in place of the built-in token:
+
+```yaml
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    environment: notifications
+    env:
+      GH_TOKEN: ${{ secrets.APPRISE_GITHUB_TOKEN }}
+    # ...steps that install Apprise and run your job...
+    steps:
+      - name: Open an issue in caronc/reports
+        run: |
+          apprise -t "Nightly load failed" -b "Review the workflow logs." \
+            "github://${GH_TOKEN}@caronc/reports?labels=nightly"
+```
+
+The `environment: notifications` line uses secrets from a GitHub environment named `notifications`. Omit it when using repository secrets.
+
+</TabItem>
+<TabItem label="Self-Hosted Apprise API">
+
+First, save the desired `github://` URL in Apprise API under a configuration key such as `github-alerts`. The GitHub token then stays on your server.
+
+Create a GitHub environment named `notifications` with these secrets:
+
+- `APPRISE_API_NOTIFY_URL`: the full endpoint, such as `https://apprise.example.com/notify/github-alerts`
+- `APPRISE_API_AUTH`: the Apprise API login in `user:password` form
+
+This workflow calls that endpoint with `curl` after a test failure:
+
+```yaml
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: notifications
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run the tests
+        run: ./run-tests.sh
+
+      - name: Notify Apprise API
+        if: failure()
+        env:
+          APPRISE_API_NOTIFY_URL: ${{ secrets.APPRISE_API_NOTIFY_URL }}
+          APPRISE_API_AUTH: ${{ secrets.APPRISE_API_AUTH }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl --fail-with-body \
+            --user "${APPRISE_API_AUTH}" \
+            --data-urlencode "title=Tests failed" \
+            --data-urlencode "body=See the workflow run: ${RUN_URL}" \
+            --data-urlencode "format=markdown" \
+            "${APPRISE_API_NOTIFY_URL}"
+```
+
+Remove `--user` and `APPRISE_API_AUTH` if authentication is disabled. See [API Usage](/api/usage/) for server configuration and authentication options.
+
+No extra setting is needed for `curl` to reach a public HTTPS endpoint. For an API available only on a private network, use a self-hosted runner on that network or [GitHub private networking](https://docs.github.com/en/actions/concepts/runners/private-networking).
+
+</TabItem>
+</Tabs>
+
+:::note
+Workflows from forked pull requests normally receive a read-only GitHub token and no repository or environment secrets. These examples are intended for trusted events or branches in the same repository.
+:::

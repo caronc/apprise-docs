@@ -1,0 +1,281 @@
+---
+title: "Notifications GitHub"
+description: "Ouvrir des tickets et des discussions GitHub, ou commenter des tickets, des pull requests et des discussions."
+sidebar:
+  label: "GitHub"
+
+source: https://github.com/
+
+schemas:
+  - github
+
+body_formats:
+  - markdown: default
+
+limits:
+  max_chars: 65536
+
+sample_urls:
+  - github://{token}@{owner}/{repo}
+  - github://{token}@{owner}/{repo}/issues/{number}
+  - github://{token}@{owner}/{repo}/pull/{number}
+  - github://{token}@{owner}/{repo}/discussions
+  - github://{token}@{owner}/{repo}/discussions/{number}
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<!-- SPONSORS:BANNER -->
+<!-- SERVICE:DETAILS -->
+
+## Configuration du compte
+
+Apprise se connecte à GitHub avec un jeton d'accès.
+
+Pour envoyer des notifications depuis GitHub Actions vers le même dépôt, utilisez le jeton intégré au workflow. Consultez [GitHub Actions](#github-actions).
+
+### Créer un jeton
+
+1. Rendez-vous sur [https://github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens) et cliquez sur **Generate new token**. Cela crée un **jeton à granularité fine** (fine-grained token), qui n'a accès qu'aux dépôts que vous choisissez.
+2. Donnez-lui un nom facile à reconnaître, comme `Apprise`, et choisissez une **Expiration**. GitHub vous enverra un e-mail avant son expiration.
+3. Réglez **Resource owner** sur l'utilisateur ou l'organisation propriétaire du dépôt.
+4. Sous **Repository access**, choisissez **Only select repositories** puis le dépôt à notifier.
+5. Sous **Permissions**, ajoutez celles dont vous avez besoin d'après le tableau ci-dessous. **Metadata: Read-only** est ajoutée automatiquement.
+6. Cliquez sur **Generate token** et copiez-le immédiatement. Il commence par `github_pat_` et n'est affiché qu'une seule fois.
+
+| Ce que vous voulez qu'Apprise fasse | Permission à ajouter                                                |
+| ----------------------------------- | ------------------------------------------------------------------- |
+| Ouvrir de nouveaux tickets          | **Issues** : Read and write                                         |
+| Commenter des tickets               | **Issues** : Read and write                                         |
+| Commenter des pull requests         | **Pull requests** : Read and write (ou **Issues** : Read and write) |
+| Lancer de nouvelles discussions     | **Discussions** : Read and write                                    |
+| Commenter des discussions           | **Discussions** : Read and write                                    |
+
+Un jeton classique (commençant par `ghp_`) fonctionne aussi. Donnez-lui la portée `repo`, ou seulement `public_repo` si le dépôt est public.
+
+:::caution
+Traitez votre jeton comme un mot de passe. Toute personne qui le possède peut faire tout ce que ses permissions autorisent.
+:::
+
+### Choisir une cible
+
+Remplacez `https://github.com/` par `github://{token}@` pour transformer une page GitHub en URL Apprise. Les exemples ci-dessous indiquent la page GitHub correspondante au-dessus de chaque commande.
+
+La racine du dépôt ouvre un nouveau ticket, tandis que `/discussions` lance une nouvelle discussion. Ajoutez le numéro d'un ticket, d'une pull request ou d'une discussion pour commenter cet élément.
+
+Les chemins se terminant par `/new`, comme `/issues/new`, créent aussi un nouvel élément. Une pull request nécessite toujours un numéro : Apprise peut la commenter, mais pas la créer.
+
+Pour notifier plusieurs endroits, ajoutez une URL pour chacun. Une URL contenant deux numéros, comme `/issues/12/23`, est refusée.
+
+Les discussions doivent d'abord être activées pour le dépôt : ouvrez ses **Settings**, puis sous **Features** cochez **Discussions**.
+
+Pour une tâche qui s'exécute chaque nuit, pointer vers un seul ticket (`/issues/42`) regroupe tous ses rapports dans un même fil, au lieu d'ouvrir un nouveau ticket à chaque fois.
+
+L'API de GitHub ne permet pas d'ajouter des pièces jointes, elles ne sont donc pas prises en charge.
+
+## Syntaxe
+
+La syntaxe valide est la suivante :
+
+- `github://{token}@{owner}/{repo}`
+- `github://{token}@{owner}/{repo}/issues/{number}`
+- `github://{token}@{owner}/{repo}/pull/{number}`
+- `github://{token}@{owner}/{repo}/discussions`
+- `github://{token}@{owner}/{repo}/discussions/{number}`
+- `github://{owner}/{repo}/?token={token}`
+
+## Détail des paramètres
+
+| Variable  | Obligatoire | Description                                                                                                                                                                                              |
+| --------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token     | Oui         | Votre jeton d'accès GitHub.                                                                                                                                                                              |
+| owner     | Oui         | L'utilisateur ou l'organisation propriétaire du dépôt.                                                                                                                                                   |
+| repo      | Oui         | Le nom du dépôt.                                                                                                                                                                                         |
+| kind      | Non         | Ce vers quoi l'URL pointe : `issues` (par défaut), `pull` ou `discussions`.                                                                                                                              |
+| number    | Non         | Le numéro du ticket, de la pull request ou de la discussion à commenter. Omettez-le pour ouvrir un nouveau ticket ou lancer une nouvelle discussion. Une pull request en a toujours besoin.              |
+| labels    | Non         | Une liste d'étiquettes, séparées par des virgules, à ajouter à un nouveau ticket. Les étiquettes doivent déjà exister dans le dépôt.                                                                     |
+| assignees | Non         | Une liste de noms d'utilisateur GitHub, séparés par des virgules, à qui assigner un nouveau ticket.                                                                                                      |
+| category  | Non         | La catégorie dans laquelle lancer une nouvelle discussion. Le nom (`Show and tell`) comme le nom court utilisé dans les liens GitHub (`show-and-tell`) fonctionnent. La valeur par défaut est `General`. |
+
+Lorsqu'un nouveau ticket ou une nouvelle discussion est ouvert, le titre de la notification devient son titre. S'il n'y a pas de titre, `Apprise Notifications` est utilisé. Lors d'un commentaire, le titre est placé en haut du commentaire.
+
+<!-- TEMPLATE:SERVICE-PARAMS -->
+
+## Exemples
+
+Ouvrir un nouveau ticket :
+
+```bash
+# Page GitHub : https://github.com/caronc/apprise
+apprise -vv -t "Échec du chargement nocturne" -b "L'étape **load** a échoué." \
+   "github://github_pat_abc123@caronc/apprise"
+```
+
+Ouvrir un nouveau ticket avec des étiquettes, assigné à un utilisateur :
+
+```bash
+# Page GitHub : https://github.com/caronc/apprise
+apprise -vv -t "Échec du chargement nocturne" -b "L'étape **load** a échoué." \
+   "github://github_pat_abc123@caronc/apprise?labels=bug,nightly&assignees=caronc"
+```
+
+Commenter un ticket ou une pull request existant :
+
+```bash
+# Page GitHub : https://github.com/caronc/apprise/issues/42
+apprise -vv -t "Échec du chargement nocturne" -b "L'étape **load** a échoué." \
+   "github://github_pat_abc123@caronc/apprise/issues/42"
+
+# Page GitHub : https://github.com/caronc/apprise/pull/1807
+apprise -vv -b "La compilation a réussi." \
+   "github://github_pat_abc123@caronc/apprise/pull/1807"
+```
+
+Lancer une nouvelle discussion, ou commenter une discussion existante :
+
+```bash
+# Page GitHub : https://github.com/caronc/apprise/discussions
+apprise -vv -t "La version 2.0 est disponible" -b "Lisez les **notes de version** pour plus de détails." \
+   "github://github_pat_abc123@caronc/apprise/discussions?category=Announcements"
+
+# Page GitHub : https://github.com/caronc/apprise/discussions/7
+apprise -vv -b "C'est maintenant corrigé." \
+   "github://github_pat_abc123@caronc/apprise/discussions/7"
+```
+
+## GitHub Actions
+
+GitHub Actions peut envoyer directement avec `github://` ou appeler un serveur Apprise API auto-hébergé. Conservez les jetons et les identifiants de l'API dans les secrets GitHub ; GitHub masque leurs valeurs dans les journaux du workflow.
+
+Le jeton intégré `secrets.GITHUB_TOKEN` fonctionne uniquement avec le dépôt qui exécute le workflow. Définissez ses droits avec un bloc `permissions:` :
+
+| Ce que vous voulez qu'Apprise fasse | Permission dans le workflow |
+| ----------------------------------- | --------------------------- |
+| Ouvrir de nouveaux tickets          | `issues: write`             |
+| Commenter des tickets               | `issues: write`             |
+| Commenter des pull requests         | `pull-requests: write`      |
+| Lancer ou commenter des discussions | `discussions: write`        |
+
+`${{ github.repository }}` contient déjà `owner/repo`, il s'insère donc directement dans l'URL Apprise.
+
+<Tabs syncKey="github-actions-delivery">
+<TabItem label="Envoi direct avec github://">
+
+Ce workflow utilise le jeton intégré pour commenter une pull request lorsque les tests échouent :
+
+```yaml
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Lancer les tests
+        run: ./run-tests.sh
+
+      - name: Commenter la pull request
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          pip install apprise
+          apprise -vv -t "Échec des tests" -b "Consultez [l'exécution du workflow]($RUN_URL) pour plus de détails." \
+            "github://${GH_TOKEN}@${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+```
+
+Pour notifier un autre dépôt, créez un jeton comme décrit dans [Créer un jeton](#créer-un-jeton), puis enregistrez-le comme secret de dépôt ou d'environnement :
+
+1. Ouvrez le dépôt qui exécute le workflow et cliquez sur **Settings**.
+2. Dans la barre latérale, sous **Security**, cliquez sur **Secrets and variables**, puis sur **Actions**.
+3. Cliquez sur **New repository secret**.
+4. Saisissez un nom comme `APPRISE_GITHUB_TOKEN`, collez votre jeton comme valeur, puis cliquez sur **Add secret**.
+
+Si vous utilisez la [GitHub CLI](https://cli.github.com/), `gh secret set APPRISE_GITHUB_TOKEN` fait la même chose.
+
+Les noms de secrets ne peuvent pas commencer par `GITHUB_`, un nom comme `GITHUB_TOKEN_APPRISE` est donc refusé.
+
+Utilisez ce secret à la place du jeton intégré :
+
+```yaml
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    environment: notifications
+    env:
+      GH_TOKEN: ${{ secrets.APPRISE_GITHUB_TOKEN }}
+    # ...étapes qui installent Apprise et exécutent votre tâche...
+    steps:
+      - name: Ouvrir un ticket dans caronc/reports
+        run: |
+          apprise -t "Échec du chargement nocturne" -b "Consultez les journaux du workflow." \
+            "github://${GH_TOKEN}@caronc/reports?labels=nightly"
+```
+
+La ligne `environment: notifications` utilise les secrets d'un environnement GitHub nommé `notifications`. Omettez-la si vous utilisez des secrets de dépôt.
+
+</TabItem>
+<TabItem label="Apprise API Auto-Hébergée">
+
+Commencez par enregistrer l'URL `github://` souhaitée dans Apprise API sous une clé de configuration telle que `github-alerts`. Le jeton GitHub reste ainsi sur votre serveur.
+
+Créez un environnement GitHub nommé `notifications` avec les secrets suivants :
+
+- `APPRISE_API_NOTIFY_URL` : le point de terminaison complet, par exemple `https://apprise.example.com/notify/github-alerts`
+- `APPRISE_API_AUTH` : les identifiants Apprise API au format `utilisateur:mot_de_passe`
+
+Ce workflow appelle ce point de terminaison avec `curl` après l'échec des tests :
+
+```yaml
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: notifications
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Lancer les tests
+        run: ./run-tests.sh
+
+      - name: Notifier Apprise API
+        if: failure()
+        env:
+          APPRISE_API_NOTIFY_URL: ${{ secrets.APPRISE_API_NOTIFY_URL }}
+          APPRISE_API_AUTH: ${{ secrets.APPRISE_API_AUTH }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl --fail-with-body \
+            --user "${APPRISE_API_AUTH}" \
+            --data-urlencode "title=Échec des tests" \
+            --data-urlencode "body=Consultez l’exécution du workflow : ${RUN_URL}" \
+            --data-urlencode "format=markdown" \
+            "${APPRISE_API_NOTIFY_URL}"
+```
+
+Supprimez `--user` et `APPRISE_API_AUTH` si l'authentification est désactivée. Consultez [Utilisation de l’API](../../api/usage/) pour la configuration du serveur et les options d'authentification.
+
+Aucun réglage supplémentaire n'est nécessaire pour que `curl` joigne un point de terminaison HTTPS public. Pour une API accessible uniquement sur un réseau privé, utilisez un runner auto-hébergé sur ce réseau ou le [réseau privé GitHub](https://docs.github.com/fr/actions/concepts/runners/private-networking).
+
+</TabItem>
+</Tabs>
+
+:::note
+Les workflows provenant de pull requests créées depuis un fork reçoivent normalement un jeton GitHub en lecture seule et aucun secret de dépôt ou d'environnement. Ces exemples sont destinés aux événements de confiance ou aux branches du même dépôt.
+:::
