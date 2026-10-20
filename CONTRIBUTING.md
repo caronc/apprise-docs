@@ -23,6 +23,10 @@ You are welcome to contribute:
 
 Small improvements are just as valuable as large ones.
 
+Before writing or restructuring a page, review the
+[documentation style guide](STYLE_GUIDE.md). It includes the standard pattern
+for headings, lists, and end-of-page navigation.
+
 ## Where Content Belongs
 
 Use these guidelines when adding or editing content:

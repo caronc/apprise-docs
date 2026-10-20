@@ -5,7 +5,13 @@ description: >
 tableOfContents: false
 ---
 
-import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components";
+import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
+import {
+  Card,
+  CardGrid,
+  Icon,
+  LinkButton,
+} from "@astrojs/starlight/components";
 
 import GitHubIcon from "~/components/icons/GitHubIcon.astro";
 import ShowcaseIcon from "~/components/icons/ShowcaseIcon.astro";
@@ -168,27 +174,17 @@ import "~/styles/landing.css";
 
     <Card>
       <div class="apprise-card-title">
-        <span class="apprise-card-icon">
-          <img src="/assets/google-play.svg" alt="" width="97" height="96" />
-        </span>
-        <span class="apprise-card-title-text">Apprise Mobile</span>
+        <span class="apprise-card-icon" aria-hidden="true"><Icon name="mobile-android" /></span>
+        <a class="apprise-mobile-docs" href="./mobile/">Apprise Mobile</a>
       </div>
 
       <div class="apprise-card-body">
-        Connectez-vous à votre serveur API Apprise auto-hébergé depuis Android. Envoyez des notifications,
+        Connectez-vous à votre serveur API Apprise auto-hébergé depuis Android, iPhone ou iPad. Envoyez des notifications,
         gérez vos services et consultez les résultats où que vous soyez.
       </div>
 
-      <div class="apprise-card-actions">
-        <LinkButton href="./mobile/" variant="minimal">
-          <span class="apprise-card-action">
-            <span class="apprise-card-action-label">Apprise Mobile</span>
-            <span class="apprise-card-action-icon">
-              <DocsIcon />
-            </span>
-          </span>
-        </LinkButton>
-      </div>
+      <MobileStoreLinks lang="fr" />
+
     </Card>
 
     <Card>
@@ -271,7 +267,7 @@ import "~/styles/landing.css";
       </li>
       <li class="apprise-why-item">
         <span class="apprise-why-term">Mobile</span>
-        <span class="apprise-why-text">Une application Android pour envoyer des notifications et suivre leur livraison où que vous soyez.</span>
+        <span class="apprise-why-text">Une application Android et iOS pour envoyer des notifications et suivre leur livraison où que vous soyez.</span>
       </li>
     </ul>
 

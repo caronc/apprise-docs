@@ -182,5 +182,10 @@
     "success_title": "Thank You",
     "success_heading": "Thank You!",
     "success_tagline": "Your donation means the world to us. Your support keeps Apprise open source, running, and growing."
+  },
+  "mobileStore": {
+    "download": "Download Apprise Mobile",
+    "appStore": "Download on the App Store",
+    "googlePlay": "Get it on Google Play"
   }
 }
