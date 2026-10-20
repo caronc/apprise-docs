@@ -9,6 +9,8 @@ source: https://www.spike.sh
 schemas:
   - spike
 
+has_incident: true
+
 sample_urls:
   - https://api.spike.sh/v1/alerts/{integration_key}
   - spike://{integration_key}

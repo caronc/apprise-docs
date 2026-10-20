@@ -43,6 +43,7 @@ const ALLOWED_KEYS = new Set([
   "has_sms",
   "has_chat",
   "has_email",
+  "has_incident",
   "has_local",
   "has_selfhosted",
   "schemas",

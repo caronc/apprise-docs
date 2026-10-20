@@ -261,6 +261,7 @@ actually supports that capability.
 | `has_sms`         | `sms`            | Service focuses on SMS/MMS delivery.                         |
 | `has_chat`        | `chat`           | Service targets chat rooms, channels, or direct messages.    |
 | `has_email`       | `email`          | Service focuses on email delivery.                           |
+| `has_incident`    | `incident`       | Service is an incident management or on-call alerting tool.  |
 | `has_local`       | `local`          | Service targets a local/native system or device.             |
 | `has_selfhosted`  | `selfhosted`     | Upstream app/service supports a self-hosted deployment.      |
 | `has_attachments` | `attachments`    | Plugin sends file attachments.                               |

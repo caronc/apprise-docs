@@ -9,6 +9,8 @@ source: https://incident.io
 schemas:
   - incidentio
 
+has_incident: true
+
 body_formats:
   - markdown
 

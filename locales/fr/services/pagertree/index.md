@@ -9,6 +9,8 @@ source: https://pagertree.com
 schemas:
   - pagertree
 
+has_incident: true
+
 sample_urls:
   - pagertree://{integration}
   - pagertree://{integration}?action=resolve&thirdparty_id=abc123

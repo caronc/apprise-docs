@@ -35,9 +35,9 @@ AMQP permet à Apprise de publier des notifications par l'intermédiaire d'un co
 
 Deux protocoles très différents portent le nom AMQP. Installez la bibliothèque correspondant à celui que parle votre courtier (ou les deux) :
 
-| Version | Utilisée par                                                             | Installation                     |
-| ------- | ------------------------------------------------------------------------ | -------------------------------- |
-| 0.9.1   | RabbitMQ (par défaut) et la plupart des courtiers qui se disent « AMQP » | `pip install pika`               |
+| Version | Utilisée par                                                                    | Installation                     |
+| ------- | ------------------------------------------------------------------------------- | -------------------------------- |
+| 0.9.1   | RabbitMQ (par défaut) et la plupart des courtiers qui se disent « AMQP »        | `pip install pika`               |
 | 1.0     | ActiveMQ Artemis, Qpid, Azure Service Bus, RabbitMQ 4.0 et versions ultérieures | `pip install python-qpid-proton` |
 
 Si vous ne précisez pas `?version=`, Apprise utilise **0.9.1** lorsque `pika` est installé, et **1.0** sinon.
@@ -90,7 +90,7 @@ Pour une connexion sécurisée (TLS), utilisez plutôt `amqps://` :
 | port       | Non    | Le port sur lequel le courtier écoute. Par défaut **5672** pour `amqp://` et **5671** pour `amqps://`.                                                                                                                                                           |
 | user       | Non    | L'utilisateur avec lequel se connecter. Sans utilisateur, AMQP 0.9.1 utilise le compte `guest` du courtier et AMQP 1.0 se connecte de façon anonyme.                                                                                                             |
 | password   | Non    | Le mot de passe de votre utilisateur.                                                                                                                                                                                                                            |
-| target     | Non    | Une ou plusieurs clés de routage (AMQP 0.9.1) ou adresses (AMQP 1.0) vers lesquelles publier. Une cible n'est facultative que lorsqu'AMQP 0.9.1 publie vers un `exchange`.                                                                                      |
+| target     | Non    | Une ou plusieurs clés de routage (AMQP 0.9.1) ou adresses (AMQP 1.0) vers lesquelles publier. Une cible n'est facultative que lorsqu'AMQP 0.9.1 publie vers un `exchange`.                                                                                       |
 | to         | Non    | Un alias de `target`. Utilisez-le pour les cibles qui contiennent une barre oblique.                                                                                                                                                                             |
 | version    | Non    | La version d'AMQP à utiliser : `0.9.1` ou `1.0`. Les formes courtes comme `0.9` et `1` fonctionnent aussi. `ver` est un alias. Par défaut `0.9.1` lorsque `pika` est installé, sinon `1.0`. Utiliser `exchange` ou `mandatory` sans version sélectionne `0.9.1`. |
 | exchange   | Non    | AMQP 0.9.1 uniquement. L'échange vers lequel publier. Par défaut, l'échange par défaut du courtier, qui livre directement à la file d'attente nommée par chaque cible.                                                                                           |

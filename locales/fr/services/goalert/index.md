@@ -10,6 +10,7 @@ schemas:
   - goalert: insecure
   - goalerts
 
+has_incident: true
 has_selfhosted: true
 
 body_formats:

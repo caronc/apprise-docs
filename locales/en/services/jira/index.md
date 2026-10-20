@@ -9,6 +9,8 @@ source: https://atlassian.com/
 schemas:
   - jira
 
+has_incident: true
+
 sample_urls:
   - jira://{apikey}
   - jira://{apikey}/@{user}

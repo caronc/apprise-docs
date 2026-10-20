@@ -9,6 +9,7 @@ source: https://www.pagerduty.com
 schemas:
   - pagerduty
 
+has_incident: true
 has_image: true
 
 sample_urls:

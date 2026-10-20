@@ -9,6 +9,8 @@ source: https://www.opsgenie.com
 schemas:
   - opsgenie
 
+has_incident: true
+
 sample_urls:
   - opsgenie://{apikey}/
   - opsgenie://{apikey}/@{user}

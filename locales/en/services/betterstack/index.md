@@ -9,6 +9,8 @@ source: https://betterstack.com
 schemas:
   - betterstack
 
+has_incident: true
+
 body_formats:
   - text
 

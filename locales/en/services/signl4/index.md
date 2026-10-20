@@ -9,6 +9,8 @@ source: https://www.signl4.com
 schemas:
   - signl4
 
+has_incident: true
+
 sample_urls:
   - signl4://{secret}
 ---

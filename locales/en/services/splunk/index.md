@@ -10,6 +10,8 @@ schemas:
   - splunk
   - victorops
 
+has_incident: true
+
 sample_urls:
   - splunk://{routing_key}@{apikey}
   - splunk://{routing_key}@{apikey}/{entity_id}

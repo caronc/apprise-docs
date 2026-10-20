@@ -258,7 +258,8 @@ Each service page starts with a frontmatter block that describes its capabilitie
 
 This metadata is **used to generate the Overview section automatically** on the site.
 For capability flags such as `has_sms`, `has_chat`, `has_email`,
-`has_local`, `has_selfhosted`, `has_attachments`, and `has_image`, use
+`has_incident`, `has_local`, `has_selfhosted`, `has_attachments`, and
+`has_image`, use
 the full guidance in [CONTRIBUTING.md](CONTRIBUTING.md#service-capability-flags).
 
 A minimal example:
