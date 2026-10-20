@@ -37,13 +37,13 @@ La syntaxe valide est la suivante :
 
 ## Détail des Paramètres
 
-| Variable    | Obligatoire | Description                                                                                                                                                                                                                                  |
-| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| integration | Oui         | Prefix ID de votre integration webhook. Il se trouve en haut de la page de l'integration.                                                                                                                                                    |
-| action      | Non         | Action du webhook. Les valeurs possibles sont `create`, `acknowledge` et `resolve`. Lorsque vous utilisez `acknowledge` ou `resolve`, utilisez aussi le parametre `thirdparty_id` pour indiquer a PagerTree quelle alerte doit etre traitee. |
-| thirdparty  | Non         | Identifiant utilise par PagerTree pour faire le lien entre des applications tierces et des alertes. Vous pouvez fournir le votre, sinon un UUID aleatoire sera genere pour vous.                                                             |
-| urgency     | Non         | Niveau d'urgence de l'alerte a generer. Les valeurs possibles sont `silent`, `low`, `medium`, `high` ou `critical`. Si aucune valeur n'est fournie, PagerTree utilisera celle definie par defaut dans l'integration.                         |
-| tags        | Non         | Liste de tags separes par des virgules, par exemple `prod,server,outage`.                                                                                                                                                                    |
+| Variable    | Obligatoire | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| integration | Oui         | Prefix ID de votre integration webhook. Il se trouve en haut de la page de l'integration.                                                                                                                                                                                                                                                                                                                                                                  |
+| action      | Non         | Ce qu'il faut faire de l'alerte. Les valeurs possibles sont `create`, `acknowledge`, `resolve` et `map`. **map** résout l'alerte quand le type de notification est `success` et en crée une pour tous les autres types. La valeur par défaut est `create`.                                                                                                                                                                                                 |
+| thirdparty  | Non         | L'identifiant que PagerTree utilise pour rattacher les événements à la même alerte. `tid` et `dedup` sont des alias. Avec `create` et sans identifiant, un nouvel identifiant aléatoire est utilisé à chaque fois. Avec toute autre action et sans identifiant, le titre (ou la première ligne du message s'il n'y a pas de titre) est utilisé : une notification `success` résout donc l'alerte qu'une notification `failure` avec le même titre a créée. |
+| urgency     | Non         | Niveau d'urgence de l'alerte a generer. Les valeurs possibles sont `silent`, `low`, `medium`, `high` ou `critical`. Si aucune valeur n'est fournie, PagerTree utilisera celle definie par defaut dans l'integration.                                                                                                                                                                                                                                       |
+| tags        | Non         | Liste de tags separes par des virgules, par exemple `prod,server,outage`.                                                                                                                                                                                                                                                                                                                                                                                  |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -56,6 +56,18 @@ Envoyer une commande de creation PagerTree.
 # Supposons que notre {integration_id} soit int_0123456789
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "pagertree://int_0123456789"
+```
+
+### Résoudre des alertes
+
+Utilisez `action=map` pour créer une alerte lors d'une notification `failure`, puis la résoudre plus tard en envoyant une notification `success` avec le même titre :
+
+```bash
+apprise -vv -n failure -t "Disque presque plein" -b "sda est à 95 %" \
+   "pagertree://int_xxxxxxxxxxx?action=map"
+
+apprise -vv -n success -t "Disque presque plein" -b "sda est revenu à la normale" \
+   "pagertree://int_xxxxxxxxxxx?action=map"
 ```
 
 ### Manipulation du Payload

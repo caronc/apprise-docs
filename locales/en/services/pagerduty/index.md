@@ -37,18 +37,20 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable        | Required | Description                                                                                                                                                                                                                           |
-| --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| integration_key | Yes      | This is provided to you on the Events API V2 integration's detail page. This can also be referred to as a Routing Key.                                                                                                                |
-| api_key         | Yes      | The API Key associated with your setup                                                                                                                                                                                                |
-| group           | No       | Provide a group (string) as part of the payload                                                                                                                                                                                       |
-| class           | No       | Provide a class (string) as part of the payload                                                                                                                                                                                       |
-| region          | No       | By default this takes on the value of **us**. But you can optionally set it to **eu** as well.                                                                                                                                        |
-| source          | No       | Provide a source (string) as part of the payload; the default is **Apprise** if one isn't specified.                                                                                                                                  |
-| component       | No       | Provide a component (string) as part of the payload; the default is **Notification** if one isn't specified.                                                                                                                          |
-| click           | No       | Provide a clickable URL to associate with the notice.                                                                                                                                                                                 |
-| image           | No       | Associate the notification status via a represented icon. You can set this value to `no` if you do not want this to occur.                                                                                                            |
-| severity        | No       | The notification severity is otherwise detected on its own, however if you wish to force a specific mode always, you can do so by providing this as part of the URL. Possible values are: `info`, `warning`, `critical`, and `error`. |
+| Variable        | Required | Description                                                                                                                                                                                                                                                                                                                                                             |
+| --------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| integration_key | Yes      | This is provided to you on the Events API V2 integration's detail page. This can also be referred to as a Routing Key.                                                                                                                                                                                                                                                  |
+| api_key         | Yes      | The API Key associated with your setup                                                                                                                                                                                                                                                                                                                                  |
+| group           | No       | Provide a group (string) as part of the payload                                                                                                                                                                                                                                                                                                                         |
+| class           | No       | Provide a class (string) as part of the payload                                                                                                                                                                                                                                                                                                                         |
+| region          | No       | By default this takes on the value of **us**. But you can optionally set it to **eu** as well.                                                                                                                                                                                                                                                                          |
+| source          | No       | Provide a source (string) as part of the payload; the default is **Apprise** if one isn't specified.                                                                                                                                                                                                                                                                    |
+| component       | No       | Provide a component (string) as part of the payload; the default is **Notification** if one isn't specified.                                                                                                                                                                                                                                                            |
+| click           | No       | Provide a clickable URL to associate with the notice.                                                                                                                                                                                                                                                                                                                   |
+| image           | No       | Associate the notification status via a represented icon. You can set this value to `no` if you do not want this to occur.                                                                                                                                                                                                                                              |
+| severity        | No       | The notification severity is otherwise detected on its own, however if you wish to force a specific mode always, you can do so by providing this as part of the URL. Possible values are: `info`, `warning`, `critical`, and `error`.                                                                                                                                   |
+| action          | No       | What to do with the incident. Possible values are **trigger**, **map** and **resolve**. **trigger** always raises an incident. **map** resolves the incident when the notification type is `success` and raises one for every other type. **resolve** always resolves it. The default is **trigger**.                                                                   |
+| dedup           | No       | A deduplication key. Events sent with the same key update the same open incident instead of creating a new one, and a resolve closes it. With **map** or **resolve** and no key, the title (or the first line of the message when there is no title) is used as the key, so a `success` notification resolves the incident that a `failure` with the same title raised. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -64,6 +66,25 @@ Send a Pager Duty trigger to our **source** `node01.local` and the **component**
 # Assuming our {component} is drive_sda
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/node01.local/drive_sda/"
+```
+
+### Resolving Incidents
+
+Use `action=map` to raise an incident on a `failure` and resolve it later by sending a `success` notification with the same title:
+
+```bash
+apprise -vv -n failure -t "Disk almost full" -b "sda is at 95%" \
+   "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/node01.local/drive_sda/?action=map"
+
+apprise -vv -n success -t "Disk almost full" -b "sda is back to normal" \
+   "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/node01.local/drive_sda/?action=map"
+```
+
+Always resolve the incident with a fixed deduplication key, whatever the notification type:
+
+```bash
+apprise -vv -b "sda is back to normal" \
+   "pagerduty://A1BRTD4JD@TIiajkdnlazkcOXrIdevi7F/?dedup=sda-disk&action=resolve"
 ```
 
 ### Custom Details
