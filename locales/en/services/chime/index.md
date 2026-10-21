@@ -9,6 +9,8 @@ source: https://aws.amazon.com/chime/
 schemas:
   - chime
 
+ended: 2026-02-20
+
 has_chat: true
 
 sample_urls:
@@ -17,6 +19,11 @@ sample_urls:
 limits:
   max_chars: 4096
 ---
+
+:::caution
+
+This service has been retired upstream. All information below pertains to its legacy configuration.
+:::
 
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
