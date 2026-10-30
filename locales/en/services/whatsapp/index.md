@@ -22,6 +22,10 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
+:::note
+This service uses Meta's official WhatsApp Business platform. If you only want to send notifications from your own WhatsApp number (including to groups) without Meta's business setup, see [Whapi.Cloud](../whapi/).
+:::
+
 ## Account Setup
 
 Meta's WhatsApp Cloud API setup is split across two separate portals: [Meta Business Manager](https://business.facebook.com/) for managing System Users and permanent tokens, and the [Meta Developer Dashboard](https://developers.facebook.com/) for creating your app and finding your Phone Number ID.
