@@ -15,7 +15,7 @@ sample_urls:
   - misskeys://{token}@{host}
 
 limits:
-  max_chars: 500
+  max_chars: 512
 ---
 
 <!-- SPONSORS:BANNER -->

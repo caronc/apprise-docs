@@ -9,8 +9,6 @@ source: https://pushed.co/
 schemas:
   - pushed
 
-has_sms: true
-
 sample_urls:
   - pushed://{app_key}/{app_secret}
   - pushed://{app_key}/{app_secret}/@{user_pushed_id}

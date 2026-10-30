@@ -16,9 +16,6 @@ sample_urls:
   - evolution://{apikey}@{host}/{instance}/{phoneNo}
   - evolutions://{apikey}@{host}/{instance}/{phoneNo}
   - evolution://{apikey}@{host}:{port}/{instance}/{phoneNo1}/{phoneNo2}
-
-limits:
-  max_chars: 65536
 ---
 
 <!-- SPONSORS:BANNER -->

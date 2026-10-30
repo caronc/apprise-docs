@@ -12,9 +12,6 @@ schemas:
 sample_urls:
   - https://push.spug.dev/send/{token}
   - spugpush://{token}
-
-limits:
-  max_chars: 10000
 ---
 
 <!-- SPONSORS:BANNER -->

@@ -12,9 +12,6 @@ schemas:
 
 has_selfhosted: true
 
-limits:
-  max_chars: 4096
-
 sample_urls:
   - hassio://{host}/{access_token}
   - hassio://{host}/{access_token}/{service}

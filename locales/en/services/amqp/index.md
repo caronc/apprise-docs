@@ -24,6 +24,9 @@ sample_urls:
   - amqps://{user}:{password}@{host}/{queue}
   - amqps://{user}:{password}@{host}/?exchange={exchange}
   - amqps://{user}:{password}@{host}/?version=1.0&to={address}
+
+limits:
+  max_chars: 16777216
 ---
 
 <!-- SPONSORS:BANNER -->

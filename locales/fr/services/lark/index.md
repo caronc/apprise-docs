@@ -16,7 +16,7 @@ sample_urls:
   - lark://{token}
 
 limits:
-  max_chars: 20000
+  max_chars: 19985
 ---
 
 <!-- SPONSORS:BANNER -->

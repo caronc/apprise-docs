@@ -11,6 +11,9 @@ schemas:
 
 sample_urls:
   - strmlabs://{access_token}/
+
+limits:
+  max_chars: 255
 ---
 
 <!-- SPONSORS:BANNER -->

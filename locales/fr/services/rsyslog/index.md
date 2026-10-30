@@ -9,6 +9,8 @@ source: https://tools.ietf.org/html/rfc5424
 schemas:
   - rsyslog: insecure
 
+has_selfhosted: true
+
 sample_urls:
   - rsyslog://{host}
   - rsyslog://{host}:{port}

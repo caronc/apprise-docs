@@ -11,9 +11,6 @@ has_image: true
 
 sample_urls:
   - macosx://
-
-limits:
-  max_chars: 250
 ---
 
 <!-- SPONSORS:BANNER -->

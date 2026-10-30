@@ -18,9 +18,6 @@ sample_urls:
   - kde://
   - qt://
   - glib://
-
-limits:
-  max_chars: 250
 ---
 
 <!-- SPONSORS:BANNER -->

@@ -17,6 +17,9 @@ sample_urls:
   - splunk://{routing_key}@{apikey}/{entity_id}
   - victorops://{routing_key}@{apikey}
   - victorops://{routing_key}@{apikey}/{entity_id}
+
+limits:
+  max_chars: 400
 ---
 
 <!-- SPONSORS:BANNER -->

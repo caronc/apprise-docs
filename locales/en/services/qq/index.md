@@ -14,9 +14,6 @@ has_chat: true
 sample_urls:
   - https://qmsg.zendee.cn/send/{token}
   - qq://{token}
-
-limits:
-  max_chars: 10000
 ---
 
 <!-- SPONSORS:BANNER -->

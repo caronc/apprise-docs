@@ -16,6 +16,9 @@ sample_urls:
   - psafers://{private_key}
   - psafers://{private_key}/{device_id}
   - psafers://{private_key}/{device_id1}/{device_id2}/{device_idN}
+
+limits:
+  max_chars: 5000
 ---
 
 <!-- SPONSORS:BANNER -->

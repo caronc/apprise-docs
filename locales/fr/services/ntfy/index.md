@@ -20,6 +20,9 @@ sample_urls:
   - ntfy://{user}@{host}:{port}/{topics}
   - ntfy://{user}:{password}@{host}/{topics}
   - ntfy://{token}@{hostname}/{topics}
+
+limits:
+  max_chars: 7800
 ---
 
 <!-- SPONSORS:BANNER -->

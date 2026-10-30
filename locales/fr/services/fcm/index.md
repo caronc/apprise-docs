@@ -18,7 +18,7 @@ sample_urls:
   - fcm://{APIKey}/#{Topic1}/#{Topic2}/#{TopicN}
 
 limits:
-  max_chars: 5000
+  max_chars: 1024
 ---
 
 <!-- SPONSORS:BANNER -->

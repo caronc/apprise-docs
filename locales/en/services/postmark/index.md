@@ -9,9 +9,6 @@ source: https://postmarkapp.com
 schemas:
   - postmark
 
-limits:
-  max_chars: 10485760
-
 has_email: true
 has_attachments: true
 

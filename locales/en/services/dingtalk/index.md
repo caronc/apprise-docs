@@ -9,7 +9,7 @@ source: https://www.dingtalk.com/
 schemas:
   - dingtalk
 
-has_sms: true
+has_chat: true
 
 body_formats:
   - text: default
@@ -22,7 +22,7 @@ sample_urls:
   - dingtalk://{Secret}@{ApiKey}/{ToPhoneNo1}/{ToPhoneNo2}/{ToPhoneNoN}
 
 limits:
-  max_chars: 160
+  max_chars: 19985
 ---
 
 <!-- SPONSORS:BANNER -->

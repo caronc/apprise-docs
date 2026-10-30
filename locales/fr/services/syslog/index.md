@@ -9,14 +9,11 @@ source: https://tools.ietf.org/html/rfc5424
 schemas:
   - syslog: insecure
 
-has_sms: true
+has_local: true
 
 sample_urls:
   - syslog://
   - syslog://{facility}
-
-limits:
-  max_chars: 160
 ---
 
 <!-- SPONSORS:BANNER -->

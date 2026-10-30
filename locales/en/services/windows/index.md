@@ -14,9 +14,6 @@ has_image: true
 
 sample_urls:
   - windows://
-
-limits:
-  max_chars: 250
 ---
 
 <!-- SPONSORS:BANNER -->

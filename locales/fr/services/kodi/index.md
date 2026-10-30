@@ -18,9 +18,6 @@ sample_urls:
   - kodi://{hostname}:{port}
   - kodi://{userid}:{password}@{hostname}
   - kodis://{userid}:{password}@{hostname}:{port}
-
-limits:
-  max_chars: 250
 ---
 
 <!-- SPONSORS:BANNER -->

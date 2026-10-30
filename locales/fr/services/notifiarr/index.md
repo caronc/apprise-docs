@@ -4,6 +4,9 @@ description: "Envoyer des notifications Notifiarr."
 
 sample_urls:
   - notifiarr://{api_key}/{channel_id}
+
+limits:
+  max_chars: 4096
 ---
 
 ## Notifications Notifiarr

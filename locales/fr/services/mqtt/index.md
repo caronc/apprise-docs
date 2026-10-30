@@ -16,6 +16,9 @@ sample_urls:
   - mqtts://{host}/{topic}
   - mqtts://{host}:{port}/{topic}
   - mqtts://{user}@{host}:{port}/{topic}
+
+limits:
+  max_chars: 268435455
 ---
 
 <!-- SPONSORS:BANNER -->

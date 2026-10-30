@@ -14,6 +14,9 @@ has_chat: true
 sample_urls:
   - wecombot://{botkey}
   - https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=abcd
+
+limits:
+  max_chars: 2048
 ---
 
 <!-- SPONSORS:BANNER -->

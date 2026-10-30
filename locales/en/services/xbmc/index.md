@@ -17,9 +17,6 @@ sample_urls:
   - xbmc://{hostname}:{port}
   - xbmc://{userid}:{password}@{hostname}
   - xbmc://{userid}:{password}@{hostname}:{port}
-
-limits:
-  max_chars: 250
 ---
 
 <!-- SPONSORS:BANNER -->

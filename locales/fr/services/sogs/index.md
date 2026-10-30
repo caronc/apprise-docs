@@ -18,6 +18,9 @@ sample_urls:
   - sessions://{public_key}:{seed}@{hostname}/{room}
   - sessions://{public_key}:{seed}@{hostname}:{port}/{room}
   - session://{public_key}:{seed}@{hostname}/{room}
+
+limits:
+  max_chars: 2000
 ---
 
 ## Session Open Group Server

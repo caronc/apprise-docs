@@ -15,9 +15,6 @@ has_image: true
 body_formats:
   - markdown
 
-limits:
-  max_chars: 32768
-
 sample_urls:
   - ilert://{integration_key}
   - ilert://{integration_key}?priority=high

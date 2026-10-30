@@ -15,9 +15,6 @@ has_image: true
 sample_urls:
   - pingram://{ApiKey}/{Target}
   - pingram://{Type}@{ApiKey}/{Target}
-
-limits:
-  max_chars: 160
 ---
 
 :::note

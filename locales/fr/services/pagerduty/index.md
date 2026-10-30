@@ -16,6 +16,9 @@ sample_urls:
   - pagerduty://{integration_key}@{api_key}
   - pagerduty://{integration_key}@{api_key}/{source}
   - pagerduty://{integration_key}@{api_key}/{source}/{component}
+
+limits:
+  max_chars: 1024
 ---
 
 <!-- SPONSORS:BANNER -->
