@@ -25,9 +25,9 @@ limits:
 
 ## Account Setup
 
-Create an account and an API key in the [TextKit console](https://jointextkit.com/console). Keys start with `ssms_sk_`.
+Create an account and an API key in the [TextKit console](https://jointextkit.com/console). Keys start with `tk_sk_`.
 
-A test key (`ssms_sk_test_`) simulates each send, so nothing reaches a phone. Live keys are enabled after a short live-access review.
+A test key (`tk_sk_test_`) simulates each send, so nothing reaches a phone. Live keys are enabled after a short live-access review.
 
 ## Syntax
 
@@ -54,10 +54,10 @@ Each `{to_phone}` is sent its own copy of the message.
 Send a TextKit notification:
 
 ```bash
-# Assuming our {apikey} is ssms_sk_abc123
+# Assuming our {apikey} is tk_sk_abc123
 # Assuming we want to notify +15551232000
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   textkit://ssms_sk_abc123/15551232000
+   textkit://tk_sk_abc123/15551232000
 ```
 
 Send to two people from a chosen number:
@@ -65,5 +65,5 @@ Send to two people from a chosen number:
 ```bash
 # Assuming our sending number is +15005550100
 apprise -vv -b "The nightly backup did not finish." \
-   "textkit://ssms_sk_abc123/15551232000/15551232001?from=15005550100"
+   "textkit://tk_sk_abc123/15551232000/15551232001?from=15005550100"
 ```
