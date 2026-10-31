@@ -24,7 +24,7 @@ sample_urls:
   - nostr://{secret_key}/{name}@{domain}
 
 limits:
-  max_chars: 8192
+  max_chars: 7000
 ---
 
 <!-- SPONSORS:BANNER -->
