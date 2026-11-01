@@ -1,18 +1,22 @@
 ---
-title: "Burst SMS Notifications"
-description: "Send Burst SMS notifications."
+title: "Kudosity Notifications"
+description: "Send Kudosity (formerly Burst SMS) notifications."
 sidebar:
-  label: "Burst SMS"
+  label: "Kudosity"
 
-source: https://burstsms.com/
+keywords: "burstsms, kudosity"
+
+source: https://kudosity.com/
 
 schemas:
   - burstsms
+  - kudosity
 
 has_sms: true
 
 sample_urls:
   - burstsms://{api_key}:{secret}@{sender_id}/{targets}
+  - kudosity://{api_key}:{secret}@{sender_id}/{targets}
 
 limits:
   max_chars: 160
@@ -23,25 +27,30 @@ limits:
 
 ## Account Setup
 
-You need to have an account with [Burst SMS](https://burstsms.com/). Visit your profile options and create a `Secret` to associate with your account. You'll notice that there is already an `API Key` present. These will be used for your credentials.
+You need to have an account with [Kudosity](https://kudosity.com/). Burst SMS is now Kudosity, so an existing Burst SMS account works as is.
 
-Burst SMS will set you up with a Sender ID that you're notifications will originate from. This must be provided as part of the Apprise URL as well.
+In your account, open **Settings** and then **API Settings**. You'll notice that there is already an `API Key` present. Create a `Secret` to go with it. These will be used for your credentials.
+
+Kudosity will set you up with a Sender ID that your notifications will originate from. This must be provided as part of the Apprise URL as well.
+
+Both `burstsms://` and `kudosity://` work the same way.
 
 ## Syntax
 
 Valid syntax is as follows:
 
 - `burstsms://{api_key}:{secret}@{sender_id}/{targets}`
+- `kudosity://{api_key}:{secret}@{sender_id}/{targets}`
 
 ## Parameter Breakdown
 
 | Variable  | Required | Description                                                                                                                                                                                                  |
 | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| api_key   | Yes      | This is the **API Key** associated with your Bulk SMS Account                                                                                                                                                |
-| secret    | Yes      | This is the **Client Secret** associated with your Bulk SMS Account                                                                                                                                          |
-| sender_id | Yes      | This is the **Phone Number** associated with your Bulk SMS Account.                                                                                                                                          |
+| api_key   | Yes      | This is the **API Key** associated with your Kudosity Account                                                                                                                                                |
+| secret    | Yes      | This is the **Client Secret** associated with your Kudosity Account                                                                                                                                          |
+| sender_id | Yes      | This is the **Phone Number** associated with your Kudosity Account.                                                                                                                                          |
 | targets   | Yes      | Optionally identify the phone numbers you wish to send your **SMS** Message to.                                                                                                                              |
-| country   | No       | Optionally specify the `countrycode` which is either `en`, `gb`, `au` or `nz`. By default this is set to `us`                                                                                                |
+| country   | No       | Optionally specify the `countrycode` which is either `us`, `gb`, `au` or `nz`. By default this is set to `us`                                                                                                |
 | validity  | No       | Optionally define how long an unsent SMS message is valid for (and will be attempted to be resent). By default this is set to zero (0) for the maximum amount of validity. This value is defined in minutes. |
 | batch     | No       | Optionally send notifications in a batch (vs individually). By default this is set to `No`.                                                                                                                  |
 
@@ -49,7 +58,7 @@ Valid syntax is as follows:
 
 ## Examples
 
-Send a Burst SMS Notification:
+Send a Kudosity Notification:
 
 ```bash
 # Assuming our {APIKey} is bc1451bd

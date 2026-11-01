@@ -1,18 +1,22 @@
 ---
-title: "Notifications Burst SMS"
-description: "Envoyer des notifications Burst SMS."
+title: "Notifications Kudosity"
+description: "Envoyer des notifications Kudosity (anciennement Burst SMS)."
 sidebar:
-  label: "Burst SMS"
+  label: "Kudosity"
 
-source: https://burstsms.com/
+keywords: "burstsms, kudosity"
+
+source: https://kudosity.com/
 
 schemas:
   - burstsms
+  - kudosity
 
 has_sms: true
 
 sample_urls:
   - burstsms://{api_key}:{secret}@{sender_id}/{targets}
+  - kudosity://{api_key}:{secret}@{sender_id}/{targets}
 
 limits:
   max_chars: 160
@@ -23,25 +27,30 @@ limits:
 
 ## Configuration du Compte
 
-Vous devez disposer d'un compte chez [Burst SMS](https://burstsms.com/). Rendez-vous dans les options de votre profil et creez un `Secret` a associer a votre compte. Vous remarquerez qu'une `cle API` est deja presente. Ces deux valeurs seront utilisees comme informations d'identification.
+Vous devez disposer d'un compte chez [Kudosity](https://kudosity.com/). Burst SMS s'appelle desormais Kudosity, donc un compte Burst SMS existant fonctionne tel quel.
 
-Burst SMS vous attribuera egalement un Sender ID a partir duquel vos notifications seront envoyees. Cette valeur doit aussi etre fournie dans l'URL Apprise.
+Dans votre compte, ouvrez **Settings** puis **API Settings**. Vous remarquerez qu'une `cle API` est deja presente. Creez un `Secret` a lui associer. Ces deux valeurs seront utilisees comme informations d'identification.
+
+Kudosity vous attribuera egalement un Sender ID a partir duquel vos notifications seront envoyees. Cette valeur doit aussi etre fournie dans l'URL Apprise.
+
+`burstsms://` et `kudosity://` fonctionnent de la meme maniere.
 
 ## Syntaxe
 
 La syntaxe valide est la suivante :
 
 - `burstsms://{api_key}:{secret}@{sender_id}/{targets}`
+- `kudosity://{api_key}:{secret}@{sender_id}/{targets}`
 
 ## Détail des Paramètres
 
 | Variable  | Obligatoire | Description                                                                                                                                                                                                                         |
 | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| api_key   | Oui         | **Cle API** associee a votre compte Burst SMS.                                                                                                                                                                                      |
-| secret    | Oui         | **Client Secret** associe a votre compte Burst SMS.                                                                                                                                                                                 |
-| sender_id | Oui         | **Phone Number** associe a votre compte Burst SMS.                                                                                                                                                                                  |
+| api_key   | Oui         | **Cle API** associee a votre compte Kudosity.                                                                                                                                                                                       |
+| secret    | Oui         | **Client Secret** associe a votre compte Kudosity.                                                                                                                                                                                  |
+| sender_id | Oui         | **Phone Number** associe a votre compte Kudosity.                                                                                                                                                                                   |
 | targets   | Oui         | Permet d'identifier les numeros de telephone auxquels vous souhaitez envoyer votre message **SMS**.                                                                                                                                 |
-| country   | Non         | Permet facultativement de preciser le `countrycode`, `en`, `gb`, `au` ou `nz`. La valeur par defaut est `us`.                                                                                                                       |
+| country   | Non         | Permet facultativement de preciser le `countrycode`, `us`, `gb`, `au` ou `nz`. La valeur par defaut est `us`.                                                                                                                       |
 | validity  | Non         | Permet facultativement de definir pendant combien de temps un SMS non envoye reste valide, et continuera donc d'etre retente. La valeur par defaut est zero, `0`, pour une validite maximale. Cette valeur est exprimee en minutes. |
 | batch     | Non         | Permet facultativement d'envoyer les notifications en lot, au lieu de maniere individuelle. Par defaut, cette option est definie sur `No`.                                                                                          |
 
@@ -49,7 +58,7 @@ La syntaxe valide est la suivante :
 
 ## Exemples
 
-Envoyer une notification Burst SMS :
+Envoyer une notification Kudosity :
 
 ```bash
 # Supposons que notre {APIKey} soit bc1451bd
