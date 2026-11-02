@@ -88,9 +88,10 @@ apprise -vv -t "Titre du message de test" -b "Corps du message de test" \
    "instagram://IGAAabc123/1234567890123456"
 ```
 
-Envoyer une image à deux personnes :
+Envoyer une image à deux personnes avec un jeton de page Facebook :
 
 ```bash
+# En supposant que notre {token} de page Facebook est EAAabc123
 apprise -vv -b "Le graphique du jour" --attach=graph.png \
-   "instagram://IGAAabc123/1234567890123456/6543210987654321"
+   "instagram://EAAabc123/1234567890123456/6543210987654321"
 ```

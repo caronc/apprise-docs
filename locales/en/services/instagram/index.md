@@ -88,9 +88,10 @@ apprise -vv -t "Test Message Title" -b "Test Message Body" \
    "instagram://IGAAabc123/1234567890123456"
 ```
 
-Send a picture to two people:
+Send a picture to two people using a Facebook Page token:
 
 ```bash
+# Assuming our Facebook Page {token} is EAAabc123
 apprise -vv -b "Today's graph" --attach=graph.png \
-   "instagram://IGAAabc123/1234567890123456/6543210987654321"
+   "instagram://EAAabc123/1234567890123456/6543210987654321"
 ```
