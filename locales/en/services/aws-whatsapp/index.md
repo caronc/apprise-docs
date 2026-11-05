@@ -1,14 +1,14 @@
 ---
 title: "AWS End User Messaging Social (WhatsApp) Notifications"
-description: "Send WhatsApp text and template notifications through AWS."
+description: "Send WhatsApp text, media and template notifications through AWS."
 sidebar:
   label: "AWS End User Messaging Social (WhatsApp)"
 source: https://aws.amazon.com/end-user-messaging/
 schemas:
   - awswhatsapp
 has_chat: true
-has_attachments: false
-has_image: false
+has_attachments: true
+has_image: true
 sample_urls:
   - awswhatsapp://{region}/{from_phone_id}/{targets}
   - awswhatsapp://{access_key_id}:{secret_access_key}@{region}/{from_phone_id}/{targets}
@@ -44,17 +44,18 @@ For explicit credentials, URL-encode reserved characters in both keys. For examp
 
 ## Parameter breakdown
 
-| Variable          | Required | Description                                                                                                 |
-| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
-| region            | Yes      | AWS region containing your sender, for example `us-east-1`.                                                 |
-| from_phone_id     | Yes      | AWS sender identifier beginning with `phone-number-id-`.                                                    |
-| targets           | Yes      | One or more international recipient phone numbers. Additional numbers can be supplied with `?to=`.          |
-| access_key_id     | No       | Explicit AWS access key; requires `secret_access_key`. Omit both to use SDK credential discovery.           |
-| secret_access_key | No       | Explicit AWS secret access key, URL-encoded.                                                                |
-| token             | No       | Session token for explicit temporary AWS credentials. Omit it when the SDK discovers temporary credentials. |
-| template          | No       | Approved template name. Omit to send free-form text within an open customer service window.                 |
-| lang              | No       | Template language, default `en_US`. Must match the approved template.                                       |
-| version           | No       | Meta API version, default `v23.0`. Choose a version supported by AWS and Meta.                              |
+| Variable          | Required        | Description                                                                                                 |
+| ----------------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
+| region            | Yes             | AWS region containing your sender, for example `us-east-1`.                                                 |
+| from_phone_id     | Yes             | AWS sender identifier beginning with `phone-number-id-`.                                                    |
+| targets           | Yes             | One or more international recipient phone numbers. Additional numbers can be supplied with `?to=`.          |
+| access_key_id     | No              | Explicit AWS access key; requires `secret_access_key`. Omit both to use SDK credential discovery.           |
+| secret_access_key | No              | Explicit AWS secret access key, URL-encoded.                                                                |
+| token             | No              | Session token for explicit temporary AWS credentials. Omit it when the SDK discovers temporary credentials. |
+| template          | No              | Approved template name. Omit to send free-form text within an open customer service window.                 |
+| lang              | No              | Template language, default `en_US`. Must match the approved template.                                       |
+| version           | No              | Meta API version, default `v23.0`. Choose a version supported by AWS and Meta.                              |
+| bucket            | For attachments | Private S3 staging bucket in the same account and region as your WABA.                                      |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -72,7 +73,35 @@ Parameter indices must be consecutive, starting at 1, with no duplicates. Parame
 
 If no mappings are provided, the template is sent without body parameters. This supports static templates such as `hello_world`. To include your alert in a template, explicitly configure `:body=1` and ensure that the approved template has that parameter.
 
-Only positional text parameters in a template's body are supported. Named parameters, template headers, buttons, attachments, and media uploads are not supported by this integration. The plugin uses a conservative 1,024-character notification body limit; template and WhatsApp content rules still apply.
+Template body parameters support positional text values. Media template headers accept one image, video, or document attachment and must match the approved template's header type. Named parameters, text/location headers, and buttons are not supported. Templates must fit one message piece; splitting templates with `overflow=split` is rejected. The default `overflow=upstream` leaves content validation to WhatsApp; `overflow=truncate` can shorten the notification body. The plugin uses a conservative 1,024-character body limit; template and WhatsApp content rules still apply.
+
+## Media attachments
+
+Add `?bucket={staging_bucket}` to the notification URL and pass files using Apprise's `-a` option or attachment API. Local, in-memory, and downloaded HTTP attachments use Apprise's normal attachment handling.
+
+For each file, the plugin uploads to a unique private S3 key, creates a five-minute presigned GET URL, and calls `PostWhatsAppMessageMedia`. It then sends the returned media ID using the same sender. The S3 staging object is deleted after the import attempt, including when the import fails. No public object ACL is added. Successfully imported media IDs are reused across recipients and retries of the same notification.
+
+Configure the bucket in the **same AWS account and region as the WABA**, as required by [AWS's media upload guide](https://docs.aws.amazon.com/social-messaging/latest/userguide/managing-media-files-s3.html). The calling identity needs:
+
+- `social-messaging:SendWhatsAppMessage` and `social-messaging:PostWhatsAppMessageMedia` for the sender.
+- `s3:PutObject`, `s3:GetObject`, and `s3:DeleteObject` for the bucket's `apprise/*` prefix. Managed multipart uploads may also need `s3:AbortMultipartUpload` for cleanup.
+- Appropriate KMS permissions if your staging bucket uses a customer-managed KMS key.
+
+Use a private staging bucket and configure a lifecycle rule as a fallback for failed cleanup and incomplete multipart uploads. An unversioned bucket is simplest; in a versioned bucket, deleting an object leaves older versions, so lifecycle rules must also expire noncurrent versions. Cleanup failures are logged without resending an already accepted message. WhatsApp keeps imported media for up to 30 days; deleting the staging object does not remove that WhatsApp copy.
+
+Supported MIME types and limits:
+
+| Media    | Formats                                  | Maximum file size            |
+| -------- | ---------------------------------------- | ---------------------------- |
+| Image    | JPEG, PNG                                | 5 MiB                        |
+| Audio    | AAC, AMR, MP3, MP4 audio, OGG            | 16 MiB                       |
+| Video    | MP4, 3GPP                                | 16 MiB                       |
+| Document | Plain text, PDF, Word, Excel, PowerPoint | 100 MiB                      |
+| Sticker  | WebP                                     | 100 KiB (conservative limit) |
+
+Unsupported MIME types, empty files, and oversized files are rejected before any AWS upload. The media contents must satisfy [WhatsApp's format and codec requirements](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html); the plugin does not transcode files. MIME detection depends on the attachment provider and your platform's MIME database. For large uploads, increase Apprise's `cto`/`rto` timeouts as needed.
+
+Within an open customer service window, the text body is sent once as a separate message, followed by one message per attachment. Documents retain their filename. For notifications outside the window, use an approved media template: provide exactly one image, video, or document, and the plugin inserts its media ID into the template header. Audio and stickers cannot be template headers. Multiple attachments with a template are rejected before uploading.
 
 ## Examples
 
@@ -90,11 +119,25 @@ apprise -b "Your requested status update" \
   "awswhatsapp://us-east-1/phone-number-id-01234567890123456789012345678901/15555550123/15555550124"
 ```
 
+Send a PDF using an approved `report_ready` template with a document header and one text body parameter:
+
+```bash
+apprise -b "Your report is ready" -a report.pdf \
+  "awswhatsapp://us-east-1/phone-number-id-01234567890123456789012345678901/15555550123?bucket=example-staging&template=report_ready&:body=1"
+```
+
+Send an image and an audio attachment during an open customer service window:
+
+```bash
+apprise -b "Your requested files" -a photo.png -a recording.mp3 \
+  "awswhatsapp://us-east-1/phone-number-id-01234567890123456789012345678901/15555550123?bucket=example-staging"
+```
+
 ## Delivery and retries
 
 Each recipient receives a separate API request. Success means AWS returned a message ID; it does not prove delivery to the recipient's device. Configure AWS message/event destinations if you need delivery status tracking.
 
-Successful recipients are recorded so Apprise retries only failed recipients after a partial failure. Automatic SDK retries are disabled because this API has no idempotency token. If you enable Apprise retries and a request times out after AWS accepted it, a duplicate message is still possible.
+Successful text, template, and individual attachment deliveries are recorded so Apprise retries only failed parts after a partial failure. Attachments are not repeated across split free-form text pieces. Automatic SDK retries are disabled because this API has no idempotency token. If you enable Apprise retries and a request times out after AWS accepted it, a duplicate message is still possible.
 
 AWS and WhatsApp throughput limits apply. The plugin throttles requests and reports API failures through Apprise; it does not provision senders, approve templates, receive messages, or manage account limits.
 
