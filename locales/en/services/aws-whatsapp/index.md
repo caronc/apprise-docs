@@ -8,7 +8,7 @@ schemas:
   - awswhatsapp
 has_chat: true
 has_attachments: true
-has_image: true
+has_image: false
 sample_urls:
   - awswhatsapp://{region}/{from_phone_id}/{targets}
   - awswhatsapp://{access_key_id}:{secret_access_key}@{region}/{from_phone_id}/{targets}
