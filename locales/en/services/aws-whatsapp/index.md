@@ -36,7 +36,7 @@ See the [AWS setup guide](https://docs.aws.amazon.com/social-messaging/latest/us
 - `awswhatsapp://{region}/{from_phone_id}/{targets}`
 - `awswhatsapp://{access_key_id}:{secret_access_key}@{region}/{from_phone_id}/{targets}`
 
-Separate multiple recipients with `/`. Use international phone numbers with a country code. Group IDs are not supported.
+Separate multiple recipients with `/`. Use international phone numbers with a country code. Bare digits are normalized to E.164, and the leading `+` is preserved in AWS message payloads. Group IDs are not supported.
 
 When credentials are omitted, Boto3 uses its [standard credential provider chain](https://docs.aws.amazon.com/boto3/latest/guide/credentials.html), including environment variables, shared AWS configuration, and IAM roles. Region is always required in the URL.
 
@@ -63,7 +63,7 @@ For explicit credentials, URL-encode reserved characters in both keys. For examp
 
 When a recipient messages your business, a 24-hour customer service window opens or refreshes. Free-form text can only be sent within that window. Outside it, use an approved template. Apprise does not open or track the window for you.
 
-Template body parameters use the same mapping convention as the direct WhatsApp integration:
+Positional template body parameters use the same mapping convention as the direct WhatsApp integration:
 
 - `:body=1` places the notification body in template parameter `{{1}}`.
 - `:type=2` places the notification type (`info`, `success`, `warning`, or `failure`) in `{{2}}`.
@@ -71,9 +71,11 @@ Template body parameters use the same mapping convention as the direct WhatsApp 
 
 Parameter indices must be consecutive, starting at 1, with no duplicates. Parameters are ordered numerically. The notification title is merged into its body because WhatsApp has no separate title field.
 
+Named template parameters are also supported. Use `:nome=Joao%20Silva` to assign a literal value to the template variable `{{nome}}`, or `:body=mensagem` to map the notification body to `{{mensagem}}`. Similarly, `:type=tipo` maps the notification type to `{{tipo}}`. The plugin includes `parameter_name` in each named text parameter. The mapping keys `body` and `type` are reserved for dynamic values. Names use lowercase letters and underscores; do not mix named and positional mappings or assign the same parameter twice.
+
 If no mappings are provided, the template is sent without body parameters. This supports static templates such as `hello_world`. To include your alert in a template, explicitly configure `:body=1` and ensure that the approved template has that parameter.
 
-Template body parameters support positional text values. Media template headers accept one image, video, or document attachment and must match the approved template's header type. Named parameters, text/location headers, and buttons are not supported. Templates must fit one message piece; splitting templates with `overflow=split` is rejected. The default `overflow=upstream` leaves content validation to WhatsApp; `overflow=truncate` can shorten the notification body. The plugin uses a conservative 1,024-character body limit; template and WhatsApp content rules still apply.
+Template body parameters support positional or named text values. Media template headers accept one image, video, or document attachment and must match the approved template's header type. Text/location headers and buttons are not supported. Templates must fit one message piece; splitting templates with `overflow=split` is rejected. The default `overflow=upstream` leaves content validation to WhatsApp; `overflow=truncate` can shorten the notification body. The plugin uses a conservative 1,024-character body limit; template and WhatsApp content rules still apply.
 
 ## Media attachments
 
