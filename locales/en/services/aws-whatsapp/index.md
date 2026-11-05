@@ -59,6 +59,8 @@ For explicit credentials, URL-encode reserved characters in both keys. For examp
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
+The optional `prefix` parameter selects the S3 staging key prefix (default `apprise/`). For example, `?bucket=example-staging&prefix=media/` stages files under `media/`; scope object permissions to that configured prefix.
+
 ## Templates and message content
 
 When a recipient messages your business, a 24-hour customer service window opens or refreshes. Free-form text can only be sent within that window. Outside it, use an approved template. Apprise does not open or track the window for you.
