@@ -38,7 +38,7 @@ See the [AWS setup guide](https://docs.aws.amazon.com/social-messaging/latest/us
 
 Separate multiple recipients with `/`. Use international phone numbers with a country code. Bare digits are normalized to E.164, and the leading `+` is preserved in AWS message payloads.
 
-Group targets use `%23{group_id}` or `{group_id}@g.us` and are serialized with `recipient_type=group`. This is experimental payload support: AWS acceptance and the sender's Meta Groups API eligibility have not been verified live. It does not create groups or establish eligibility; only use an existing Cloud API group that your provider and account support.
+Group messaging is not supported by this integration. Use individual phone-number recipients.
 
 When credentials are omitted, Boto3 uses its [standard credential provider chain](https://docs.aws.amazon.com/boto3/latest/guide/credentials.html), including environment variables, shared AWS configuration, and IAM roles. Region is always required in the URL.
 
