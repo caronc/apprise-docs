@@ -36,7 +36,9 @@ See the [AWS setup guide](https://docs.aws.amazon.com/social-messaging/latest/us
 - `awswhatsapp://{region}/{from_phone_id}/{targets}`
 - `awswhatsapp://{access_key_id}:{secret_access_key}@{region}/{from_phone_id}/{targets}`
 
-Separate multiple recipients with `/`. Use international phone numbers with a country code. Bare digits are normalized to E.164, and the leading `+` is preserved in AWS message payloads. Group IDs are not supported.
+Separate multiple recipients with `/`. Use international phone numbers with a country code. Bare digits are normalized to E.164, and the leading `+` is preserved in AWS message payloads.
+
+Group targets use `%23{group_id}` or `{group_id}@g.us` and are serialized with `recipient_type=group`. This is experimental payload support: AWS acceptance and the sender's Meta Groups API eligibility have not been verified live. It does not create groups or establish eligibility; only use an existing Cloud API group that your provider and account support.
 
 When credentials are omitted, Boto3 uses its [standard credential provider chain](https://docs.aws.amazon.com/boto3/latest/guide/credentials.html), including environment variables, shared AWS configuration, and IAM roles. Region is always required in the URL.
 
@@ -77,7 +79,66 @@ Named template parameters are also supported. Use `:nome=Joao%20Silva` to assign
 
 If no mappings are provided, the template is sent without body parameters. This supports static templates such as `hello_world`. To include your alert in a template, explicitly configure `:body=1` and ensure that the approved template has that parameter.
 
-Template body parameters support positional or named text values. Media template headers accept one image, video, or document attachment and must match the approved template's header type. Text/location headers and buttons are not supported. Templates must fit one message piece; splitting templates with `overflow=split` is rejected. The default `overflow=upstream` leaves content validation to WhatsApp; `overflow=truncate` can shorten the notification body. The plugin uses a conservative 1,024-character body limit; template and WhatsApp content rules still apply.
+Template body parameters support positional or named text values. Media template headers accept one image, video, or document attachment and must match the approved template's header type. Text/location headers and template buttons can be configured with explicit components, described below. Templates must fit one message piece; splitting templates with `overflow=split` is rejected. The default `overflow=upstream` leaves content validation to WhatsApp; `overflow=truncate` can shorten the notification body. The plugin uses a conservative 1,024-character body limit; template and WhatsApp content rules still apply.
+
+### Structured headers and buttons
+
+The `components` URL parameter accepts a URL-encoded JSON list in Meta's template component format. The Python constructor accepts the equivalent list as `template_components`. This supports:
+
+- One text header parameter, or a location header with latitude, longitude, name and address.
+- An explicit image/video/document header referring to a media ID or HTTPS link.
+- Dynamic URL, quick-reply, copy-code and Flow buttons, with indices from `0` to `9`.
+- Explicit text body parameters, including named parameters.
+
+The components must match an approved template. Static button labels, static phone-number buttons and fixed URLs are defined when creating the template; they do not need runtime parameters. Do not combine an explicit body component with `:body`/positional/named mappings, or an explicit header with an attachment. Duplicate headers, body components and button indices are rejected before sending.
+
+An exact string value `$body` or `$type` resolves to notification content or type; `$$body` escapes the placeholder and sends literal `$body`. Components are copied before rendering, so concurrent notifications do not overwrite each other's values. The component JSON is masked in privacy-mode URLs.
+
+For a template with a text header, one body parameter and a dynamic URL button:
+
+```python
+from apprise.plugins.awswhatsapp import NotifyAWSWhatsApp
+
+service = NotifyAWSWhatsApp(
+    region_name="us-east-1",
+    from_phone_id="phone-number-id-01234567890123456789012345678901",
+    targets="15555550123",
+    template="appointment_details",
+    template_mapping={"body": "1"},
+    template_components=[
+        {"type": "header", "parameters": [{"type": "text", "text": "Appointment"}]},
+        {
+            "type": "button",
+            "sub_type": "url",
+            "index": "0",
+            "parameters": [{"type": "text", "text": "appointment-123"}],
+        },
+    ],
+)
+```
+
+A location header instead uses:
+
+```json
+[
+  {
+    "type": "header",
+    "parameters": [
+      {
+        "type": "location",
+        "location": {
+          "latitude": -5.09,
+          "longitude": -42.8,
+          "name": "Office",
+          "address": "Example street"
+        }
+      }
+    ]
+  }
+]
+```
+
+Button parameter types are `text` for `url`, `payload` for `quick_reply`, `coupon_code` for `copy_code`, and an `action` object for `flow`. Template approval and any Flow configuration remain requirements of Meta/AWS.
 
 ## Media attachments
 
@@ -103,7 +164,20 @@ Supported MIME types and limits:
 | Document | Plain text, PDF, Word, Excel, PowerPoint | 100 MiB                      |
 | Sticker  | WebP                                     | 100 KiB (conservative limit) |
 
-Unsupported MIME types, empty files, and oversized files are rejected before any AWS upload. The media contents must satisfy [WhatsApp's format and codec requirements](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html); the plugin does not transcode files. MIME detection depends on the attachment provider and your platform's MIME database. For large uploads, increase Apprise's `cto`/`rto` timeouts as needed.
+Unsupported MIME types, empty files, and oversized files are rejected before any AWS upload. The media contents must satisfy [WhatsApp's format and codec requirements](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html). MIME detection depends on the attachment provider and your platform's MIME database. For large uploads, increase Apprise's `cto`/`rto` timeouts as needed.
+
+### Optional media conversion
+
+By default, files are sent as provided. Set `transcode=image`, `audio`, `video`, or `sticker` to explicitly convert attachments before upload. FFmpeg must be installed locally and available on `PATH`; it is not a Python runtime dependency.
+
+| Profile   | Output                                             |
+| --------- | -------------------------------------------------- |
+| `image`   | JPEG, first frame only                             |
+| `audio`   | MP3, 128 kbit/s, two channels                      |
+| `video`   | MP4 with H.264, YUV 4:2:0 and AAC audio            |
+| `sticker` | Static WebP, padded to 512 × 512, first frame only |
+
+Conversion uses local temporary files, a 120-second per-file timeout, a 100 MiB input limit and restricted FFmpeg protocols/input formats. Temporary files are removed after sending or on failure. Converted outputs still undergo the normal WhatsApp MIME/size checks; conversion does not guarantee a file fits the upload limits. The selected profile applies to every attachment in that notification. Office/PDF document conversion is not a media-codec operation and is not performed by FFmpeg.
 
 Within an open customer service window, the text body is sent once as a separate message, followed by one message per attachment. Documents retain their filename. For notifications outside the window, use an approved media template: provide exactly one image, video, or document, and the plugin inserts its media ID into the template header. Audio and stickers cannot be template headers. Multiple attachments with a template are rejected before uploading.
 
@@ -146,3 +220,57 @@ Successful text, template, and individual attachment deliveries are recorded so 
 AWS and WhatsApp throughput limits apply. The plugin throttles requests and reports API failures through Apprise; it does not provision senders, approve templates, receive messages, or manage account limits.
 
 API reference: [SendWhatsAppMessage](https://docs.aws.amazon.com/social-messaging/latest/APIReference/API_SendWhatsAppMessage.html).
+
+## Template discovery and administration
+
+An explicit companion utility provides template and sender inspection. Sending a notification never creates templates, changes event destinations or runs administration calls.
+
+```bash
+python -m apprise.utils.awswhatsapp --region us-east-1 senders
+python -m apprise.utils.awswhatsapp --region us-east-1 templates --waba waba-example
+python -m apprise.utils.awswhatsapp --region us-east-1 describe-template \
+  --waba waba-example --name appointment_details --language en_US
+```
+
+`describe-template` returns the template text, approval status, language, header format, required body/header variable names, button definitions and the original template JSON. Template administration requires a recent Boto3 version with the corresponding AWS operations; the older SDK supported for sending may not expose template-management APIs. Upgrade Boto3 if the command reports that requirement.
+
+Create a template from a local Meta-format JSON definition with:
+
+```bash
+python -m apprise.utils.awswhatsapp --region us-east-1 create-template \
+  --waba waba-example --definition template.json
+```
+
+This explicitly calls `CreateWhatsAppMessageTemplate` and requires its IAM permission. The template is submitted for Meta approval, not automatically approved. Creating/linking the WABA or registering a sender number remains part of [AWS's embedded console sign-up flow](https://docs.aws.amazon.com/social-messaging/latest/userguide/getting-started-whatsapp.html); AWS documents `AssociateWhatsAppBusinessAccount` as console sign-up use only. The utility discovers existing senders rather than pretending to replace that process.
+
+## Incoming messages and delivery receipts
+
+AWS publishes incoming messages and statuses to the configured event destination. A separate consumer handles these asynchronous events; a successful send still means API acceptance rather than device delivery.
+
+The companion utility normalizes AWS WhatsApp webhook entries, SNS notifications, SQS/Lambda envelopes, direct Meta entries and EventBridge statuses into JSON records. Each record identifies its kind (`message`, `status` or provider `event`), message ID, status or sender, timestamp and provider data. When supplied by AWS, `aws_message_id` is preserved alongside the Meta/native message ID for correlation. Raw provider data includes incoming text/media metadata, button replies and failure details. Store and deduplicate these records in your application as appropriate; the decoder does not make consent decisions or automatically mark messages read.
+
+Decode a trusted event file without network requests:
+
+```bash
+python -m apprise.utils.awswhatsapp decode-events --file event.json
+```
+
+Or long-poll one batch from your SQS subscription to the SNS event topic:
+
+```bash
+python -m apprise.utils.awswhatsapp --region us-east-1 receive-events \
+  --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/example
+```
+
+This emits JSON Lines and does not delete queue messages by default. Add `--ack` to delete each SQS message only after all decoded records have been written and flushed. A parser/handler failure leaves the message unacknowledged for retry. A production application can call `receive_events(client, queue_url, handler, delete=True)` with a durable, idempotent storage handler; SQS is at-least-once and duplicates remain possible. Configure SNS/SQS subscriptions, queue access policies and a dead-letter queue for your consumer.
+
+To explicitly set the existing SNS topic as the WABA event destination:
+
+```bash
+python -m apprise.utils.awswhatsapp --region us-east-1 configure-events \
+  --waba waba-example --topic-arn arn:aws:sns:us-east-1:123456789012:example
+```
+
+This replaces the WABA's event destination, requires `PutWhatsAppBusinessAccountEventDestinations`, and assumes the topic and its publishing permissions already exist. It does not silently provision or change IAM policies. Do not use the decoder as an unauthenticated HTTP webhook: it is an event parser, not an SNS signature verifier or web server. Consume through an IAM-authorized queue/Lambda integration or validate the transport separately.
+
+See [AWS incoming messages](https://docs.aws.amazon.com/social-messaging/latest/userguide/whatsapp-receive-message.html) and [message statuses](https://docs.aws.amazon.com/social-messaging/latest/userguide/managing-event-destinations-status.html).
