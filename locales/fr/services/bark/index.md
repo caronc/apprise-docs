@@ -89,22 +89,45 @@ Toute personne disposant de votre clé de chiffrement peut lire vos notification
 
 Consultez la [documentation officielle de Bark sur le chiffrement](https://github.com/Finb/Bark/blob/master/docs/encryption.md) pour en savoir plus sur le fonctionnement des notifications chiffrées.
 
+## Remplacer et Supprimer des Notifications
+
+Attribuez un `id` à une notification pour pouvoir la mettre à jour ou la retirer plus tard. C'est utile pour les messages d'état, par exemple un build qui échoue puis réussit.
+
+1. Envoyez une notification avec `?id=build-42`.
+2. Envoyez-en une autre avec le même `id` pour la remplacer. La nouvelle notification prend la place de l'ancienne au lieu de s'y ajouter.
+3. Envoyez-en une avec `?id=build-42&delete=yes` pour la retirer du Centre de notifications et de l'historique de l'application Bark.
+
+Cette fonctionnalité nécessite Bark v1.5.2 et bark-server v2.2.5 ou plus récents.
+
+:::note
+Bark transmet une suppression sous forme de notification silencieuse. Activez **Réglages > Général > Actualisation en arrière-plan** pour Bark, sinon la suppression est ignorée. Apprise a tout de même besoin d'un corps de message pour l'envoyer, mais ce corps n'est jamais affiché.
+:::
+
+Lorsque `key=` est défini, l'`id` et l'indicateur de suppression sont envoyés en clair à côté du message chiffré, car le serveur Bark en a besoin pour retrouver la notification sur votre appareil. Évitez de placer des informations privées dans l'`id`.
+
 ## Détail des Paramètres
 
-| Variable   | Requis | Description                                                                                                                                                                                                                            |
-| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| device_key | Oui    | La clé de l'appareil que vous souhaitez notifier.                                                                                                                                                                                      |
-| sound      | Non    | Permet facultativement de définir un fichier son à jouer avec la notification envoyée. Les sons pris en charge sont identifiés [ici](https://github.com/Finb/Bark/tree/master/Sounds).                                                 |
-| click      | Non    | Fournit un lien hypertexte à associer à la notification.                                                                                                                                                                               |
-| level      | Non    | Précise le niveau du message. Peut être **active**, **timeSensitive** ou **passive**.                                                                                                                                                  |
-| volume     | Non    | Précise un volume entre 0 et 10, inclus.                                                                                                                                                                                               |
-| badge      | Non    | Fournit une valeur numérique égale ou supérieure à 0 pour associer un badge à l'icône Bark sur l'appareil iOS.                                                                                                                         |
-| category   | Non    | Associe une catégorie à votre notification.                                                                                                                                                                                            |
-| group      | Non    | Associe un groupe à votre notification.                                                                                                                                                                                                |
-| icon       | Non    | Définit une URL d'icône personnalisée pour la notification. Si elle n'est pas précisée, Apprise peut utiliser son image de notification par défaut, sauf si elle est désactivée.                                                       |
-| image      | Non    | Définissez cette valeur sur `no` si vous ne souhaitez pas que le niveau d'alerte Apprise soit utilisé comme icône associée au message.                                                                                                 |
-| call       | Non    | Entrée de type booléen. Accepte `yes/no`, `true/false`, `1/0`, `+/-`. Lorsqu'elle est activée, la charge utile inclut `1`.                                                                                                             |
-| key        | Non    | Une clé de chiffrement AES-GCM de 16, 24 ou 32 caractères, identique à celle configurée dans les réglages Encrypted Push de l'application Bark. Nécessite le paquet Python `cryptography`. Voir [Chiffrement](#chiffrement) ci-dessus. |
+| Variable   | Requis | Description                                                                                                                                                                                                                                                                                |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| device_key | Oui    | La clé de l'appareil que vous souhaitez notifier.                                                                                                                                                                                                                                          |
+| sound      | Non    | Permet facultativement de définir un fichier son à jouer avec la notification envoyée. Les sons pris en charge sont identifiés [ici](https://github.com/Finb/Bark/tree/master/Sounds).                                                                                                     |
+| click      | Non    | Fournit un lien hypertexte à associer à la notification.                                                                                                                                                                                                                                   |
+| level      | Non    | Précise le niveau du message. Peut être **active**, **timeSensitive** ou **passive**.                                                                                                                                                                                                      |
+| volume     | Non    | Précise un volume entre 0 et 10, inclus.                                                                                                                                                                                                                                                   |
+| badge      | Non    | Fournit une valeur numérique égale ou supérieure à 0 pour associer un badge à l'icône Bark sur l'appareil iOS.                                                                                                                                                                             |
+| category   | Non    | Associe une catégorie à votre notification.                                                                                                                                                                                                                                                |
+| group      | Non    | Associe un groupe à votre notification.                                                                                                                                                                                                                                                    |
+| icon       | Non    | Définit une URL d'icône personnalisée pour la notification. Si elle n'est pas précisée, Apprise peut utiliser son image de notification par défaut, sauf si elle est désactivée.                                                                                                           |
+| image      | Non    | Définissez cette valeur sur `no` si vous ne souhaitez pas que le niveau d'alerte Apprise soit utilisé comme icône associée au message.                                                                                                                                                     |
+| call       | Non    | Entrée de type booléen. Accepte `yes/no`, `true/false`, `1/0`, `+/-`. Lorsqu'elle est activée, la charge utile inclut `1`.                                                                                                                                                                 |
+| subtitle   | Non    | Une ligne de texte affichée entre le titre et le corps.                                                                                                                                                                                                                                    |
+| copy       | Non    | Le texte copié lorsque vous copiez la notification sur votre appareil, à la place du corps. Pratique pour les codes à usage unique.                                                                                                                                                        |
+| action     | Non    | Ce qui se passe lorsque vous touchez la notification. `alert` ouvre l'application avec une fenêtre permettant de copier ou de partager le message. `none` ouvre seulement l'application. Une URL `click` est prioritaire sur ce paramètre.                                                 |
+| archive    | Non    | Définissez `yes` pour enregistrer la notification dans l'historique de l'application Bark, ou `no` pour ne pas l'enregistrer. Sans valeur, c'est le réglage de l'application qui décide (l'enregistrement est activé par défaut).                                                          |
+| ttl        | Non    | Durée de conservation, en secondes, d'une notification enregistrée. À l'expiration, Bark la retire de l'historique de l'application et du Centre de notifications. Ne s'applique qu'aux notifications enregistrées dans l'historique.                                                      |
+| id         | Non    | Un identifiant unique pour la notification. Une nouvelle notification envoyée avec le même `id` remplace la précédente. Nécessite Bark v1.5.2 et bark-server v2.2.5 ou plus récents. Voir [Remplacer et Supprimer des Notifications](#remplacer-et-supprimer-des-notifications) ci-dessus. |
+| delete     | Non    | Définissez `yes` pour supprimer la notification correspondant à `id` au lieu d'en afficher une nouvelle. Nécessite `id`. La valeur par défaut est `no`.                                                                                                                                    |
+| key        | Non    | Une clé de chiffrement AES-GCM de 16, 24 ou 32 caractères, identique à celle configurée dans les réglages Encrypted Push de l'application Bark. Nécessite le paquet Python `cryptography`. Voir [Chiffrement](#chiffrement) ci-dessus.                                                     |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -142,4 +165,34 @@ Envoyer une notification Bark chiffrée de bout en bout (voir
 ```bash
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
    "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?key=1234567890123456"
+```
+
+Envoyer une notification avec un sous-titre, et ne copier que le code lorsque vous la copiez sur votre appareil :
+
+```bash
+apprise -vv -t "Connexion" -b "Votre code de connexion est 123456" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?subtitle=MyApp&copy=123456"
+```
+
+Enregistrer une notification dans l'historique de l'application et laisser Bark la retirer au bout d'une heure :
+
+```bash
+apprise -vv -t "Rappel" -b "La porte est toujours ouverte" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?archive=yes&ttl=3600"
+```
+
+Afficher l'état d'un build, le remplacer une fois le build terminé, puis le retirer (voir [Remplacer et Supprimer des Notifications](#remplacer-et-supprimer-des-notifications) ci-dessus) :
+
+```bash
+# Afficher l'état
+apprise -vv -t "Build" -b "En cours" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?id=build-42"
+
+# Le remplacer
+apprise -vv -t "Build" -b "Réussi" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?id=build-42"
+
+# Le retirer
+apprise -vv -b "delete" \
+   "bark://localhost:8080/j300012fl9y0b5AW9g9Nsejb8P?id=build-42&delete=yes"
 ```
