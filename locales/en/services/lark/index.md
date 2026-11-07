@@ -11,6 +11,10 @@ schemas:
 
 has_chat: true
 
+body_formats:
+  - text: default
+  - markdown
+
 sample_urls:
   - https://open.larksuite.com/open-apis/bot/v2/hook/{token}
   - lark://{token}
@@ -48,9 +52,10 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                      |
-| -------- | -------- | ---------------------------------------------------------------- |
-| token    | Yes      | The 32-character integration key at the end of your webhook URL. |
+| Variable | Required | Description                                                                                                                                                            |
+| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | Yes      | The 32-character integration key at the end of your webhook URL.                                                                                                       |
+| format   | No       | Accepts `text` (the default) or `markdown`. Markdown is sent as a card that shows the formatting, with the title in the card header coloured by the notification type. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -70,4 +75,11 @@ Using the full native URL as-is:
 ```bash
 apprise -vv -t "Lark Title" -b "Body of message" \
    https://open.larksuite.com/open-apis/bot/v2/hook/abcdef1234567890abcdef1234567890
+```
+
+Send a Markdown notification as a card:
+
+```bash
+apprise -vv -t "Disk Alert" -b "**/var** is 95% full" \
+   "lark://abcdef1234567890abcdef1234567890?format=markdown"
 ```
