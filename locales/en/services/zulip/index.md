@@ -49,6 +49,10 @@ Valid syntax is as follows:
 
 **Note**: If neither a **`{stream}`** or **`{email}`** is specified then by default the stream **general** is notified.
 
+:::note
+The message title is used as the Zulip topic. If no title is given, the topic **Apprise Notifications** is used instead.
+:::
+
 You can also mix and match the entries above too:
 
 - `zulip://{botname}@{organization}/{token}/{stream1}/{email1}/`
@@ -82,7 +86,8 @@ Send a Zulip notification to the #support stream:
 ```bash
 # Assuming our {organization} is apprise
 # Assuming our {token} is T1JJ3T3L2
+# Assuming our {botname} is goober
 # Assuming our {stream} is #support
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   zulip:///apprise/T1JJ3T3L2/support
+   zulip:///goober@apprise/T1JJ3T3L2/support
 ```

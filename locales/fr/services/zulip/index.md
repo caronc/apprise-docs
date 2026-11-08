@@ -49,6 +49,10 @@ La syntaxe valide est la suivante :
 
 **Remarque :** si ni **`{stream}`** ni **`{email}`** ne sont precises, le flux **general** est notifie par defaut.
 
+:::note
+Le titre du message est utilisé comme sujet (topic) Zulip. Si aucun titre n'est fourni, le sujet **Apprise Notifications** est utilisé à la place.
+:::
+
 Vous pouvez aussi melanger les entrees ci-dessus :
 
 - `zulip://{botname}@{organization}/{token}/{stream1}/{email1}/`
@@ -82,7 +86,8 @@ Envoyer une notification Zulip vers le flux `#support` :
 ```bash
 # Supposons que notre {organization} soit apprise
 # Supposons que notre {token} soit T1JJ3T3L2
+# Supposons que notre {botname} soit goober
 # Supposons que notre {stream} soit #support
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
-   zulip:///apprise/T1JJ3T3L2/support
+   zulip:///goober@apprise/T1JJ3T3L2/support
 ```
