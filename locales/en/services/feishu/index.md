@@ -11,6 +11,10 @@ schemas:
 
 has_chat: true
 
+body_formats:
+  - text: default
+  - markdown
+
 sample_urls:
   - feishu://{token}
 
@@ -33,9 +37,10 @@ Valid syntax is as follows:
 
 ## Parameter Breakdown
 
-| Variable | Required | Description                                                                           |
-| -------- | -------- | ------------------------------------------------------------------------------------- |
-| token    | **Yes**  | The token you generated as part of your Fieshu Custom Bot Creation (via your account) |
+| Variable | Required | Description                                                                                                                                                            |
+| -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | **Yes**  | The token you generated as part of your Fieshu Custom Bot Creation (via your account)                                                                                  |
+| format   | No       | Accepts `text` (the default) or `markdown`. Markdown is sent as a card that shows the formatting, with the title in the card header coloured by the notification type. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -47,4 +52,11 @@ Send a notification to your Feishu account:
 # Assuming our {token} is token
 apprise -vv --body="Test Message" \
    "feishu://token"
+```
+
+Send a Markdown notification as a card:
+
+```bash
+apprise -vv -t "Disk Alert" --body="**/var** is 95% full" \
+   "feishu://token?format=markdown"
 ```

@@ -11,6 +11,10 @@ schemas:
 
 has_chat: true
 
+body_formats:
+  - text: default
+  - markdown
+
 sample_urls:
   - feishu://{token}
 
@@ -33,9 +37,10 @@ La syntaxe valide est la suivante :
 
 ## Détail des Paramètres
 
-| Variable | Obligatoire | Description                                                                            |
-| -------- | ----------- | -------------------------------------------------------------------------------------- |
-| token    | **Oui**     | Jeton genere lors de la creation de votre bot personnalise Feishu depuis votre compte. |
+| Variable | Obligatoire | Description                                                                                                                                                                                                 |
+| -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token    | **Oui**     | Jeton genere lors de la creation de votre bot personnalise Feishu depuis votre compte.                                                                                                                      |
+| format   | Non         | Accepte `text` (par défaut) ou `markdown`. Le Markdown est envoyé sous forme de carte qui affiche la mise en forme, avec le titre dans l'en-tête de la carte, dont la couleur suit le type de notification. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -47,4 +52,11 @@ Envoyer une notification a votre compte Feishu :
 # Supposons que notre {token} soit token
 apprise -vv --body="Message de Test" \
    "feishu://token"
+```
+
+Envoyer une notification Markdown sous forme de carte :
+
+```bash
+apprise -vv -t "Alerte disque" --body="**/var** est plein à 95 %" \
+   "feishu://token?format=markdown"
 ```
