@@ -79,6 +79,16 @@ Template parameters are filled in the same way as the [WhatsApp](../whatsapp/) s
 
 If no parameters are given, the template is sent as-is, which suits static templates such as `hello_world`.
 
+Named templates are also supported:
+
+- `:nome=Test` supplies the literal value `Test` for `{{nome}}`.
+- `:body=mensagem` maps the notification body to `{{mensagem}}`.
+- `:type=tipo` maps the notification type to `{{tipo}}`.
+
+Named parameters include Meta's `parameter_name` field. Names use lowercase letters, digits and underscores and cannot start with a digit. `body` and `type` are reserved mapping keys. Named and positional formats cannot be mixed, and duplicate assignments are rejected. URL-encode values containing reserved characters.
+
+Apprise does not download templates or discover their parameters. Configure mappings to match the approved template. Only text body parameters are supported; template header and button parameters are not implemented.
+
 ## Attachments
 
 Add `?bucket={Bucket}` to send attachments. Each file is briefly stored in the `apprise/` folder of that bucket while WhatsApp copies it, then removed.
@@ -87,6 +97,8 @@ Add `?bucket={Bucket}` to send attachments. Each file is briefly stored in the `
 - Your IAM user also needs `social-messaging:PostWhatsAppMessageMedia`, plus `s3:PutObject`, `s3:GetObject` and `s3:DeleteObject` on `apprise/*`.
 
 Images, audio and video are sent as such; any other file is sent as a document. Each attachment is sent as its own message after the text. WhatsApp's own [file type and size limits](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html) apply.
+
+Attachments are separate messages rather than template headers. They require an open customer-service window, even when sent alongside an approved text template. AWS acceptance is not proof of delivery. Applications remain responsible for opt-in and delivery-status processing.
 
 ## Examples
 

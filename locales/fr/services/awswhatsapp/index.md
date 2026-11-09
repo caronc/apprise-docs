@@ -88,6 +88,8 @@ Ajoutez `?bucket={Bucket}` pour envoyer des pièces jointes. Chaque fichier est 
 
 Les images, l'audio et la vidéo sont envoyés comme tels ; tout autre fichier est envoyé comme document. Chaque pièce jointe est envoyée dans son propre message après le texte. Les [limites de types et de tailles de fichiers](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html) de WhatsApp s'appliquent.
 
+Les pi�ces jointes sont des messages distincts, et non des en-t�tes de mod�le. Elles n�cessitent une fen�tre de service client ouverte, m�me lorsqu'elles accompagnent un mod�le textuel approuv�. L'acceptation par AWS ne prouve pas la livraison. L'application reste responsable du consentement et du traitement des statuts de livraison.
+
 ## Exemples
 
 Envoyer un message WhatsApp :
