@@ -61,20 +61,29 @@ Le niveau peut être forcé globalement via `?level=`, ou ajusté individuelleme
 
 ## Détail des Paramètres
 
-| Variable                           | Obligatoire | Description                                                                                                                                                                                                                                                 |
-| ---------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apikey                             | \*Oui       | Votre clé d'intégration PushWard (commence par `hlk_`). Peut aussi être fournie via l'argument `?apikey=`.                                                                                                                                                  |
-| level                              | Non         | Force ce niveau pour toutes les notifications : `passive`, `active`, `time-sensitive` ou `critical`. Les formes abrégées fonctionnent aussi (ex. `crit`).                                                                                                   |
-| info / success / warning / failure | Non         | Remplace le niveau utilisé pour ce type de notification (valeurs par défaut : `active` / `active` / `time-sensitive` / `time-sensitive`). Ex. `?info=passive&failure=critical`.                                                                             |
-| volume                             | Non         | Volume de l'alerte (`0.0`–`1.0`) ; appliqué uniquement quand le niveau résolu est `critical`.                                                                                                                                                               |
-| ack                                | Non         | Définir sur `yes` pour répéter la notification jusqu'à ce que quelqu'un appuie sur Acknowledge. La valeur par défaut est `no`. Non envoyé quand le niveau résolu est `passive`, et incompatible avec `snooze`. Au plus 25 peuvent se répéter en même temps. |
-| repeat                             | Non         | Secondes entre les répétitions (`30`-`3600`, `60` par défaut) ; appliqué uniquement avec `ack`. Au plus 50 répétitions sont envoyées.                                                                                                                       |
-| expire                             | Non         | Secondes avant l'arrêt des répétitions (`60`-`10800`, `3600` par défaut) ; appliqué uniquement avec `ack`.                                                                                                                                                  |
-| url                                | Non         | Lien ouvert depuis la notification, jusqu'à 2048 caractères.                                                                                                                                                                                                |
-| subtitle                           | Non         | Ligne affichée sous le titre, jusqu'à 256 caractères.                                                                                                                                                                                                       |
-| thread                             | Non         | Regroupe les notifications. Jusqu'à 128 caractères.                                                                                                                                                                                                         |
-| collapse                           | Non         | Une notification ultérieure avec la même valeur remplace celle-ci. Jusqu'à 64 caractères.                                                                                                                                                                   |
-| snooze                             | Non         | Jusqu'à 3 boutons de rappel, en durées différentes en minutes (`1`-`1440`), ex. `?snooze=15,60`.                                                                                                                                                            |
+| Variable                           | Obligatoire | Description                                                                                                                                                                     |
+| ---------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apikey                             | \*Oui       | Votre clé d'intégration PushWard (commence par `hlk_`). Peut aussi être fournie via l'argument `?apikey=`.                                                                      |
+| level                              | Non         | Force ce niveau pour toutes les notifications : `passive`, `active`, `time-sensitive` ou `critical`. Les formes abrégées fonctionnent aussi (ex. `crit`).                       |
+| info / success / warning / failure | Non         | Remplace le niveau utilisé pour ce type de notification (valeurs par défaut : `active` / `active` / `time-sensitive` / `time-sensitive`). Ex. `?info=passive&failure=critical`. |
+| volume                             | Non         | Volume de l'alerte (`0.0`–`1.0`) ; appliqué uniquement quand le niveau résolu est `critical`.                                                                                   |
+| ack                                | Non         | Définir sur `yes` pour répéter la notification jusqu'à ce que quelqu'un appuie sur **Acknowledge**. La valeur par défaut est `no`.                                              |
+| repeat                             | Non         | Secondes entre les répétitions, de `30` à `3600`. La valeur par défaut est `60`. Utilisé uniquement avec `ack`.                                                                 |
+| expire                             | Non         | Secondes avant l'arrêt des répétitions, de `60` à `10800`. La valeur par défaut est `3600`. Utilisé uniquement avec `ack`.                                                      |
+| url                                | Non         | Lien ouvert lorsque l'on touche la notification, jusqu'à 2048 caractères.                                                                                                       |
+| subtitle                           | Non         | Ligne affichée sous le titre, jusqu'à 256 caractères.                                                                                                                           |
+| thread                             | Non         | Regroupe les notifications qui partagent la même valeur, jusqu'à 128 caractères.                                                                                                |
+| collapse                           | Non         | Une notification ultérieure avec la même valeur remplace celle-ci, jusqu'à 64 caractères.                                                                                       |
+| snooze                             | Non         | Ajoute jusqu'à 3 boutons de rappel, sous forme de durées différentes en minutes, de `1` à `1440`. Par exemple `?snooze=15,60`. Incompatible avec `ack`.                         |
+
+:::note
+Avec `ack=yes` :
+
+- PushWard envoie au plus 50 répétitions, et un compte peut avoir jusqu'à 25 notifications qui se répètent en même temps.
+- Une notification envoyée au niveau `passive` est livrée sans répétition, car PushWard ne l'autorise pas à ce niveau.
+- `ack` ne peut pas être combiné avec `snooze`.
+
+:::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
