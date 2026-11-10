@@ -14,6 +14,8 @@ has_image: true
 sample_urls:
   - pushward://{apikey}
   - pushward://{apikey}?level=critical&volume=0.8
+  - pushward://{apikey}?ack=yes&repeat=120&expire=1800
+  - pushward://{apikey}?snooze=15,60
 
 limits:
   - name: "Title"
@@ -45,6 +47,8 @@ Valid syntax is as follows:
 - `pushward://{apikey}`
 - `pushward://{apikey}?level={level}`
 - `pushward://{apikey}?info={level}&success={level}&warning={level}&failure={level}`
+- `pushward://{apikey}?ack=yes&repeat={seconds}&expire={seconds}`
+- `pushward://{apikey}?snooze={minutes},{minutes}`
 
 The notification level may be set explicitly via `?level=` to force the same level for every notification, or you may fine-tune each Apprise type individually using `?info=`, `?success=`, `?warning=`, and `?failure=`. When omitted, the level is derived automatically from the Apprise notification type using the following defaults:
 
@@ -63,6 +67,23 @@ The notification level may be set explicitly via `?level=` to force the same lev
 | level                              | No       | Forces this level for every notification: `passive`, `active`, `time-sensitive`, or `critical`. Short-forms work too (e.g. `crit`).                              |
 | info / success / warning / failure | No       | Override the level used for that notification type (defaults: `active` / `active` / `time-sensitive` / `time-sensitive`). e.g. `?info=passive&failure=critical`. |
 | volume                             | No       | The alert volume (`0.0`–`1.0`); only applied when the resolved level is `critical`.                                                                              |
+| ack                                | No       | Set to `yes` to repeat the notification until someone taps **Acknowledge**. The default is `no`.                                                                 |
+| repeat                             | No       | Seconds between repeats, from `30` to `3600`. The default is `60`. Only used with `ack`.                                                                         |
+| expire                             | No       | Seconds before the repeats stop, from `60` to `10800`. The default is `3600`. Only used with `ack`.                                                              |
+| url                                | No       | A link opened when the notification is tapped, up to 2048 characters.                                                                                            |
+| subtitle                           | No       | A line shown under the title, up to 256 characters.                                                                                                              |
+| thread                             | No       | Groups notifications that share the same value, up to 128 characters.                                                                                            |
+| collapse                           | No       | A later notification with the same value replaces this one, up to 64 characters.                                                                                 |
+| snooze                             | No       | Adds up to 3 snooze buttons, given as different durations in minutes from `1` to `1440`. For example `?snooze=15,60`. Cannot be combined with `ack`.             |
+
+:::note
+With `ack=yes`:
+
+- PushWard sends at most 50 repeats, and an account can have up to 25 notifications repeating at once.
+- A notification sent at the `passive` level is delivered without repeating, since PushWard does not allow it at that level.
+- `ack` cannot be combined with `snooze`.
+
+:::
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
@@ -87,6 +108,20 @@ Map individual Apprise notification types to different PushWard levels:
 ```bash
 apprise -vv -t "Info" -b "Deployment finished." \
    "pushward://hlk_xxxxxxxxxxxx?info=passive&failure=critical"
+```
+
+Repeat a notification every 2 minutes, for up to 30 minutes, until someone acknowledges it:
+
+```bash
+apprise -vv -t "Disk Full" -b "Only 5% left." \
+   "pushward://hlk_xxxxxxxxxxxx?ack=yes&repeat=120&expire=1800"
+```
+
+Offer snooze buttons and group the notifications together:
+
+```bash
+apprise -vv -t "Backup Done" -b "Nightly backup finished." \
+   "pushward://hlk_xxxxxxxxxxxx?snooze=15,60&thread=backups"
 ```
 
 Example YAML configuration:
