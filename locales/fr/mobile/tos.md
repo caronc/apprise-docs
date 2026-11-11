@@ -101,3 +101,7 @@ continuer.
 
 Pour toute question concernant ces Conditions, écrivez à
 [lead2gold@gmail.com](mailto:lead2gold@gmail.com).
+
+## 9. Marques Commerciales
+
+Google Play et le logo Google Play sont des marques de Google LLC. Apple, le logo Apple, iPhone et iPad sont des marques d'Apple Inc., déposées aux États-Unis et dans d'autres pays et régions. App Store est une marque de service d'Apple Inc.

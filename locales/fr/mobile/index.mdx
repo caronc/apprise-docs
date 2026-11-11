@@ -8,6 +8,7 @@ sidebar:
 ---
 
 import "~/styles/mobile.css";
+import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
@@ -22,36 +23,19 @@ import "~/styles/mobile.css";
 <div class="mobile-page">
   <section class="mobile-hero">
     <div class="mobile-hero-copy">
-      <span class="mobile-app-label">Application Android</span>
+      <span class="mobile-app-label">Application Android et iOS</span>
       <h2>Vos notifications, où que vous soyez</h2>
       <p>
         Envoyez un message ou une photo que vous venez de prendre vers une destination, un groupe
-        ou toutes les destinations configurées. Apprise Mobile relie votre appareil Android à
+        ou toutes les destinations configurées. Apprise Mobile relie votre téléphone ou votre tablette à
         <!-- SERVICES:COUNT --> services pris en charge grâce à votre API Apprise auto-hébergée.
       </p>
       <p>
         Nécessite un <a href="../api/deployment/">serveur API Apprise</a> en cours d'exécution.
         Apprise Mobile est un client pour votre serveur, pas un service de notification à lui seul.
       </p>
-      <a
-        class="mobile-get-link mobile-get-link-primary"
-        href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Disponible sur Google Play
-      </a>
+      <MobileStoreLinks lang="fr" />
     </div>
-
-    <a
-      class="mobile-play-mark"
-      href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Obtenir Apprise Mobile sur Google Play"
-    >
-      <img src="/assets/google-play.svg" alt="Google Play" width="97" height="96" />
-    </a>
 
   </section>
 
@@ -147,19 +131,15 @@ import "~/styles/mobile.css";
   </section>
 
 <section class="mobile-get">
-  <h2>Obtenir Apprise Mobile</h2>
+  <h2>Connectez votre téléphone ou votre tablette</h2>
   <p>
-    Installez l'application depuis Google Play, scannez le code QR dans
-    l'interface Web de votre API Apprise et commencez à envoyer. Google Play
-    installe automatiquement les mises à jour.
+    Disponible pour Android 8.0 ou version ultérieure et pour iPhone ou iPad
+    avec iOS 17.2 ou version ultérieure. Installez l'application depuis l'une
+    des boutiques ci-dessus, connectez votre serveur API Apprise et envoyez
+    votre première notification.
   </p>
-  <a
-    class="mobile-get-link mobile-get-link-primary"
-    href="https://play.google.com/store/apps/details?id=com.appriseit.mobile"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Disponible sur Google Play
+  <a class="mobile-get-link mobile-get-link-primary" href="./getting-started/">
+    Configurer Apprise Mobile
   </a>
 </section>
 
@@ -168,7 +148,4 @@ import "~/styles/mobile.css";
   <a href="./tos/">Conditions d'utilisation</a>
 </nav>
 
-  <p class="mobile-footnote">
-    Google Play et le logo Google Play sont des marques de Google LLC. Consultez les <a href="https://developer.android.com/distribute/marketing-tools/brand-guidelines">consignes officielles relatives à la marque</a>.
-  </p>
 </div>

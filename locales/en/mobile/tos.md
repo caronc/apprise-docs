@@ -83,3 +83,7 @@ continuing.
 ## 8. Contact
 
 Questions about these Terms can be sent to **[lead2gold@gmail.com](mailto:lead2gold@gmail.com)**.
+
+## 9. Trademarks
+
+Google Play and the Google Play logo are trademarks of Google LLC. Apple, the Apple logo, iPhone, and iPad are trademarks of Apple Inc., registered in the U.S. and other countries and regions. App Store is a service mark of Apple Inc.

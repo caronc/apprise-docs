@@ -58,6 +58,6 @@ mailto://user:pass@gmail.com/?to=jane@example.com&format=html
 
 Vous utiliserez ces URL partout dans Apprise :
 
-1. **Arguments CLI :** `apprise "service://..."`
-2. **Fichiers de configuration :** listés dans vos fichiers YAML ou TEXT.
-3. **Appels API :** transmis dans la charge utile JSON.
+- **Arguments CLI :** `apprise "service://..."`
+- **Fichiers de configuration :** listés dans vos fichiers YAML ou TEXT.
+- **Appels API :** transmis dans la charge utile JSON.

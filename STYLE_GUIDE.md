@@ -34,7 +34,8 @@ Do not assume prior knowledge of Apprise unless stated.
 
 ### Headings
 
-- Use sentence case for headings
+- Use Title Case for English headings and the language's native title
+  capitalization for translations
 - Keep headings descriptive and short
 
 ### Paragraphs
@@ -46,6 +47,26 @@ Do not assume prior knowledge of Apprise unless stated.
 
 - Use bullets for unordered lists
 - Use numbered lists for sequential steps
+
+### Optional End-of-Page Navigation
+
+When a page ends by directing readers to related tasks, use one consistent
+pattern:
+
+```md
+## Next Steps
+
+- **[Action Label](path/):** One short explanation of what the reader will do.
+- **[Another Action](path/):** One short explanation of the next option.
+```
+
+- Use the translated equivalent of `Next Steps` on localized pages.
+- Keep each destination in a single bullet and link the action label only.
+- Use ordinary Markdown bullets. Do not add buttons, custom components, or
+  decorative numbering.
+- Use a numbered list only when readers must complete steps in order.
+- Use a table when readers are choosing between several paths based on their
+  goal.
 
 ## Examples
 
