@@ -16,6 +16,7 @@ sample_urls:
   - pushward://{apikey}?level=critical&volume=0.8
   - pushward://{apikey}?ack=yes&repeat=120&expire=1800
   - pushward://{apikey}?snooze=15,60
+  - pushward://{apikey}?key={key}
 
 limits:
   - name: "Title"
@@ -49,6 +50,7 @@ Valid syntax is as follows:
 - `pushward://{apikey}?info={level}&success={level}&warning={level}&failure={level}`
 - `pushward://{apikey}?ack=yes&repeat={seconds}&expire={seconds}`
 - `pushward://{apikey}?snooze={minutes},{minutes}`
+- `pushward://{apikey}?key={key}`
 
 The notification level may be set explicitly via `?level=` to force the same level for every notification, or you may fine-tune each Apprise type individually using `?info=`, `?success=`, `?warning=`, and `?failure=`. When omitted, the level is derived automatically from the Apprise notification type using the following defaults:
 
@@ -58,6 +60,36 @@ The notification level may be set explicitly via `?level=` to force the same lev
 | `success`    | `active`         |
 | `warning`    | `time-sensitive` |
 | `failure`    | `time-sensitive` |
+
+## Encryption
+
+PushWard can end-to-end encrypt your notifications so that neither the PushWard server nor Apple's push service sees the title, subtitle, body or link.
+
+1. In the PushWard app (1.17.0 or later), open **Settings > End-to-End Encryption**, create a key and copy it.
+2. Add that key to your Apprise URL with `?key=`. It is 64 hexadecimal characters.
+
+```bash
+apprise -vv -t "Disk Full" -b "Only 5% left." \
+   "pushward://hlk_xxxxxxxxxxxx?key=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+```
+
+The level, sender and options such as `ack`, `thread` and `snooze` stay readable, because the server needs them to deliver the notification.
+
+:::note
+Encryption requires the `cryptography` Python package:
+
+```bash
+pip install cryptography
+```
+
+Once a `key` is set, Apprise never sends your message unencrypted. If `cryptography` is not installed, the key is not 64 hexadecimal characters, or `key=` is left blank, Apprise refuses to load the URL. An encrypted notification holds about 2240 characters of title and body together; a longer one is not sent and Apprise logs a warning.
+:::
+
+:::caution
+Anyone with your encryption key can read your notifications. Keep it as private as your integration key.
+:::
+
+See PushWard's [encryption documentation](https://pushward.app/docs/notifications/encryption) for more on how it works.
 
 ## Parameter Breakdown
 
@@ -75,6 +107,8 @@ The notification level may be set explicitly via `?level=` to force the same lev
 | thread                             | No       | Groups notifications that share the same value, up to 128 characters.                                                                                            |
 | collapse                           | No       | A later notification with the same value replaces this one, up to 64 characters.                                                                                 |
 | snooze                             | No       | Adds up to 3 snooze buttons, given as different durations in minutes from `1` to `1440`. For example `?snooze=15,60`. Cannot be combined with `ack`.             |
+| key                                | No       | The encryption key from the PushWard app, 64 hexadecimal characters. Requires the `cryptography` Python package. See [Encryption](#encryption) above.            |
+| e2ee                               | No       | Set to `no` to send readable text even though a `key` is set. The default is `yes`.                                                                              |
 
 :::note
 With `ack=yes`:
