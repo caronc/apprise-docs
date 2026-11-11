@@ -16,6 +16,7 @@ sample_urls:
   - pushward://{apikey}?level=critical&volume=0.8
   - pushward://{apikey}?ack=yes&repeat=120&expire=1800
   - pushward://{apikey}?snooze=15,60
+  - pushward://{apikey}?key={key}
 
 limits:
   - name: "Titre"
@@ -49,6 +50,7 @@ La syntaxe valide est la suivante :
 - `pushward://{apikey}?info={level}&success={level}&warning={level}&failure={level}`
 - `pushward://{apikey}?ack=yes&repeat={seconds}&expire={seconds}`
 - `pushward://{apikey}?snooze={minutes},{minutes}`
+- `pushward://{apikey}?key={key}`
 
 Le niveau peut être forcé globalement via `?level=`, ou ajusté individuellement pour chaque type Apprise avec `?info=`, `?success=`, `?warning=` et `?failure=`. S'il est omis, il est dérivé automatiquement du type de notification selon les correspondances par défaut suivantes :
 
@@ -58,6 +60,36 @@ Le niveau peut être forcé globalement via `?level=`, ou ajusté individuelleme
 | `success`    | `active`         |
 | `warning`    | `time-sensitive` |
 | `failure`    | `time-sensitive` |
+
+## Chiffrement
+
+PushWard peut chiffrer vos notifications de bout en bout, de sorte que ni le serveur PushWard ni le service de notifications d'Apple ne voient le titre, le sous-titre, le corps ou le lien.
+
+1. Dans l'application PushWard (1.17.0 ou ultérieure), ouvrez **Réglages > Chiffrement de bout en bout**, créez une clé et copiez-la.
+2. Ajoutez cette clé à votre URL Apprise avec `?key=`. Elle fait 64 caractères hexadécimaux.
+
+```bash
+apprise -vv -t "Disque plein" -b "Il ne reste que 5 %." \
+   "pushward://hlk_xxxxxxxxxxxx?key=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+```
+
+Le niveau, l'expéditeur et les options comme `ack`, `thread` et `snooze` restent lisibles, car le serveur en a besoin pour livrer la notification.
+
+:::note
+Le chiffrement nécessite le paquet Python `cryptography` :
+
+```bash
+pip install cryptography
+```
+
+Dès qu'une `key` est définie, Apprise n'envoie jamais votre message en clair. Si `cryptography` n'est pas installé, si la clé ne fait pas 64 caractères hexadécimaux ou si `key=` est laissé vide, Apprise refuse de charger l'URL. Une notification chiffrée contient environ 2240 caractères de titre et de corps au total ; une notification plus longue n'est pas envoyée et Apprise consigne un avertissement.
+:::
+
+:::caution
+Toute personne disposant de votre clé de chiffrement peut lire vos notifications. Protégez-la avec autant de soin que votre clé d'intégration.
+:::
+
+Consultez la [documentation de PushWard sur le chiffrement](https://pushward.app/docs/notifications/encryption) pour en savoir plus sur son fonctionnement.
 
 ## Détail des Paramètres
 
@@ -75,6 +107,8 @@ Le niveau peut être forcé globalement via `?level=`, ou ajusté individuelleme
 | thread                             | Non         | Regroupe les notifications qui partagent la même valeur, jusqu'à 128 caractères.                                                                                                |
 | collapse                           | Non         | Une notification ultérieure avec la même valeur remplace celle-ci, jusqu'à 64 caractères.                                                                                       |
 | snooze                             | Non         | Ajoute jusqu'à 3 boutons de rappel, sous forme de durées différentes en minutes, de `1` à `1440`. Par exemple `?snooze=15,60`. Incompatible avec `ack`.                         |
+| key                                | Non         | La clé de chiffrement de l'application PushWard, 64 caractères hexadécimaux. Nécessite le paquet Python `cryptography`. Voir [Chiffrement](#chiffrement) ci-dessus.             |
+| e2ee                               | Non         | Définir sur `no` pour envoyer le texte en clair même si une `key` est définie. La valeur par défaut est `yes`.                                                                  |
 
 :::note
 Avec `ack=yes` :
