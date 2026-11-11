@@ -79,6 +79,16 @@ Les paramètres d'un modèle se remplissent de la même façon qu'avec le servic
 
 Sans paramètres, le modèle est envoyé tel quel, ce qui convient aux modèles statiques comme `hello_world`.
 
+Les modèles à paramètres nommés sont aussi pris en charge :
+
+- `:nome=Test` fournit la valeur littérale `Test` pour `{{nome}}`.
+- `:body=mensagem` place le corps de la notification dans `{{mensagem}}`.
+- `:type=tipo` place le type de notification dans `{{tipo}}`.
+
+Les paramètres nommés incluent le champ `parameter_name` de Meta. Les noms utilisent des lettres minuscules, des chiffres et des tirets bas, et ne peuvent pas commencer par un chiffre. `body` et `type` sont des clés de correspondance réservées. Les formats nommé et positionnel ne peuvent pas être mélangés, et les affectations en double sont refusées. Encodez pour l'URL les valeurs contenant des caractères réservés.
+
+Apprise ne télécharge pas les modèles et ne découvre pas leurs paramètres. Faites correspondre vos paramètres au modèle approuvé. Seuls les paramètres texte du corps sont pris en charge. Les paramètres d'en-tête et de bouton des modèles ne sont pas implémentés.
+
 ## Pièces jointes
 
 Ajoutez `?bucket={Bucket}` pour envoyer des pièces jointes. Chaque fichier est brièvement déposé dans le dossier `apprise/` de ce compartiment le temps que WhatsApp le copie, puis il est supprimé.
@@ -88,7 +98,7 @@ Ajoutez `?bucket={Bucket}` pour envoyer des pièces jointes. Chaque fichier est 
 
 Les images, l'audio et la vidéo sont envoyés comme tels ; tout autre fichier est envoyé comme document. Chaque pièce jointe est envoyée dans son propre message après le texte. Les [limites de types et de tailles de fichiers](https://docs.aws.amazon.com/social-messaging/latest/userguide/supported-media-types.html) de WhatsApp s'appliquent.
 
-Les pi�ces jointes sont des messages distincts, et non des en-t�tes de mod�le. Elles n�cessitent une fen�tre de service client ouverte, m�me lorsqu'elles accompagnent un mod�le textuel approuv�. L'acceptation par AWS ne prouve pas la livraison. L'application reste responsable du consentement et du traitement des statuts de livraison.
+Les pièces jointes sont des messages distincts, et non des en-têtes de modèle. Elles nécessitent une fenêtre de service client ouverte, même lorsqu'elles accompagnent un modèle textuel approuvé. L'acceptation par AWS ne prouve pas la livraison. L'application reste responsable du consentement et du traitement des statuts de livraison.
 
 ## Exemples
 

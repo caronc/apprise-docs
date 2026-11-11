@@ -87,7 +87,7 @@ Named templates are also supported:
 
 Named parameters include Meta's `parameter_name` field. Names use lowercase letters, digits and underscores and cannot start with a digit. `body` and `type` are reserved mapping keys. Named and positional formats cannot be mixed, and duplicate assignments are rejected. URL-encode values containing reserved characters.
 
-Apprise does not download templates or discover their parameters. Configure mappings to match the approved template. Only text body parameters are supported; template header and button parameters are not implemented.
+Apprise does not download templates or discover their parameters. Configure mappings to match the approved template. Only text body parameters are supported. Template header and button parameters are not implemented.
 
 ## Attachments
 
