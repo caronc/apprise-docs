@@ -226,6 +226,18 @@ HTTP attachments support explicit timeout configuration:
 
 Timeout values persist with the attachment.
 
+The asset's `service_timeout` (60 seconds by default) also limits the download,
+counted from the start of the request. See
+[Assets & Branding](/library/assets/).
+
+- Connecting, and waiting for the server to answer, never take longer than the
+  time left. A chain of redirects stops once time is up.
+- A file still arriving after that is stopped and the download fails, even when
+  the server sends data a little at a time.
+- `0` turns this off, and a download can take as long as it needs.
+
+This also covers a server, or a proxy, that sends its response headers a byte at a time. It does not fully apply to an application that passes its own `requests.Session` (Apprise's `HTTPPolicySession`, used by Apprise API, is fully covered). There, the time is only checked between pieces of the file, so a server that trickles its headers or data can take longer.
+
 ### Caching
 
 Controls how long a downloaded attachment is considered valid before it is
