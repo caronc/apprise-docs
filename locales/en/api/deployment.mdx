@@ -916,6 +916,38 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
 ```
 
+**Reminders are sent by a separate scheduler process. Create `/etc/systemd/system/apprise-scheduler.service`** with the same `Environment=` lines as `apprise.service`:
+
+```ini
+[Unit]
+Description=Apprise API Reminder Scheduler
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/apprise-api/apprise_api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/python manage.py scheduler
+Restart=on-failure
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Enable and start it:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise-scheduler
+```
+
 `APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
 and lets the configuration manager list your saved keys. One Gunicorn worker
 keeps resource use modest for a home or small-team installation.
@@ -1043,6 +1075,38 @@ WantedBy=multi-user.target
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
+```
+
+**Reminders are sent by a separate scheduler process. Create `/etc/systemd/system/apprise-scheduler.service`** with the same `Environment=` lines as `apprise.service`:
+
+```ini
+[Unit]
+Description=Apprise API Reminder Scheduler
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory=/opt/apprise-api/apprise_api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/python manage.py scheduler
+Restart=on-failure
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Enable and start it:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise-scheduler
 ```
 
 `APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
@@ -1187,6 +1251,44 @@ run_rc_command "$1"
 sudo chmod +x /usr/local/etc/rc.d/apprise
 sudo sysrc apprise_enable=YES
 sudo service apprise start
+```
+
+**Reminders are sent by a separate scheduler process. Create `/usr/local/etc/rc.d/apprise_scheduler`** with the same environment as `apprise`:
+
+```sh
+#!/bin/sh
+
+# PROVIDE: apprise_scheduler
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=apprise_scheduler
+rcvar=apprise_scheduler_enable
+
+load_rc_config $name
+
+: ${apprise_scheduler_enable:="NO"}
+: ${apprise_scheduler_user:="www"}
+: ${apprise_scheduler_dir:="/usr/local/apprise-api"}
+: ${apprise_scheduler_venv:="${apprise_scheduler_dir}/venv"}
+: ${apprise_scheduler_pidfile:="/var/run/${name}.pid"}
+: ${apprise_scheduler_logfile:="/var/log/${name}.log"}
+
+pidfile=${apprise_scheduler_pidfile}
+command="/usr/sbin/daemon"
+command_args="-f -r -P ${pidfile} -o ${apprise_scheduler_logfile} -u ${apprise_scheduler_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_scheduler_venv}/bin/python ${apprise_scheduler_dir}/apprise_api/manage.py scheduler"
+
+run_rc_command "$1"
+```
+
+**Make it executable, enable it at boot, and start it:**
+
+```bash
+sudo chmod +x /usr/local/etc/rc.d/apprise_scheduler
+sudo sysrc apprise_scheduler_enable=YES
+sudo service apprise_scheduler start
 ```
 
 `APPRISE_STATEFUL_MODE=simple` stores each configuration as a readable file
@@ -1485,12 +1587,13 @@ A Kubernetes example that uses a `Secret` (basic auth `.htpasswd`) and a `Config
 
 ## Pruning
 
-The packaged container runs one low-priority cleanup cycle each day. It covers both areas below and has a time limit:
+The packaged container runs one low-priority cleanup cycle each day. It covers the areas below and has a time limit:
 
-| Area             | What it prunes                                                | Retention setting                                            |
-| :--------------- | :------------------------------------------------------------ | :----------------------------------------------------------- |
-| Persistent state | Apprise's notification-state storage (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)             |
-| Authentication   | Per-key Basic Auth locks without configuration.               | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days) |
+| Area             | What it prunes                                                                                                               | Retention setting                                                                          |
+| :--------------- | :--------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| Persistent state | Apprise's notification-state storage (`APPRISE_STORAGE_DIR`).                                                                | `APPRISE_STORAGE_PRUNE_DAYS` (default `30` days)                                           |
+| Authentication   | Per-key Basic Auth locks without configuration.                                                                              | `APPRISE_AUTH_PRUNE_SECONDS` (default `2592000`, or 30 days)                               |
+| Reminders        | Incomplete configuration removals, finished reminders (nothing left to send), and dangling files left by incomplete uploads. | `APPRISE_REMINDER_PRUNE_DAYS` (default `7` days); attachments at least 1 hour after upload |
 
 `APPRISE_PRUNE_INTERVAL_SECONDS` controls the schedule. Set `APPRISE_PRUNE_ENABLED=no` to disable scheduled cleanup. `APPRISE_PRUNE_TIMEOUT_SECONDS` changes the 8-hour time limit. The combined or individual commands may still run manually:
 
@@ -1499,6 +1602,21 @@ docker exec -it apprise python manage.py prune
 docker exec -it apprise python manage.py storeprune --days 30
 docker exec -it apprise python manage.py authprune --seconds 2592000
 ```
+
+Without the container, run `python manage.py prune` from the `apprise_api` directory once a day, such as from cron, with the same environment as the service.
+
+## Stopping the Container
+
+When the container stops, the reminder scheduler finishes the notifications it is already sending, waiting up to 60 seconds for them. Docker stops a container by force after 10 seconds by default, so give it longer:
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    stop_grace_period: 75s
+```
+
+With `docker run`, add `--stop-timeout 75`. On Kubernetes, set `terminationGracePeriodSeconds: 75`. A reminder cut off part way through is not sent again.
 
 ## Logging and Observability
 
@@ -1523,3 +1641,4 @@ This mode is intended for development only and is **not recommended for producti
 - **[Address Destinations](/api/usage/):** Save configuration keys using the web UI or provide notification URLs with each request.
 - **[Send Notifications](/api/endpoints/):** Use `/notify` or `/notify/{KEY}` from any HTTP client.
 - **[Connect Other Systems](/api/integrations/):** Integrate applications and automation tools with the Apprise API.
+- **[Secure the Server](/api/security/):** Harden your instance with the security checklist.

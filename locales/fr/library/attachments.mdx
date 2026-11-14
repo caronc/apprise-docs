@@ -1,5 +1,5 @@
 ---
-title: Pièces Jointes
+title: Pièces jointes
 description: Envoyer des fichiers, du contenu en mémoire et des URL hébergées via les services Apprise qui prennent en charge les pièces jointes.
 sidebar:
   order: 7
@@ -22,7 +22,7 @@ uniforme qui vous permet de :
 - la convertir en base64 (`attachment.base64()`), pour les API qui exigent une charge utile inline ;
 - préserver la confidentialité dans les logs (`attachment.url(privacy=True)`).
 
-## Ce que Reçoivent les Plugins
+## Ce que reçoivent les plugins
 
 Lorsqu'un plugin déclare la prise en charge des pièces jointes :
 
@@ -54,7 +54,7 @@ Raccourci pratique :
 - `a.path` déclenche un téléchargement ou une validation si nécessaire ;
 - `len(a)` renvoie la taille de la pièce jointe en octets, lorsqu'elle est connue.
 
-### `send()` Peut Être Appelé Plusieurs Fois
+### `send()` peut être appelé plusieurs fois
 
 Un long message peut être réparti sur plusieurs appels à `send()`. Apprise ne
 transmet `attach` qu'à un seul de ces appels. Le test `if attach:` évite donc
@@ -65,7 +65,7 @@ une autre partie, surchargez `_attachment_send_index()`. Consultez
 [Connaître Sa Position Parmi Plusieurs Appels à `send()`](../extending/message-format-conversion/#connaitre-sa-position-parmi-plusieurs-appels-a-send)
 pour voir un exemple.
 
-## Sources des Pièces Jointes
+## Sources des pièces jointes
 
 Apprise prend en charge plusieurs sources de pièces jointes. Elles sont toutes
 normalisées vers la même surface d'API.
@@ -192,7 +192,7 @@ apobj.notify(
 - La vérification SSL est activée par défaut ; définissez `verify=no` uniquement pour des endpoints internes de confiance.
 - `cto=` et `rto=` contrôlent respectivement les timeouts de connexion et de lecture.
 
-### Paramètres Réservés
+### Paramètres réservés
 
 Les paramètres suivants sont consommés par Apprise et ne sont pas transmis en amont :
 
@@ -205,7 +205,7 @@ Les paramètres suivants sont consommés par Apprise et ne sont pas transmis en 
 
 Tous les autres paramètres de requête sont transmis tels quels.
 
-### En-têtes Personnalisés
+### En-têtes personnalisés
 
 Des en-têtes HTTP personnalisés peuvent être définis avec la syntaxe
 `+Header=Value`.
@@ -218,22 +218,35 @@ https://example.com/file.png?+Authorization=Bearer%20TOKEN
 
 Ces entrées deviennent des en-têtes HTTP, et non des paramètres de requête.
 
-### Vérification des Certificats
+### Vérification des certificats
 
 Le paramètre `verify=` contrôle la vérification des certificats TLS pour
 les pièces jointes basées sur HTTPS.
 
 - `verify=yes` (par défaut) : les certificats TLS sont validés à l'aide du magasin de confiance du système.
-- `verify=no` : la vérification des certificats TLS est désactivée. Cela ne doit être utilisé que pour les tests ou lors d'interactions avec des endpoints internes de confiance.
+- `verify=no` : la vérification des certificats TLS est désactivée. Cela ne doit être utilisé que pour les tests ou lors d'interactions avec des points de terminaison internes de confiance.
 
-### Délais d'Attente
+### Délais d'attente
 
-Les pièces jointes HTTP prennent en charge une configuration explicite des timeouts :
+Les pièces jointes HTTP prennent en charge une configuration explicite des délais d'attente :
 
-- `cto=` timeout de connexion (secondes)
-- `rto=` timeout de lecture (secondes)
+- `cto=` délai de connexion (secondes)
+- `rto=` délai de lecture (secondes)
 
-Les valeurs de timeout persistent avec la pièce jointe.
+Ces délais restent attachés à la pièce jointe.
+
+Le délai `service_timeout` de l'objet `AppriseAsset` (60 secondes par défaut) limite aussi le
+téléchargement, compté depuis le début de la requête. Voir
+[Ressources et image de marque](/library/assets/).
+
+- La connexion, et l'attente de la réponse du serveur, ne dépassent jamais le
+  temps restant. Une suite de redirections s'arrête une fois le délai écoulé.
+- Un fichier encore en cours de réception après ce délai est arrêté et le
+  téléchargement échoue, même si le serveur envoie ses données petit à petit.
+- `0` désactive cette limite, et un téléchargement peut alors prendre le temps
+  qu'il lui faut.
+
+Cela couvre aussi un serveur, ou un proxy, qui envoie ses en-têtes de réponse octet par octet. Cette limite ne s'applique pas entièrement à une application qui fournit sa propre `requests.Session` (la `HTTPPolicySession` d'Apprise, utilisée par Apprise API, est entièrement couverte). Dans ce cas, le délai n'est vérifié qu'entre deux morceaux du fichier, donc un serveur qui envoie ses en-têtes ou ses données au compte-gouttes peut prendre plus de temps.
 
 ### Cache
 
@@ -251,20 +264,20 @@ Le cache est toujours supprimé du système de fichiers dès que l'instance
 `AppriseAttachment` sort de portée ou que l'objet est supprimé.
 :::
 
-### Ordre de Détection du Nom de Fichier et du MIME
+### Ordre de détection du nom de fichier et du MIME
 
 1. `name=` ou `mime=` explicite
 1. en-tête `Content-Disposition`
 1. nom de fichier extrait du chemin URL
 1. valeurs de repli générées
 
-### Lecture en Continu et Limites
+### Lecture en continu et limites
 
 Les pièces jointes HTTP sont diffusées vers le disque et validées
 progressivement. Lorsque `Content-Length` est absent ou invalide, les limites
 de taille sont appliquées pendant le streaming.
 
-### Réutilisation des Téléchargements
+### Réutilisation des téléchargements
 
 Lorsque le cache est activé, un même téléchargement HTTP peut être réutilisé
 sur plusieurs envois de notifications.
@@ -388,7 +401,7 @@ apobj.notify(
 </TabItem>
 </Tabs>
 
-### Modes d'Emplacement du Contenu
+### Modes d'emplacement du contenu
 
 La gestion des pièces jointes est gouvernée par des règles d'emplacement du contenu :
 
@@ -398,16 +411,16 @@ La gestion des pièces jointes est gouvernée par des règles d'emplacement du c
 | `HOSTED`       | Destiné aux services hébergés. Les fichiers locaux et pièces jointes mémoire sont rejetés.                       |
 | `INACCESSIBLE` | Les pièces jointes sont entièrement désactivées. Tous les téléchargements échouent et les objets valent `False`. |
 
-## Paramètres d'URL Partagés par les Types de Pièces Jointes
+## Paramètres d'URL partagés par les types de pièces jointes
 
 | Valeur | Description                                                                                                                                                                              |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mime` | Les URL de pièces jointes prennent en charge un petit ensemble de paramètres de requête communs. <br/>Force le type MIME de la pièce jointe en contournant la détection.                 |
 | `name` | Force le nom de fichier présenté au plugin. Cela ne renomme pas le fichier local ; cela modifie seulement les métadonnées (`attachment.name`) et ce que le plugin peut envoyer en amont. |
 
-## Utiliser les Pièces Jointes dans les Plugins
+## Utiliser les pièces jointes dans les plugins
 
-### Valider l'Accès
+### Valider l'accès
 
 Vérifiez toujours que les pièces jointes sont disponibles avant de les utiliser :
 
@@ -423,7 +436,7 @@ for attachment in attach:
 
 Une pièce jointe peut échouer parce qu'elle est absente, dépasse les limites de taille, est inaccessible depuis l'emplacement d'exécution courant, ou n'a pas pu être téléchargée.
 
-### Préférez `attachment.open()` pour les API de Téléversement
+### Préférez `attachment.open()` pour les API de téléversement
 
 De nombreux services exigent des uploads multipart. Utilisez `attachment.open()`
 pour obtenir un objet de type fichier : cela fonctionne correctement pour
@@ -458,7 +471,7 @@ objets `AttachMemory` : dans les deux cas, cela lèvera un `OSError`.
 Utilisez toujours `attachment.open()` ou `with attachment as f:` à la place.
 :::
 
-### Base64 Lorsque le Service l'Exige
+### Base64 lorsque le service l'exige
 
 Tous les types de pièces jointes prennent en charge l'export Base64. Certaines
 API exigent des pièces jointes encodées en base64. Utilisez `attachment.base64()` :
@@ -476,7 +489,7 @@ Interceptez-la et échouez proprement.
 
 Cela est fréquemment utilisé par les API qui ne prennent pas en charge les uploads multipart.
 
-### Lire par Blocs si Nécessaire
+### Lire par blocs si nécessaire
 
 Si vous devez éviter de charger un fichier entier en mémoire, utilisez `attachment.chunk()` :
 
@@ -486,7 +499,7 @@ for chunk in attachment.chunk(size=5 * 1024 * 1024):
     ...
 ```
 
-### Nettoyage et Cycle de Vie
+### Nettoyage et cycle de vie
 
 Les plugins n'ont généralement pas besoin de supprimer manuellement les fichiers
 temporaires téléchargés. Les objets pièces jointes gèrent eux-mêmes leur
@@ -495,18 +508,18 @@ nettoyage via `invalidate()` et leurs destructeurs.
 Si vous conservez des objets pièces jointes au-delà de `send()`, il vous revient
 de bien comprendre leur cycle de vie. En règle générale, traitez-les comme des objets éphémères.
 
-## Limites et Sécurité
+## Limites et sécurité
 
 - Les limites de taille sont appliquées par `AttachBase.max_file_size`. Si votre service impose une limite plus basse, faites-la respecter dans votre plugin avec `len(attachment)` et échouez tôt.
 - La prise en charge des pièces jointes est activée explicitement par plugin via `attachment_support = True`. Si votre service n'accepte pas les fichiers, laissez cette option désactivée.
 - Utilisez `attachment.url(privacy=True)` dans les logs. Cela garantit que les secrets embarqués sont masqués.
 
-## Conseils pour les Auteurs de Plugins
+## Conseils pour les auteurs de plugins
 
 Les plugins devraient valider tôt la taille et le nombre des pièces jointes,
 et gérer proprement les pièces jointes inaccessibles.
 
-## Exemples Pratiques dans les Plugins Principaux
+## Exemples pratiques dans les plugins principaux
 
 Le projet principal contient des modèles courants que vous pouvez reprendre.
 

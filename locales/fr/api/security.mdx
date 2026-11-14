@@ -1,0 +1,64 @@
+---
+title: Sécurité
+description: Des mesures pour rendre un serveur Apprise API plus sûr, avec les compromis de chaque réglage.
+sidebar:
+  order: 6
+---
+
+Apprise API démarre ouverte pour être facile à essayer sur un réseau domestique. Avant que d'autres personnes ou Internet puissent l'atteindre, parcourez cette page.
+
+## Liste de contrôle
+
+- **Activez l'authentification.** Définissez `APPRISE_AUTH_REQUIRED=yes` avec `APPRISE_PASSWORD`, et donnez à chaque Config ID son propre identifiant. Voir [Authentification et contrôle d'accès](/api/deployment/#authentification-et-contrôle-daccès).
+- **Utilisez des Config ID difficiles à deviner.** Sans authentification, quiconque connaît un Config ID peut envoyer par son intermédiaire et le modifier. Utilisez **Nouvelle configuration** pour en générer un au hasard.
+- **Bloquez les adresses internes pour les pièces jointes.** Ajoutez `internal` à `APPRISE_ATTACH_REJECT_URL`, sauf si vous avez besoin de pièces jointes provenant de votre propre réseau (voir [Pièces jointes par adresse web](#pièces-jointes-par-adresse-web)).
+- **Verrouillez la configuration une fois installée.** Définissez `APPRISE_CONFIG_LOCK=yes`.
+- **Facultatif : retirez l'identifiant administrateur après l'installation.** Laissez `APPRISE_PASSWORD` vide ; les identifiants des configurations existantes continuent de fonctionner.
+- **Désactivez ce que vous n'utilisez pas.** Définissez `APPRISE_STATELESS_MODE=no` si chaque notification passe par un Config ID enregistré, `APPRISE_REMINDER_URLS_MAX=0` si les rappels ne doivent envoyer que par leur configuration enregistrée, et `APPRISE_REMINDER_ENABLED=no` si vous n'utilisez pas les rappels.
+- **Limitez les services.** `APPRISE_DENY_SERVICES` et `APPRISE_ALLOW_SERVICES` déterminent quels services de notification peuvent être utilisés.
+- **Limitez les rappels.** Vérifiez `APPRISE_REMINDER_MAX`, `APPRISE_REMINDER_USER_MIN_INTERVAL` et `APPRISE_REMINDER_ATTACH_QUOTA`, et définissez `APPRISE_REMINDER_STORE_MAX` pour plafonner l'espace disque que toutes les pièces jointes stockées des rappels peuvent occuper ensemble. Les adresses web sont téléchargées à chaque envoi d'un rappel et ne comptent pas.
+- **Utilisez HTTPS et un routage strict.** Placez le serveur derrière un proxy inverse avec HTTPS, et utilisez `STRICT_MODE=yes` (voir l'onglet de déploiement derrière un proxy dans [Déploiement](/api/deployment/#démarrage-rapide)).
+- **Bannissez les récidivistes.** Utilisez Fail2ban pour bloquer les clients qui échouent sans cesse à se connecter ou qui sondent les routes. Voir [Protéger l'API Apprise avec Fail2ban](/guides/fail2ban/#protéger-lapi-apprise).
+
+## Compromis
+
+Certains réglages protègent le serveur mais retirent quelque chose. Choisissez ceux qui correspondent à votre usage.
+
+| Réglage                                     | Protège contre                                                                                                                                         | Compromis                                                                                                                                                                       |
+| :------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `APPRISE_ATTACH_REJECT_URL` avec `internal` | L'utilisation du serveur pour télécharger depuis votre réseau privé, sa propre adresse de bouclage ou l'adresse de métadonnées d'un fournisseur cloud. | Les pièces jointes ne peuvent plus provenir d'appareils locaux, comme des captures de caméras de sécurité ou des fichiers d'un serveur domestique.                              |
+| `APPRISE_CONFIG_LOCK=yes`                   | La lecture des URL de notification, et des mots de passe qu'elles contiennent, dans les configurations enregistrées.                                   | Seul l'administrateur peut voir ou modifier les configurations. Les configurations enregistrées continuent d'envoyer.                                                           |
+| Aucun identifiant administrateur            | Un mot de passe administrateur volé ou deviné donnant accès à chaque Config ID.                                                                        | Personne ne peut ajouter d'identifiants, modifier les limites ni ouvrir la liste des configurations et la liste des rappels tant que le mot de passe n'est pas redéfini.        |
+| `APPRISE_STATEFUL_MODE=hash`                | La lecture des Config ID sur le disque ou dans une sauvegarde.                                                                                         | La liste des configurations et la liste des rappels exigent le mode `simple` ; elles ne sont donc pas disponibles.                                                              |
+| `APPRISE_STATELESS_MODE=no`                 | L'envoi vers n'importe quelle URL de notification choisie par l'appelant.                                                                              | Chaque notification doit utiliser un Config ID enregistré. Les rappels envoient toujours aux URL enregistrées avec eux, sauf si `APPRISE_REMINDER_URLS_MAX=0` est aussi défini. |
+| `APPRISE_REMINDER_URLS_MAX=0`               | L'envoi des rappels vers des URL enregistrées avec eux plutôt que dans une configuration.                                                              | Les rappels n'envoient que par la configuration enregistrée de leur Config ID.                                                                                                  |
+
+## Pièces jointes par adresse web
+
+Une notification peut joindre un fichier depuis une adresse web. Le serveur le télécharge ; les règles d'adresse décident donc de ce que le serveur peut atteindre. Les mêmes règles s'appliquent à `/notify`, à l'aperçu `/attach/{KEY}` et aux adresses web enregistrées avec un rappel, téléchargées à chaque envoi.
+
+- `APPRISE_ATTACH_REJECT_URL` est vérifiée en premier. Tout ce qu'elle reconnaît est refusé.
+- `APPRISE_ATTACH_ALLOW_URL` est vérifiée ensuite. Tout ce qu'elle ne reconnaît pas est refusé. La valeur par défaut, `*`, autorise tout ce que la liste de refus n'a pas refusé.
+- `internal` dans la liste de refus refuse toute adresse qui est, ou se résout en, une adresse privée, de bouclage, de lien local ou autre adresse interne. Elle l'emporte toujours sur la liste d'autorisation.
+
+Choisissez l'une de ces options :
+
+- **Rien sur votre réseau n'est nécessaire :** gardez les entrées par défaut et ajoutez `internal` :
+
+  ```bash
+  APPRISE_ATTACH_REJECT_URL="127.0.* localhost* internal"
+  ```
+
+- **Les pièces jointes viennent seulement de quelques endroits connus :** n'ajoutez pas `internal` et autorisez uniquement ces hôtes. Tout le reste, y compris les autres sites web, est refusé :
+
+  ```bash
+  APPRISE_ATTACH_ALLOW_URL="camera.lan 192.168.1.20 https://files.example.com"
+  ```
+
+- **Les appareils locaux et le web ouvert sont tous deux nécessaires :** n'ajoutez pas `internal` et refusez les adresses internes qui ne doivent jamais être atteintes, comme l'adresse de métadonnées cloud :
+
+  ```bash
+  APPRISE_ATTACH_REJECT_URL="127.0.* localhost* 169.254.*"
+  ```
+
+Ces règles ne concernent que le téléchargement des pièces jointes. Elles ne changent pas les services de notification vers lesquels on peut envoyer.

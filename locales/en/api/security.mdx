@@ -1,0 +1,64 @@
+---
+title: Security
+description: Steps that can make an Apprise API server safer, with the trade-offs of each setting.
+sidebar:
+  order: 6
+---
+
+Apprise API starts open so it is easy to try on a home network. Before other people or the Internet can reach it, work through this page.
+
+## Checklist
+
+- **Turn on logins.** Set `APPRISE_AUTH_REQUIRED=yes` with `APPRISE_PASSWORD`, and give each Config ID its own login. See [Authentication and Access Control](/api/deployment/#authentication-and-access-control).
+- **Use hard-to-guess Config IDs.** Without logins, anyone who knows a Config ID can send through it and change it. Use **New Configuration** to generate a random one.
+- **Block internal addresses for attachments.** Add `internal` to `APPRISE_ATTACH_REJECT_URL`, unless you need attachments from your own network (see [Web Address Attachments](#web-address-attachments)).
+- **Lock the configuration once it is set up.** Set `APPRISE_CONFIG_LOCK=yes`.
+- **Optional: remove the administrator login after setup.** Leave `APPRISE_PASSWORD` unset; existing configuration logins keep working.
+- **Turn off what you do not use.** Set `APPRISE_STATELESS_MODE=no` if every notification goes through a saved Config ID, `APPRISE_REMINDER_URLS_MAX=0` if reminders should only send through their saved configuration, and `APPRISE_REMINDER_ENABLED=no` if you do not use reminders.
+- **Limit the services.** `APPRISE_DENY_SERVICES` and `APPRISE_ALLOW_SERVICES` control which notification services may be used.
+- **Limit reminders.** Review `APPRISE_REMINDER_MAX`, `APPRISE_REMINDER_USER_MIN_INTERVAL` and `APPRISE_REMINDER_ATTACH_QUOTA`, and set `APPRISE_REMINDER_STORE_MAX` to cap the disk space all stored reminder attachments may take together. Web addresses are downloaded each time a reminder is sent and do not count.
+- **Use HTTPS and strict routing.** Put the server behind a reverse proxy with HTTPS, and use `STRICT_MODE=yes` (see the **Deployment Behind a Proxy** tab in [Deployment](/api/deployment/#quick-start)).
+- **Ban repeat offenders.** Use Fail2ban to block clients that keep failing to log in or probing for routes. See [Protecting Apprise API with Fail2ban](/guides/fail2ban/#protecting-apprise-api).
+
+## Trade-offs
+
+Some settings protect the server but take something away. Pick the ones that fit how you use it.
+
+| Setting                                     | Protects against                                                                                                                  | Trade-off                                                                                                                                     |
+| :------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `APPRISE_ATTACH_REJECT_URL` with `internal` | Callers using the server to download from your private network, its own loopback address, or a cloud provider's metadata address. | Attachments can no longer come from local devices, such as snapshots from security cameras or files from a home server.                       |
+| `APPRISE_CONFIG_LOCK=yes`                   | Anyone reading the notification URLs, and the passwords inside them, from saved configurations.                                   | Only the administrator can view or change configurations. Saved configurations keep sending.                                                  |
+| No administrator login                      | A stolen or guessed administrator password giving access to every Config ID.                                                      | Nobody can add logins, change limits or open the Configuration List and Reminder List until the password is set again.                        |
+| `APPRISE_STATEFUL_MODE=hash`                | Config IDs being read from the disk or a backup.                                                                                  | The Configuration List and Reminder List need `simple` mode, so they are not available.                                                       |
+| `APPRISE_STATELESS_MODE=no`                 | Callers sending to any notification URL they choose.                                                                              | Every notification must use a saved Config ID. Reminders still send to URLs saved with them, unless `APPRISE_REMINDER_URLS_MAX=0` is set too. |
+| `APPRISE_REMINDER_URLS_MAX=0`               | Reminders sending to URLs saved with them rather than in a configuration.                                                         | Reminders only send through their Config ID's saved configuration.                                                                            |
+
+## Web Address Attachments
+
+A notification can attach a file from a web address. The server downloads it, so the address rules decide what the server may reach. The same rules apply to `/notify`, to the `/attach/{KEY}` preview, and to web addresses saved with a reminder, which are downloaded each time it is sent.
+
+- `APPRISE_ATTACH_REJECT_URL` is checked first. Anything it matches is refused.
+- `APPRISE_ATTACH_ALLOW_URL` is checked next. Anything it does not match is refused. The default, `*`, allows everything the deny list did not refuse.
+- `internal` in the deny list refuses any address that is, or resolves to, a private, loopback, link-local or other internal address. It always wins over the allow list.
+
+Choose one of these:
+
+- **Nothing on your network is needed:** keep the default entries and add `internal`:
+
+  ```bash
+  APPRISE_ATTACH_REJECT_URL="127.0.* localhost* internal"
+  ```
+
+- **Attachments come only from a few known places:** leave `internal` out and allow only those hosts. Everything else, including other websites, is refused:
+
+  ```bash
+  APPRISE_ATTACH_ALLOW_URL="camera.lan 192.168.1.20 https://files.example.com"
+  ```
+
+- **Local devices and the open web are both needed:** leave `internal` out and deny the internal addresses that must never be reached, such as the cloud metadata address:
+
+  ```bash
+  APPRISE_ATTACH_REJECT_URL="127.0.* localhost* 169.254.*"
+  ```
+
+These rules only cover attachment downloads. They do not change which notification services can be sent to.

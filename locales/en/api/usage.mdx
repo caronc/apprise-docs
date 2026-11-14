@@ -551,6 +551,8 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
+In the web interface, the **Attachments** section of the **Notifications** tab takes uploaded files and web addresses. **Preview** downloads a web address the way a send would and shows the file, or why it could not be fetched (such as a `404`). It always offers a **Download** button.
+
 ## Stateful Notifications
 
 <picture class="theme-aware-sf-diagram">
@@ -736,6 +738,37 @@ The markers inside `url` are left exactly as written:
 Each `url` also carries the settings written underneath it in the configuration, so substituting the markers gives you a URL that sends the same way the saved entry does. The exception is a setting the service has no URL argument for, which is left out because a URL cannot express it.
 
 Add `privacy=1` and the text around each marker is masked and every default is withheld. That listing is fine to display, but it cannot be used to send.
+
+### Reminders
+
+A reminder is a notification saved now and sent later, once or on a repeating schedule.
+
+#### Add a Reminder
+
+On the **Notifications** tab, write the message and select **Add Reminder**. Choose a date and time or a public holiday, then select **Add Reminder** again to save it. If you leave the name empty, the title or first line of the message is used.
+
+Select **Make recurring** to repeat by seconds, minutes, hours, days, weeks, months, or years. You can limit the schedule to selected weekdays or months and add an end date. **Drift** moves each scheduled time later, or earlier when you enter a negative value.
+
+Uploaded files are stored with the reminder. Web addresses are downloaded at send time, so a link to a changing file, such as a camera snapshot, retrieves its current content.
+
+#### View and Manage Reminders
+
+The **Reminders** tab provides calendar and **All** views. From either view, you can:
+
+- pause or resume a reminder;
+- edit, copy, test, or delete it;
+- change one occurrence or the whole series when it repeats; and
+- choose the timezone used to display dates without changing when reminders are sent.
+
+Paused reminders remain visible. Finished reminders stay in the **All** view until they are removed. Selecting an empty calendar day starts a reminder for that date.
+
+The tab is available to the administrator and to a configuration login while its access is `user`. When `APPRISE_ADMIN` is enabled in simple stateful mode, **Reminder List** shows reminders from every Config ID.
+
+#### Limits
+
+After a Config ID has a login, the administrator can set its reminder count and attachment allowance on the access page. These limits do not apply to the administrator, although files added by the administrator still count toward the configuration's attachment use.
+
+See [Reminders](../endpoints/#reminders) for the API.
 
 ## Payload Mapping (Hooks)
 
