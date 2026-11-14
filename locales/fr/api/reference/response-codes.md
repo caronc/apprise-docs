@@ -1,5 +1,5 @@
 ---
-title: Codes de Réponse
+title: Codes de réponse
 description: Codes d'état HTTP renvoyés par l'API Apprise et leur signification.
 sidebar:
   order: 2
@@ -10,7 +10,7 @@ L'API Apprise utilise les codes d'état HTTP standard. De nombreuses réponses d
 | Code  | Signification                   | Où vous le verrez                                                                                                                                                                                                                                                           |
 | :---- | :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `200` | OK                              | La requête a réussi.                                                                                                                                                                                                                                                        |
-| `204` | No Content                      | Rien n'a été trouvé à récupérer ou à supprimer (`/get`, `/cfg`, `/json/urls` ou `/del`). La réponse n'a pas de corps.                                                                                                                                                       |
+| `204` | No Content                      | Une suppression a réussi (`/del`, ou `DELETE` sur un rappel), ou rien n'a été trouvé à récupérer ou à supprimer (`/get`, `/cfg`, `/json/urls` ou `/del`). La réponse n'a pas de corps.                                                                                      |
 | `302` | Found                           | L'interface Web a redirigé le navigateur après une connexion, une déconnexion ou la sélection d'une configuration. Les clients API ne devraient normalement pas recevoir cette réponse.                                                                                     |
 | `400` | Bad Request                     | La requête contient une charge utile, un `type`, un `format`, un tag, un en-tête de récursion ou un mappage de champ invalide. Une requête `/notify` sans état et sans URL valide renvoie aussi ce code.                                                                    |
 | `401` | Unauthorized                    | Les identifiants Basic Auth globaux ou propres à la clé étaient manquants ou invalides. L'en-tête `WWW-Authenticate: Basic` indique au client de demander les identifiants.                                                                                                 |

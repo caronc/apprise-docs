@@ -1,5 +1,5 @@
 ---
-title: "Ressources et Image de Marque"
+title: "Ressources et image de marque"
 description: "Image de marque, stockage, sécurité et comportement global d'une session Apprise"
 sidebar:
   order: 3
@@ -27,7 +27,7 @@ apobj = Apprise(asset=asset)
 
 Si aucun asset n'est fourni, Apprise en crée un par défaut.
 
-## Cycle de Vie et Portée
+## Cycle de vie et portée
 
 - créé une seule fois, en général au démarrage de l'application ;
 - partagé entre tous les plugins chargés et le traitement de configuration ;
@@ -35,7 +35,7 @@ Si aucun asset n'est fourni, Apprise en crée un par défaut.
 
 Modifier un asset après l'avoir lié à `Apprise` peut produire des résultats incohérents d'un plugin à l'autre.
 
-## Initialisation de l'Objet
+## Initialisation de l'objet
 
 `AppriseAsset.__init__()` fournit des arguments nommés pour le stockage, les
 délais d'attente, les limites de messages et d'autres réglages partagés.
@@ -50,11 +50,11 @@ configuration YAML.
 
 ---
 
-## Valeurs par Défaut et Référence des Champs
+## Valeurs par défaut et référence des champs
 
 Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentation, ainsi que l'endroit où chaque champ est utilisé.
 
-### Identité et Présentation
+### Identité et présentation
 
 | Champ                | Type              |                          Par défaut | Utilisé par                       | Notes                                                                                                                                                                                                                                                                                                  |
 | -------------------- | ----------------- | ----------------------------------: | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -69,7 +69,7 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `image_url_logo`     | `str`             |                      URL GitHub raw | `image_url(logo=True)`            | Utilisé pour le logo de l'application.                                                                                                                                                                                                                                                                 |
 | `image_path_mask`    | `str`             |           local `assets/themes/...` | `image_path()` / `image_raw()`    | Utilisé pour la résolution locale d'icônes et le chargement des octets bruts.                                                                                                                                                                                                                          |
 
-### Aides de Correspondance de Type
+### Aides de correspondance de type
 
 | Champ                 | Type                   |       Valeur par défaut | Utilisé par | Notes                                                      |
 | --------------------- | ---------------------- | ----------------------: | ----------- | ---------------------------------------------------------- |
@@ -78,7 +78,7 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `ascii_notify_map`    | `dict[NotifyType,str]` | mappage type vers jeton | `ascii()`   | Jetons ASCII par défaut pour les contextes purement texte. |
 | `default_ascii_chars` | `str`                  |                   `[?]` | `ascii()`   | Utilisé lorsqu'un mappage est absent.                      |
 
-### Interprétation du Contenu
+### Interprétation du contenu
 
 | Champ               | Type           |  Défaut | Utilisé par            | Notes                                                                                                                                    |
 | ------------------- | -------------- | ------: | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -87,24 +87,24 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `interpret_escapes` | `bool`         | `False` | Pré-traitement message | Active `\n`, `\t`, etc. avant l'envoi.                                                                                                   |
 | `encoding`          | `str`          | `utf-8` | Encodage               | Utilisé lors du traitement des chaînes et par certains services pendant l'envoi. Conservez la valeur par défaut sauf besoin particulier. |
 
-### Concurrence et Envoi
+### Concurrence et envoi
 
-| Champ                    | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                      |
-| ------------------------ | --------------- | -----: | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `async_mode`             | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                 |
-| `default_service_retry`  | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                         |
-| `default_service_wait`   | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                       |
-| `service_timeout`        | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. `0` désactive la limite. Voir [Résultats de notification](/library/results/). |
-| `result_log_memory_size` | `int`           |    `0` | Journaux du résultat     | Octets conservés en mémoire avant de transférer les journaux vers un fichier temporaire. Utilisé seulement si `result_log_disk_size` est supérieur à `0`.                                                                  |
-| `result_log_disk_size`   | `int`           |    `0` | Journaux du résultat     | Espace disque temporaire maximal pour le résultat d'une notification. `0` conserve tous les journaux en mémoire.                                                                                                           |
+| Champ                    | Type            | Défaut | Utilisé par              | Notes                                                                                                                                                                                                                                                                                                                    |
+| ------------------------ | --------------- | -----: | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `async_mode`             | `bool`          | `True` | Orchestration des envois | Contrôle l'envoi concurrent ou séquentiel.                                                                                                                                                                                                                                                                               |
+| `default_service_retry`  | `int`           |    `0` | Tentatives par service   | Nombre de tentatives par défaut pour tout service sans `?retry=` dans son URL. Limité à `[0, 10]`.                                                                                                                                                                                                                       |
+| `default_service_wait`   | `float`         |  `0.5` | Tentatives par service   | Délai inter-tentative par défaut (secondes) pour les services sans `?wait=`. Limité à `[0.0, 20.0]`.                                                                                                                                                                                                                     |
+| `service_timeout`        | `int` / `float` | `60.0` | Délai par service        | Nombre maximal de secondes qu'un service (toutes tentatives comprises) peut prendre avant qu'Apprise n'abandonne et ne signale un `TIMEOUT`. Un téléchargement de pièce jointe web encore en cours après ce délai est aussi arrêté. `0` désactive les deux limites. Voir [Résultats de notification](/library/results/). |
+| `result_log_memory_size` | `int`           |    `0` | Journaux du résultat     | Octets conservés en mémoire avant de transférer les journaux vers un fichier temporaire. Utilisé seulement si `result_log_disk_size` est supérieur à `0`.                                                                                                                                                                |
+| `result_log_disk_size`   | `int`           |    `0` | Journaux du résultat     | Espace disque temporaire maximal pour le résultat d'une notification. `0` conserve tous les journaux en mémoire.                                                                                                                                                                                                         |
 
-### Découverte de Plugins
+### Découverte de plugins
 
 | Champ          | Type        | Défaut | Utilisé par             | Notes                                                 |
 | -------------- | ----------- | -----: | ----------------------- | ----------------------------------------------------- |
 | `plugin_paths` | `list[str]` |   `[]` | Chargement personnalisé | Déclenche la détection de modules à l'initialisation. |
 
-### Stockage Persistant
+### Stockage persistant
 
 | Champ           | Type                  | Défaut | Utilisé par                  | Notes                                                                                                |
 | --------------- | --------------------- | -----: | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -113,14 +113,14 @@ Ce tableau documente les **vraies valeurs par défaut** issues de l'implémentat
 | `storage_idlen` | `int`                 |    `8` | Génération d'espaces nommés  | Contrôle la longueur des répertoires de namespace générés.                                           |
 | `storage_salt`  | `bytes`               |  `b""` | Génération d'espaces nommés  | Fournit un salage facultatif ; les chaînes sont encodées avec `encoding`.                            |
 
-### Gestion du Matériel de Clé
+### Gestion du matériel de clé
 
 | Champ         | Type   | Défaut | Utilisé par    | Notes                                                                                                                                                                                                   |
 | ------------- | ------ | -----: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pgp_autogen` | `bool` | `True` | Contrôleur PGP | Quand `True`, un auto-envoi avec `pgp=encrypt` peut générer la paire de clés RSA-2048 de l'expéditeur dans le stockage persistant. Les clés des destinataires et de `pgp=sign` ne sont jamais générées. |
 | `pem_autogen` | `bool` | `True` | Contrôleur PEM | Active la génération automatique de clés PEM si le stockage le permet et qu'aucune clé n'est fournie.                                                                                                   |
 
-#### Détails de la Génération Automatique PGP
+#### Détails de la génération automatique PGP
 
 Quand `pgp_autogen = True`, un auto-envoi avec `pgp=encrypt` peut générer **les deux** fichiers de clés de l'expéditeur si aucune clé n'est trouvée :
 
@@ -144,7 +144,7 @@ asset = AppriseAsset(
 
 Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement. Une clé doit provenir du stockage local, de WKD ou d'un chemin `pgppub=` explicite.
 
-### Limites de Sécurité
+### Limites de sécurité
 
 | Champ                      | Type             |         Défaut | Utilisé par                      | Notes                                                                                                                                                                                                                                                                                        |
 | -------------------------- | ---------------- | -------------: | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -156,7 +156,7 @@ Avec `pgp_autogen = False`, aucune paire de clés n'est créée automatiquement.
 | `payload_min_buffer`       | `int`            |           `25` | Formatage/découpage des messages | Caractères réservés à l'autre côté avant de conserver le côté court en entier ; voir [Plafond de taille des messages](#plafond-de-taille-des-messages).                                                                                                                                      |
 | `timezone`                 | `str` / `tzinfo` | fuseau système | Comportement temporel            | Définit le fuseau horaire utilisé par les plugins qui génèrent des horodatages. Accepte un nom IANA comme `"America/Toronto"` ou un objet `tzinfo`. YAML accepte `timezone` ou son alias `tz`.                                                                                               |
 
-## Schémas d'Utilisation Courants
+## Schémas d'utilisation courants
 
 <Tabs>
 
@@ -312,7 +312,7 @@ anglais.
 
 </Tabs>
 
-## Résolution d'Icônes et d'Images
+## Résolution d'icônes et d'images
 
 Apprise résout les icônes à l'aide de masques configurables.
 
@@ -332,7 +332,7 @@ asset = AppriseAsset(
 
 ---
 
-## Contrôles de Sécurité
+## Contrôles de sécurité
 
 ### Redirections HTTP
 
@@ -355,7 +355,7 @@ schema://token/?redirect=yes
 schema://token/?redirect=no
 ```
 
-### Journalisation Sécurisée
+### Journalisation sécurisée
 
 Lorsqu'elle est activée, les secrets sont masqués dans toutes les sorties de journal.
 
@@ -365,7 +365,7 @@ asset = AppriseAsset(secure_logging=True)
 
 La désactiver est fortement déconseillé en dehors d'environnements isolés.
 
-### Plafond de Taille des Messages
+### Plafond de taille des messages
 
 `payload_max_size` définit la limite du message, c'est-à-dire le budget total
 de caractères (`N`) pour le titre et le corps avant le formatage ou le
@@ -418,7 +418,7 @@ admissible peut donc utiliser toute la limite.
 Le formatage et l'échappement peuvent ensuite ajouter quelques caractères.
 La limite s'applique à tous les modes `overflow=`, y compris `upstream`.
 
-## Limites des Fichiers de Configuration
+## Limites des fichiers de configuration
 
 YAML prend volontairement en charge moins de réglages d'asset que le
 constructeur Python. Les contrôles numériques comme `service_timeout`,
@@ -442,7 +442,7 @@ asset:
   language: fr # ou : lang: fr
 ```
 
-## Voir Aussi
+## Voir aussi
 
-- [Routage par Tags & Tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/attente par service, les délais maximum par service et les remplacements par appel dans les fichiers de configuration.
+- [Routage par tags & tentatives](./tag-routing/) -- comment configurer les tags de priorité, les tentatives/attente par service, les délais maximum par service et les remplacements par appel dans les fichiers de configuration.
 - [Résultats de notification](./results/) -- comment un service en échec ou dont le délai a expiré vous est signalé depuis `notify()`.

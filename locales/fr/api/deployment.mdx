@@ -16,7 +16,7 @@ Si vous cherchez à :
 - l'intégrer avec la CLI ou la bibliothèque Python, consultez **Intégrations**
 - comprendre les clés, le stockage ou le verrouillage, consultez **Configuration**
 
-## Démarrage Rapide
+## Démarrage rapide
 
 Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.
 
@@ -923,6 +923,38 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
 ```
 
+**Les rappels sont envoyés par un processus planificateur séparé. Créez `/etc/systemd/system/apprise-scheduler.service`** avec les mêmes lignes `Environment=` que `apprise.service` :
+
+```ini
+[Unit]
+Description=Apprise API Reminder Scheduler
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/apprise-api/apprise_api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/python manage.py scheduler
+Restart=on-failure
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Activez-le et démarrez-le :**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise-scheduler
+```
+
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
 lisible et permet au gestionnaire de configurations d'afficher vos clés
 enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
@@ -1051,6 +1083,38 @@ WantedBy=multi-user.target
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now apprise
+```
+
+**Les rappels sont envoyés par un processus planificateur séparé. Créez `/etc/systemd/system/apprise-scheduler.service`** avec les mêmes lignes `Environment=` que `apprise.service` :
+
+```ini
+[Unit]
+Description=Apprise API Reminder Scheduler
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory=/opt/apprise-api/apprise_api
+Environment=APPRISE_CONFIG_DIR=/var/lib/apprise/config
+Environment=APPRISE_ATTACH_DIR=/var/lib/apprise/attach
+Environment=APPRISE_STATEFUL_MODE=simple
+Environment=APPRISE_WORKER_COUNT=1
+Environment=APPRISE_DEFAULT_FORMAT=text
+Environment=TZ=Etc/UTC
+ExecStart=/opt/apprise-api/venv/bin/python manage.py scheduler
+Restart=on-failure
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Activez-le et démarrez-le :**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now apprise-scheduler
 ```
 
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
@@ -1201,6 +1265,44 @@ sudo sysrc apprise_enable=YES
 sudo service apprise start
 ```
 
+**Les rappels sont envoyés par un processus planificateur séparé. Créez `/usr/local/etc/rc.d/apprise_scheduler`** avec le même environnement que `apprise` :
+
+```sh
+#!/bin/sh
+
+# PROVIDE: apprise_scheduler
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=apprise_scheduler
+rcvar=apprise_scheduler_enable
+
+load_rc_config $name
+
+: ${apprise_scheduler_enable:="NO"}
+: ${apprise_scheduler_user:="www"}
+: ${apprise_scheduler_dir:="/usr/local/apprise-api"}
+: ${apprise_scheduler_venv:="${apprise_scheduler_dir}/venv"}
+: ${apprise_scheduler_pidfile:="/var/run/${name}.pid"}
+: ${apprise_scheduler_logfile:="/var/log/${name}.log"}
+
+pidfile=${apprise_scheduler_pidfile}
+command="/usr/sbin/daemon"
+command_args="-f -r -P ${pidfile} -o ${apprise_scheduler_logfile} -u ${apprise_scheduler_user} -t ${name} /usr/bin/env APPRISE_CONFIG_DIR=/var/db/apprise/config APPRISE_ATTACH_DIR=/var/db/apprise/attach APPRISE_STATEFUL_MODE=simple APPRISE_WORKER_COUNT=1 APPRISE_DEFAULT_FORMAT=text TZ=Etc/UTC ${apprise_scheduler_venv}/bin/python ${apprise_scheduler_dir}/apprise_api/manage.py scheduler"
+
+run_rc_command "$1"
+```
+
+**Rendez-le exécutable, activez-le au démarrage, et lancez-le :**
+
+```bash
+sudo chmod +x /usr/local/etc/rc.d/apprise_scheduler
+sudo sysrc apprise_scheduler_enable=YES
+sudo service apprise_scheduler start
+```
+
 `APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
 lisible et permet au gestionnaire de configurations d'afficher vos clés
 enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
@@ -1275,7 +1377,7 @@ Une fois déployés, l'API et l'interface web optionnelle sont disponibles à l'
 http://localhost:8000/
 ```
 
-## Stockage Persistant
+## Stockage persistant
 
 L'API Apprise prend en charge le stockage persistant pour :
 
@@ -1294,7 +1396,7 @@ Le conteneur attend les chemins inscriptibles suivants :
 
 Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** suffit.
 
-### Mode avec État
+### Mode avec état
 
 Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la configuration et de la connexion actuelle :
 
@@ -1314,7 +1416,7 @@ Un administrateur authentifié conserve un accès complet aux configurations lor
 
 Les modes globaux sont toujours prioritaires. Même un administrateur ne peut pas envoyer de notification avec ou sans état lorsque le mode correspondant est désactivé. Les identifiants administrateur contournent uniquement l'accès propre à la configuration et son verrouillage.
 
-## Déploiements Durcis
+## Déploiements durcis
 
 L'API Apprise permet également de durcir les processus et le système de
 fichiers. Ces mesures protègent le conteneur, mais n'ajoutent ni HTTPS, ni
@@ -1359,7 +1461,7 @@ Points importants :
 - aucun fichier n'est écrit sous `/var/log` ;
 - tous les logs sont écrits vers stdout et stderr.
 
-### Notes de Durcissement pour Kubernetes
+### Notes de durcissement pour Kubernetes
 
 Si vous déployez dans Kubernetes, consultez **Démarrage Rapide -> Kubernetes -> Durci (rootless + lecture seule)** pour un exemple prêt à l'emploi qui :
 
@@ -1369,7 +1471,7 @@ Si vous déployez dans Kubernetes, consultez **Démarrage Rapide -> Kubernetes -
 - utilise un système de fichiers racine en lecture seule ;
 - monte `/tmp` comme `emptyDir` en mémoire.
 
-## Vérifications d'État
+## Vérifications d'état
 
 L'API Apprise expose un endpoint de santé :
 
@@ -1392,7 +1494,7 @@ Cet endpoint convient pour :
 - les probes de liveness Kubernetes ;
 - les systèmes de supervision externes.
 
-## Reverse Proxies et Chemins de Base
+## Reverse proxies et chemins de base
 
 Si l'API Apprise est hébergée derrière un proxy inverse ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
 
@@ -1412,7 +1514,7 @@ Cela garantit :
 - un routage correct de l'interface web ;
 - des liens OpenAPI corrects.
 
-## Authentification et Contrôle d'Accès
+## Authentification et contrôle d'accès
 
 L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger ses points de terminaison avec HTTP Basic. Seuls les ID de configuration rendus publics peuvent la contourner, uniquement pour les notifications avec tag.
 
@@ -1422,7 +1524,7 @@ L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPR
 | Administrateur activé    | `APPRISE_AUTH_REQUIRED=yes` avec `APPRISE_PASSWORD` | L'administrateur peut accéder à toutes les clés et gérer les connexions de configuration. `APPRISE_USER` est facultatif.                                                      |
 | Administrateur désactivé | `APPRISE_AUTH_REQUIRED=yes` sans `APPRISE_PASSWORD` | Les utilisateurs existants accèdent uniquement à leurs propres clés. Aucune nouvelle connexion ne peut être créée tant qu'un mot de passe administrateur n'est pas configuré. |
 
-`APPRISE_USER` sans `APPRISE_PASSWORD` produit un avertissement au démarrage et laisse le compte administrateur désactivé. Consultez les [Variables d'Environnement](../reference/environment/).
+`APPRISE_USER` sans `APPRISE_PASSWORD` produit un avertissement au démarrage et laisse le compte administrateur désactivé. Consultez les [Variables d'environnement](../reference/environment/).
 
 `APPRISE_BASIC_AUTH_REALM` nomme le serveur dans les invites de connexion. Il ne modifie aucun identifiant. La valeur par défaut est `Apprise API` ; utilisez un nom différent pour chaque instance.
 
@@ -1472,7 +1574,7 @@ accès `user` enregistré se comporte alors comme `locked` sans être réécrit.
 L'accès `public` reste public, car il masque déjà le contenu de la
 configuration. Un utilisateur de configuration peut changer uniquement son
 mot de passe et doit répéter son nom d'utilisateur. Consultez les
-[Points de Terminaison de l'API](../endpoints/).
+[Points de terminaison de l'API](../endpoints/).
 
 Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
 
@@ -1480,7 +1582,7 @@ Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactiv
 
 Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Lorsqu'un utilisateur `user` efface sa configuration, ses identifiants sont conservés et ce délai recommence afin qu'il puisse enregistrer une nouvelle configuration. Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
 
-### Vérification de l'Origine du Navigateur
+### Vérification de l'origine du navigateur
 
 Les navigateurs ajoutent un en-tête `Origin` lorsqu'une page modifie des données. L'API Apprise vérifie cet en-tête et refuse les modifications envoyées depuis un autre site. Les requêtes provenant du même site sont autorisées.
 
@@ -1501,12 +1603,13 @@ Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `Con
 
 ## Élagage
 
-Le conteneur exécute chaque jour un cycle de nettoyage à faible priorité. Il couvre les deux domaines ci-dessous et dispose d'une limite de temps :
+Le conteneur exécute chaque jour un cycle de nettoyage à faible priorité. Il couvre les domaines ci-dessous et dispose d'une limite de temps :
 
-| Domaine          | Ce qu'il élague                                                  | Paramètre de rétention                                         |
-| :--------------- | :--------------------------------------------------------------- | :------------------------------------------------------------- |
-| État persistant  | Stockage d'état de notification Apprise (`APPRISE_STORAGE_DIR`). | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)               |
-| Authentification | Verrous Basic par clé sans configuration.                        | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours) |
+| Domaine          | Ce qu'il élague                                                                                                                                    | Paramètre de rétention                                                                                        |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| État persistant  | Stockage d'état de notification Apprise (`APPRISE_STORAGE_DIR`).                                                                                   | `APPRISE_STORAGE_PRUNE_DAYS` (défaut `30` jours)                                                              |
+| Authentification | Verrous Basic par clé sans configuration.                                                                                                          | `APPRISE_AUTH_PRUNE_SECONDS` (défaut `2592000`, soit 30 jours)                                                |
+| Rappels          | Suppressions de configuration incomplètes, rappels terminés (plus rien à envoyer) et fichiers résiduels laissés par des téléversements incomplets. | `APPRISE_REMINDER_PRUNE_DAYS` (`7` jours par défaut) ; pièces jointes au moins 1 heure après le téléversement |
 
 `APPRISE_PRUNE_INTERVAL_SECONDS` contrôle la planification. Réglez `APPRISE_PRUNE_ENABLED=no` pour désactiver le nettoyage planifié. `APPRISE_PRUNE_TIMEOUT_SECONDS` modifie la limite de 8 heures. La commande combinée et les commandes individuelles restent exécutables manuellement :
 
@@ -1516,7 +1619,22 @@ docker exec -it apprise python manage.py storeprune --days 30
 docker exec -it apprise python manage.py authprune --seconds 2592000
 ```
 
-## Logging et Observabilité
+Sans le conteneur, lancez `python manage.py prune` depuis le dossier `apprise_api` une fois par jour, par exemple avec cron, avec le même environnement que le service.
+
+## Arrêter le conteneur
+
+À l'arrêt du conteneur, le planificateur de rappels termine les notifications qu'il est déjà en train d'envoyer et les attend jusqu'à 60 secondes. Par défaut, Docker arrête un conteneur de force au bout de 10 secondes ; accordez-lui donc plus de temps :
+
+```yaml
+services:
+  apprise:
+    image: caronc/apprise:latest
+    stop_grace_period: 75s
+```
+
+Avec `docker run`, ajoutez `--stop-timeout 75`. Sur Kubernetes, définissez `terminationGracePeriodSeconds: 75`. Un rappel interrompu en cours d'envoi n'est pas renvoyé.
+
+## Logging et observabilité
 
 - Tous les logs sont émis vers stdout et stderr
 - Aucun fichier log n'est écrit sur disque
@@ -1524,7 +1642,7 @@ docker exec -it apprise python manage.py authprune --seconds 2592000
 - Les appels réussis à `/status`, `/metrics`, au favicon et à `robots.txt` sont
   omis des journaux d'accès ; les échecs et limitations restent visibles
 
-## Déploiements de Développement
+## Déploiements de développement
 
 Pour le développement local, le dépôt inclut des surcharges Docker Compose qui :
 
@@ -1534,8 +1652,9 @@ Pour le développement local, le dépôt inclut des surcharges Docker Compose qu
 
 Ce mode est destiné uniquement au développement et **n'est pas recommandé en production**.
 
-## Étapes Suivantes
+## Étapes suivantes
 
 - **[Ciblez les Destinations](../usage/) :** enregistrez des clés de configuration via l'interface web ou fournissez les URL de notification avec chaque requête.
 - **[Envoyez des Notifications](../endpoints/) :** utilisez `/notify` ou `/notify/{KEY}` depuis n'importe quel client HTTP.
 - **[Connectez d'Autres Systèmes](../integrations/) :** intégrez des applications et des outils d'automatisation à l'API Apprise.
+- **[Sécurisez le Serveur](../security/) :** renforcez votre instance avec la liste de contrôle de sécurité.

@@ -310,6 +310,10 @@ synchronous service dispatched on its own can, in rare cases, still finish (succ
 or not) after its budget expired, since there was nothing else running that a deadline
 check could interrupt in between. Treat `service_timeout`/`timeout=` as "Apprise won't
 wait longer than this," not as a hard, forcible cutoff for the underlying call.
+
+Web attachment downloads are the exception: a file still arriving after
+`service_timeout` is cut off, even if the server keeps sending data slowly. See
+[Attachments](/library/attachments/#timeouts).
 :::
 
 | Parameter         | Type            | Constraints                         | Default |
