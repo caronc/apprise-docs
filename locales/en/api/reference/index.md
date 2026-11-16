@@ -13,3 +13,4 @@ This section contains detailed reference material for Apprise API.
 - [Environment variables](/api/reference/environment/)
 - [Response codes](/api/reference/response-codes/)
 - [OpenAPI specification](/api/reference/openapi/)
+- [Reminder diagnostics](/api/reference/reminder-diagnostics/)

@@ -189,5 +189,14 @@
     "download": "Download Apprise Mobile",
     "appStore": "Download on the App Store",
     "googlePlay": "Get it on Google Play"
+  },
+  "overview": {
+    "mobile": "Apprise Mobile",
+    "webhook": "HTTP / Webhook",
+    "api": "Apprise API",
+    "cli": "Apprise CLI",
+    "software": "Apprise-Aware Software",
+    "library": "Apprise Core Library",
+    "destinations": "Destinations"
   }
 }

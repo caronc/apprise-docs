@@ -7,7 +7,7 @@ sidebar:
 
 Apprise API démarre ouverte pour être facile à essayer sur un réseau domestique. Avant que d'autres personnes ou Internet puissent l'atteindre, parcourez cette page.
 
-## Liste de contrôle
+## Liste de Contrôle
 
 - **Activez l'authentification.** Définissez `APPRISE_AUTH_REQUIRED=yes` avec `APPRISE_PASSWORD`, et donnez à chaque Config ID son propre identifiant. Voir [Authentification et contrôle d'accès](/api/deployment/#authentification-et-contrôle-daccès).
 - **Utilisez des Config ID difficiles à deviner.** Sans authentification, quiconque connaît un Config ID peut envoyer par son intermédiaire et le modifier. Utilisez **Nouvelle configuration** pour en générer un au hasard.
@@ -33,7 +33,7 @@ Certains réglages protègent le serveur mais retirent quelque chose. Choisissez
 | `APPRISE_STATELESS_MODE=no`                 | L'envoi vers n'importe quelle URL de notification choisie par l'appelant.                                                                              | Chaque notification doit utiliser un Config ID enregistré. Les rappels envoient toujours aux URL enregistrées avec eux, sauf si `APPRISE_REMINDER_URLS_MAX=0` est aussi défini. |
 | `APPRISE_REMINDER_URLS_MAX=0`               | L'envoi des rappels vers des URL enregistrées avec eux plutôt que dans une configuration.                                                              | Les rappels n'envoient que par la configuration enregistrée de leur Config ID.                                                                                                  |
 
-## Pièces jointes par adresse web
+## Pièces Jointes par Adresse Web
 
 Une notification peut joindre un fichier depuis une adresse web. Le serveur le télécharge ; les règles d'adresse décident donc de ce que le serveur peut atteindre. Les mêmes règles s'appliquent à `/notify`, à l'aperçu `/attach/{KEY}` et aux adresses web enregistrées avec un rappel, téléchargées à chaque envoi.
 

@@ -189,5 +189,14 @@
     "download": "Télécharger Apprise Mobile",
     "appStore": "Télécharger dans l'App Store",
     "googlePlay": "Disponible sur Google Play"
+  },
+  "overview": {
+    "mobile": "Apprise Mobile",
+    "webhook": "HTTP / Webhook",
+    "api": "Apprise API",
+    "cli": "Apprise CLI",
+    "software": "Logiciels compatibles",
+    "library": "Bibliothèque Apprise",
+    "destinations": "Destinations"
   }
 }

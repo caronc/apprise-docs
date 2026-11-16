@@ -77,6 +77,38 @@ obj.send(
 Using `send()` directly bypasses many of the safeguards and features (like tagging and attachment processing) provided by the main `notify()` method.
 :::
 
+### URLs and Their Fields
+
+A notification object can give its URL back as separate fields, named after the tokens and arguments in [`details()`](/library/inspection/), the same names the [URL Builder](/url-builder/) shows. `fields_to_url()` puts fields back together into a URL. This lets a program show a URL as a form and turn the form back into a URL.
+
+```python
+import apprise
+from apprise.fields import fields_to_url
+
+obj = apprise.Apprise.instantiate(
+    "mailtos://user:secret@example.com?to=a@example.com&smtp=smtp.example.com"
+)
+
+# The URL as fields, and the same fields with the secrets hidden
+fields = obj.url_fields()
+hidden = obj.url_fields(privacy=True)
+
+# fields["targets"] == ["a@example.com"]
+# fields["smtp"] == "smtp.example.com"
+# hidden["password"] == "****"
+
+# The fields make the same URL again
+url = fields_to_url(fields)
+assert apprise.Apprise.instantiate(url).url() == obj.url()
+```
+
+- An alias such as `to` is folded into the entry it stands for, here `targets`.
+- Key/value options (`+header`, `-param`, `:key`) come back as maps, such as `headers`, `params` and `payload`.
+- Values come back as the type `details()` gives them: lists, numbers and `True`/`False`.
+- The hidden fields mask every entry `details()` marks as private.
+- `fields_to_url()` returns `None` when the schema is unknown or a field name isn't one the service lists. It doesn't check the URL; load it to find out whether it works.
+- `parse_fields(url)` reads the fields of a URL its service wouldn't load yet, such as `mailto://` with nothing after it, so a form can show what was typed so far.
+
 ## Handling Configuration Errors
 
 Apprise raises `AppriseImproperlyConfigured` when a library call receives

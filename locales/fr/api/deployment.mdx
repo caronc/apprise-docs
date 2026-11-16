@@ -16,7 +16,7 @@ Si vous cherchez à :
 - l'intégrer avec la CLI ou la bibliothèque Python, consultez **Intégrations**
 - comprendre les clés, le stockage ou le verrouillage, consultez **Configuration**
 
-## Démarrage rapide
+## Démarrage Rapide
 
 Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.
 
@@ -96,7 +96,7 @@ Ce modèle rend le conteneur accessible uniquement depuis l'hôte Docker. Une
 instance Nginx distincte fournit le HTTPS public, les journaux et la politique
 de sécurité.
 
-### Préparer les fichiers du conteneur
+### Préparer les Fichiers du Conteneur
 
 Créez les répertoires persistants, un fichier d'environnement et un fichier
 hôte vide pour la surcharge du serveur Nginx. Remplacez le mot de passe
@@ -135,7 +135,7 @@ d'authentification avec `429` et `Retry-After: 60`. Le conteneur applique ces
 contrôles stricts. Le serveur Nginx public ci-dessous reste un simple relais
 HTTPS et journalise les réponses pour des outils comme Fail2ban.
 
-### Démarrer le conteneur limité à l'adresse locale
+### Démarrer le Conteneur Limité à l'Adresse Locale
 
 ```bash
 docker run -d \
@@ -159,7 +159,7 @@ La publication du port sur `127.0.0.1` empêche tout accès réseau direct au
 conteneur. Seuls les services exécutés sur l'hôte Docker, comme le proxy Nginx
 public ci-dessous, peuvent joindre le port `8010`.
 
-### Configurer la passerelle Docker fiable
+### Configurer la Passerelle Docker Fiable
 
 Inspectez maintenant ce conteneur une seule fois, écrivez la passerelle obtenue
 dans la surcharge montée, puis redémarrez Apprise pour que Nginx la charge :
@@ -191,7 +191,7 @@ changement de réseau Docker. Ne faites pas confiance à tout un réseau Docker 
 privé, sauf si chacun de ses appareils est fiable. Apprise utilise l'adresse
 client obtenue pour l'audit et les limites de débit du mode strict.
 
-### Configurer le proxy Nginx public
+### Configurer le Proxy Nginx Public
 
 La directive `map` doit se trouver dans le contexte `http` de Nginx. Les fichiers
 placés sous `/etc/nginx/conf.d/` y sont généralement chargés. Cette règle masque
@@ -262,7 +262,7 @@ existantes à la place des chemins d'exemple. N'activez HSTS qu'après avoir
 confirmé que le domaine et ses éventuels sous-domaines resteront exclusivement
 accessibles en HTTPS.
 
-### Vérifier la chaîne de proxy
+### Vérifier la Chaîne de Proxy
 
 ```bash
 nginx -t
@@ -1377,7 +1377,7 @@ Une fois déployés, l'API et l'interface web optionnelle sont disponibles à l'
 http://localhost:8000/
 ```
 
-## Stockage persistant
+## Stockage Persistant
 
 L'API Apprise prend en charge le stockage persistant pour :
 
@@ -1396,7 +1396,7 @@ Le conteneur attend les chemins inscriptibles suivants :
 
 Pour la plupart des déploiements, monter **uniquement `/config` et `/attach`** suffit.
 
-### Mode avec état
+### Mode avec État
 
 Les fonctions persistantes dépendent du mode du serveur, du verrouillage de la configuration et de la connexion actuelle :
 
@@ -1416,7 +1416,7 @@ Un administrateur authentifié conserve un accès complet aux configurations lor
 
 Les modes globaux sont toujours prioritaires. Même un administrateur ne peut pas envoyer de notification avec ou sans état lorsque le mode correspondant est désactivé. Les identifiants administrateur contournent uniquement l'accès propre à la configuration et son verrouillage.
 
-## Déploiements durcis
+## Déploiements Durcis
 
 L'API Apprise permet également de durcir les processus et le système de
 fichiers. Ces mesures protègent le conteneur, mais n'ajoutent ni HTTPS, ni
@@ -1461,7 +1461,7 @@ Points importants :
 - aucun fichier n'est écrit sous `/var/log` ;
 - tous les logs sont écrits vers stdout et stderr.
 
-### Notes de durcissement pour Kubernetes
+### Notes de Durcissement pour Kubernetes
 
 Si vous déployez dans Kubernetes, consultez **Démarrage Rapide -> Kubernetes -> Durci (rootless + lecture seule)** pour un exemple prêt à l'emploi qui :
 
@@ -1471,7 +1471,7 @@ Si vous déployez dans Kubernetes, consultez **Démarrage Rapide -> Kubernetes -
 - utilise un système de fichiers racine en lecture seule ;
 - monte `/tmp` comme `emptyDir` en mémoire.
 
-## Vérifications d'état
+## Vérifications d'État
 
 L'API Apprise expose un endpoint de santé :
 
@@ -1494,7 +1494,7 @@ Cet endpoint convient pour :
 - les probes de liveness Kubernetes ;
 - les systèmes de supervision externes.
 
-## Reverse proxies et chemins de base
+## Reverse Proxies et Chemins de Base
 
 Si l'API Apprise est hébergée derrière un proxy inverse ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
 
@@ -1514,7 +1514,7 @@ Cela garantit :
 - un routage correct de l'interface web ;
 - des liens OpenAPI corrects.
 
-## Authentification et contrôle d'accès
+## Authentification et Contrôle d'Accès
 
 L'API Apprise ne requiert aucune authentification par défaut. Définissez `APPRISE_AUTH_REQUIRED=yes` pour protéger ses points de terminaison avec HTTP Basic. Seuls les ID de configuration rendus publics peuvent la contourner, uniquement pour les notifications avec tag.
 
@@ -1561,7 +1561,7 @@ L'accès public s'applique uniquement aux appels avec état `POST /notify/{KEY}`
 
 Pour `POST /notify` sans état, l'administrateur peut s'authentifier directement. Un utilisateur de configuration doit fournir des `urls` explicites, ses identifiants et l'en-tête `X-Apprise-Config-ID` correspondant ; l'accès doit être `user`. Sans `urls`, la forme v2 avec en-tête conserve l'envoi stateful avec la configuration enregistrée.
 
-Les comptes `user` et `locked` peuvent consulter `/status` et `/details` avec leurs identifiants et leur ID de configuration. Un compte désactivé ne le peut pas. L'administrateur peut fournir un en-tête `X-Apprise-Config-ID` valide pour simplifier le client, mais cet en-tête n'est pas obligatoire.
+Les comptes `user` et `locked` peuvent consulter `/status` et `/details` avec leurs identifiants et leur ID de configuration. Un compte désactivé ne le peut pas, et un compte public ne peut pas consulter `/details`. L'administrateur peut fournir un en-tête `X-Apprise-Config-ID` valide pour simplifier le client, mais cet en-tête n'est pas obligatoire.
 
 Pour définir l'accès, ouvrez une configuration et sélectionnez son cadenas ou **Authentification**. Choisissez le mode d'accès, saisissez les identifiants lorsqu'ils sont requis, puis sélectionnez **Enregistrer**. Les administrateurs peuvent utiliser **Générer Aléatoirement** pour chaque identifiant.
 
@@ -1582,7 +1582,7 @@ Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactiv
 
 Les anciens verrous sans configuration sont supprimés après `APPRISE_AUTH_PRUNE_SECONDS` (30 jours par défaut). Lorsqu'un utilisateur `user` efface sa configuration, ses identifiants sont conservés et ce délai recommence afin qu'il puisse enregistrer une nouvelle configuration. Les verrous avec configuration sont conservés. Consultez [Élagage](#élagage).
 
-### Vérification de l'origine du navigateur
+### Vérification de l'Origine du Navigateur
 
 Les navigateurs ajoutent un en-tête `Origin` lorsqu'une page modifie des données. L'API Apprise vérifie cet en-tête et refuse les modifications envoyées depuis un autre site. Les requêtes provenant du même site sont autorisées.
 
@@ -1621,7 +1621,7 @@ docker exec -it apprise python manage.py authprune --seconds 2592000
 
 Sans le conteneur, lancez `python manage.py prune` depuis le dossier `apprise_api` une fois par jour, par exemple avec cron, avec le même environnement que le service.
 
-## Arrêter le conteneur
+## Arrêter le Conteneur
 
 À l'arrêt du conteneur, le planificateur de rappels termine les notifications qu'il est déjà en train d'envoyer et les attend jusqu'à 60 secondes. Par défaut, Docker arrête un conteneur de force au bout de 10 secondes ; accordez-lui donc plus de temps :
 
@@ -1634,7 +1634,7 @@ services:
 
 Avec `docker run`, ajoutez `--stop-timeout 75`. Sur Kubernetes, définissez `terminationGracePeriodSeconds: 75`. Un rappel interrompu en cours d'envoi n'est pas renvoyé.
 
-## Logging et observabilité
+## Logging et Observabilité
 
 - Tous les logs sont émis vers stdout et stderr
 - Aucun fichier log n'est écrit sur disque
@@ -1642,7 +1642,7 @@ Avec `docker run`, ajoutez `--stop-timeout 75`. Sur Kubernetes, définissez `ter
 - Les appels réussis à `/status`, `/metrics`, au favicon et à `robots.txt` sont
   omis des journaux d'accès ; les échecs et limitations restent visibles
 
-## Déploiements de développement
+## Déploiements de Développement
 
 Pour le développement local, le dépôt inclut des surcharges Docker Compose qui :
 
@@ -1652,7 +1652,27 @@ Pour le développement local, le dépôt inclut des surcharges Docker Compose qu
 
 Ce mode est destiné uniquement au développement et **n'est pas recommandé en production**.
 
-## Étapes suivantes
+## Dépannage
+
+### Adresses de Pièces Jointes Bloquées
+
+Un aperçu ou un envoi de pièce jointe peut être refusé selon l'endroit vers lequel pointe son adresse web. L'aperçu de l'interface web indique le réglage concerné.
+
+- **Aperçus :** `/attach` ne télécharge pas depuis les adresses du réseau local (loopback, privées, link-local et autres adresses non publiques) sauf si `APPRISE_ATTACH_PREVIEW_INTERNAL` vaut `yes`. Ce réglage ne change rien aux envois.
+- **Aperçus et envois :** les deux suivent `APPRISE_ATTACH_REJECT_URL` et `APPRISE_ATTACH_ALLOW_URL`. Par défaut, `127.0.*` et `localhost*` sont refusés. Ajouter `internal` à `APPRISE_ATTACH_REJECT_URL` refuse toutes les adresses du réseau local, aperçus compris.
+
+Pour prévisualiser l'image d'une caméra de votre réseau local, comme `http://192.168.1.50/snapshot.jpg` :
+
+```yaml
+services:
+  apprise:
+    environment:
+      APPRISE_ATTACH_PREVIEW_INTERNAL: "yes"
+```
+
+N'activez ce réglage que si toutes les personnes qui peuvent joindre le serveur sont de confiance, car un aperçu renvoie le fichier téléchargé à l'appelant. Voir [`APPRISE_ATTACH_PREVIEW_INTERNAL`](../reference/environment/) pour la liste complète des réglages de pièces jointes.
+
+## Étapes Suivantes
 
 - **[Ciblez les Destinations](../usage/) :** enregistrez des clés de configuration via l'interface web ou fournissez les URL de notification avec chaque requête.
 - **[Envoyez des Notifications](../endpoints/) :** utilisez `/notify` ou `/notify/{KEY}` depuis n'importe quel client HTTP.

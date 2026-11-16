@@ -1546,7 +1546,7 @@ Public access applies only to stateful `POST /notify/{KEY}` calls. Other endpoin
 
 For stateless `POST /notify`, administrators can authenticate directly. A configuration user must provide explicit `urls`, matching credentials, and `X-Apprise-Config-ID`; the configuration must use `user` access. Without `urls`, the v2 header form remains a stateful send through the saved configuration.
 
-The `user` and `locked` accounts may retrieve `/status` and `/details` with their credentials and Config ID. A disabled account cannot. Administrators may include a valid `X-Apprise-Config-ID` for client convenience, but do not need one.
+The `user` and `locked` accounts may retrieve `/status` and `/details` with their credentials and Config ID. A disabled account cannot, and a public one cannot retrieve `/details`. Administrators may include a valid `X-Apprise-Config-ID` for client convenience, but do not need one.
 
 To set access, open a configuration and select its lock icon or **Authentication**. Choose the access mode, enter credentials when required, then select **Save**. Administrators can use **Randomize** for either credential.
 
@@ -1635,6 +1635,26 @@ For local development, the repository includes Docker Compose overrides that:
 - expose the API on port `8000`
 
 This mode is intended for development only and is **not recommended for production**.
+
+## Troubleshooting
+
+### Blocked Attachment Addresses
+
+An attachment preview or send can be refused because of where its web address points. The preview in the web interface names the setting involved.
+
+- **Previews:** `/attach` does not download from local network addresses (loopback, private, link-local and other non-public addresses) unless `APPRISE_ATTACH_PREVIEW_INTERNAL` is set to `yes`. Sends are not affected by this setting.
+- **Previews and sends:** both follow `APPRISE_ATTACH_REJECT_URL` and `APPRISE_ATTACH_ALLOW_URL`. By default `127.0.*` and `localhost*` are refused. Adding `internal` to `APPRISE_ATTACH_REJECT_URL` refuses every local network address, previews included.
+
+To preview a snapshot from a camera on your LAN, such as `http://192.168.1.50/snapshot.jpg`:
+
+```yaml
+services:
+  apprise:
+    environment:
+      APPRISE_ATTACH_PREVIEW_INTERNAL: "yes"
+```
+
+Only turn this on when everyone who can reach the server is trusted, since a preview returns the downloaded file to the caller. See [`APPRISE_ATTACH_PREVIEW_INTERNAL`](/api/reference/environment/) for the full list of attachment settings.
 
 ## Next Steps
 

@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   /* Existing styling to ensure block behavior */
   .theme-aware-a1-diagram img {
@@ -70,17 +72,7 @@ This makes notifications portable, maintainable, and easy to reason about.
 
 ## How Apprise Fits Together
 
-<picture class="apprise-flow">
-  <source
-    srcset="/assets/apprise-overview-en-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-en-light.svg"
-    alt="Sources on the left send through the Apprise API or core library in the middle, which deliver to notification services on the right."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview alt="Sources on the left send through the Apprise API or core library in the middle, which deliver to notification services on the right." />
 
 - **Something needs to send a message.** A script, a webhook, the command line, the mobile app, or software that already speaks Apprise.
 - **Apprise handles the delivery.** You either import the Python library into your own code, or run the API server as a shared gateway that anything can post to.
@@ -129,3 +121,4 @@ Both send the same notification. Point them at a different service and only the 
 | Send notifications from your own application         | [The Python Library](/library/)                                 |
 | Give many systems one shared notification gateway    | [The API Server](/api/), stateless or with saved configurations |
 | Send from your phone against your self-hosted server | [Apprise Mobile](/mobile/)                                      |
+| Send a notification later, or on a schedule          | [Reminders](/api/endpoints/#reminders) on the API Server        |

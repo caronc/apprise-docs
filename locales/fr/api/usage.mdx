@@ -37,7 +37,7 @@ Ce guide couvre la fonctionnalité centrale de l'API Apprise : l'envoi de notifi
 1. **Sans état :** vous fournissez les URL de configuration dans la charge utile de la requête.
 1. **Avec état :** vous référencez une clé de configuration préalablement enregistrée.
 
-## Référence rapide
+## Référence Rapide
 
 Chaque méthode d'envoi ci-dessous fonctionne avec les deux points de terminaison. Les requêtes sans état vont vers `/notify` ; les requêtes avec état vont vers `/notify/{KEY}`, ou vers `/notify` avec un en-tête `X-Apprise-Config-ID`.
 
@@ -53,7 +53,7 @@ Chaque méthode d'envoi ci-dessous fonctionne avec les deux points de terminaiso
 | Valeurs de substitution | Non utilisées                                                     | Objet `template`, champs `template[nom]` ou en-tête |
 | URL explicites          | `urls` dans une charge utile JSON ou de formulaire                | Non utilisées                                       |
 
-## Priorité des champs
+## Priorité des Champs
 
 Un champ peut être envoyé dans la charge utile, dans un en-tête `X-Apprise-*` ou dans la chaîne de requête. Lorsqu'il est envoyé à plusieurs endroits, la première source de ce tableau l'emporte, de gauche à droite :
 
@@ -72,7 +72,7 @@ Un champ peut être envoyé dans la charge utile, dans un en-tête `X-Apprise-*`
 - Les sources de `template` ne se combinent pas : des valeurs non vides dans la charge utile remplacent entièrement l'en-tête. Si la charge utile ne contient aucune valeur utilisable, l'en-tête peut les fournir.
 - Ces valeurs ne changent jamais qui peut envoyer. L'authentification et les règles de tag des configurations `locked` et `public` s'appliquent quelle que soit la provenance d'une valeur.
 
-## Messages en texte brut et en-têtes
+## Messages en Texte Brut et En-têtes
 
 Les clients qui ne peuvent pas construire de JSON peuvent envoyer le message comme corps complet de la requête. Le `Content-Type` en définit le format :
 
@@ -427,7 +427,7 @@ Consultez [Fournir des valeurs de substitution](#fournir-des-valeurs-de-substitu
 </TabItem>
 </Tabs>
 
-## Formats de réponse
+## Formats de Réponse
 
 Par défaut, les points de terminaison renvoient `text/plain`. Si vous préférez
 du JSON, envoyez `Accept: application/json`.
@@ -441,7 +441,7 @@ Ces réponses attendent la fin de l'envoi des notifications, puis transmettent
 les journaux une entrée à la fois. Un résultat volumineux stocké sur disque
 n'est donc pas reconstruit en mémoire et le format de la réponse ne change pas.
 
-### Diffusion en direct de la progression
+### Diffusion en Direct de la Progression
 
 Les points de terminaison de notification peuvent indiquer leur progression à mesure que chaque service est notifié. Utilisez `?stream=yes` ou envoyez `Accept: text/event-stream`.
 
@@ -503,7 +503,7 @@ laquelle le proxy attend une activité du flux. La valeur par défaut est de
 `-N` (`--no-buffer`) indique à `curl` d'afficher chaque événement dès son arrivée plutôt que d'attendre la fermeture de la connexion.
 :::
 
-## Notifications sans état
+## Notifications sans État
 
 <picture class="theme-aware-sl-diagram">
   <source
@@ -521,7 +521,7 @@ Les notifications sans état sont idéales pour un usage de type « sidecar » l
 
 Lorsque l'authentification est activée, utilisez les identifiants administrateur ou envoyez des `urls` explicites avec les identifiants d'un utilisateur de configuration et l'en-tête `X-Apprise-Config-ID` correspondant. L'accès de cet utilisateur doit être `user` ; `locked`, `public` et `disabled` ne peuvent pas envoyer de notifications sans état. Pour rester compatible avec l'API Apprise v2, l'en-tête envoyé sans `urls` reste un envoi avec état via la configuration enregistrée.
 
-### Requête JSON de base
+### Requête JSON de Base
 
 La méthode la plus courante consiste à envoyer une charge utile JSON à `/notify`.
 
@@ -538,7 +538,7 @@ curl -X POST \
   http://localhost:8000/notify
 ```
 
-### Pièces jointes
+### Pièces Jointes
 
 Pour envoyer des pièces jointes, utilisez `multipart/form-data`. L'API accepte les envois de fichiers classiques ainsi que les URL distantes. Utilisez `attach` comme nom de champ recommandé. Les alias `attachment` et `attachments` sont également acceptés.
 
@@ -562,16 +562,7 @@ curl -X POST \
 
 Dans l'interface web, la section **Pièces jointes** de l'onglet **Notifications** accepte des fichiers téléversés et des adresses web. **Aperçu** télécharge une adresse web comme le ferait un envoi et affiche le fichier, ou la raison pour laquelle il n'a pas pu être récupéré (comme un `404`). Un bouton **Télécharger** est toujours proposé.
 
-:::note
-Les pièces jointes du réseau local, comme la caméra ci-dessus,
-fonctionnent par défaut. Si `/notify` n'est pas entièrement fiable,
-ajoutez le mot-clé `internal` à `APPRISE_ATTACH_REJECT_URL` pour bloquer
-les destinations se résolvant vers une adresse privée ou interne
-(protection SSRF) -- notez que cela bloque aussi les appareils du réseau
-local. Voir [Variables d'environnement](/api/reference/environment/).
-:::
-
-## Notifications avec état
+## Notifications avec État
 
 <picture class="theme-aware-sf-diagram">
   <source
@@ -589,7 +580,7 @@ Les notifications avec état vous permettent de simplifier votre code client. Vo
 
 **Point de terminaison :** `POST /notify/{KEY}`
 
-### Envoyer vers une clé
+### Envoyer vers une Clé
 
 Si vous avez enregistré une configuration sous la clé `my-alerts` :
 
@@ -616,7 +607,7 @@ Une connexion administrateur avec mot de passe uniquement utilise `-u ":password
 
 Un administrateur peut aussi définir un ID de configuration comme `public`. Les appelants publics omettent Basic Auth, mais doivent fournir un tag précis autre que `all`. L'accès public fonctionne uniquement pour les notifications avec état ; les autres points de terminaison restent protégés.
 
-Le mode `disabled` bloque l'accès de l'utilisateur sans supprimer sa configuration ni ses identifiants. Un administrateur peut toujours la gérer et l'utiliser.
+Le mode `disabled` bloque l'accès de l'utilisateur sans supprimer sa configuration ni ses identifiants. Un administrateur peut toujours la gérer et l'utiliser, mais ses rappels sont conservés tels quels : aucun ne s'exécute ni ne peut être modifié, pas même par l'administrateur, tant que son accès ne change pas.
 
 ### Tags
 
@@ -647,7 +638,7 @@ curl -X POST -d '{"tag": "comment create,admin", "body": "..."}' ...
 
 Le tag peut aussi être envoyé dans l'en-tête `X-Apprise-Tag` ou dans la chaîne de requête `?tag=`. Consultez [Priorité des champs](#priorité-des-champs) pour savoir lequel l'emporte.
 
-### Fournir des valeurs de substitution
+### Fournir des Valeurs de Substitution
 
 Si une configuration enregistrée utilise des marqueurs `${NOM}`, les URL qui en
 dépendent ne sont pas utilisées tant qu'une valeur n'est pas disponible. Vous
@@ -736,7 +727,7 @@ enregistrée. Ce niveau exige les droits d'administrateur ou l'accès `user`.
 Les accès `locked`, `public` et `disabled` ne reçoivent pas plus que `info`.
 :::
 
-### Voir ce dont une configuration a besoin
+### Voir ce dont une Configuration a Besoin
 
 `GET /json/urls/{KEY}` liste chaque URL enregistrée avec les noms de substitution qu'elle utilise :
 
@@ -766,7 +757,7 @@ Avec `privacy=1`, le texte autour de chaque marqueur est masqué et toutes les v
 
 Un rappel est une notification enregistrée maintenant et envoyée plus tard, une seule fois ou de façon répétée.
 
-#### Ajouter un rappel
+#### Ajouter un Rappel
 
 Dans l'onglet **Notifications**, rédigez le message et sélectionnez **Ajouter un rappel**. Choisissez une date et une heure ou un jour férié, puis sélectionnez de nouveau **Ajouter un rappel** pour l'enregistrer. Si vous laissez le nom vide, le titre ou la première ligne du message est utilisé.
 
@@ -774,7 +765,7 @@ Sélectionnez **Rendre récurrent** pour répéter le rappel par secondes, minut
 
 Les fichiers téléversés sont enregistrés avec le rappel. Les adresses web sont téléchargées au moment de l'envoi : un lien vers un fichier qui change, comme une capture de caméra, récupère ainsi son contenu actuel.
 
-#### Afficher et gérer les rappels
+#### Afficher et Gérer les Rappels
 
 L'onglet **Rappels** propose une vue calendrier et une vue **Tous**. Dans les deux vues, vous pouvez :
 
@@ -793,7 +784,7 @@ Après la création d'un identifiant pour un Config ID, l'administrateur peut d�
 
 Consultez [Rappels](../endpoints/#rappels) pour l'API.
 
-## Mapping de la charge utile (hooks)
+## Mapping de la Charge Utile (Hooks)
 
 Parfois, vous ne pouvez pas changer le format de la charge utile envoyée par un outil tiers (par ex. Grafana, Prometheus). L'API Apprise permet de faire correspondre les champs entrants avec les champs compatibles Apprise via des paramètres de requête préfixés par deux-points (`:`).
 
@@ -801,7 +792,7 @@ Parfois, vous ne pouvez pas changer le format de la charge utile envoyée par un
 Les clés de mapping passent dans la chaîne de requête et doivent être encodées pour une URL si elles contiennent des caractères spéciaux.
 :::
 
-### Règles de mapping
+### Règles de Mapping
 
 | Syntaxe                          | Effet                                          |
 | -------------------------------- | ---------------------------------------------- |
@@ -817,11 +808,11 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:message=body&:severity=type"
 ```
 
-### Mapping de champs imbriqués
+### Mapping de Champs Imbriqués
 
 Lorsque la charge utile entrante utilise des objets imbriqués ou des tableaux, référencez-les côté source de la règle avec une **notation pointée** pour les objets imbriqués et une **notation entre crochets** pour les éléments de tableau. Les deux peuvent être combinés librement.
 
-#### Objets imbriqués (notation pointée)
+#### Objets Imbriqués (Notation Pointée)
 
 Utilisez un chemin séparé par des points pour parcourir des dictionnaires imbriqués :
 
@@ -835,7 +826,7 @@ curl -X POST \
   "http://localhost:8000/notify/my-alerts?:event.title=title&:event.state=type&:component.name=body"
 ```
 
-#### Éléments de tableau (notation entre crochets)
+#### Éléments de Tableau (Notation Entre Crochets)
 
 Ajoutez `[N]` juste après le nom de clé pour déréférencer l'index `N` dans ce tableau. Les indices multiples et le mélange avec la notation pointée sont pris en charge :
 
@@ -879,7 +870,7 @@ L'interface Web choisit une langue pour chaque page qu'elle affiche, dans cet or
 3. Chaque tag complet de cet en-tête est essayé avant tout tag raccourci. Demander `pt-BR, de` essaie `pt-BR`, puis `de`, et seulement ensuite `pt`.
 4. L'anglais, lorsqu'aucune de vos langues n'est disponible.
 
-### Demander une langue depuis votre propre code
+### Demander une Langue depuis Votre Propre Code
 
 Cet en-tête n'est pas réservé aux navigateurs. N'importe quel client peut l'envoyer, et les étapes 2 à 4 ci-dessus s'appliquent de la même manière :
 

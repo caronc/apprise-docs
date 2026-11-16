@@ -7,6 +7,7 @@ sidebar:
 ---
 
 import { Icon } from "@astrojs/starlight/components";
+import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
     :root[data-theme="dark"] .apprise-flow img {
@@ -149,17 +150,10 @@ The **Apprise API** turns Apprise into a service. You run it once, point your sy
 
 It is the middle box in the picture below: everything on the left hands it a message, and it takes care of delivering to everything on the right.
 
-<picture class="apprise-flow apprise-flow--api">
-  <source
-    srcset="/assets/apprise-overview-en-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-en-light.svg"
-    alt="Sources on the left send to the Apprise API in the middle, which delivers to notification services on the right."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="api"
+  alt="Sources on the left send to the Apprise API in the middle, which delivers to notification services on the right."
+/>
 
 ## Use Cases
 
@@ -168,6 +162,7 @@ It is the middle box in the picture below: everything on the left hands it a mes
 - **Or store nothing at all.** Send the destination URLs with each request instead, which suits short-lived containers and sidecars. One server does both.
 - **No Python required.** Anything that can make an HTTP request can send a notification, including tools and appliances that have no scripting at all.
 - **A web interface included.** Manage saved configurations and send test notifications from your browser. It follows your browser language, and you can turn it off with `APPRISE_API_ONLY=yes`.
+- **Send later, or on a schedule.** Save a [reminder](/api/endpoints/#reminders) and the server sends it once, on a repeating schedule, or on a public holiday. Nothing else has to stay running to send it.
 - **Runs anywhere.** A small container that is at home under Docker, Docker Compose, or Kubernetes.
 
 <div class="api-mobile-callout">

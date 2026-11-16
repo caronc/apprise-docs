@@ -1,5 +1,5 @@
 ---
-title: "Routage par tags & tentatives"
+title: "Routage par Tags & Tentatives"
 description: "Escalade par priorité, filtrage exclusif, tentatives et délai par service, et remplacement par appel."
 sidebar:
   order: 4
@@ -13,7 +13,7 @@ Cette page explique comment configurer ces fonctionnalités dans vos fichiers de
 
 ---
 
-## Tags de priorité
+## Tags de Priorité
 
 Chaque tag dans un fichier de configuration peut porter un préfixe numérique de priorité séparé par deux-points : `N:nomdetag`.
 
@@ -74,9 +74,9 @@ Les tags sans préfixe de priorité ont par défaut la priorité **0** (urgence 
 
 ---
 
-## Fonctionnement de l'envoi
+## Fonctionnement de l'Envoi
 
-### Mode escalade (par défaut)
+### Mode Escalade (par Défaut)
 
 Lorsque vous déclenchez un tag **sans** préfixe de priorité, Apprise utilise la **chaîne d'escalade** :
 
@@ -97,7 +97,7 @@ apobj.notify(body="Utilisation disque à 90%", tag="alerts")
 apprise --config=config.yml --tag="alerts" --body="Utilisation disque à 90%"
 ```
 
-### Formation des groupes
+### Formation des Groupes
 
 Tous les services partageant le **même nom de tag et le même numéro de priorité** sont traités comme un seul groupe. Le groupe est considéré comme réussi uniquement si **chaque** service qu'il contient réussit. Si un seul service échoue, Apprise escalade immédiatement vers le groupe au numéro supérieur suivant.
 
@@ -148,7 +148,7 @@ groupe de priorité 0, et un filtre `"abc"` comme un filtre `"0:abc"` correspond
 définis avec l'une ou l'autre forme. Si les deux formes figurent dans le même fichier de
 configuration, ces services seront toujours distribués ensemble comme un groupe unique.
 
-### Mode exclusif
+### Mode Exclusif
 
 Lorsque vous spécifiez un **préfixe** de priorité dans le filtre, Apprise ignore la chaîne d'escalade et ne notifie que les services dont le tag correspondant porte **exactement** cette priorité.
 
@@ -177,7 +177,7 @@ service correspondant trouvé). C'est intentionnel -- un filtre exclusif est une
 pas une demande de secours.
 :::
 
-### Comportement en cas d'échec de chaîne
+### Comportement en Cas d'Échec de Chaîne
 
 Quand `notify()` exécute plusieurs chaînes OR indépendantes en parallèle, le comportement par défaut est de laisser **chaque chaîne se terminer** avant de retourner -- même si une chaîne a déjà échoué. Cela garantit que chaque service configuré obtient au moins une tentative.
 
@@ -203,7 +203,7 @@ apobj.notify(body="Alerte critique", tag=["ops", "securite"])
 
 ---
 
-## Tentatives et délai par service
+## Tentatives et Délai par Service
 
 Chaque service peut être configuré avec son propre nombre de tentatives et délai inter-tentative. Ces paramètres sont indépendants de la chaîne d'escalade et s'appliquent à chaque échec de livraison.
 
@@ -259,7 +259,7 @@ urls:
 effectue exactement une tentative quelle que soit la valeur de `wait`.
 :::
 
-### Valeurs acceptées
+### Valeurs Acceptées
 
 | Paramètre | Type    | Contraintes                                          | Par défaut |
 | :-------- | :------ | :--------------------------------------------------- | :--------- |
@@ -270,7 +270,7 @@ Les valeurs invalides (nombres négatifs, chaînes non numériques, `inf`, `nan`
 
 ---
 
-## Délais par service
+## Délais par Service
 
 Chaque service dispose d'un budget de temps -- s'il (avec toutes ses tentatives et pauses)
 n'a pas terminé dans ce délai, Apprise cesse d'attendre plutôt que de rester bloqué
@@ -325,7 +325,7 @@ d'envoyer des données lentement. Voir
 
 ---
 
-## Services optionnels
+## Services Optionnels
 
 Le paramètre `optional` indique qu'un service peut échouer sans faire échouer toute
 la notification. Lorsque `optional=yes` est activé sur un service, un échec de
@@ -336,7 +336,7 @@ Utilisez ce paramètre pour les points de terminaison qui doivent recevoir la
 notification quand ils sont disponibles, sans faire échouer l'application appelante
 quand ils ne le sont pas.
 
-### Exemple : écrans d'affichage domestiques
+### Exemple : Écrans d'Affichage Domestiques
 
 Imaginons que votre système domotique possède quatre écrans Kodi avec le tag `media`. Vous souhaitez afficher une notification sur les écrans actuellement allumés, mais vous ne voulez pas qu'un écran éteint déclenche une alerte d'astreinte à trois heures du matin.
 
@@ -395,7 +395,7 @@ apobj.notify(body="Le dîner est prêt", tag="media")
 apprise --config=config.yml --tag="media" --body="Le dîner est prêt"
 ```
 
-### Interaction entre `optional` et les services requis
+### Interaction entre `optional` et les Services Requis
 
 Le paramètre est par service. Vous pouvez librement mélanger des services optionnels et requis au sein du même groupe de tags. Le résultat global suit ces règles :
 
@@ -415,7 +415,7 @@ En résumé : les échecs et dépassements de délai des services optionnels ne 
 pas échouer le résultat global. Seul l'échec ou le dépassement de délai d'un
 service requis peut rendre le résultat faux.
 
-### Interaction entre `optional` et les tentatives
+### Interaction entre `optional` et les Tentatives
 
 Activer `optional=yes` **ne saute pas** le service et ne contourne pas la logique de tentatives. La livraison est toujours tentée, et si `retry` est supérieur à zéro, Apprise retentera le nombre de fois configuré avant d'abandonner. Ce n'est qu'après l'épuisement de toutes les tentatives qu'Apprise vérifie le paramètre `optional` pour décider d'absorber ou non l'échec.
 
@@ -461,7 +461,7 @@ result = apobj.notify(body="Le dîner est prêt")
 print(result)  # True même si chaque point de terminaison était inaccessible
 ```
 
-### Exemples supplémentaires
+### Exemples Supplémentaires
 
 **Journal de débogage non critique associé à un canal d'alerte requis :**
 
@@ -542,7 +542,7 @@ apobj.notify(body="Mouvement détecté", tag="affichages")
 
 ---
 
-## Valeurs par défaut globales via AppriseAsset
+## Valeurs par Défaut Globales via AppriseAsset
 
 Si vous souhaitez que **chaque** service d'une session Apprise partage les mêmes valeurs par défaut de tentatives, d'attente et de délai sans modifier chaque URL, définissez-les sur `AppriseAsset` :
 
@@ -566,7 +566,7 @@ Les valeurs par URL (`?retry=` / `?wait=` ou clés YAML) **remplacent** les vale
 
 ---
 
-## Remplacement du nombre de tentatives par appel
+## Remplacement du Nombre de Tentatives par Appel
 
 Un `:N` en fin de **valeur de filtre de tag** remplace le nombre de tentatives pour chaque service correspondant, pour **cet appel uniquement**. La configuration permanente du service n'est pas modifiée.
 
@@ -588,7 +588,7 @@ Le suffixe `:N` suit les mêmes règles de validation que le paramètre URL `ret
 
 ---
 
-## Remplacement du délai par appel
+## Remplacement du Délai par Appel
 
 Passez `timeout=` à `notify()` pour limiter la durée de **cet appel précis**, du début à
 la fin -- pour tous les services qu'il notifie. Contrairement à `service_timeout` (un
@@ -627,7 +627,7 @@ apobj.notify(body="Abandonner rapidement cette fois", timeout=5)
 seul le `service_timeout` de `AppriseAsset` s'applique. Les valeurs négatives déclenchent
 une erreur, tout comme un `service_timeout` invalide.
 
-### Filtres OR et AND multi-tags
+### Filtres OR et AND Multi-Tags
 
 Apprise supporte deux façons de combiner des noms de tags dans un seul appel
 à notify.
@@ -677,7 +677,7 @@ apprise --config=config.yml --tag="devops, management" --body="Alerte combinée"
 
 ---
 
-## Exemple complet
+## Exemple Complet
 
 L'exemple suivant combine les trois fonctionnalités : escalade par priorité, tentatives/attente par service, et remplacement du nombre de tentatives par appel.
 

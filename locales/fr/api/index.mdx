@@ -7,6 +7,7 @@ sidebar:
 ---
 
 import { Icon } from "@astrojs/starlight/components";
+import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
     :root[data-theme="dark"] .apprise-flow img {
@@ -149,25 +150,19 @@ L'**API Apprise** transforme Apprise en service. Vous la lancez une fois, vous y
 
 C'est la boîte centrale du schéma ci-dessous : tout ce qui se trouve à gauche lui confie un message, et elle se charge de la remise vers tout ce qui se trouve à droite.
 
-<picture class="apprise-flow apprise-flow--api">
-  <source
-    srcset="/assets/apprise-overview-fr-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-fr-light.svg"
-    alt="Les sources à gauche envoient vers l'API Apprise au centre, qui distribue vers les services de notification à droite."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="api"
+  alt="Les sources à gauche envoient vers l'API Apprise au centre, qui distribue vers les services de notification à droite."
+/>
 
-## Cas d'usage
+## Cas d'Usage
 
 - **Un seul point d'entrée.** Vos scripts, conteneurs et applications envoient tous au même endroit, au lieu de transporter chacun ses propres identifiants.
 - **Vos URL au même endroit.** Enregistrez un ensemble de destinations sous une clé comme `my-alerts`, puis envoyez à cette clé. Changez les destinataires sans toucher à ce qui vous appelle.
 - **Ou ne rien stocker du tout.** Envoyez plutôt les URL de destination avec chaque requête, ce qui convient aux conteneurs éphémères. Un même serveur fait les deux.
 - **Python n'est pas requis.** Tout ce qui sait faire une requête HTTP peut envoyer une notification, y compris des outils et des équipements sans aucun langage de script.
 - **Une interface web incluse.** Gérez les configurations enregistrées et envoyez des tests depuis votre navigateur. Elle suit la langue de votre navigateur et se désactive avec `APPRISE_API_ONLY=yes`.
+- **Envoyer plus tard, ou selon un calendrier.** Enregistrez un [rappel](./endpoints/#rappels) et le serveur l'envoie une fois, de façon répétée ou lors d'un jour férié. Rien d'autre n'a besoin de rester en marche pour l'envoyer.
 - **S'exécute partout.** Un petit conteneur à l'aise sous Docker, Docker Compose ou Kubernetes.
 
 <div class="api-mobile-callout">

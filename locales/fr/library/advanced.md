@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-## Notifications asynchrones
+## Notifications Asynchrones
 
 Si vous exécutez votre code dans une boucle d'événements `asyncio`, vous pouvez utiliser `async_notify()` pour envoyer des notifications sans bloquer.
 
@@ -56,7 +56,7 @@ restored_obj = pickle.loads(serialized_data)
 restored_obj.notify("Je suis de retour !")
 ```
 
-## Bas niveau : l'objet de notification Apprise
+## Bas Niveau : l'Objet de Notification Apprise
 
 Lorsque vous appelez `Apprise.notify()`, Apprise gère pour vous les tags, la configuration et la journalisation. Si vous devez contourner cela et interagir directement avec un objet de notification précis :
 
@@ -78,7 +78,39 @@ obj.send(
 Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::
 
-## Gestion des erreurs de configuration
+### Les URL et Leurs Champs
+
+Un objet de notification peut rendre son URL sous forme de champs séparés, nommés d'après les jetons et les arguments de [`details()`](/fr/library/inspection/), les mêmes noms que ceux du [générateur d'URL](/fr/url-builder/). `fields_to_url()` rassemble les champs en une URL. Un programme peut ainsi présenter une URL sous forme de formulaire, puis transformer le formulaire en URL.
+
+```python
+import apprise
+from apprise.fields import fields_to_url
+
+obj = apprise.Apprise.instantiate(
+    "mailtos://user:secret@example.com?to=a@example.com&smtp=smtp.example.com"
+)
+
+# L'URL sous forme de champs, et les mêmes champs aux secrets masqués
+fields = obj.url_fields()
+hidden = obj.url_fields(privacy=True)
+
+# fields["targets"] == ["a@example.com"]
+# fields["smtp"] == "smtp.example.com"
+# hidden["password"] == "****"
+
+# Les champs redonnent la même URL
+url = fields_to_url(fields)
+assert apprise.Apprise.instantiate(url).url() == obj.url()
+```
+
+- Un alias comme `to` est regroupé dans l'entrée qu'il représente, ici `targets`.
+- Les options clé/valeur (`+header`, `-param`, `:key`) reviennent sous forme de tables, comme `headers`, `params` et `payload`.
+- Les valeurs reviennent dans le type que leur donne `details()` : listes, nombres et `True`/`False`.
+- Les champs masqués masquent chaque entrée que `details()` marque comme privée.
+- `fields_to_url()` renvoie `None` lorsque le schéma est inconnu ou qu'un nom de champ ne fait pas partie de ceux du service. Elle ne vérifie pas l'URL ; chargez-la pour savoir si elle fonctionne.
+- `parse_fields(url)` lit les champs d'une URL que son service ne chargerait pas encore, comme `mailto://` sans rien après, pour qu'un formulaire affiche ce qui a déjà été saisi.
+
+## Gestion des Erreurs de Configuration
 
 Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque
 reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette
@@ -119,7 +151,7 @@ Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE`
 sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le
 seul cas où ces méthodes lèvent encore une exception.
 
-## Prise en charge des proxys
+## Prise en Charge des Proxys
 
 Apprise envoie chaque notification via [requests](https://requests.readthedocs.io/), qui respecte automatiquement les variables d'environnement standard `HTTP_PROXY`, `HTTPS_PROXY` et `NO_PROXY`. Aucune configuration spécifique à Apprise n'est nécessaire : définissez la variable avant de démarrer votre processus (ou exportez-la dans l'environnement dans lequel Apprise s'exécute) et chaque requête sortante passera par le proxy :
 

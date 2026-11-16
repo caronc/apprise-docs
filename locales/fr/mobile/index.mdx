@@ -9,6 +9,7 @@ sidebar:
 
 import "~/styles/mobile.css";
 import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
+import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
@@ -40,26 +41,19 @@ import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
   </section>
 
 <section class="mobile-preview">
-  <h2>Où se place Apprise Mobile</h2>
+  <h2>Où se Place Apprise Mobile</h2>
   <p>
     Apprise Mobile est un client pour un serveur que vous hébergez. Il dialogue
     avec votre API Apprise, qui se charge de la remise.
   </p>
-  <picture class="apprise-flow apprise-flow--mobile">
-    <source
-      srcset="/assets/apprise-overview-fr-dark.svg"
-      media="(prefers-color-scheme: dark)"
-    />
-    <img
-      src="/assets/apprise-overview-fr-light.svg"
-      alt="Apprise Mobile mis en évidence parmi les façons d'envoyer des notifications."
-      loading="lazy"
-    />
-  </picture>
+  <AppriseOverview
+    highlight="mobile"
+    alt="Apprise Mobile mis en évidence parmi les façons d'envoyer des notifications."
+  />
 </section>
 
 <section class="mobile-preview">
-  <h2>Envoyez maintenant ou gardez pour plus tard</h2>
+  <h2>Envoyez Maintenant ou Gardez pour Plus Tard</h2>
   <ul>
     <li>
       <strong>Envoyez où que vous soyez.</strong> Contactez les personnes, les
@@ -84,6 +78,11 @@ import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
       <strong>Modifiez au besoin.</strong> Travaillez sur les configurations
       distantes en Texte ou YAML avec le formatage, le signalement des erreurs,
       les actions Annuler et Rétablir, ainsi que la conversion locale.
+    </li>
+    <li>
+      <strong>Planifiez des rappels.</strong> Enregistrez une notification que
+      votre serveur enverra plus tard, une fois ou de façon répétée, même
+      téléphone éteint. Voir <a href="./reminders/">Rappels</a>.
     </li>
   </ul>
 </section>

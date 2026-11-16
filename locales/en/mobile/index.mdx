@@ -9,6 +9,7 @@ sidebar:
 
 import "~/styles/mobile.css";
 import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
+import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
@@ -40,22 +41,15 @@ import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
   </section>
 
 <section class="mobile-preview">
-  <h2>Where Apprise Mobile fits</h2>
+  <h2>Where Apprise Mobile Fits</h2>
   <p>
     Apprise Mobile is a client for a server you run. It talks to your Apprise
     API, which does the delivering.
   </p>
-  <picture class="apprise-flow apprise-flow--mobile">
-    <source
-      srcset="/assets/apprise-overview-en-dark.svg"
-      media="(prefers-color-scheme: dark)"
-    />
-    <img
-      src="/assets/apprise-overview-en-light.svg"
-      alt="Apprise Mobile highlighted among the ways to send notifications through Apprise."
-      loading="lazy"
-    />
-  </picture>
+  <AppriseOverview
+    highlight="mobile"
+    alt="Apprise Mobile highlighted among the ways to send notifications through Apprise."
+  />
 </section>
 
 <section class="mobile-preview">
@@ -80,6 +74,11 @@ import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
     <li>
       <strong>Edit when needed.</strong> Work with remote configurations in Text
       or YAML using formatting, error hints, undo, and local conversion.
+    </li>
+    <li>
+      <strong>Schedule reminders.</strong> Save a notification for your server
+      to send later, once or on a repeating schedule, even with your phone
+      switched off. See <a href="/mobile/reminders/">Reminders</a>.
     </li>
   </ul>
 </section>

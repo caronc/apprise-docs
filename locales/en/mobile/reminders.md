@@ -3,7 +3,7 @@ title: Reminders
 description: Schedule notifications from Apprise Mobile to be sent later, once or on a repeating schedule.
 sidebar:
   label: Reminders
-  order: 2
+  order: 3
 ---
 
 A reminder is a notification you write now and your Apprise API server sends later. It can be sent once, on a repeating schedule (every day, every second Tuesday, the first of each month), or on a public holiday every year.
@@ -44,7 +44,7 @@ The Reminder section has the same fields as the Apprise API web page:
 - **Name**: what the reminder is called in your lists. Left empty, the title or the first line of the message is used.
 - **Send on**: a date you pick, or a public holiday. For a holiday, pick the country (it starts as your phone's own region setting; no location is used), an optional region, and the holiday itself.
 - **Time zone**: the time zone the date and time are read in. It starts as the one you last picked, or else your phone's. If neither is in the list, the field starts empty and a zone must be picked before saving.
-- **Date and time**: when it is sent. For a repeating reminder this is when it starts, and it can be left as **Now**.
+- **Date and time**: when it is sent. For a repeating reminder this is when it starts, and it can be left as **Now**. A time skipped when the clocks go forward is sent once they have (02:30 becomes 03:30), and a time that happens twice when they go back is sent the first time.
 - **Make recurring**: switch on to repeat it.
 - **Ends**: an optional last day for a repeating reminder.
 - **Every**: how often it repeats, for example every 2 weeks. Choose **Custom (crontab)** to type your own five-part crontab rule.
@@ -96,6 +96,8 @@ A reminder whose server can't be reached right now can't be changed: its menu sh
 ## Free and Full Versions
 
 Reminders are part of the free version. The free version manages your first 3 reminders, counted from the oldest, including any made on the Apprise API web page. Reminders past those 3 stay on your server and keep being sent; they appear greyed out in the app, and tapping one explains how to unlock them.
+
+Only reminders still to be sent count, paused ones included. A one-off reminder that has already gone out (or failed), or a repeating one past its end, doesn't count. Giving a finished reminder a new time makes it count again, so saving it needs room.
 
 Reminders still waiting to be saved count toward the 3 as well. Once the free version has 3 reminders, the **Add Reminder** button and the message screen's Reminder switch are greyed out. Tapping either explains the limit: unlock the full version, or delete a reminder to make room.
 

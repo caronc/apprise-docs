@@ -3,7 +3,7 @@ title: Politique de Confidentialité d'Apprise Mobile
 description: Comment Apprise Mobile traite les informations sur votre appareil et avec les serveurs que vous configurez.
 sidebar:
   label: Politique de Confidentialité
-  order: 3
+  order: 4
 ---
 
 **Dernière mise à jour : 10 octobre 2026**

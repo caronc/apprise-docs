@@ -598,7 +598,7 @@ A password-only administrator login uses `-u ":password"`.
 
 An administrator may also set a Config ID to `public`. Public callers omit Basic Auth but must provide a specific tag other than `all`. Public access works only for stateful notification calls; other endpoints remain protected.
 
-The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it.
+The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it, but its reminders are kept as they are and none run or can be changed, not even by the administrator, until its access changes.
 
 ### Tagging
 
