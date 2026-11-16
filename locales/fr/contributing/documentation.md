@@ -46,32 +46,21 @@ sponsorships/
 
 ### Guide des Répertoires
 
-- **Getting Started** (`getting-started/`)
-  Contenu introductif pour les nouveaux utilisateurs
+- **Getting Started** (`getting-started/`) Contenu introductif pour les nouveaux utilisateurs
 
-- **Guides** (`guides/`)
-  Articles pratiques, workflows, bonnes pratiques et dépannage
+- **Guides** (`guides/`) Articles pratiques, workflows, bonnes pratiques et dépannage
 
-- **Config** (`config/`)
-  Syntaxe de configuration et documents de référence
+- **Config** (`config/`) Syntaxe de configuration et documents de référence
 
-- **QA** (`qa/`)
-  Dépannage, diagnostics et FAQ
+- **QA** (`qa/`) Dépannage, diagnostics et FAQ
 
-- **Dev** (`dev/`)
-  Documentation orientée développement et fonctionnement interne
+- **Dev** (`dev/`) Documentation orientée développement et fonctionnement interne
 
-- **Contributing** (`contributing/`)
-  Comment aider à améliorer Apprise et son écosystème
+- **Contributing** (`contributing/`) Comment aider à améliorer Apprise et son écosystème
 
-- **Services** (`services/`)
-  Documentation spécifique à un service de notification, y compris la syntaxe d'URL, les options de configuration et des exemples
+- **Services** (`services/`) Documentation spécifique à un service de notification, y compris la syntaxe d'URL, les options de configuration et des exemples
 
-- **Sponsorships** (`sponsorships/`)
-  Entrées de sponsors d'entreprise, chacune contenant un fichier `meta.json` et des logos optionnels.
-  Ce répertoire est **géré par les mainteneurs**. N'y ajoutez ou ne modifiez rien sans en avoir été
-  expressément chargé. Consultez `sponsorships/README.md` pour le schéma complet et les conventions
-  de nommage des logos.
+- **Sponsorships** (`sponsorships/`) Entrées de sponsors d'entreprise, chacune contenant un fichier `meta.json` et des logos optionnels. Ce répertoire est **géré par les mainteneurs**. N'y ajoutez ou ne modifiez rien sans en avoir été expressément chargé. Consultez `sponsorships/README.md` pour le schéma complet et les conventions de nommage des logos.
 
 ## Bien Débuter comme Contributeur
 
@@ -89,8 +78,7 @@ sponsorships/
    pnpm install
    ```
 
-2. Apporter vos changements dans la documentation
-   Ajoutez, modifiez ou améliorez n'importe quel fichier Markdown.
+2. Apporter vos changements dans la documentation Ajoutez, modifiez ou améliorez n'importe quel fichier Markdown.
 
 3. Lancer la validation :
 
@@ -217,9 +205,7 @@ La plupart des pages de service devraient conserver ces trois marqueurs dans cet
 <!-- TEMPLATE:SERVICE-PARAMS -->
 ```
 
-Le pipeline de synchronisation prend aussi en charge plusieurs autres marqueurs de build.
-Les fichiers Markdown utilisent normalement la forme en commentaire HTML, tandis que les
-fichiers MDX peuvent utiliser la forme en commentaire JSX.
+Le pipeline de synchronisation prend aussi en charge plusieurs autres marqueurs de build. Les fichiers Markdown utilisent normalement la forme en commentaire HTML, tandis que les fichiers MDX peuvent utiliser la forme en commentaire JSX.
 
 | Forme                                      | Exemple                    |
 | ------------------------------------------ | -------------------------- |
@@ -251,10 +237,7 @@ Les marqueurs `TEMPLATE:*` sont découverts automatiquement depuis :
 - `shared_templates/*.md` ou `shared_templates/*.mdx`
 - `locales/<locale>/_templates/*.md` ou `locales/<locale>/_templates/*.mdx`
 
-Par exemple, `locales/fr/_templates/service-params.md` devient
-`<!-- TEMPLATE:SERVICE-PARAMS -->`, et `locales/fr/_templates/eviction-table.md`
-devient `<!-- TEMPLATE:EVICTION-TABLE -->`. Les templates d'une locale remplacent
-les templates partagés du même nom.
+Par exemple, `locales/fr/_templates/service-params.md` devient `<!-- TEMPLATE:SERVICE-PARAMS -->`, et `locales/fr/_templates/eviction-table.md` devient `<!-- TEMPLATE:EVICTION-TABLE -->`. Les templates d'une locale remplacent les templates partagés du même nom.
 
 ### Référence Complète du Frontmatter
 
@@ -322,14 +305,9 @@ limits:
 
 #### Formats de Corps
 
-`body_formats` déclare le(s) format(s) de message qu'un service accepte :
-`text`, `html`, ou `markdown`. Ce champ reflète la déclaration `notify_format`
-du plugin correspondant dans la bibliothèque Apprise.
+`body_formats` déclare le(s) format(s) de message qu'un service accepte : `text`, `html`, ou `markdown`. Ce champ reflète la déclaration `notify_format` du plugin correspondant dans la bibliothèque Apprise.
 
-Le champ est entièrement optionnel. Une page de service qui l'omet est
-documentée comme n'acceptant que `text`, la même valeur par défaut que
-`NotifyBase` utilise lui-même lorsqu'un plugin ne déclare aucun
-`notify_format`.
+Le champ est entièrement optionnel. Une page de service qui l'omet est documentée comme n'acceptant que `text`, la même valeur par défaut que `NotifyBase` utilise lui-même lorsqu'un plugin ne déclare aucun `notify_format`.
 
 ```yaml
 # Service texte uniquement -- aucun bloc body_formats n'est nécessaire.
@@ -337,9 +315,7 @@ schemas:
   - example://
 ```
 
-Lorsqu'un service accepte plusieurs formats, listez-les et marquez celui
-par défaut avec un mapping à clé unique `format: default`, le même
-raccourci que `schemas` utilise déjà pour `: insecure` :
+Lorsqu'un service accepte plusieurs formats, listez-les et marquez celui par défaut avec un mapping à clé unique `format: default`, le même raccourci que `schemas` utilise déjà pour `: insecure` :
 
 ```yaml
 body_formats:
@@ -349,20 +325,10 @@ body_formats:
 
 Règles, dans l'ordre :
 
-1. **`body_formats` est optionnel.** Omettez-le entièrement pour un
-   service texte uniquement ; cela équivaut à `body_formats: [text]`.
-2. **Au plus une entrée peut être marquée `: default`.** Déclarer deux
-   valeurs par défaut ou plus est un échec de validation de la
-   documentation. Il n'existe aucun moyen d'honorer deux valeurs par
-   défaut sur le même service.
-3. **Si aucune entrée n'est marquée `: default`, la première entrée de la
-   liste devient la valeur par défaut implicite.** Ceci est valide et ne
-   fera pas échouer la validation, mais `pnpm lint` affiche une
-   recommandation d'en marquer une explicitement dès qu'un service déclare
-   plus d'un format, car l'intention est facile à manquer à la lecture
-   autrement.
-4. **Le même format ne peut pas être déclaré deux fois** dans la même
-   liste.
+1. **`body_formats` est optionnel.** Omettez-le entièrement pour un service texte uniquement ; cela équivaut à `body_formats: [text]`.
+2. **Au plus une entrée peut être marquée `: default`.** Déclarer deux valeurs par défaut ou plus est un échec de validation de la documentation. Il n'existe aucun moyen d'honorer deux valeurs par défaut sur le même service.
+3. **Si aucune entrée n'est marquée `: default`, la première entrée de la liste devient la valeur par défaut implicite.** Ceci est valide et ne fera pas échouer la validation, mais `pnpm lint` affiche une recommandation d'en marquer une explicitement dès qu'un service déclare plus d'un format, car l'intention est facile à manquer à la lecture autrement.
+4. **Le même format ne peut pas être déclaré deux fois** dans la même liste.
 5. **Les noms de format inconnus font échouer la validation.** Seuls
    `text`, `html`, et `markdown` sont reconnus.
 
@@ -385,11 +351,7 @@ body_formats:
 
 #### Indicateurs de Capacité
 
-Les indicateurs de capacité sont des booléens frontmatter nommés `has_<feature>`.
-Définissez-les à `true` uniquement lorsque le service prend en charge la fonctionnalité.
-Ces indicateurs alimentent l'aperçu du service, les badges de fonctionnalités et les
-paramètres de filtre d'URL ; par exemple, `has_attachments: true` devient le jeton de
-filtre `attachments` dans `?f=attachments`.
+Les indicateurs de capacité sont des booléens frontmatter nommés `has_<feature>`. Définissez-les à `true` uniquement lorsque le service prend en charge la fonctionnalité. Ces indicateurs alimentent l'aperçu du service, les badges de fonctionnalités et les paramètres de filtre d'URL ; par exemple, `has_attachments: true` devient le jeton de filtre `attachments` dans `?f=attachments`.
 
 | Clé frontmatter   | Jeton de filtre URL | Signification                                                     |
 | ----------------- | ------------------- | ----------------------------------------------------------------- |
@@ -401,9 +363,7 @@ filtre `attachments` dans `?f=attachments`.
 | `has_attachments` | `attachments`       | Service prenant en charge les pièces jointes.                     |
 | `has_image`       | `image`             | Service utilisant les images ou icônes d'état gérées par Apprise. |
 
-`has_sponsorship` est un raccourci spécial réservé aux mainteneurs pour
-`sponsorship_level: 1` ; il est documenté séparément ci-dessous parce qu'il contrôle
-la visibilité des sponsors plutôt qu'une capacité générale du service.
+`has_sponsorship` est un raccourci spécial réservé aux mainteneurs pour `sponsorship_level: 1` ; il est documenté séparément ci-dessous parce qu'il contrôle la visibilité des sponsors plutôt qu'une capacité générale du service.
 
 > **N'ajoutez ni ne modifiez les champs de parrainage** sauf si vous êtes mainteneur du projet
 > ou si vous en avez été explicitement chargé. Ces champs ont une portée commerciale.

@@ -20,11 +20,7 @@ Every tag in a configuration file may carry a numeric priority prefix separated 
 Lower numbers mean **higher urgency** -- they are dispatched first.
 
 :::note
-The priority number is **only a grouping and sort-order marker**. Services that share
-the same tag name and the same priority number are dispatched together as one group.
-Groups fire in ascending numeric order (lowest number first). The actual values you
-choose are irrelevant -- `2`, `50`, and `9999` are just as valid as `1`, `2`, and `3`.
-Only their relative order matters.
+The priority number is **only a grouping and sort-order marker**. Services that share the same tag name and the same priority number are dispatched together as one group. Groups fire in ascending numeric order (lowest number first). The actual values you choose are irrelevant -- `2`, `50`, and `9999` are just as valid as `1`, `2`, and `3`. Only their relative order matters.
 :::
 
 <Tabs syncKey="config-format">
@@ -143,10 +139,7 @@ When `notify(tag="abc")` is called against the above:
 2. If **both** succeed, `True` is returned -- Telegram is never contacted.
 3. If **either** fails, Apprise escalates to the priority-1 group (Telegram).
 
-Because tags without a prefix default to priority **0**, the service definitions `abc` and `0:abc`
-are fully equivalent. Both place the service in priority group 0, and a filter of either `"abc"`
-or `"0:abc"` will match services tagged with either form. If both forms appear in the same
-configuration file, those services will always be dispatched together as a single group.
+Because tags without a prefix default to priority **0**, the service definitions `abc` and `0:abc` are fully equivalent. Both place the service in priority group 0, and a filter of either `"abc"` or `"0:abc"` will match services tagged with either form. If both forms appear in the same configuration file, those services will always be dispatched together as a single group.
 
 ### Exclusive Mode
 
@@ -170,11 +163,7 @@ apprise --config=config.yml --tag="2:alerts" --body="Scheduled maintenance windo
 | `"0:alerts"` | Exclusive -- only priority-0 entries; `alerts` and `0:alerts` definitions are identical |
 
 :::note
-If no service matches the exact priority you specify, **nothing is sent**. The result
-`notify()` gives back evaluates as `False` (its `status` is `NOMATCH` -- see
-[Notification Results](/library/results/)), and the CLI exits with code `3` (no matching
-services found). This is intentional -- an exclusive filter is a precise selection, not a
-fallback request.
+If no service matches the exact priority you specify, **nothing is sent**. The result `notify()` gives back evaluates as `False` (its `status` is `NOMATCH` -- see [Notification Results](/library/results/)), and the CLI exits with code `3` (no matching services found). This is intentional -- an exclusive filter is a precise selection, not a fallback request.
 :::
 
 ### Multi-Chain Failure Behaviour
@@ -255,8 +244,7 @@ urls:
 </Tabs>
 
 :::note
-`wait` is only meaningful when `retry` is greater than zero. A service with `retry=0`
-makes exactly one attempt regardless of the `wait` value.
+`wait` is only meaningful when `retry` is greater than zero. A service with `retry=0` makes exactly one attempt regardless of the `wait` value.
 :::
 
 ### Accepted Values
@@ -266,20 +254,15 @@ makes exactly one attempt regardless of the `wait` value.
 | `retry`   | `int`   | `0` to `10`                                 | `0`     |
 | `wait`    | `float` | `0.0` to `20.0`; integers promoted to float | `0.5`   |
 
-Invalid values (negative numbers, non-numeric strings, `inf`, `nan`) are rejected and
-fall back to the asset default (see [Global Defaults](#global-defaults-via-appriseasset) below).
+Invalid values (negative numbers, non-numeric strings, `inf`, `nan`) are rejected and fall back to the asset default (see [Global Defaults](#global-defaults-via-appriseasset) below).
 
 ---
 
 ## Per-Service Timeouts
 
-Every service gets a time budget -- if it (including all of its retries and waits) hasn't
-finished within that window, Apprise stops waiting on it rather than hanging forever. This
-is separate from `retry`/`wait` above: a service can be given plenty of retries but still be
-cut off if the whole thing is taking too long.
+Every service gets a time budget -- if it (including all of its retries and waits) hasn't finished within that window, Apprise stops waiting on it rather than hanging forever. This is separate from `retry`/`wait` above: a service can be given plenty of retries but still be cut off if the whole thing is taking too long.
 
-By default, each service gets **60 seconds**. Set your own value with `service_timeout` on
-`AppriseAsset`, or turn the limit off entirely with `0`:
+By default, each service gets **60 seconds**. Set your own value with `service_timeout` on `AppriseAsset`, or turn the limit off entirely with `0`:
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -298,22 +281,12 @@ apprise --service-limit 10 --body "Quick health check" \
     "slack://tokenA/tokenB/tokenC"
 ```
 
-A service that runs out of time is reported with a `TIMEOUT` status instead of a plain
-failure -- see [Notification Results](/library/results/) for how to check this from Python.
+A service that runs out of time is reported with a `TIMEOUT` status instead of a plain failure -- see [Notification Results](/library/results/) for how to check this from Python.
 
 :::caution
-Apprise can stop _waiting_ on a service once its budget passes, but it cannot forcibly
-interrupt a call that is already in progress -- Python has no way to do that to a
-blocking network request. In practice that means the affected service keeps running in
-the background even after Apprise reports `TIMEOUT` and moves on, and a single
-synchronous service dispatched on its own can, in rare cases, still finish (successfully
-or not) after its budget expired, since there was nothing else running that a deadline
-check could interrupt in between. Treat `service_timeout`/`timeout=` as "Apprise won't
-wait longer than this," not as a hard, forcible cutoff for the underlying call.
+Apprise can stop _waiting_ on a service once its budget passes, but it cannot forcibly interrupt a call that is already in progress -- Python has no way to do that to a blocking network request. In practice that means the affected service keeps running in the background even after Apprise reports `TIMEOUT` and moves on, and a single synchronous service dispatched on its own can, in rare cases, still finish (successfully or not) after its budget expired, since there was nothing else running that a deadline check could interrupt in between. Treat `service_timeout`/`timeout=` as "Apprise won't wait longer than this," not as a hard, forcible cutoff for the underlying call.
 
-Web attachment downloads are the exception: a file still arriving after
-`service_timeout` is cut off, even if the server keeps sending data slowly. See
-[Attachments](/library/attachments/#timeouts).
+Web attachment downloads are the exception: a file still arriving after `service_timeout` is cut off, even if the server keeps sending data slowly. See [Attachments](/library/attachments/#timeouts).
 :::
 
 | Parameter         | Type            | Constraints                         | Default |
@@ -324,19 +297,13 @@ Web attachment downloads are the exception: a file still arriving after
 
 ## Optional Services
 
-The `optional` flag marks a service as allowed to fail without failing the whole
-notification. When `optional=yes` is set on a service, a delivery failure for that
-service does not affect the overall result. The overall result still evaluates as
-true if all required services succeeded.
+The `optional` flag marks a service as allowed to fail without failing the whole notification. When `optional=yes` is set on a service, a delivery failure for that service does not affect the overall result. The overall result still evaluates as true if all required services succeeded.
 
-Use this for endpoints that should receive the notification when they are available,
-but should not make the calling application treat the notification as failed.
+Use this for endpoints that should receive the notification when they are available, but should not make the calling application treat the notification as failed.
 
 ### Example: Home-Screen Displays
 
-Suppose your home automation system has four Kodi screens tagged `media`. You want to show
-a notification on whichever screens are currently on, but you do not want a delivery
-failure on a sleeping screen to wake you up at 3 am by paging your on-call channel.
+Suppose your home automation system has four Kodi screens tagged `media`. You want to show a notification on whichever screens are currently on, but you do not want a delivery failure on a sleeping screen to wake you up at 3 am by paging your on-call channel.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -395,8 +362,7 @@ apprise --config=config.yml --tag="media" --body="Dinner is ready"
 
 ### Interaction of `optional` with Required Services
 
-The flag is per-service. You can freely mix optional and required endpoints within the
-same tag group. The aggregate result follows these rules:
+The flag is per-service. You can freely mix optional and required endpoints within the same tag group. The aggregate result follows these rules:
 
 | Services in batch                                    | Result            |
 | :--------------------------------------------------- | :---------------- |
@@ -410,15 +376,11 @@ same tag group. The aggregate result follows these rules:
 | Mix of required and optional; any required fail      | False (`FAILURE`) |
 | Mix of required and optional; required time out only | False (`TIMEOUT`) |
 
-In short: optional failures and optional timeouts do not fail the overall result.
-Only a required service failure or timeout can make the result evaluate as false.
+In short: optional failures and optional timeouts do not fail the overall result. Only a required service failure or timeout can make the result evaluate as false.
 
 ### Interaction of `optional` with Retries
 
-Setting `optional=yes` does **not** skip the service or bypass its retry logic.
-Delivery is still attempted, and if `retry` is greater than zero, Apprise will retry
-the configured number of times before giving up. Only after all retry attempts have been
-exhausted does Apprise check the `optional` flag and decide whether to absorb the failure.
+Setting `optional=yes` does **not** skip the service or bypass its retry logic. Delivery is still attempted, and if `retry` is greater than zero, Apprise will retry the configured number of times before giving up. Only after all retry attempts have been exhausted does Apprise check the `optional` flag and decide whether to absorb the failure.
 
 ```apache
 # This service is attempted up to 4 times (initial + 3 retries) with a
@@ -437,8 +399,7 @@ media=kodi://192.168.1.10?optional=yes&retry=3&wait=2
 
 ### Setting `optional` from Python
 
-You can set the flag directly on any loaded service object, or pass it as a constructor
-argument when building service objects manually:
+You can set the flag directly on any loaded service object, or pass it as a constructor argument when building service objects manually:
 
 ```python
 import apprise
@@ -546,8 +507,7 @@ apobj.notify(body="Motion detected", tag="displays")
 
 ## Global Defaults via AppriseAsset
 
-If you want **every** service in an Apprise session to share the same retry, wait, and
-timeout defaults without editing each URL, set them on `AppriseAsset`:
+If you want **every** service in an Apprise session to share the same retry, wait, and timeout defaults without editing each URL, set them on `AppriseAsset`:
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -593,9 +553,7 @@ The `:N` suffix follows the same validation rules as the `retry` URL parameter. 
 
 ## Per-Call Timeout Override
 
-Pass `timeout=` to `notify()` to cap how long **this one call** is allowed to take, from
-start to finish -- across every service it notifies. Unlike `service_timeout` (which is a
-per-service budget set on `AppriseAsset`), `timeout` is a ceiling on the whole call.
+Pass `timeout=` to `notify()` to cap how long **this one call** is allowed to take, from start to finish -- across every service it notifies. Unlike `service_timeout` (which is a per-service budget set on `AppriseAsset`), `timeout` is a ceiling on the whole call.
 
 ```python
 # Cap this entire call at 30 seconds, regardless of the asset's own
@@ -609,9 +567,7 @@ apprise --limit 30 --body "Time-sensitive alert" \
     "slack://tokenA/tokenB/tokenC"
 ```
 
-When both are set, **whichever one is sooner wins** for each service -- `timeout=` never
-extends a stricter `service_timeout`, and a generous `service_timeout` never overrides a
-tighter `timeout=`.
+When both are set, **whichever one is sooner wins** for each service -- `timeout=` never extends a stricter `service_timeout`, and a generous `service_timeout` never overrides a tighter `timeout=`.
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -624,9 +580,7 @@ apobj.add("slack://tokenA/tokenB/tokenC")
 apobj.notify(body="Give up quickly this time", timeout=5)
 ```
 
-`timeout` defaults to `0`, meaning "no call-level cap" -- only the `AppriseAsset`
-`service_timeout` applies. Negative values raise an error, the same way an invalid
-`service_timeout` does.
+`timeout` defaults to `0`, meaning "no call-level cap" -- only the `AppriseAsset` `service_timeout` applies. Negative values raise an error, the same way an invalid `service_timeout` does.
 
 ### Multi-Tag OR and AND Filters
 
@@ -637,10 +591,7 @@ Apprise supports two ways to combine tag names in a single notify call.
 | **OR** -- multiple separate tag values            | Match services that carry **any** of the listed tags      | Multiple `--tag` flags in the CLI; a list of tag strings in Python |
 | **AND** -- multiple tag names in one filter entry | Match only services that carry **all** of the listed tags | A single `--tag "a, b"` flag in the CLI; a nested list in Python   |
 
-When using **OR**, each tag name forms an **independent escalation chain**.
-Every chain must find a fully-successful priority group before the result
-evaluates as true. A `:N` retry suffix on any token applies only to services
-matched by that token; other tokens are unaffected.
+When using **OR**, each tag name forms an **independent escalation chain**. Every chain must find a fully-successful priority group before the result evaluates as true. A `:N` retry suffix on any token applies only to services matched by that token; other tokens are unaffected.
 
 ```python
 # OR -- devops services get retry=3; management services get retry=2.
@@ -656,12 +607,9 @@ apprise --config=config.yml \
         --body="Team alert"
 ```
 
-If `devops`-tagged services all succeed at their lowest priority group,
-Apprise still dispatches the `management` chain -- the two chains are
-independent of each other.
+If `devops`-tagged services all succeed at their lowest priority group, Apprise still dispatches the `management` chain -- the two chains are independent of each other.
 
-When using **AND**, services must carry every tag in the group to be selected.
-All AND-matched services share one escalation chain.
+When using **AND**, services must carry every tag in the group to be selected. All AND-matched services share one escalation chain.
 
 ```python
 # AND -- service must carry BOTH "devops" AND "management" to match.
@@ -784,17 +732,13 @@ apprise --config=config.yml --tag="5:alerts" \
 The examples below show common notification patterns using the features described on this page.
 
 :::note
-Priority numbers are **relative ordering markers**, not fixed slots. A service at
-priority `2` always dispatches before a service at priority `500` for the same tag --
-the exact values don't matter, only their order. You are free to use any positive
-integers that are meaningful to you.
+Priority numbers are **relative ordering markers**, not fixed slots. A service at priority `2` always dispatches before a service at priority `500` for the same tag -- the exact values don't matter, only their order. You are free to use any positive integers that are meaningful to you.
 :::
 
 <Tabs>
 <TabItem label="Example 1">
 
-**Single tag with two escalation levels** -- priority values `2` and `50` are used to
-show that the numbers are arbitrary; only the ordering matters.
+**Single tag with two escalation levels** -- priority values `2` and `50` are used to show that the numbers are arbitrary; only the ordering matters.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -836,12 +780,7 @@ apprise --config=config.yml --tag="alerts" --body="Alert"
 
 <TabItem label="Example 2">
 
-**Three OR chains each with multiple priority levels** -- `alpha`, `beta`, and `gamma`
-are independent chains dispatched simultaneously. Within each chain, lower-numbered
-groups run first; failures escalate to the next level. By default, every chain runs to
-completion even after another chain has already exhausted all its levels without success
--- see [Multi-Chain Failure Behaviour](#multi-chain-failure-behaviour) above for how to
-change this.
+**Three OR chains each with multiple priority levels** -- `alpha`, `beta`, and `gamma` are independent chains dispatched simultaneously. Within each chain, lower-numbered groups run first; failures escalate to the next level. By default, every chain runs to completion even after another chain has already exhausted all its levels without success -- see [Multi-Chain Failure Behaviour](#multi-chain-failure-behaviour) above for how to change this.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -899,10 +838,7 @@ urls:
 | 2 (if round 1 failed for that chain) | Telegram (priority 5)      | -- exhausted --        | Telegram 3 (priority 200) |
 | 3 (if round 2 failed for alpha)      | Discord (priority 700)     |                        |                           |
 
-All three chains run their round-1 batches **simultaneously**. By default, `beta`
-exhausting in round 2 does not stop `alpha` or `gamma` from continuing their own
-escalation rounds -- each chain runs independently to completion, exactly as shown in
-round 3 above.
+All three chains run their round-1 batches **simultaneously**. By default, `beta` exhausting in round 2 does not stop `alpha` or `gamma` from continuing their own escalation rounds -- each chain runs independently to completion, exactly as shown in round 3 above.
 
 ```python
 apobj.notify(body="Broadcast", tag=["alpha", "beta", "gamma"])
@@ -920,9 +856,7 @@ apprise --config=config.yml \
 
 <TabItem label="Example 3">
 
-**Two independent OR chains with per-call retry overrides** -- each tag token in the
-filter carries its own `:N` retry suffix so `devops` services get three retries and
-`management` services get two, all in one `notify()` call.
+**Two independent OR chains with per-call retry overrides** -- each tag token in the filter carries its own `:N` retry suffix so `devops` services get three retries and `management` services get two, all in one `notify()` call.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -1011,9 +945,7 @@ apprise --config=config.yml --tag="devops, management" --body="Combined alert"
 
 <TabItem label="Example 5">
 
-**Exclusive dispatch** -- a priority prefix in the filter targets only that exact
-priority level. No escalation chain is built; the matched services are dispatched
-as a single flat batch.
+**Exclusive dispatch** -- a priority prefix in the filter targets only that exact priority level. No escalation chain is built; the matched services are dispatched as a single flat batch.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">

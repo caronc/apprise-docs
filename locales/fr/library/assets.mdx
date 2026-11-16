@@ -37,16 +37,9 @@ Modifier un asset après l'avoir lié à `Apprise` peut produire des résultats 
 
 ## Initialisation de l'Objet
 
-`AppriseAsset.__init__()` fournit des arguments nommés pour le stockage, les
-délais d'attente, les limites de messages et d'autres réglages partagés.
-Utilisez toujours le nom documenté du constructeur, comme `timezone=`,
-`service_timeout=` ou `payload_max_size=`. Ces arguments valident les valeurs
-avant de les appliquer.
+`AppriseAsset.__init__()` fournit des arguments nommés pour le stockage, les délais d'attente, les limites de messages et d'autres réglages partagés. Utilisez toujours le nom documenté du constructeur, comme `timezone=`, `service_timeout=` ou `payload_max_size=`. Ces arguments valident les valeurs avant de les appliquer.
 
-Les arguments du constructeur Python et les clés YAML `asset:` sont des
-interfaces distinctes. Certains réglages sont accessibles aux applications
-par `AppriseAsset(...)`, mais volontairement indisponibles dans la
-configuration YAML.
+Les arguments du constructeur Python et les clés YAML `asset:` sont des interfaces distinctes. Certains réglages sont accessibles aux applications par `AppriseAsset(...)`, mais volontairement indisponibles dans la configuration YAML.
 
 ---
 
@@ -191,9 +184,7 @@ asset = AppriseAsset(async_mode=False)
 
 <TabItem value="timeout" label="Délai par Service">
 
-Donne à chaque service de la session le même budget de temps, au lieu des 60
-secondes par défaut. Voir [Résultats de notification](/library/results/) pour
-savoir comment un service qui dépasse son délai vous est signalé en retour.
+Donne à chaque service de la session le même budget de temps, au lieu des 60 secondes par défaut. Voir [Résultats de notification](/library/results/) pour savoir comment un service qui dépasse son délai vous est signalé en retour.
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -215,8 +206,7 @@ apobj.notify(body="Alerte urgente", timeout=30)
 
 <TabItem value="result-logs" label="Stockage des journaux du résultat">
 
-Conservez une petite partie des journaux en mémoire et placez les entrées
-suivantes dans un fichier temporaire supprimé automatiquement :
+Conservez une petite partie des journaux en mémoire et placez les entrées suivantes dans un fichier temporaire supprimé automatiquement :
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -228,10 +218,7 @@ asset = AppriseAsset(
 apobj = Apprise(asset=asset)
 ```
 
-Ces limites sont partagées par tous les services et toutes les tentatives d'une
-notification. Si l'espace disque est épuisé ou indisponible, l'envoi continue
-et le résultat contient un avertissement indiquant que les journaux suivants
-n'ont pas pu être conservés.
+Ces limites sont partagées par tous les services et toutes les tentatives d'une notification. Si l'espace disque est épuisé ou indisponible, l'envoi continue et le résultat contient un avertissement indiquant que les journaux suivants n'ont pas pu être conservés.
 
 </TabItem>
 
@@ -274,8 +261,7 @@ asset = AppriseAsset(
 
 <TabItem value="timezone" label="Contrôle du fuseau horaire" >
 
-Les plugins qui génèrent des horodatages (par exemple les en-têtes `Date` des
-emails) utilisent le fuseau horaire configuré.
+Les plugins qui génèrent des horodatages (par exemple les en-têtes `Date` des emails) utilisent le fuseau horaire configuré.
 
 ```python
 from apprise import AppriseAsset
@@ -287,9 +273,7 @@ asset = AppriseAsset(timezone="America/Toronto")
 
 <TabItem value="language" label="Contrôle de la langue" >
 
-Apprise traduit ses propres textes lisibles, comme les noms de champs
-renvoyés par `details()`. Si `language` n'est pas défini, la langue du
-système sur lequel Apprise s'exécute est utilisée.
+Apprise traduit ses propres textes lisibles, comme les noms de champs renvoyés par `details()`. Si `language` n'est pas défini, la langue du système sur lequel Apprise s'exécute est utilisée.
 
 ```python
 from apprise import AppriseAsset
@@ -299,14 +283,9 @@ asset = AppriseAsset(language="fr")
 asset = AppriseAsset(language="en-CA")
 ```
 
-Un tag régional recherche d'abord cette traduction exacte (`en_CA`),
-puis sa langue de base (`en`), et revient enfin à l'anglais. Apprise fournit
-des traductions pour `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`,
-`ko`, `ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi` et `zh`.
+Un tag régional recherche d'abord cette traduction exacte (`en_CA`), puis sa langue de base (`en`), et revient enfin à l'anglais. Apprise fournit des traductions pour `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`, `ko`, `ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi` et `zh`.
 
-Seuls les textes lus par une personne sont traduits. Tout ce qui est lu par
-un programme, comme un code de statut ou une clé dans une réponse, reste en
-anglais.
+Seuls les textes lus par une personne sont traduits. Tout ce qui est lu par un programme, comme un code de statut ou une clé dans une réponse, reste en anglais.
 
   </TabItem>
 
@@ -336,18 +315,13 @@ asset = AppriseAsset(
 
 ### Redirections HTTP
 
-Par défaut, Apprise suit les redirections HTTP 3xx, conformément au comportement
-de la bibliothèque requests sous-jacente. Si vous souhaitez empêcher la
-transmission des en-têtes personnalisés et des identifiants vers des destinations
-différentes de l'URL d'origine, vous pouvez désactiver globalement le suivi des
-redirections :
+Par défaut, Apprise suit les redirections HTTP 3xx, conformément au comportement de la bibliothèque requests sous-jacente. Si vous souhaitez empêcher la transmission des en-têtes personnalisés et des identifiants vers des destinations différentes de l'URL d'origine, vous pouvez désactiver globalement le suivi des redirections :
 
 ```python
 asset = AppriseAsset(http_redirects=False)
 ```
 
-Les URLs individuelles peuvent toujours remplacer la valeur par défaut de
-l'asset via le paramètre d'URL `redirect=` :
+Les URLs individuelles peuvent toujours remplacer la valeur par défaut de l'asset via le paramètre d'URL `redirect=` :
 
 ```text
 # Remplacement par URL, indépendamment du réglage de l'asset
@@ -367,10 +341,7 @@ La désactiver est fortement déconseillé en dehors d'environnements isolés.
 
 ### Plafond de Taille des Messages
 
-`payload_max_size` définit la limite du message, c'est-à-dire le budget total
-de caractères (`N`) pour le titre et le corps avant le formatage ou le
-découpage. La valeur `0` désactive cette limite. Si le titre et le corps
-tiennent déjà dans `N`, Apprise les laisse inchangés.
+`payload_max_size` définit la limite du message, c'est-à-dire le budget total de caractères (`N`) pour le titre et le corps avant le formatage ou le découpage. La valeur `0` désactive cette limite. Si le titre et le corps tiennent déjà dans `N`, Apprise les laisse inchangés.
 
 ```python
 asset = AppriseAsset(payload_max_size=100000)
@@ -384,25 +355,15 @@ Trois réglages fonctionnent ensemble lorsque le contenu dépasse `N` :
 | `payload_buffer_threshold` | `10`   | Un titre ou un corps aussi court peut être conservé en entier.                  |
 | `payload_min_buffer`       | `25`   | Espace que l'autre côté doit conserver avant de garder le côté court en entier. |
 
-Avec les valeurs par défaut, un message trop volumineux est résolu dans cet
-ordre :
+Avec les valeurs par défaut, un message trop volumineux est résolu dans cet ordre :
 
 1. **Un côté est vide :** l'autre reçoit tout le budget.
-2. **Un côté est court :** un titre de 10 caractères ou moins reste entier
-   si le corps peut conserver 25 caractères, ou toute sa longueur s'il est
-   plus court. La même règle vérifie ensuite si le corps est court. Si les
-   deux sont admissibles, le titre est vérifié en premier.
-3. **Sinon :** le titre et le corps se partagent `N` selon leurs longueurs
-   d'origine. Lorsque `N` permet de représenter les deux, chacun conserve au
-   moins un caractère.
+2. **Un côté est court :** un titre de 10 caractères ou moins reste entier si le corps peut conserver 25 caractères, ou toute sa longueur s'il est plus court. La même règle vérifie ensuite si le corps est court. Si les deux sont admissibles, le titre est vérifié en premier.
+3. **Sinon :** le titre et le corps se partagent `N` selon leurs longueurs d'origine. Lorsque `N` permet de représenter les deux, chacun conserve au moins un caractère.
 
-Par exemple, un titre de 20 caractères et un corps de 18 caractères avec
-`N=20` se répartissent environ 10/10. Une limite plus petite peut encore
-produire un fragment court, mais elle ne favorise pas un côté lorsque les
-deux peuvent être représentés.
+Par exemple, un titre de 20 caractères et un corps de 18 caractères avec `N=20` se répartissent environ 10/10. Une limite plus petite peut encore produire un fragment court, mais elle ne favorise pas un côté lorsque les deux peuvent être représentés.
 
-Les utilisateurs de la bibliothèque peuvent modifier les deux réglages lors
-de la création de l'asset :
+Les utilisateurs de la bibliothèque peuvent modifier les deux réglages lors de la création de l'asset :
 
 ```python
 asset = AppriseAsset(
@@ -412,21 +373,13 @@ asset = AppriseAsset(
 )
 ```
 
-Avec `payload_min_buffer=0`, aucune place n'est réservée : un côté court
-admissible peut donc utiliser toute la limite.
+Avec `payload_min_buffer=0`, aucune place n'est réservée : un côté court admissible peut donc utiliser toute la limite.
 
-Le formatage et l'échappement peuvent ensuite ajouter quelques caractères.
-La limite s'applique à tous les modes `overflow=`, y compris `upstream`.
+Le formatage et l'échappement peuvent ensuite ajouter quelques caractères. La limite s'applique à tous les modes `overflow=`, y compris `upstream`.
 
 ## Limites des Fichiers de Configuration
 
-YAML prend volontairement en charge moins de réglages d'asset que le
-constructeur Python. Les contrôles numériques comme `service_timeout`,
-`payload_max_size`, `payload_buffer_threshold` et `payload_min_buffer`
-doivent être fournis par leurs arguments nommés dans `AppriseAsset(...)`.
-Les chemins de plugins et les réglages de stockage sont également contrôlés
-par l'application afin qu'un fichier de configuration ne puisse ni charger
-du code ni rediriger le stockage persistant.
+YAML prend volontairement en charge moins de réglages d'asset que le constructeur Python. Les contrôles numériques comme `service_timeout`, `payload_max_size`, `payload_buffer_threshold` et `payload_min_buffer` doivent être fournis par leurs arguments nommés dans `AppriseAsset(...)`. Les chemins de plugins et les réglages de stockage sont également contrôlés par l'application afin qu'un fichier de configuration ne puisse ni charger du code ni rediriger le stockage persistant.
 
 `image_path_mask` et `secure_logging` sont aussi contrôlés par l'application.
 Une configuration peut être récupérée depuis un autre serveur ou écrite par un

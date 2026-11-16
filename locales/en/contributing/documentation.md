@@ -7,8 +7,7 @@ sidebar:
 
 ## Contributing to Apprise Documentation
 
-We welcome documentation improvements! Please follow the guidelines below to help us review and
-merge your contributions smoothly.
+We welcome documentation improvements! Please follow the guidelines below to help us review and merge your contributions smoothly.
 
 ## Retrieve from GitHub
 
@@ -47,33 +46,21 @@ sponsorships/
 
 ### Directory Guide
 
-- **Getting Started** (`getting-started/`)
-  Introductory material for new users
+- **Getting Started** (`getting-started/`) Introductory material for new users
 
-- **Guides** (`guides/`)
-  How-to articles, workflows, best practices, and troubleshooting patterns
+- **Guides** (`guides/`) How-to articles, workflows, best practices, and troubleshooting patterns
 
-- **Config** (`config/`)
-  Configuration syntax and reference material
+- **Config** (`config/`) Configuration syntax and reference material
 
-- **QA** (`qa/`)
-  Troubleshooting, diagnostics, and FAQs
+- **QA** (`qa/`) Troubleshooting, diagnostics, and FAQs
 
-- **Dev** (`dev/`)
-  Developer-focused documentation and internals
+- **Dev** (`dev/`) Developer-focused documentation and internals
 
-- **Contributing** (`contributing/`)
-  How to help improve Apprise and its ecosystem
+- **Contributing** (`contributing/`) How to help improve Apprise and its ecosystem
 
-- **Services** (`services/`)
-  Documentation specific to a notification service, including URL syntax,
-  configuration options, and examples
+- **Services** (`services/`) Documentation specific to a notification service, including URL syntax, configuration options, and examples
 
-- **Sponsorships** (`sponsorships/`)
-  Company-level sponsor entries, each containing a `meta.json` and optional logo
-  files. This directory is **maintainer-managed**. Do not add or modify entries
-  unless you have been asked to do so. See `sponsorships/README.md` for the full
-  schema and logo naming conventions.
+- **Sponsorships** (`sponsorships/`) Company-level sponsor entries, each containing a `meta.json` and optional logo files. This directory is **maintainer-managed**. Do not add or modify entries unless you have been asked to do so. See `sponsorships/README.md` for the full schema and logo naming conventions.
 
 ## Getting Started as a Contributor
 
@@ -91,8 +78,7 @@ sponsorships/
    pnpm install
    ```
 
-2. Make your documentation changes
-   Add, edit, or improve any Markdown file.
+2. Make your documentation changes Add, edit, or improve any Markdown file.
 
 3. Run validation:
 
@@ -219,8 +205,7 @@ Most service pages should keep these three markers in this order:
 <!-- TEMPLATE:SERVICE-PARAMS -->
 ```
 
-The sync pipeline also supports several other build markers. Markdown files normally
-use the HTML-comment form, while MDX files may use the JSX-comment form instead.
+The sync pipeline also supports several other build markers. Markdown files normally use the HTML-comment form, while MDX files may use the JSX-comment form instead.
 
 | Form                               | Example                    |
 | ---------------------------------- | -------------------------- |
@@ -252,15 +237,11 @@ The following markers are currently supported:
 - `shared_templates/*.md` or `shared_templates/*.mdx`
 - `locales/<locale>/_templates/*.md` or `locales/<locale>/_templates/*.mdx`
 
-For example, `locales/en/_templates/service-params.md` becomes
-`<!-- TEMPLATE:SERVICE-PARAMS -->`, and `locales/en/_templates/eviction-table.md`
-becomes `<!-- TEMPLATE:EVICTION-TABLE -->`. Locale templates override shared templates
-with the same name.
+For example, `locales/en/_templates/service-params.md` becomes `<!-- TEMPLATE:SERVICE-PARAMS -->`, and `locales/en/_templates/eviction-table.md` becomes `<!-- TEMPLATE:EVICTION-TABLE -->`. Locale templates override shared templates with the same name.
 
 ### Full Frontmatter Reference
 
-The example above shows the common fields. A service page may also carry the following
-optional fields:
+The example above shows the common fields. A service page may also carry the following optional fields:
 
 ```md
 ---
@@ -324,13 +305,9 @@ limits:
 
 #### Body Formats
 
-`body_formats` declares which message format(s) a service accepts: any of
-`text`, `html`, or `markdown`. It mirrors the plugin's own `notify_format`
-declaration in the Apprise library.
+`body_formats` declares which message format(s) a service accepts: any of `text`, `html`, or `markdown`. It mirrors the plugin's own `notify_format` declaration in the Apprise library.
 
-The field is entirely optional. A service page that omits it is documented
-as accepting `text` only, the same default `NotifyBase` itself uses when a
-plugin declares no `notify_format`.
+The field is entirely optional. A service page that omits it is documented as accepting `text` only, the same default `NotifyBase` itself uses when a plugin declares no `notify_format`.
 
 ```yaml
 # Text-only service -- no body_formats block needed at all.
@@ -338,9 +315,7 @@ schemas:
   - example://
 ```
 
-When a service accepts more than one format, list them and mark the
-default with a single-key `format: default` mapping, the same shorthand
-`schemas` already uses for `: insecure`:
+When a service accepts more than one format, list them and mark the default with a single-key `format: default` mapping, the same shorthand `schemas` already uses for `: insecure`:
 
 ```yaml
 body_formats:
@@ -350,16 +325,10 @@ body_formats:
 
 Rules, in order:
 
-1. **`body_formats` is optional.** Omit it entirely for a text-only
-   service; this is equivalent to `body_formats: [text]`.
-2. **At most one entry may be marked `: default`.** Declaring two or more
-   defaults is a documentation validation failure. There is no way to
-   honor two defaults on the same service.
-3. **If no entry is marked `: default`, the first entry listed is the
-   implicit default.** This is valid and will not fail validation, but
-   `pnpm lint` prints a recommendation to mark one explicitly once a
-   service declares more than one format, since the intent is easy to
-   miss on a quick read otherwise.
+1. **`body_formats` is optional.** Omit it entirely for a text-only service; this is equivalent to `body_formats: [text]`.
+2. **At most one entry may be marked `: default`.** Declaring two or more defaults is a documentation validation failure. There is no way to honor two defaults on the same service.
+3. **If no entry is marked `: default`, the first entry listed is the implicit default.** This is valid and will not fail validation, but
+   `pnpm lint` prints a recommendation to mark one explicitly once a service declares more than one format, since the intent is easy to miss on a quick read otherwise.
 4. **The same format may not be declared twice** in the same list.
 5. **Unknown format names fail validation.** Only `text`, `html`, and
    `markdown` are recognized.
@@ -382,10 +351,7 @@ body_formats:
 
 #### Capability Flags
 
-Capability flags are frontmatter booleans named `has_<feature>`. Set them to `true`
-only when the service supports the feature. These flags drive the service overview,
-feature badges, and URL filter parameters; for example, `has_attachments: true`
-becomes the `attachments` filter token in `?f=attachments`.
+Capability flags are frontmatter booleans named `has_<feature>`. Set them to `true` only when the service supports the feature. These flags drive the service overview, feature badges, and URL filter parameters; for example, `has_attachments: true` becomes the `attachments` filter token in `?f=attachments`.
 
 | Frontmatter key   | URL filter token | Meaning                                                          |
 | ----------------- | ---------------- | ---------------------------------------------------------------- |
@@ -397,9 +363,7 @@ becomes the `attachments` filter token in `?f=attachments`.
 | `has_attachments` | `attachments`    | Service supports file attachments.                               |
 | `has_image`       | `image`          | Service uses Apprise-managed status images or icons in messages. |
 
-`has_sponsorship` is a special maintainer-only shorthand for `sponsorship_level: 1`;
-it is documented separately below because it controls sponsor visibility rather than
-a general service capability.
+`has_sponsorship` is a special maintainer-only shorthand for `sponsorship_level: 1`; it is documented separately below because it controls sponsor visibility rather than a general service capability.
 
 > **Do not add or modify sponsorship fields** unless you are the project maintainer
 > or have been explicitly asked to do so. These fields have commercial significance.
@@ -424,9 +388,7 @@ Examples:
 ![Service Logo](./images/logo.svg)
 ```
 
-The site build includes a safeguard that rewrites locale-local internal links
-for non-default locales during sync, but contributors should still author
-locale-safe links in source content whenever practical.
+The site build includes a safeguard that rewrites locale-local internal links for non-default locales during sync, but contributors should still author locale-safe links in source content whenever practical.
 
 Even partial translations are welcome.
 
@@ -438,8 +400,7 @@ This repository uses automated checks to ensure:
 - Supported frontmatter keys and structure
 - Predictable rendering on the website
 
-Linting exists to **help contributors**, not to block them. Most failures are
-formatting or unsupported metadata issues and are easy to fix.
+Linting exists to **help contributors**, not to block them. Most failures are formatting or unsupported metadata issues and are easy to fix.
 
 ## How You Can Help
 

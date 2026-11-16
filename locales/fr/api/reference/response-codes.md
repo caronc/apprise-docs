@@ -31,14 +31,6 @@ L'API Apprise utilise les codes d'état HTTP standard. De nombreuses réponses d
 | `503` | Service Unavailable             | L'application est temporairement indisponible, ou tous les emplacements de flux en direct sont occupés. Lorsque ces emplacements sont occupés, la réponse inclut `Retry-After: 15`.                                                                                                                                                           |
 | `504` | Gateway Timeout                 | Le worker de l'application n'a pas répondu avant l'expiration du délai du proxy.                                                                                                                                                                                                                                                              |
 
-:::note
-Certains cas d'erreur dépendent de l'endpoint et peuvent renvoyer soit du `text/plain`, soit du JSON selon la valeur de `Accept`.
-:::
-
-:::note
 Les contrôles d'état et de métriques réussis sont omis du journal d'accès nginx fourni. Leurs échecs, notamment les codes `417` et `429`, restent journalisés afin de préserver la surveillance et la détection des abus.
-:::
 
-:::note
 Un [flux de progression en direct](/api/usage/#diffusion-en-direct-de-la-progression) commence avec le code HTTP `200`. Consultez le statut de son événement `result` final au lieu d'attendre un code HTTP `424` ultérieur.
-:::

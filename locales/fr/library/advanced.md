@@ -31,8 +31,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Voir [Résultats de notification](/library/results/) pour tout ce que `result`
-peut vous dire : détail par service, durée, journaux capturés, et plus encore.
+Voir [Résultats de notification](/library/results/) pour tout ce que `result` peut vous dire : détail par service, durée, journaux capturés, et plus encore.
 
 ## Sérialisation (Pickle)
 
@@ -108,13 +107,11 @@ assert apprise.Apprise.instantiate(url).url() == obj.url()
 - Les valeurs reviennent dans le type que leur donne `details()` : listes, nombres et `True`/`False`.
 - Les champs masqués masquent chaque entrée que `details()` marque comme privée.
 - `fields_to_url()` renvoie `None` lorsque le schéma est inconnu ou qu'un nom de champ ne fait pas partie de ceux du service. Elle ne vérifie pas l'URL ; chargez-la pour savoir si elle fonctionne.
-- `parse_fields(url)` lit les champs d'une URL que son service ne chargerait pas encore, comme `mailto://` sans rien après, pour qu'un formulaire affiche ce qui a déjà été saisi.
+- `apprise.fields.parse_fields(url)` lit les champs d'une URL que son service ne chargerait pas encore, comme `mailto://` sans rien après, pour qu'un formulaire affiche ce qui a déjà été saisi.
 
 ## Gestion des Erreurs de Configuration
 
-Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque
-reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette
-exception lorsque votre application doit signaler un problème de configuration :
+Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette exception lorsque votre application doit signaler un problème de configuration :
 
 ```python
 from apprise import AppriseAsset
@@ -126,30 +123,15 @@ except AppriseImproperlyConfigured as error:
     print(f"Paramètres Apprise non valides : {error}")
 ```
 
-Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError`
-continuent de fonctionner. Dans le nouveau code, interceptez plutôt
-`AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de
-configuration.
+Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError` continuent de fonctionner. Dans le nouveau code, interceptez plutôt `AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de configuration.
 
-Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous
-pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin
-de distinguer la cause.
-Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être
-interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent
-sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs
-détails individuels ne sont pas nécessaires.
+Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin de distinguer la cause. Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs détails individuels ne sont pas nécessaires.
 
-`notify()` et `async_notify()` signalent ces problèmes dans leur valeur de
-retour plutôt qu'en levant une exception.
+`notify()` et `async_notify()` signalent ces problèmes dans leur valeur de retour plutôt qu'en levant une exception.
 
-Un service qui échoue avant de préparer son message reçoit sa propre entrée
-`FAILURE`, comme un service qui échoue pendant l'envoi. Les autres services sont
-quand même exécutés, l'escalade continue et les services optionnels le restent.
-Un appel dont les résultats sont mixtes renvoie `PARTIAL`.
+Un service qui échoue avant de préparer son message reçoit sa propre entrée `FAILURE`, comme un service qui échoue pendant l'envoi. Les autres services sont quand même exécutés, l'escalade continue et les services optionnels le restent. Un appel dont les résultats sont mixtes renvoie `PARTIAL`.
 
-Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE`
-sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le
-seul cas où ces méthodes lèvent encore une exception.
+Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE` sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le seul cas où ces méthodes lèvent encore une exception.
 
 ## Prise en Charge des Proxys
 

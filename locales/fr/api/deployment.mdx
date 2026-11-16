@@ -20,12 +20,7 @@ Si vous cherchez à :
 
 Choisissez ci-dessous une méthode de déploiement pour démarrer rapidement l'API Apprise.
 
-Les exemples auto-hébergés publient normalement le port `8000` afin que les
-appareils de confiance de votre réseau domestique ou interne puissent se
-connecter sans proxy supplémentaire. Ils utilisent le mode normal. Ne les
-exposez pas directement à Internet. Utilisez l'onglet **Déploiement derrière un
-proxy** pour un serveur public avec HTTPS, authentification, routage strict et
-port de conteneur limité à l'adresse locale.
+Les exemples auto-hébergés publient normalement le port `8000` afin que les appareils de confiance de votre réseau domestique ou interne puissent se connecter sans proxy supplémentaire. Ils utilisent le mode normal. Ne les exposez pas directement à Internet. Utilisez l'onglet **Déploiement derrière un proxy** pour un serveur public avec HTTPS, authentification, routage strict et port de conteneur limité à l'adresse locale.
 
 <Tabs>
   <TabItem label="Docker auto-hébergé">
@@ -58,9 +53,7 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
 
-Pour essayer la connexion administrateur intégrée en local, arrêtez d'abord le
-conteneur de démarrage rapide : les deux exemples utilisent le port `8000`.
-Celui-ci laisse la liste des configurations accessible à `admin` :
+Pour essayer la connexion administrateur intégrée en local, arrêtez d'abord le conteneur de démarrage rapide : les deux exemples utilisent le port `8000`. Celui-ci laisse la liste des configurations accessible à `admin` :
 
 ```bash
 docker run --name apprise-auth \
@@ -77,31 +70,20 @@ docker run --name apprise-auth \
   -d caronc/apprise:latest
 ```
 
-Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous avec `admin` et le mot de
-passe `changeme`. La liste fonctionne grâce au mode `simple` ; la liste des
-configurations est affichée par défaut.
+Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous avec `admin` et le mot de passe `changeme`. La liste fonctionne grâce au mode `simple` ; la liste des configurations est affichée par défaut.
 
 :::caution
-`admin` / `changeme` ne sert qu'à cet exemple local. Choisissez un mot de passe
-fort avant de partager le service et utilisez HTTPS pour les connexions réseau.
-La commande Docker expose ce mot de passe aux personnes qui peuvent consulter
-les processus ou le conteneur ; utilisez un fichier d'environnement protégé
-pour un vrai déploiement.
+`admin` / `changeme` ne sert qu'à cet exemple local. Choisissez un mot de passe fort avant de partager le service et utilisez HTTPS pour les connexions réseau. La commande Docker expose ce mot de passe aux personnes qui peuvent consulter les processus ou le conteneur ; utilisez un fichier d'environnement protégé pour un vrai déploiement.
 :::
 
 </TabItem>
 <TabItem label="Déploiement derrière un proxy">
 
-Ce modèle rend le conteneur accessible uniquement depuis l'hôte Docker. Une
-instance Nginx distincte fournit le HTTPS public, les journaux et la politique
-de sécurité.
+Ce modèle rend le conteneur accessible uniquement depuis l'hôte Docker. Une instance Nginx distincte fournit le HTTPS public, les journaux et la politique de sécurité.
 
 ### Préparer les Fichiers du Conteneur
 
-Créez les répertoires persistants, un fichier d'environnement et un fichier
-hôte vide pour la surcharge du serveur Nginx. Remplacez le mot de passe
-d'exemple avant de démarrer le conteneur. La surcharge sera remplie après que
-Docker aura indiqué la passerelle du conteneur actif.
+Créez les répertoires persistants, un fichier d'environnement et un fichier hôte vide pour la surcharge du serveur Nginx. Remplacez le mot de passe d'exemple avant de démarrer le conteneur. La surcharge sera remplie après que Docker aura indiqué la passerelle du conteneur actif.
 
 ```bash
 mkdir -p apprise/config apprise/attach
@@ -125,15 +107,9 @@ touch apprise/nginx-server-override.conf
 chmod 644 apprise/nginx-server-override.conf
 ```
 
-Le fichier hôte vide doit exister avant `docker run`, car la commande ci-dessous
-le monte à la place du fichier vide du conteneur. Son contenu sera ajouté après
-le démarrage du conteneur.
+Le fichier hôte vide doit exister avant `docker run`, car la commande ci-dessous le monte à la place du fichier vide du conteneur. Son contenu sera ajouté après le démarrage du conteneur.
 
-`STRICT_MODE=yes` conserve le code `404` pour les routes inconnues, renvoie
-`405` pour les méthodes non prises en charge et limite le trafic
-d'authentification avec `429` et `Retry-After: 60`. Le conteneur applique ces
-contrôles stricts. Le serveur Nginx public ci-dessous reste un simple relais
-HTTPS et journalise les réponses pour des outils comme Fail2ban.
+`STRICT_MODE=yes` conserve le code `404` pour les routes inconnues, renvoie `405` pour les méthodes non prises en charge et limite le trafic d'authentification avec `429` et `Retry-After: 60`. Le conteneur applique ces contrôles stricts. Le serveur Nginx public ci-dessous reste un simple relais HTTPS et journalise les réponses pour des outils comme Fail2ban.
 
 ### Démarrer le Conteneur Limité à l'Adresse Locale
 
@@ -155,14 +131,11 @@ docker run -d \
   caronc/apprise:latest
 ```
 
-La publication du port sur `127.0.0.1` empêche tout accès réseau direct au
-conteneur. Seuls les services exécutés sur l'hôte Docker, comme le proxy Nginx
-public ci-dessous, peuvent joindre le port `8010`.
+La publication du port sur `127.0.0.1` empêche tout accès réseau direct au conteneur. Seuls les services exécutés sur l'hôte Docker, comme le proxy Nginx public ci-dessous, peuvent joindre le port `8010`.
 
 ### Configurer la Passerelle Docker Fiable
 
-Inspectez maintenant ce conteneur une seule fois, écrivez la passerelle obtenue
-dans la surcharge montée, puis redémarrez Apprise pour que Nginx la charge :
+Inspectez maintenant ce conteneur une seule fois, écrivez la passerelle obtenue dans la surcharge montée, puis redémarrez Apprise pour que Nginx la charge :
 
 ```bash
 docker_gateway="$(docker inspect \
@@ -185,18 +158,11 @@ EOF
 docker restart apprise
 ```
 
-Cette méthode fonctionne avec le bridge par défaut et les réseaux personnalisés,
-car la passerelle provient du conteneur actif. Répétez cette étape après un
-changement de réseau Docker. Ne faites pas confiance à tout un réseau Docker ou
-privé, sauf si chacun de ses appareils est fiable. Apprise utilise l'adresse
-client obtenue pour l'audit et les limites de débit du mode strict.
+Cette méthode fonctionne avec le bridge par défaut et les réseaux personnalisés, car la passerelle provient du conteneur actif. Répétez cette étape après un changement de réseau Docker. Ne faites pas confiance à tout un réseau Docker ou privé, sauf si chacun de ses appareils est fiable. Apprise utilise l'adresse client obtenue pour l'audit et les limites de débit du mode strict.
 
 ### Configurer le Proxy Nginx Public
 
-La directive `map` doit se trouver dans le contexte `http` de Nginx. Les fichiers
-placés sous `/etc/nginx/conf.d/` y sont généralement chargés. Cette règle masque
-les contrôles d'état réussis et conserve les erreurs ainsi que les réponses de
-limitation de débit.
+La directive `map` doit se trouver dans le contexte `http` de Nginx. Les fichiers placés sous `/etc/nginx/conf.d/` y sont généralement chargés. Cette règle masque les contrôles d'état réussis et conserve les erreurs ainsi que les réponses de limitation de débit.
 
 ```nginx
 map "$uri:$status" $apprise_access_loggable {
@@ -257,10 +223,7 @@ server {
 }
 ```
 
-Utilisez votre automatisation de certificats et votre politique de sécurité
-existantes à la place des chemins d'exemple. N'activez HSTS qu'après avoir
-confirmé que le domaine et ses éventuels sous-domaines resteront exclusivement
-accessibles en HTTPS.
+Utilisez votre automatisation de certificats et votre politique de sécurité existantes à la place des chemins d'exemple. N'activez HSTS qu'après avoir confirmé que le domaine et ses éventuels sous-domaines resteront exclusivement accessibles en HTTPS.
 
 ### Vérifier la Chaîne de Proxy
 
@@ -272,9 +235,7 @@ curl --user admin https://apprise.example.com/status
 docker inspect --format '{{json .State.Health}}' apprise
 ```
 
-Le proxy externe doit remplacer `X-Forwarded-For`, et le conteneur ne doit faire
-confiance qu'à la passerelle Docker de ce proxy. Ensemble, ces réglages
-conservent l'adresse publique du client sans permettre sa falsification.
+Le proxy externe doit remplacer `X-Forwarded-For`, et le conteneur ne doit faire confiance qu'à la passerelle Docker de ce proxy. Ensemble, ces réglages conservent l'adresse publique du client sans permettre sa falsification.
 
 </TabItem>
 <TabItem label="Docker Compose auto-hébergé">
@@ -323,10 +284,7 @@ services:
       start_period: 20s
 ```
 
-Pour obtenir la même configuration administrateur locale avec Compose,
-enregistrez le YAML ci-dessous dans `compose.yaml`. Placez le mot de passe
-d'exemple et un secret durable pour les connexions Web dans un fichier `.env`
-protégé :
+Pour obtenir la même configuration administrateur locale avec Compose, enregistrez le YAML ci-dessous dans `compose.yaml`. Placez le mot de passe d'exemple et un secret durable pour les connexions Web dans un fichier `.env` protégé :
 
 ```bash
 printf 'APPRISE_PASSWORD=changeme\nAPPRISE_WEB_AUTH_SECRET=%s\n' \
@@ -353,16 +311,10 @@ services:
       - ./attach:/attach
 ```
 
-L'entrée `env_file` charge les deux secrets depuis `.env`, placé à côté de
-`compose.yaml`. Arrêtez tout ancien conteneur utilisant le port `8000`, puis lancez
-`docker compose up -d`. Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous
-avec `admin` et le mot de passe `changeme`. Conservez `.env` lors des
-redéploiements ; changer son secret Web déconnecte les sessions existantes.
+L'entrée `env_file` charge les deux secrets depuis `.env`, placé à côté de `compose.yaml`. Arrêtez tout ancien conteneur utilisant le port `8000`, puis lancez `docker compose up -d`. Ouvrez `http://127.0.0.1:8000/cfg` et connectez-vous avec `admin` et le mot de passe `changeme`. Conservez `.env` lors des redéploiements ; changer son secret Web déconnecte les sessions existantes.
 
 :::caution
-Remplacez `changeme` avant toute utilisation hors d'un test local. Placez le
-vrai mot de passe dans un fichier d'environnement protégé ou un coffre à
-secrets, et utilisez HTTPS pour les connexions réseau.
+Remplacez `changeme` avant toute utilisation hors d'un test local. Placez le vrai mot de passe dans un fichier d'environnement protégé ou un coffre à secrets, et utilisez HTTPS pour les connexions réseau.
 :::
 
 </TabItem>
@@ -855,13 +807,7 @@ spec:
 </TabItem>
 <TabItem label="Sans conteneur">
 
-Suivez ces instructions pour exécuter l'API Apprise directement sur un hôte,
-sans Docker. Chaque installation utilise un environnement virtuel Python, le
-gestionnaire de services du système d'exploitation et Nginx. Dans ces exemples,
-Gunicorn n'écoute que sur l'adresse locale et Nginx expose le service en HTTP
-simple sur un réseau local ou de confiance. Pour une installation accessible
-depuis Internet, ajoutez HTTPS et l'authentification comme décrit dans
-**Déploiement derrière un proxy**.
+Suivez ces instructions pour exécuter l'API Apprise directement sur un hôte, sans Docker. Chaque installation utilise un environnement virtuel Python, le gestionnaire de services du système d'exploitation et Nginx. Dans ces exemples, Gunicorn n'écoute que sur l'adresse locale et Nginx expose le service en HTTP simple sur un réseau local ou de confiance. Pour une installation accessible depuis Internet, ajoutez HTTPS et l'authentification comme décrit dans **Déploiement derrière un proxy**.
 
   <Tabs>
 <TabItem label="Ubuntu 24.04">
@@ -955,13 +901,9 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise-scheduler
 ```
 
-`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible et permet au gestionnaire de configurations d'afficher vos clés
-enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
-pour un usage personnel ou une petite équipe.
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier lisible et permet au gestionnaire de configurations d'afficher vos clés enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources pour un usage personnel ou une petite équipe.
 
-**Créez `/etc/nginx/sites-available/appriseapi`** pour servir les fichiers
-statiques et transmettre le reste à Gunicorn :
+**Créez `/etc/nginx/sites-available/appriseapi`** pour servir les fichiers statiques et transmettre le reste à Gunicorn :
 
 ```nginx
 server {
@@ -996,8 +938,7 @@ sudo nginx -t
 sudo systemctl enable --now nginx
 ```
 
-Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API
-Apprise devrait se charger.
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API Apprise devrait se charger.
 
 **Journaux et fichiers**
 
@@ -1018,8 +959,7 @@ sudo systemctl stop apprise
 </TabItem>
 <TabItem label="Rocky Linux / RHEL 10">
 
-Les mêmes étapes fonctionnent sur Red Hat Enterprise Linux 10, Rocky Linux 10,
-et Oracle Linux 10.
+Les mêmes étapes fonctionnent sur Red Hat Enterprise Linux 10, Rocky Linux 10, et Oracle Linux 10.
 
 **Installez les paquets requis et démarrez NGINX :**
 
@@ -1117,10 +1057,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now apprise-scheduler
 ```
 
-`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible et permet au gestionnaire de configurations d'afficher vos clés
-enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
-pour un usage personnel ou une petite équipe.
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier lisible et permet au gestionnaire de configurations d'afficher vos clés enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources pour un usage personnel ou une petite équipe.
 
 **Copiez les fichiers statiques dans l'arborescence web de Nginx :**
 
@@ -1130,14 +1067,11 @@ sudo cp -R /opt/apprise-api/apprise_api/static/. \
   /usr/share/nginx/html/apprise/
 ```
 
-Ces fichiers restent ainsi sous `/usr/share/nginx/html`, où la politique SELinux
-standard autorise Nginx à les servir sans modifier le contexte de sécurité du
-code source de l'application.
+Ces fichiers restent ainsi sous `/usr/share/nginx/html`, où la politique SELinux standard autorise Nginx à les servir sans modifier le contexte de sécurité du code source de l'application.
 
 **Créez `/etc/nginx/default.d/apprise.conf` :**
 
-La configuration Nginx fournie par Rocky charge ce fichier dans son bloc
-serveur par défaut. L'adresse IP du serveur fonctionne donc sans nom de domaine.
+La configuration Nginx fournie par Rocky charge ce fichier dans son bloc serveur par défaut. L'adresse IP du serveur fonctionne donc sans nom de domaine.
 
 ```nginx
 client_max_body_size 500M;
@@ -1158,8 +1092,7 @@ location / {
 }
 ```
 
-**Laissez NGINX joindre Gunicorn.** SELinux bloque par défaut ses connexions
-vers les autres ports locaux :
+**Laissez NGINX joindre Gunicorn.** SELinux bloque par défaut ses connexions vers les autres ports locaux :
 
 ```bash
 sudo setsebool -P httpd_can_network_connect 1
@@ -1172,8 +1105,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API
-Apprise devrait se charger.
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API Apprise devrait se charger.
 
 **Journaux et fichiers**
 
@@ -1194,10 +1126,7 @@ sudo systemctl stop apprise
 </TabItem>
 <TabItem label="FreeBSD">
 
-FreeBSD n'a pas systemd ; cette méthode utilise donc son propre gestionnaire
-de services `rc.d`. Les commandes supposent que `sudo` est installé et que
-votre compte est autorisé à l'utiliser. Sinon, ouvrez une session superutilisateur
-avec `su -` et omettez `sudo` dans chaque commande.
+FreeBSD n'a pas systemd ; cette méthode utilise donc son propre gestionnaire de services `rc.d`. Les commandes supposent que `sudo` est installé et que votre compte est autorisé à l'utiliser. Sinon, ouvrez une session superutilisateur avec `su -` et omettez `sudo` dans chaque commande.
 
 **Installez les paquets requis :**
 
@@ -1208,11 +1137,7 @@ python_version="$(python3 -c \
 sudo pkg install -y "py${python_version}-virtualenv"
 ```
 
-Sous FreeBSD, Python est compilé sans `ensurepip`. Le paquet `virtualenv`
-correspondant à la version de Python est donc nécessaire pour créer un
-environnement qui contient Pip. Rust et `pkgconf` permettent à Pip de compiler
-des dépendances telles que `cryptography`, pour lesquelles aucun paquet binaire
-Python n'est nécessairement disponible sous FreeBSD.
+Sous FreeBSD, Python est compilé sans `ensurepip`. Le paquet `virtualenv` correspondant à la version de Python est donc nécessaire pour créer un environnement qui contient Pip. Rust et `pkgconf` permettent à Pip de compiler des dépendances telles que `cryptography`, pour lesquelles aucun paquet binaire Python n'est nécessairement disponible sous FreeBSD.
 
 **Clonez l'API Apprise et installez ses dépendances Python :**
 
@@ -1303,15 +1228,9 @@ sudo sysrc apprise_scheduler_enable=YES
 sudo service apprise_scheduler start
 ```
 
-`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier
-lisible et permet au gestionnaire de configurations d'afficher vos clés
-enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources
-pour un usage personnel ou une petite équipe. L'option `-P` enregistre le processus superviseur de
-`daemon` ; `service apprise stop` peut ainsi arrêter le service sans que Gunicorn
-soit aussitôt redémarré.
+`APPRISE_STATEFUL_MODE=simple` enregistre chaque configuration dans un fichier lisible et permet au gestionnaire de configurations d'afficher vos clés enregistrées. Un seul processus Gunicorn limite l'utilisation des ressources pour un usage personnel ou une petite équipe. L'option `-P` enregistre le processus superviseur de `daemon` ; `service apprise stop` peut ainsi arrêter le service sans que Gunicorn soit aussitôt redémarré.
 
-**Remplacez le bloc serveur d'exemple dans la section `http { }` existante** de
-`/usr/local/etc/nginx/nginx.conf` par celui-ci :
+**Remplacez le bloc serveur d'exemple dans la section `http { }` existante** de `/usr/local/etc/nginx/nginx.conf` par celui-ci :
 
 ```nginx
 server {
@@ -1345,8 +1264,7 @@ sudo nginx -t
 sudo service nginx start
 ```
 
-Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API
-Apprise devrait se charger.
+Visitez `http://your-server-ip/` (ou `http://127.0.0.1/` en local). L'API Apprise devrait se charger.
 
 **Journaux et fichiers**
 
@@ -1418,10 +1336,7 @@ Les modes globaux sont toujours prioritaires. Même un administrateur ne peut pa
 
 ## Déploiements Durcis
 
-L'API Apprise permet également de durcir les processus et le système de
-fichiers. Ces mesures protègent le conteneur, mais n'ajoutent ni HTTPS, ni
-authentification, ni routage strict. Pour un serveur public ou multi-tenant,
-combinez-les avec le **Déploiement derrière un proxy** présenté ci-dessus.
+L'API Apprise permet également de durcir les processus et le système de fichiers. Ces mesures protègent le conteneur, mais n'ajoutent ni HTTPS, ni authentification, ni routage strict. Pour un serveur public ou multi-tenant, combinez-les avec le **Déploiement derrière un proxy** présenté ci-dessus.
 
 Exemple de configuration conteneur durci :
 
@@ -1498,9 +1413,7 @@ Cet endpoint convient pour :
 
 Si l'API Apprise est hébergée derrière un proxy inverse ou servie sous un sous-chemin, définissez `APPRISE_BASE_URL` en conséquence.
 
-Pour un exemple complet de proxy HTTPS avec un accès au conteneur limité à
-l'adresse locale, consultez **Démarrage Rapide -> Docker + Nginx externe**
-ci-dessus.
+Pour un exemple complet de proxy HTTPS avec un accès au conteneur limité à l'adresse locale, consultez **Démarrage Rapide -> Docker + Nginx externe** ci-dessus.
 
 Exemple :
 
@@ -1536,11 +1449,7 @@ Les pages Web utilisent une connexion signée afin que **Déconnexion** puisse f
 
 Les clients avec état peuvent conserver des chemins comme `/notify/{KEY}`. Les points de terminaison compatibles acceptent aussi `X-Apprise-Config-ID`, ce qui garde la clé hors de l'URL.
 
-Les configurations Nginx fournies exposent explicitement `GET /qr`,
-`/qr/{KEY}` et `/qr/@` pour configurer Apprise Mobile. Elles refusent les autres
-méthodes, ignorent le corps de la requête, désactivent la mise en tampon du proxy
-et marquent les réponses `no-store`. Le mode strict leur applique aussi la
-limite de débit réservée aux routes protégées.
+Les configurations Nginx fournies exposent explicitement `GET /qr`, `/qr/{KEY}` et `/qr/@` pour configurer Apprise Mobile. Elles refusent les autres méthodes, ignorent le corps de la requête, désactivent la mise en tampon du proxy et marquent les réponses `no-store`. Le mode strict leur applique aussi la limite de débit réservée aux routes protégées.
 
 Le plugin `apprise://` de la CLI Apprise envoie cet en-tête avec sa version 2, utilisée par défaut. Utilisez `?v=1` uniquement avec un ancien serveur qui exige `/notify/{KEY}`.
 
@@ -1567,14 +1476,7 @@ Pour définir l'accès, ouvrez une configuration et sélectionnez son cadenas ou
 
 L'ID de configuration et les identifiants sont des valeurs distinctes. Transmettez l'ID et les identifiants configurés à l'utilisateur. Le nom d'utilisateur est facultatif et le mot de passe enregistré n'est plus affiché.
 
-Les clients API gèrent l'accès avec `POST /auth/{KEY}`. Le champ `access`
-accepte `user`, `locked`, `public` ou `disabled`. Un nouvel enregistrement
-utilise `user` par défaut, ou `locked` lorsque `APPRISE_CONFIG_LOCK=yes`. Un
-accès `user` enregistré se comporte alors comme `locked` sans être réécrit.
-L'accès `public` reste public, car il masque déjà le contenu de la
-configuration. Un utilisateur de configuration peut changer uniquement son
-mot de passe et doit répéter son nom d'utilisateur. Consultez les
-[Points de terminaison de l'API](../endpoints/).
+Les clients API gèrent l'accès avec `POST /auth/{KEY}`. Le champ `access` accepte `user`, `locked`, `public` ou `disabled`. Un nouvel enregistrement utilise `user` par défaut, ou `locked` lorsque `APPRISE_CONFIG_LOCK=yes`. Un accès `user` enregistré se comporte alors comme `locked` sans être réécrit. L'accès `public` reste public, car il masque déjà le contenu de la configuration. Un utilisateur de configuration peut changer uniquement son mot de passe et doit répéter son nom d'utilisateur. Consultez les [Points de terminaison de l'API](../endpoints/).
 
 Les verrous par clé sont ignorés lorsque `APPRISE_AUTH_REQUIRED` est désactivé, ce qui rétablit le fonctionnement ouvert d'origine. Leurs fichiers sont conservés et redeviennent actifs lorsque l'authentification est activée.
 
@@ -1596,8 +1498,7 @@ Pour une défense en profondeur, vous pouvez ajouter des protections en dehors d
 - ajouter une authentification au niveau du proxy ou de l'ingress ;
 - restreindre l'accès avec un pare-feu ou une politique réseau.
 
-Des fichiers de surcharge Nginx peuvent également être montés dans le conteneur
-pour répondre à des besoins particuliers de contrôle d'accès.
+Des fichiers de surcharge Nginx peuvent également être montés dans le conteneur pour répondre à des besoins particuliers de contrôle d'accès.
 
 Un exemple Kubernetes utilisant un `Secret` (basic auth `.htpasswd`) et une `ConfigMap` (nginx `location-override.conf`) est disponible dans **Démarrage Rapide -> Kubernetes -> Exemple Complet**.
 
@@ -1639,8 +1540,7 @@ Avec `docker run`, ajoutez `--stop-timeout 75`. Sur Kubernetes, définissez `ter
 - Tous les logs sont émis vers stdout et stderr
 - Aucun fichier log n'est écrit sur disque
 - Des métriques Prometheus sont disponibles sur `/metrics`
-- Les appels réussis à `/status`, `/metrics`, au favicon et à `robots.txt` sont
-  omis des journaux d'accès ; les échecs et limitations restent visibles
+- Les appels réussis à `/status`, `/metrics`, au favicon et à `robots.txt` sont omis des journaux d'accès ; les échecs et limitations restent visibles
 
 ## Déploiements de Développement
 

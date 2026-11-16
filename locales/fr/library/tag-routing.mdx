@@ -20,12 +20,7 @@ Chaque tag dans un fichier de configuration peut porter un préfixe numérique d
 Les numéros inférieurs signifient une **urgence plus haute** -- ils sont traités en premier.
 
 :::note
-Le numéro de priorité est **uniquement un marqueur de regroupement et d'ordre de tri**.
-Les services qui partagent le même nom de tag et le même numéro de priorité sont
-dispatchés ensemble comme un seul groupe. Les groupes s'exécutent dans l'ordre numérique
-croissant (le numéro le plus bas en premier). Les valeurs choisies n'ont pas d'importance
-en elles-mêmes -- `2`, `50` et `9999` sont aussi valides que `1`, `2` et `3`.
-Seul leur ordre relatif compte.
+Le numéro de priorité est **uniquement un marqueur de regroupement et d'ordre de tri**. Les services qui partagent le même nom de tag et le même numéro de priorité sont dispatchés ensemble comme un seul groupe. Les groupes s'exécutent dans l'ordre numérique croissant (le numéro le plus bas en premier). Les valeurs choisies n'ont pas d'importance en elles-mêmes -- `2`, `50` et `9999` sont aussi valides que `1`, `2` et `3`. Seul leur ordre relatif compte.
 :::
 
 <Tabs syncKey="config-format">
@@ -142,11 +137,7 @@ Lorsque `notify(tag="abc")` est appelé avec la configuration ci-dessus :
 2. Si **les deux** réussissent, `True` est retourné -- Telegram n'est jamais contacté.
 3. Si **l'un ou l'autre** échoue, Apprise escalade vers le groupe de priorité 1 (Telegram).
 
-Les tags sans préfixe ayant par défaut la priorité **0**, les définitions `abc` et `0:abc` sont
-entièrement équivalentes dans une configuration de service. Toutes deux placent le service dans le
-groupe de priorité 0, et un filtre `"abc"` comme un filtre `"0:abc"` correspondent aux services
-définis avec l'une ou l'autre forme. Si les deux formes figurent dans le même fichier de
-configuration, ces services seront toujours distribués ensemble comme un groupe unique.
+Les tags sans préfixe ayant par défaut la priorité **0**, les définitions `abc` et `0:abc` sont entièrement équivalentes dans une configuration de service. Toutes deux placent le service dans le groupe de priorité 0, et un filtre `"abc"` comme un filtre `"0:abc"` correspondent aux services définis avec l'une ou l'autre forme. Si les deux formes figurent dans le même fichier de configuration, ces services seront toujours distribués ensemble comme un groupe unique.
 
 ### Mode Exclusif
 
@@ -170,11 +161,7 @@ apprise --config=config.yml --tag="2:alerts" --body="Fenêtre de maintenance pla
 | `"0:alerts"`     | Exclusif -- uniquement les entrées de priorité 0 (`alerts` et `0:alerts` sont identiques) |
 
 :::note
-Si aucun service ne correspond à la priorité exacte spécifiée, **rien n'est envoyé**. Le résultat
-retourné par `notify()` est considéré comme faux (son `status` vaut `NOMATCH` -- voir
-[Résultats de notification](/library/results/)), et la CLI se termine avec le code `3` (aucun
-service correspondant trouvé). C'est intentionnel -- un filtre exclusif est une sélection précise,
-pas une demande de secours.
+Si aucun service ne correspond à la priorité exacte spécifiée, **rien n'est envoyé**. Le résultat retourné par `notify()` est considéré comme faux (son `status` vaut `NOMATCH` -- voir [Résultats de notification](/library/results/)), et la CLI se termine avec le code `3` (aucun service correspondant trouvé). C'est intentionnel -- un filtre exclusif est une sélection précise, pas une demande de secours.
 :::
 
 ### Comportement en Cas d'Échec de Chaîne
@@ -255,8 +242,7 @@ urls:
 </Tabs>
 
 :::note
-`wait` n'a de sens que lorsque `retry` est supérieur à zéro. Un service avec `retry=0`
-effectue exactement une tentative quelle que soit la valeur de `wait`.
+`wait` n'a de sens que lorsque `retry` est supérieur à zéro. Un service avec `retry=0` effectue exactement une tentative quelle que soit la valeur de `wait`.
 :::
 
 ### Valeurs Acceptées
@@ -272,13 +258,9 @@ Les valeurs invalides (nombres négatifs, chaînes non numériques, `inf`, `nan`
 
 ## Délais par Service
 
-Chaque service dispose d'un budget de temps -- s'il (avec toutes ses tentatives et pauses)
-n'a pas terminé dans ce délai, Apprise cesse d'attendre plutôt que de rester bloqué
-indéfiniment. Ceci est indépendant de `retry`/`wait` ci-dessus : un service peut avoir
-droit à de nombreuses tentatives tout en étant coupé si l'ensemble prend trop de temps.
+Chaque service dispose d'un budget de temps -- s'il (avec toutes ses tentatives et pauses) n'a pas terminé dans ce délai, Apprise cesse d'attendre plutôt que de rester bloqué indéfiniment. Ceci est indépendant de `retry`/`wait` ci-dessus : un service peut avoir droit à de nombreuses tentatives tout en étant coupé si l'ensemble prend trop de temps.
 
-Par défaut, chaque service dispose de **60 secondes**. Définissez votre propre valeur avec
-`service_timeout` sur `AppriseAsset`, ou désactivez complètement la limite avec `0` :
+Par défaut, chaque service dispose de **60 secondes**. Définissez votre propre valeur avec `service_timeout` sur `AppriseAsset`, ou désactivez complètement la limite avec `0` :
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -297,26 +279,14 @@ apprise --service-limit 10 --body "Vérification rapide" \
     "slack://tokenA/tokenB/tokenC"
 ```
 
-Un service qui dépasse son délai est signalé avec un statut `TIMEOUT` plutôt qu'un
-simple échec -- voir [Résultats de notification](/library/results/) pour savoir comment
-vérifier cela depuis Python.
+Un service qui dépasse son délai est signalé avec un statut `TIMEOUT` plutôt qu'un simple échec -- voir [Résultats de notification](/library/results/) pour savoir comment vérifier cela depuis Python.
 
 :::caution
-Apprise peut arrêter _d'attendre_ un service quand son budget de temps est dépassé,
-mais il ne peut pas couper de force un appel déjà en cours. Si une requête réseau est
-bloquée, Python ne peut pas simplement l'interrompre au milieu.
+Apprise peut arrêter _d'attendre_ un service quand son budget de temps est dépassé, mais il ne peut pas couper de force un appel déjà en cours. Si une requête réseau est bloquée, Python ne peut pas simplement l'interrompre au milieu.
 
-En pratique, le service concerné peut donc continuer en arrière-plan après qu'Apprise
-a signalé `TIMEOUT` et est passé à la suite. Avec un seul service synchrone lancé tout
-seul, il peut même finir après son délai, car il n'y avait aucun autre travail où
-Apprise pouvait vérifier la limite entre deux étapes. Pensez à `service_timeout` et
-`timeout=` comme une promesse "Apprise ne restera pas à attendre plus longtemps que
-ça", pas comme un bouton d'arrêt forcé du service lui-même.
+En pratique, le service concerné peut donc continuer en arrière-plan après qu'Apprise a signalé `TIMEOUT` et est passé à la suite. Avec un seul service synchrone lancé tout seul, il peut même finir après son délai, car il n'y avait aucun autre travail où Apprise pouvait vérifier la limite entre deux étapes. Pensez à `service_timeout` et `timeout=` comme une promesse "Apprise ne restera pas à attendre plus longtemps que ça", pas comme un bouton d'arrêt forcé du service lui-même.
 
-Les téléchargements de pièces jointes web font exception : un fichier encore en
-cours de réception après `service_timeout` est interrompu, même si le serveur continue
-d'envoyer des données lentement. Voir
-[Pièces jointes](/library/attachments/#délais-dattente).
+Les téléchargements de pièces jointes web font exception : un fichier encore en cours de réception après `service_timeout` est interrompu, même si le serveur continue d'envoyer des données lentement. Voir [Pièces jointes](/library/attachments/#délais-dattente).
 :::
 
 | Paramètre         | Type            | Contraintes                           | Par défaut |
@@ -327,14 +297,9 @@ d'envoyer des données lentement. Voir
 
 ## Services Optionnels
 
-Le paramètre `optional` indique qu'un service peut échouer sans faire échouer toute
-la notification. Lorsque `optional=yes` est activé sur un service, un échec de
-livraison pour ce service n'affecte pas le résultat global. Le résultat global est
-quand même considéré comme vrai si tous les services requis ont réussi.
+Le paramètre `optional` indique qu'un service peut échouer sans faire échouer toute la notification. Lorsque `optional=yes` est activé sur un service, un échec de livraison pour ce service n'affecte pas le résultat global. Le résultat global est quand même considéré comme vrai si tous les services requis ont réussi.
 
-Utilisez ce paramètre pour les points de terminaison qui doivent recevoir la
-notification quand ils sont disponibles, sans faire échouer l'application appelante
-quand ils ne le sont pas.
+Utilisez ce paramètre pour les points de terminaison qui doivent recevoir la notification quand ils sont disponibles, sans faire échouer l'application appelante quand ils ne le sont pas.
 
 ### Exemple : Écrans d'Affichage Domestiques
 
@@ -411,9 +376,7 @@ Le paramètre est par service. Vous pouvez librement mélanger des services opti
 | Mélange requis/optionnels ; au moins un requis échoue              | Faux (`FAILURE`) |
 | Mélange requis/optionnels ; délai dépassé sur les requis seulement | Faux (`TIMEOUT`) |
 
-En résumé : les échecs et dépassements de délai des services optionnels ne font
-pas échouer le résultat global. Seul l'échec ou le dépassement de délai d'un
-service requis peut rendre le résultat faux.
+En résumé : les échecs et dépassements de délai des services optionnels ne font pas échouer le résultat global. Seul l'échec ou le dépassement de délai d'un service requis peut rendre le résultat faux.
 
 ### Interaction entre `optional` et les Tentatives
 
@@ -590,10 +553,7 @@ Le suffixe `:N` suit les mêmes règles de validation que le paramètre URL `ret
 
 ## Remplacement du Délai par Appel
 
-Passez `timeout=` à `notify()` pour limiter la durée de **cet appel précis**, du début à
-la fin -- pour tous les services qu'il notifie. Contrairement à `service_timeout` (un
-budget par service défini sur `AppriseAsset`), `timeout` est un plafond pour l'appel
-entier.
+Passez `timeout=` à `notify()` pour limiter la durée de **cet appel précis**, du début à la fin -- pour tous les services qu'il notifie. Contrairement à `service_timeout` (un budget par service défini sur `AppriseAsset`), `timeout` est un plafond pour l'appel entier.
 
 ```python
 # Limite cet appel entier à 30 secondes, quel que soit le service_timeout
@@ -607,9 +567,7 @@ apprise --limit 30 --body "Alerte urgente" \
     "slack://tokenA/tokenB/tokenC"
 ```
 
-Lorsque les deux sont définis, **le délai le plus court l'emporte** pour chaque service --
-`timeout=` ne prolonge jamais un `service_timeout` plus strict, et un `service_timeout`
-généreux ne remplace jamais un `timeout=` plus serré.
+Lorsque les deux sont définis, **le délai le plus court l'emporte** pour chaque service -- `timeout=` ne prolonge jamais un `service_timeout` plus strict, et un `service_timeout` généreux ne remplace jamais un `timeout=` plus serré.
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -623,25 +581,18 @@ apobj.add("slack://tokenA/tokenB/tokenC")
 apobj.notify(body="Abandonner rapidement cette fois", timeout=5)
 ```
 
-`timeout` vaut `0` par défaut, ce qui signifie "aucun plafond au niveau de l'appel" --
-seul le `service_timeout` de `AppriseAsset` s'applique. Les valeurs négatives déclenchent
-une erreur, tout comme un `service_timeout` invalide.
+`timeout` vaut `0` par défaut, ce qui signifie "aucun plafond au niveau de l'appel" -- seul le `service_timeout` de `AppriseAsset` s'applique. Les valeurs négatives déclenchent une erreur, tout comme un `service_timeout` invalide.
 
 ### Filtres OR et AND Multi-Tags
 
-Apprise supporte deux façons de combiner des noms de tags dans un seul appel
-à notify.
+Apprise supporte deux façons de combiner des noms de tags dans un seul appel à notify.
 
 | Motif                                                             | Signification                                                       | Exemple                                                                            |
 | :---------------------------------------------------------------- | :------------------------------------------------------------------ | :--------------------------------------------------------------------------------- |
 | **OR** -- plusieurs valeurs de tag séparées                       | Correspond aux services portant **l'un ou l'autre** des tags listés | Plusieurs indicateurs `--tag` dans la CLI ; une liste de chaînes de tags en Python |
 | **AND** -- plusieurs noms de tags dans une seule entrée de filtre | Correspond uniquement aux services portant **tous** les tags listés | Un seul `--tag "a, b"` dans la CLI ; une liste imbriquée en Python                 |
 
-Avec **OR**, chaque nom de tag forme une **chaîne d'escalade indépendante**.
-Toutes les chaînes doivent trouver un groupe de priorité entièrement réussi
-avant que le résultat soit considéré comme vrai. Un suffixe `:N` sur un token ne
-s'applique qu'aux services correspondant à ce token ; les autres ne sont pas
-affectés.
+Avec **OR**, chaque nom de tag forme une **chaîne d'escalade indépendante**. Toutes les chaînes doivent trouver un groupe de priorité entièrement réussi avant que le résultat soit considéré comme vrai. Un suffixe `:N` sur un token ne s'applique qu'aux services correspondant à ce token ; les autres ne sont pas affectés.
 
 ```python
 # OR -- les services devops obtiennent retry=3 ; management obtient retry=2.
@@ -657,13 +608,9 @@ apprise --config=config.yml \
         --body="Alerte équipe"
 ```
 
-Si tous les services `devops` réussissent dans leur groupe de priorité le plus
-bas, Apprise envoie quand même la chaîne `management` -- les deux chaînes sont
-indépendantes l'une de l'autre.
+Si tous les services `devops` réussissent dans leur groupe de priorité le plus bas, Apprise envoie quand même la chaîne `management` -- les deux chaînes sont indépendantes l'une de l'autre.
 
-Avec **AND**, les services doivent porter tous les tags du groupe pour être
-sélectionnés. Les services correspondant à un filtre AND partagent une seule
-chaîne d'escalade.
+Avec **AND**, les services doivent porter tous les tags du groupe pour être sélectionnés. Les services correspondant à un filtre AND partagent une seule chaîne d'escalade.
 
 ```python
 # AND -- le service doit porter "devops" ET "management" pour correspondre.
@@ -777,16 +724,13 @@ apprise --config=config.yml --tag="5:alerts" \
 Les exemples ci-dessous illustrent des schémas de notification courants.
 
 :::note
-Les numéros de priorité sont des **marqueurs d'ordre relatif**, pas des valeurs fixes.
-Un service à la priorité `2` sera toujours envoyé avant un service à la priorité `500`
-pour le même tag -- les valeurs exactes n'ont pas d'importance, seul leur ordre compte.
+Les numéros de priorité sont des **marqueurs d'ordre relatif**, pas des valeurs fixes. Un service à la priorité `2` sera toujours envoyé avant un service à la priorité `500` pour le même tag -- les valeurs exactes n'ont pas d'importance, seul leur ordre compte.
 :::
 
 <Tabs>
 <TabItem label="Exemple 1">
 
-**Tag unique avec deux niveaux d'escalade** -- les valeurs `2` et `50` montrent que les
-numéros sont arbitraires ; seul l'ordre importe.
+**Tag unique avec deux niveaux d'escalade** -- les valeurs `2` et `50` montrent que les numéros sont arbitraires ; seul l'ordre importe.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -828,12 +772,7 @@ apprise --config=config.yml --tag="alertes" --body="Alerte"
 
 <TabItem label="Exemple 2">
 
-**Trois chaînes OR avec plusieurs niveaux de priorité** -- `alpha`, `beta` et `gamma`
-sont des chaînes indépendantes dispatchées simultanément. Au sein de chaque chaîne,
-les groupes de priorité inférieure s'exécutent en premier ; les échecs escaladent au
-niveau suivant. Par défaut, chaque chaîne s'exécute jusqu'à son terme même après qu'une
-autre chaîne a déjà épuisé tous ses niveaux sans succès -- voir « Comportement en cas
-d'échec de chaîne » plus haut pour changer cela.
+**Trois chaînes OR avec plusieurs niveaux de priorité** -- `alpha`, `beta` et `gamma` sont des chaînes indépendantes dispatchées simultanément. Au sein de chaque chaîne, les groupes de priorité inférieure s'exécutent en premier ; les échecs escaladent au niveau suivant. Par défaut, chaque chaîne s'exécute jusqu'à son terme même après qu'une autre chaîne a déjà épuisé tous ses niveaux sans succès -- voir « Comportement en cas d'échec de chaîne » plus haut pour changer cela.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -907,9 +846,7 @@ apprise --config=config.yml \
 
 <TabItem label="Exemple 3">
 
-**Deux chaînes OR indépendantes avec surcharge de tentatives par appel** -- chaque
-token porte son propre suffixe `:N` : les services `devops` obtiennent trois tentatives
-et les services `direction` en obtiennent deux.
+**Deux chaînes OR indépendantes avec surcharge de tentatives par appel** -- chaque token porte son propre suffixe `:N` : les services `devops` obtiennent trois tentatives et les services `direction` en obtiennent deux.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">
@@ -998,9 +935,7 @@ apprise --config=config.yml --tag="devops, direction" --body="Alerte combinée"
 
 <TabItem label="Exemple 5">
 
-**Dispatch exclusif** -- un préfixe de priorité dans le filtre cible uniquement ce
-niveau exact. Aucune chaîne d'escalade n'est construite ; les services correspon-
-dants sont dispatchés en un seul lot plat.
+**Dispatch exclusif** -- un préfixe de priorité dans le filtre cible uniquement ce niveau exact. Aucune chaîne d'escalade n'est construite ; les services correspon- dants sont dispatchés en un seul lot plat.
 
 <Tabs syncKey="config-format">
 <TabItem label="TEXT">

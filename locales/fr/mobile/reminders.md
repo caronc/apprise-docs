@@ -31,7 +31,7 @@ L'Agenda regroupe les rappels de tous vos serveurs. Les rappels en pause apparai
 
 Une fois téléchargés, les rappels sont gardés sur votre téléphone : l'écran s'ouvre tout de suite et les affiche même hors connexion. Ils sont téléchargés de nouveau au même rythme que les listes du tableau de bord (**Actualiser les listes de services** dans les Réglages), et après une modification faite dans l'application. Faites glisser l'une ou l'autre vue vers le bas pour les télécharger de nouveau maintenant.
 
-Faites glisser un rappel vers la **droite** pour l'envoyer maintenant, sans changer son prochain envoi. Une notice indique tout de suite l'envoi, puis son résultat ; le faire glisser de nouveau avant la fin ne l'envoie pas deux fois. Faites-le glisser vers la **gauche** pour le suspendre, ou reprendre un rappel suspendu.
+Faites glisser un rappel vers la **droite** pour l'envoyer maintenant, sans changer son prochain envoi. Un message indique tout de suite l'envoi, puis son résultat ; le faire glisser de nouveau avant la fin ne l'envoie pas deux fois. Faites-le glisser vers la **gauche** pour le suspendre, ou reprendre un rappel suspendu.
 
 ## Ajouter un Rappel
 

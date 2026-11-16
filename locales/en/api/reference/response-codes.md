@@ -31,14 +31,6 @@ Apprise API uses standard HTTP status codes. Many error responses return a short
 | `503` | Service Unavailable             | The application is temporarily unavailable, or all live-stream slots are busy. When the slots are busy, the response includes `Retry-After: 15`.                                                                                                                                       |
 | `504` | Gateway Timeout                 | The application worker did not respond before the proxy timeout.                                                                                                                                                                                                                       |
 
-:::note
-Some error cases are endpoint-specific and may return either `text/plain` or JSON depending on `Accept`.
-:::
-
-:::note
 Successful health and metrics probes are omitted from the packaged nginx access log. Their failures, including `417` and `429`, remain logged so monitoring and abuse detection still work.
-:::
 
-:::note
 A [live progress stream](/api/usage/#live-progress-streaming) starts with HTTP `200`. Check its final `result` status instead of expecting a later HTTP `424`.
-:::

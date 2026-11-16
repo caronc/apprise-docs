@@ -127,19 +127,19 @@ Findings
   - No scheduler was running, so no reminder was being sent.
 ```
 
-| Finding                                                      | What to do                                                                                                                                           |
-| :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No scheduler was running                                     | Start the scheduler. The container runs one; elsewhere, run `python manage.py scheduler` beside the web server (see [Deployment](/api/deployment/)). |
-| The server's clock ... does not match its timezone               | The process reads a different timezone than `TZ` names. Check how `TZ` is set for every process, including the scheduler.                            |
-| It is paused                                                 | Resume it from its card.                                                                                                                             |
-| It was due ... before this was copied                            | It goes out once the scheduler looks again. Past `grace`, it is skipped as late instead.                                                             |
-| It has nothing left to send                                  | Its `count` was reached, its `until` passed, or a one-off was sent. Edit it to give it more times.                                                   |
-| Its configuration is disabled                                | Change the configuration's access. Its reminders carry on from there.                                                                                |
-| It sends through a configuration, but none is saved          | Save a configuration under the Config ID, or send the reminder to its own URLs.                                                                      |
-| The server no longer allows URLs in reminders | The administrator turned them off. Send through the configuration instead. |
-| Attachments are turned off on the server | The administrator turned them off. Remove the attachments. |
-| Its configuration went unused                                | Use the Config ID, then resume its reminders, or raise `APPRISE_REMINDER_IDLE_DAYS`.                                                                 |
-| Times or versions differ                                     | The two machines work out times differently. Compare the versions, and update the older one.                                                         |
+| Finding                                             | What to do                                                                                                                                           |
+| :-------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No scheduler was running                            | Start the scheduler. The container runs one; elsewhere, run `python manage.py scheduler` beside the web server (see [Deployment](/api/deployment/)). |
+| The server's clock ... does not match its timezone  | The process reads a different timezone than `TZ` names. Check how `TZ` is set for every process, including the scheduler.                            |
+| It is paused                                        | Resume it from its card.                                                                                                                             |
+| It was due ... before this was copied               | It goes out once the scheduler looks again. Past `grace`, it is skipped as late instead.                                                             |
+| It has nothing left to send                         | Its `count` was reached, its `until` passed, or a one-off was sent. Edit it to give it more times.                                                   |
+| Its configuration is disabled                       | Change the configuration's access. Its reminders carry on from there.                                                                                |
+| It sends through a configuration, but none is saved | Save a configuration under the Config ID, or send the reminder to its own URLs.                                                                      |
+| The server no longer allows URLs in reminders       | The administrator turned them off. Send through the configuration instead.                                                                           |
+| Attachments are turned off on the server            | The administrator turned them off. Remove the attachments.                                                                                           |
+| Its configuration went unused                       | Use the Config ID, then resume its reminders, or raise `APPRISE_REMINDER_IDLE_DAYS`.                                                                 |
+| Times or versions differ                            | The two machines work out times differently. Compare the versions, and update the older one.                                                         |
 
 ## Server Log
 

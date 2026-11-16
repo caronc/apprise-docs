@@ -129,19 +129,19 @@ Findings
 
 Le rapport est en anglais. Ses constats, et que faire :
 
-| Constat (en anglais)                                         | Que faire                                                                                                                                                         |
-| :----------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No scheduler was running                                     | Démarrez le scheduler. Le conteneur en exécute un ; ailleurs, exécutez `python manage.py scheduler` à côté du serveur web (voir [Déploiement](/api/deployment/)). |
-| The server's clock ... does not match its timezone           | Le processus lit un autre fuseau horaire que celui nommé par `TZ`. Vérifiez comment `TZ` est défini pour chaque processus, y compris le scheduler.                |
-| It is paused                                                 | Reprenez-le depuis sa carte.                                                                                                                                      |
-| It was due ... before this was copied                        | Il part dès que le scheduler regarde à nouveau. Au-delà de `grace`, il est ignoré pour retard.                                                                    |
-| It has nothing left to send                                  | Son `count` a été atteint, son `until` est passé, ou un envoi unique a été fait. Modifiez-le pour lui donner d'autres échéances.                                  |
-| Its configuration is disabled                                | Changez l'accès de la configuration. Ses rappels reprennent à partir de là.                                                                                       |
-| It sends through a configuration, but none is saved          | Enregistrez une configuration sous le Config ID, ou envoyez le rappel à ses propres URL.                                                                          |
-| The server no longer allows URLs in reminders | L'administrateur les a désactivées. Envoyez plutôt par la configuration. |
-| Attachments are turned off on the server | L'administrateur les a désactivées. Retirez les pièces jointes. |
-| Its configuration went unused                                | Utilisez le Config ID, puis reprenez ses rappels, ou augmentez `APPRISE_REMINDER_IDLE_DAYS`.                                                                      |
-| Times or versions differ                                     | Les deux machines calculent les heures différemment. Comparez les versions et mettez à jour la plus ancienne.                                                     |
+| Constat (en anglais)                                | Que faire                                                                                                                                                         |
+| :-------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No scheduler was running                            | Démarrez le scheduler. Le conteneur en exécute un ; ailleurs, exécutez `python manage.py scheduler` à côté du serveur web (voir [Déploiement](/api/deployment/)). |
+| The server's clock ... does not match its timezone  | Le processus lit un autre fuseau horaire que celui nommé par `TZ`. Vérifiez comment `TZ` est défini pour chaque processus, y compris le scheduler.                |
+| It is paused                                        | Reprenez-le depuis sa carte.                                                                                                                                      |
+| It was due ... before this was copied               | Il part dès que le scheduler regarde à nouveau. Au-delà de `grace`, il est ignoré pour retard.                                                                    |
+| It has nothing left to send                         | Son `count` a été atteint, son `until` est passé, ou un envoi unique a été fait. Modifiez-le pour lui donner d'autres échéances.                                  |
+| Its configuration is disabled                       | Changez l'accès de la configuration. Ses rappels reprennent à partir de là.                                                                                       |
+| It sends through a configuration, but none is saved | Enregistrez une configuration sous le Config ID, ou envoyez le rappel à ses propres URL.                                                                          |
+| The server no longer allows URLs in reminders       | L'administrateur les a désactivées. Envoyez plutôt par la configuration.                                                                                          |
+| Attachments are turned off on the server            | L'administrateur les a désactivées. Retirez les pièces jointes.                                                                                                   |
+| Its configuration went unused                       | Utilisez le Config ID, puis reprenez ses rappels, ou augmentez `APPRISE_REMINDER_IDLE_DAYS`.                                                                      |
+| Times or versions differ                            | Les deux machines calculent les heures différemment. Comparez les versions et mettez à jour la plus ancienne.                                                     |
 
 ## Journal du Serveur
 
