@@ -82,7 +82,7 @@ apobj.notify(body="<b>Hello</b>")
 
 The plugin receives `<b>Hello</b>` unchanged and `body_passthrough=True`. Apprise still applies its normal title and overflow handling.
 
-The CLI does not produce this state. It always provides `body_format=TEXT` unless the caller passes `--input-format` to override it.
+The CLI does not produce this state. It uses `--input-format` when given, otherwise the `body_format` from the `asset:` section of a loaded YAML configuration, and falls back to `body_format=TEXT`.
 
 ## Choosing the Plugin Format
 

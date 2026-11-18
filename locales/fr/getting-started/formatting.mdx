@@ -57,7 +57,7 @@ Si vous ne précisez **pas** de format, Apprise suppose des états légèrement 
 
 | Interface                    | Format d'entrée par défaut                                                                                                                |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                                    |
+| [CLI](../../cli/)            | `text` - sauf si une configuration YAML définit `body_format` sous `asset:`                                                               |
 | [Python API](../../library/) | `none` - aucune conversion automatique sauf si `body_format` est fourni dans `notify()` ou défini dans `AppriseAsset()`                   |
 | [Apprise-API](../../api/)    | `none` - aucune conversion automatique sauf si la requête fournit `format`, ou si l'opérateur du serveur définit `APPRISE_DEFAULT_FORMAT` |
 
