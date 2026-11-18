@@ -57,7 +57,7 @@ If you do **not** specify a format, Apprise assumes slightly different states de
 
 | Interface                    | Default input format                                                                                                               |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| [CLI](../../cli/)            | `text`                                                                                                                             |
+| [CLI](../../cli/)            | `text` - unless a YAML configuration sets `body_format` under `asset:`                                                             |
 | [Python API](../../library/) | `none` - no automatic format conversion unless `body_format` is provided in `notify()` or preset in `AppriseAsset()`               |
 | [Apprise-API](../../api/)    | `none` - no automatic format conversion unless the request supplies `format`, or the server operator sets `APPRISE_DEFAULT_FORMAT` |
 

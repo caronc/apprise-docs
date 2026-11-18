@@ -428,6 +428,19 @@ Les chemins de plugins et les réglages de stockage sont également contrôlés
 par l'application afin qu'un fichier de configuration ne puisse ni charger
 du code ni rediriger le stockage persistant.
 
+`image_path_mask` et `secure_logging` sont aussi contrôlés par l'application.
+Une configuration peut être récupérée depuis un autre serveur ou écrite par un
+autre utilisateur, elle ne peut donc ni diriger Apprise vers des fichiers
+locaux ni désactiver le masquage dans les journaux. Les entrées YAML pour ces
+deux clés sont ignorées avec un avertissement.
+
+Un réglage peut aussi vérifier sa valeur avec une méthode statique
+`clean_<clé>()` sur `AppriseAsset`. Elle renvoie la valeur à conserver, ou
+lève `AppriseInvalidData` avec la raison. Le chargeur YAML journalise cette
+raison et ignore la clé, et le constructeur lève
+`AppriseImproperlyConfigured`. `theme` doit être un seul nom de dossier et
+`default_extension` ne peut pas contenir `/` ni `\`.
+
 `timezone` est pris en charge dans YAML et peut aussi utiliser l'alias `tz` :
 
 ```yaml
@@ -440,6 +453,18 @@ asset:
 ```yaml
 asset:
   language: fr # ou : lang: fr
+```
+
+`body_format` est pris en charge dans YAML uniquement comme valeur par défaut.
+Il s'applique lorsque l'asset n'a pas encore de `body_format`, donc une valeur
+passée à `AppriseAsset(body_format=...)` l'emporte toujours. `notify()` lit le
+format depuis l'asset de l'objet `Apprise` lui-même, il faut donc passer ce
+même asset à `AppriseConfig(asset=...)` pour que la valeur YAML soit prise en
+compte :
+
+```yaml
+asset:
+  body_format: markdown
 ```
 
 ## Voir Aussi

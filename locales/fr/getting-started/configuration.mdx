@@ -406,7 +406,9 @@ Les clés d'asset suivent quelques règles :
 
 - les clés qui commencent par `_` ou se terminent par `_` sont ignorées ;
 - seules les clés d'asset déjà existantes, de type chaîne ou booléen, peuvent être définies ;
-- les valeurs doivent être des chaînes ou des booléens ; les chaînes sont converties en booléens lorsque la valeur par défaut sous-jacente est booléenne.
+- les valeurs doivent être des chaînes ou des booléens ; les chaînes sont converties en booléens lorsque la valeur par défaut sous-jacente est booléenne ;
+- `image_path_mask` et `secure_logging` sont ignorées. Une configuration peut provenir d'un autre serveur, elle ne peut donc pas diriger Apprise vers des fichiers de votre ordinateur ni désactiver le masquage des mots de passe dans les journaux ;
+- `theme` doit être un simple nom de dossier et `default_extension` ne peut pas contenir `/` ni `\`. Les autres valeurs sont ignorées avec un avertissement.
 
 Un sous-ensemble pratique de clés couramment utilisées est présenté ci-dessous ; si vous ne remplacez pas une entrée, sa valeur par défaut est conservée.
 
@@ -436,9 +438,6 @@ asset:
   # (par défaut = false)
   interpret_escapes: false
 
-  # les identifiants sont protégés lorsqu'ils sont écrits dans les journaux (par défaut = true)
-  secure_logging: true
-
   # Encodage utilisé lors de la lecture de la configuration sur disque
   encoding: utf-8
 
@@ -454,9 +453,10 @@ asset:
   #   http://github.com/caronc/apprise/tree/master/apprise/assets/themes/default
   image_url_mask: https://example.local/assets/themes/{THEME}/apprise-{TYPE}-{XY}{EXTENSION}
   image_url_logo: https://example.local/assets/themes/{THEME}/apprise-logo.png
-  image_path_mask: /apprise/installation/assets/themes/{THEME}/apprise-{TYPE}-{XY}{EXTENSION}
 
   # Indiquez à Apprise à l'avance quel type de contenu vous allez lui fournir ;
+  # Utilisé seulement si aucun format n'a déjà été choisi (par exemple avec
+  # l'option --input-format du CLI).
   # Les valeurs sont :
   #   - null: (par défaut) transmet le contenu tel quel
   #   - "text": le contenu fourni est au format "text" (valeur par défaut pour le CLI)

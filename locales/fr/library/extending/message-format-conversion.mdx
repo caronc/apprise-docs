@@ -82,7 +82,7 @@ apobj.notify(body="<b>Bonjour</b>")
 
 Le plugin reçoit `<b>Bonjour</b>` sans modification et `body_passthrough=True`. Apprise applique tout de même le traitement normal du titre et du dépassement.
 
-La CLI ne produit pas cet état. Elle fournit toujours `body_format=TEXT` sauf si l'appelant utilise `--input-format` pour le remplacer.
+La CLI ne produit pas cet état. Elle utilise `--input-format` s'il est fourni, sinon le `body_format` de la section `asset:` d'une configuration YAML chargée, et se rabat sur `body_format=TEXT`.
 
 ## Choisir le Format du Plugin
 

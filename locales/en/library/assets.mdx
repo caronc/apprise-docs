@@ -418,6 +418,17 @@ through their named `AppriseAsset(...)` arguments. Plugin paths and storage
 settings are also application-controlled so configuration files cannot load
 code or redirect persistent storage.
 
+`image_path_mask` and `secure_logging` are application-controlled too. A
+configuration may be fetched from another server or written by another user,
+so it can not point Apprise at local files or turn off log redaction. YAML
+entries for either key are ignored with a warning.
+
+A setting can also vet its value with a static `clean_<key>()` method on
+`AppriseAsset`. It returns the value to store, or raises `AppriseInvalidData`
+with the reason. The YAML loader logs that reason and skips the key, and the
+constructor raises `AppriseImproperlyConfigured`. `theme` must be a single
+folder name and `default_extension` can not contain `/` or `\`.
+
 `timezone` is supported in YAML and may also use the `tz` alias:
 
 ```yaml
@@ -430,6 +441,17 @@ asset:
 ```yaml
 asset:
   language: fr # or: lang: fr
+```
+
+`body_format` is supported in YAML as a default only. It applies when the
+asset has no `body_format` yet, so a value given to
+`AppriseAsset(body_format=...)` always wins. `notify()` reads the format from
+the `Apprise` object's own asset, so pass that same asset to
+`AppriseConfig(asset=...)` for the YAML value to take effect:
+
+```yaml
+asset:
+  body_format: markdown
 ```
 
 ## See Also
