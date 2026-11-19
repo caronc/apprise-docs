@@ -12,7 +12,7 @@ Lorsqu'un rappel n'est pas envoyé au moment prévu, ses diagnostics montrent ce
 Sélectionnez l'icône d'insecte (**Diagnostics**) sur la carte d'un rappel dans l'onglet **Rappels**, ou sur un envoi passé dans son calendrier. La fenêtre montre exactement ce que **Copier** copiera, et son interrupteur **Masqué** choisit la quantité de détails :
 
 - **Masqué** (activé au départ) masque le nom et le tag du rappel, et ne garde que le schéma de chaque URL et adresse de pièce jointe (par exemple `json://`), pour que leur nombre et leur type restent visibles.
-- Désactivé, le nom, le tag, les URL et les pièces jointes sont affichés en entier, avec les mots de passe et jetons de ses URL toujours masqués.
+- Désactivé, le nom, le tag, les URL et les pièces jointes sont affichés en entier, avec les mots de passe, jetons et autres secrets de ses URL et adresses de pièces jointes toujours masqués.
 
 Dans les deux cas, le titre et le corps du rappel ainsi que le Config ID sont omis. Le texte est copié dans un bloc ` ```json `, pour rester lisible une fois collé dans un ticket GitHub. Les appelants de l'API obtiennent la même chose avec `GET /reminder/{KEY}/{ID}/diagnostics`, en ajoutant `?privacy=yes` pour la version masquée.
 
@@ -36,17 +36,17 @@ Chaque heure est une date et heure ISO 8601 en UTC, par exemple `2026-11-17T14:0
 
 ## Server
 
-| Champ               | Signification                                                                                                                                   |
-| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `time`              | Le moment de la copie, sur l'horloge propre du serveur, avec son décalage. Il correspond aux horodatages du journal du serveur.                 |
-| `tz`                | Le fuseau horaire du serveur (`TZ`). `time` devrait être lu dans ce fuseau ; sinon, `TZ` n'est pas configuré comme prévu.                       |
-| `scheduler_running` | Si un scheduler tournait. Sans lui, aucun rappel n'est envoyé.                                                                                  |
-| `grace`             | `APPRISE_REMINDER_GRACE` : combien de secondes de retard un rappel peut encore être envoyé. Au-delà, il est ignoré.                             |
-| `idle_days`         | `APPRISE_REMINDER_IDLE_DAYS` : une configuration inutilisée pendant ce nombre de jours voit ses rappels mis en pause. `0` désactive ce réglage. |
-| `workers`           | `APPRISE_REMINDER_WORKERS` : combien de rappels sont envoyés en même temps.                                                                     |
-| `urls_allowed`      | Si les rappels peuvent envoyer à leurs propres URL (`APPRISE_REMINDER_URLS_MAX` supérieur à `0`).                                               |
-| `attach_allowed`    | Si les pièces jointes sont activées (`APPRISE_ATTACH_SIZE` supérieur à `0`).                                                                    |
-| `auth_required`     | Si les connexions sont activées (`APPRISE_AUTH_REQUIRED`). L'accès d'une configuration n'affecte ses rappels que lorsqu'elles le sont.          |
+| Champ               | Signification                                                                                                                                          |
+| :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `time`              | Le moment de la copie, sur l'horloge propre du serveur, avec son décalage. Il correspond aux horodatages du journal du serveur.                        |
+| `tz`                | Le fuseau horaire du serveur (`TZ`). `time` devrait être lu dans ce fuseau ; sinon, `TZ` n'est pas configuré comme prévu.                              |
+| `scheduler_running` | Si un scheduler tournait. Sans lui, aucun rappel n'est envoyé.                                                                                         |
+| `grace`             | `APPRISE_REMINDER_GRACE` : combien de secondes de retard un rappel peut encore être envoyé. Au-delà, il est ignoré.                                    |
+| `idle_days`         | `APPRISE_REMINDER_IDLE_DAYS` : une configuration inutilisée pendant ce nombre de jours voit ses rappels mis en pause. `0` désactive ce réglage.        |
+| `workers`           | `APPRISE_REMINDER_WORKERS` : combien de rappels sont envoyés en même temps.                                                                            |
+| `urls_allowed`      | Si les rappels peuvent envoyer à leurs propres URL (`APPRISE_REMINDER_URLS_MAX` supérieur à `0`).                                                      |
+| `attach_allowed`    | Si les pièces jointes sont activées (`APPRISE_ATTACH_SIZE` supérieur à `0`).                                                                           |
+| `auth_required`     | Si les connexions sont activées (`APPRISE_AUTH_REQUIRED`). L'accès d'une configuration n'affecte ses rappels que lorsque les connexions sont activées. |
 
 ## Config
 
@@ -88,7 +88,7 @@ Deux machines aux versions différentes peuvent calculer des heures différentes
 | `created`, `updated`   | Quand il a été ajouté, et modifié pour la dernière fois.                                                                                                                                            |
 | `tag`                  | Les services de la configuration auxquels il envoie. Absent ou `null` à côté de `urls` signifie qu'il n'envoie qu'à ses propres URL ; `""` désigne les services sans tag de la configuration.       |
 | `urls`                 | Ses propres URL, avec leurs mots de passe et jetons masqués.                                                                                                                                        |
-| `attach`               | Ses pièces jointes : le `filename` et la `size` d'un fichier enregistré, ou une adresse web avec son mot de passe masqué.                                                                           |
+| `attach`               | Ses pièces jointes : le `filename` et la `size` d'un fichier enregistré, ou une adresse web avec son mot de passe, ses jetons et autres secrets masqués.                                            |
 
 ### Dépannage
 

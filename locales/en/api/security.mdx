@@ -16,7 +16,7 @@ Apprise API starts open so it is easy to try on a home network. Before other peo
 - **Optional: remove the administrator login after setup.** Leave `APPRISE_PASSWORD` unset; existing configuration logins keep working.
 - **Turn off what you do not use.** Set `APPRISE_STATELESS_MODE=no` if every notification goes through a saved Config ID, `APPRISE_REMINDER_URLS_MAX=0` if reminders should only send through their saved configuration, and `APPRISE_REMINDER_ENABLED=no` if you do not use reminders.
 - **Limit the services.** `APPRISE_DENY_SERVICES` and `APPRISE_ALLOW_SERVICES` control which notification services may be used.
-- **Limit reminders.** Review `APPRISE_REMINDER_MAX`, `APPRISE_REMINDER_USER_MIN_INTERVAL` and `APPRISE_REMINDER_ATTACH_QUOTA`, and set `APPRISE_REMINDER_STORE_MAX` to cap the disk space all stored reminder attachments may take together. Web addresses are downloaded each time a reminder is sent and do not count.
+- **Limit reminders.** Review `APPRISE_REMINDER_MAX`, `APPRISE_REMINDER_USER_MIN_INTERVAL` and `APPRISE_REMINDER_ATTACH_QUOTA`, and set `APPRISE_REMINDER_STORE_MAX` to cap the disk space stored reminder attachments may take together. It applies to configuration logins and callers without a login; files the administrator uploads are not held to it. Web addresses are downloaded each time a reminder is sent and do not count.
 - **Use HTTPS and strict routing.** Put the server behind a reverse proxy with HTTPS, and use `STRICT_MODE=yes` (see the **Deployment Behind a Proxy** tab in [Deployment](/api/deployment/#quick-start)).
 - **Ban repeat offenders.** Use Fail2ban to block clients that keep failing to log in or probing for routes. See [Protecting Apprise API with Fail2ban](/guides/fail2ban/#protecting-apprise-api).
 

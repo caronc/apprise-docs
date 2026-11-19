@@ -70,4 +70,4 @@ Nous pouvons modifier cette politique en fonction de l'évolution de l'applicati
 
 ## Contact
 
-Pour toute question concernant cette politique, écrivez à [lead2gold@gmail.com](mailto:lead2gold@gmail.com).
+Pour toute question concernant cette politique, écrivez à [support@appriseit.com](mailto:support@appriseit.com).

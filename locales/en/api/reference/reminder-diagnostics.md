@@ -12,7 +12,7 @@ When a reminder is not sent when you expected, its diagnostics show what the ser
 Select the bug icon (**Diagnostics**) on a reminder's card in the **Reminders** tab, or on a past send in its calendar. The dialog shows exactly what **Copy** will copy, and its **Redacted** switch picks how much:
 
 - **Redacted** (on to start with) hides the reminder's name and tag, and keeps only the scheme of each URL and attachment address (such as `json://`), so how many there are, and of what kind, still shows.
-- Turned off, the name, tag, URLs and attachments are shown in full, with the passwords and tokens in its URLs still hidden.
+- Turned off, the name, tag, URLs and attachments are shown in full, with the passwords, tokens and other secrets in its URLs and attachment addresses still hidden.
 
 Either way, the reminder's title, body and the Config ID are left out. The text is copied inside a ` ```json ` block, so it reads well once pasted into a GitHub issue. Callers of the API get the same from `GET /reminder/{KEY}/{ID}/diagnostics`, adding `?privacy=yes` for the redacted version.
 
@@ -88,7 +88,7 @@ Two machines with different versions can work out different times, such as after
 | `created`, `updated`   | When it was added, and last changed.                                                                                                                                       |
 | `tag`                  | Which of the configuration's services it sends to. Missing or `null` beside `urls` means it sends to its own URLs alone; `""` means the configuration's untagged services. |
 | `urls`                 | The URLs of its own it sends to, with their passwords and tokens hidden.                                                                                                   |
-| `attach`               | Its attachments: a stored file's `filename` and `size`, or a web address with its password hidden.                                                                         |
+| `attach`               | Its attachments: a stored file's `filename` and `size`, or a web address with its password, tokens and other secrets hidden.                                               |
 
 ### Troubleshooting
 

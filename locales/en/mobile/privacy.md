@@ -70,4 +70,4 @@ We may update this policy as the app changes. When a change requires renewed acc
 
 ## Contact
 
-Questions about this policy can be sent to [lead2gold@gmail.com](mailto:lead2gold@gmail.com).
+Questions about this policy can be sent to [support@appriseit.com](mailto:support@appriseit.com).
