@@ -17,8 +17,8 @@
     "clean:full": "rm -rf node_modules pnpm-lock.yaml"
   },
   "devDependencies": {
-    "markdownlint-cli2": "^0.15.0",
+    "markdownlint-cli2": "^0.24.2",
     "prettier": "^3.7.4",
-    "yaml": "^2.6.0"
+    "yaml": "^2.9.1"
   }
 }

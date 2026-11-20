@@ -1,5 +1,5 @@
 ---
-title: "Référence des utilitaires"
+title: "Référence des Utilitaires"
 description: "Fonctions utilitaires communes utilisées par les plugins Apprise et les intégrations de bibliothèque."
 sidebar:
   label: "Utilitaires"
@@ -16,7 +16,7 @@ Cette page se concentre sur les helpers que vous utiliserez le plus souvent
 lorsque vous écrivez ou maintenez des plugins. D'autres utilitaires existent,
 mais ils ne sont volontairement pas couverts ici.
 
-## Modèles d'import
+## Modèles d'Import
 
 Les helpers sont exposés via `apprise.utils` (recommandé pour les auteurs de
 plugins) et implémentés dans les modules `apprise.utils.*`.
@@ -56,7 +56,7 @@ from apprise.utils.base64 import (
 )
 ```
 
-### Schéma d'appel recommandé
+### Schéma d'Appel Recommandé
 
 Une bonne façon de voir les utilitaires d'analyse est la suivante :
 
@@ -99,7 +99,7 @@ host = results.get("host")
 qsd = results.get("qsd", {})  # dictionnaire des paramètres de requête
 ```
 
-#### Arguments clés
+#### Arguments Clés
 
 - `verify_host`
   Lorsque cette valeur est `True`, `parse_url()` valide l'hôte et renvoie
@@ -122,7 +122,7 @@ qsd = results.get("qsd", {})  # dictionnaire des paramètres de requête
   laisse par défaut à `False`, car `+` est fréquent dans les jetons et mots de
   passe.
 
-#### Valeur renvoyée
+#### Valeur Renvoyée
 
 Le dictionnaire renvoyé varie selon l'entrée, mais comprend généralement :
 
@@ -131,7 +131,7 @@ Le dictionnaire renvoyé varie selon l'entrée, mais comprend généralement :
 - `fullpath`, et parfois `path` et `query` ;
 - les données de chaîne de requête analysées via `qsd`.
 
-## Helpers d'analyse courants
+## Helpers d'Analyse Courants
 
 ### `parse_bool()`
 
@@ -146,7 +146,7 @@ include_image = parse_bool(qsd.get("image"), default=False)
 batch = parse_bool(qsd.get("batch"), default=True)
 ```
 
-#### Valeurs reconnues
+#### Valeurs Reconnues
 
 - Faux : `"0"`, `"no"`, `"off"`, `"false"`, `"deny"`, `"disable"`, `"never"`
 - Vrai : `"1"`, `"yes"`, `"on"`, `"true"`, `"allow"`, `"enable"`
@@ -154,7 +154,7 @@ batch = parse_bool(qsd.get("batch"), default=True)
 Si une chaîne ne peut pas être interprétée, `default` est renvoyé. Pour les
 valeurs non textuelles, `bool(value)` est utilisé.
 
-#### Exemple de comportement tri-état
+#### Exemple de Comportement Tri-État
 
 Parfois, vous souhaitez distinguer :
 
@@ -194,7 +194,7 @@ if self.mode is None:
     raise AppriseImproperlyConfigured(msg)
 ```
 
-#### Règles de correspondance
+#### Règles de Correspondance
 
 - La casse et les espaces autour de la valeur sont ignorés.
 - Une correspondance exacte l'emporte. Sinon, le premier choix, dans l'ordre
@@ -208,7 +208,7 @@ if self.mode is None:
   une chaîne, des choix inutilisables ou l'absence de correspondance renvoient
   tous `default`.
 
-#### Arguments optionnels
+#### Arguments Optionnels
 
 - `default` est renvoyé quand rien ne correspond (`None` par défaut).
 - `length` ne compare que les premiers caractères de la valeur. Avec
@@ -235,7 +235,7 @@ tags = parse_list(qsd.get("tag"), cast=str)
 targets = parse_list(qsd.get("to"), cast=str, allow_whitespace=False)
 ```
 
-#### Options courantes
+#### Options Courantes
 
 - `cast` convertit les valeurs avant l'analyse lorsque c'est possible ;
 - `allow_whitespace` contrôle si les espaces sont traités comme séparateurs ;
@@ -281,7 +281,7 @@ from apprise.utils.parse import parse_urls
 endpoints = parse_urls(qsd.get("endpoint"))
 ```
 
-#### En quoi `store_unparseable` aide
+#### En Quoi `store_unparseable` Aide
 
 Si aucun élément valide n'est détecté et que `store_unparseable=True`, l'entrée
 est quand même découpée selon des séparateurs courants puis renvoyée. Cela vous
@@ -375,7 +375,7 @@ Un schéma pratique ressemble à celui des emails et téléphones :
 - avertir pour les valeurs invalides sans faire échouer toute la configuration,
   sauf si le service exige au moins une cible valide.
 
-## Validation d'hôte et d'identifiant
+## Validation d'Hôte et d'Identifiant
 
 Ces helpers sont souvent utilisés par les plugins pour valider tôt les entrées
 et produire des messages d'erreur clairs.
@@ -403,7 +403,7 @@ et produire des messages d'erreur clairs.
 fonctions renvoient `False` pour une entrée invalide et une chaîne normalisée
 pour une entrée valide.
 
-## Validation par regex
+## Validation par Regex
 
 ### `validate_regex()`
 
@@ -419,7 +419,7 @@ if not token:
     return None
 ```
 
-#### Tuples regex dans `template_token`
+#### Tuples Regex dans `template_token`
 
 Si votre plugin définit une regex de jeton de template, comme le font la
 plupart des plugins, vous pouvez la réutiliser directement pour valider les
@@ -436,7 +436,7 @@ self.token = validate_regex(
 Cela suppose que `template_tokens["token"]["regex"]` soit un tuple de la forme
 `(regex, flags)`.
 
-#### Points notables
+#### Points Notables
 
 - les regex sont mises en cache en interne après compilation, donc les
   validations répétées coûtent peu ;
@@ -457,7 +457,7 @@ value = validate_regex(
 # value vaut maintenant "prefix:123" (ou None si pas de correspondance)
 ```
 
-## Journalisation sûre et gestion des secrets
+## Journalisation Sûre et Gestion des Secrets
 
 ### `sanitize_payload()`
 
@@ -473,7 +473,7 @@ from apprise.utils.sanitize import sanitize_payload
 self.logger.debug("payload=%s", sanitize_payload(payload))
 ```
 
-#### Quand l'utiliser
+#### Quand l'Utiliser
 
 Vous n'avez pas besoin d'assainir chaque log de debug. `sanitize_payload()` est
 surtout utile lorsque :
@@ -494,7 +494,7 @@ if self.logger.isEnabledFor(logging.DEBUG):
     self.logger.debug("Payload: %s", sanitize_payload(payload))
 ```
 
-#### Ce que fait la fonction
+#### Ce Que Fait la Fonction
 
 - laisse inchangées les primitives (`None`, booléens, nombres, etc.) ;
 - résume les longues chaînes avec un marqueur compact et des aperçus début/fin ;
@@ -510,7 +510,7 @@ Schéma pratique :
 1. Si le debug est activé, journalisez `sanitize_payload(payload)`.
 1. Envoyez le payload original au service amont.
 
-#### Ajuster le comportement
+#### Ajuster le Comportement
 
 Certains environnements bénéficient de limites plus strictes, par exemple pour
 empêcher de grosses pièces jointes ou des blobs de type Base64 d'entrer dans
@@ -533,7 +533,7 @@ Lors d'un dépannage, évitez d'augmenter globalement ces limites. Il est plus
 sûr de les ajuster localement et temporairement autour d'une instruction de
 debug précise.
 
-## Helpers d'encodage
+## Helpers d'Encodage
 
 ### `base64_urlencode()` et `base64_urldecode()`
 

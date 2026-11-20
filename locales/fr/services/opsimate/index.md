@@ -24,7 +24,7 @@ sample_urls:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
 [OpsiMate](https://opsimate.dev) est une console d'exploitation auto-hébergée qui regroupe les alertes de vos outils de supervision dans une seule file. Apprise lui envoie des alertes via son [API Custom Alerts](https://docs.opsimate.dev/docs/integrations/custom-alerts) : tout ce qu'Apprise peut notifier peut donc apparaître sur votre tableau OpsiMate. Le projet est hébergé sur [GitHub](https://github.com/OpsiMate/OpsiMate).
 

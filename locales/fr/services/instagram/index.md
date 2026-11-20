@@ -30,7 +30,7 @@ limits:
 Instagram permet seulement à une entreprise de répondre aux personnes qui lui ont écrit en premier. Chaque personne que vous notifiez doit avoir envoyé un message privé à votre compte Instagram au cours des dernières **24 heures**, sinon Instagram refusera la notification.
 :::
 
-## Configuration du compte
+## Configuration du Compte
 
 Apprise envoie des messages privés Instagram depuis un compte Instagram **professionnel** (entreprise ou créateur).
 
@@ -44,7 +44,7 @@ Le jeton d'accès est valide pendant 60 jours. Générez-en un nouveau depuis la
 
 Si votre application est encore en mode **Développement**, ajoutez chaque personne que vous contactez comme testeur Instagram dans **Rôles de l'application**.
 
-### Trouver un identifiant d'utilisateur
+### Trouver un Identifiant d'Utilisateur
 
 Instagram identifie chaque personne par un identifiant numérique qui n'est valable que pour votre compte. Une fois que quelqu'un vous a écrit, listez vos conversations pour le trouver :
 
@@ -54,7 +54,7 @@ curl "https://graph.instagram.com/v26.0/me/conversations?platform=instagram&fiel
 
 Chaque conversation liste ses participants avec leur `username` et leur `id`. Utilisez l'`id` de la personne à notifier.
 
-### Utiliser un jeton de page Facebook
+### Utiliser un Jeton de Page Facebook
 
 Si votre compte Instagram est lié à une page Facebook, vous pouvez utiliser le jeton d'accès de cette page (il commence par `EAA`) à la place. Apprise le détecte automatiquement. Meta documente l'envoi de fichiers avec un jeton de page, utilisez-en donc un si les pièces jointes échouent avec votre jeton Instagram.
 
@@ -65,7 +65,7 @@ La syntaxe valide est la suivante :
 - `instagram://{token}/{user_id}`
 - `instagram://{token}/{user_id1}/{user_id2}/{user_idN}`
 
-## Détail des paramètres
+## Détail des Paramètres
 
 | Variable | Requis | Description                                                                                               |
 | -------- | ------ | --------------------------------------------------------------------------------------------------------- |

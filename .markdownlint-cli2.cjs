@@ -9,6 +9,10 @@ module.exports = {
 	 MD036: false,
 	 // first header in file does not have to be # (h1)
 	 MD041: false,
+	 // the front matter title is not counted as an h1, so a page may start at ### (as inside tabs)
+	 MD001: { front_matter_title: "" },
+	 // link text such as [here] is allowed
+	 MD059: false,
      // MD051 slug algorithm differs from Starlight's github-slugger (which strips
      // accents); this causes false positives on French headings that contain
      // accented characters. Disabled because the runtime links are correct.
