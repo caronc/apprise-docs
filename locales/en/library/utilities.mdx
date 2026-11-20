@@ -25,6 +25,7 @@ authors), and are implemented in the `apprise.utils.*` modules.
 from apprise.utils.parse import (
     parse_bool,
     parse_call_sign,
+    parse_choice,
     parse_emails,
     parse_list,
     parse_phone_no,
@@ -163,6 +164,47 @@ if raw is None:
 else:
     # Explicitly set: honor user intent
     discovery = parse_bool(raw, default=False)
+```
+
+### `parse_choice()`
+
+Matches a user-supplied value against a fixed set of choices, such as a
+`?mode=` or `?priority=` option. Use it instead of writing your own lookup so
+every plugin accepts input the same way.
+
+```python
+from apprise.utils.parse import parse_choice
+
+self.mode = parse_choice(mode, EXAMPLE_MODES)
+if self.mode is None:
+    msg = f"The Example mode specified ({mode}) is invalid."
+    self.logger.warning(msg)
+    raise AppriseImproperlyConfigured(msg)
+```
+
+#### How It Matches
+
+- Case and surrounding spaces are ignored.
+- An exact match wins. Otherwise the first choice, in the order given, that
+  starts with the value is returned, so `web` matches `webhook`.
+- The matching choice is returned exactly as declared.
+- `choices` can be a tuple, list, dict (its keys) or a `str` Enum. Pass an
+  ordered tuple rather than a set so abbreviations always resolve the same way.
+- It never raises. An empty value, a value that is not a string, unusable
+  choices, or no match all return `default`.
+
+#### Common Options
+
+- `default` is returned when nothing matches (`None` unless set).
+- `length` only compares the first few characters of the value. With
+  `length=2`, `highest` matches `high` and `maximum` matches `max`. An invalid
+  length is ignored.
+
+```python
+priority = parse_choice(
+    "highest", ("min", "low", "normal", "high", "max"), length=2
+)
+# priority is now "high"
 ```
 
 ### `parse_list()`
