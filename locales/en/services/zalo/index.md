@@ -12,7 +12,7 @@ schemas:
 has_chat: true
 
 body_formats:
-  - markdown
+  - markdown: default
   - text
 
 sample_urls:

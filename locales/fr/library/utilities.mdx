@@ -26,6 +26,7 @@ plugins) et implémentés dans les modules `apprise.utils.*`.
 from apprise.utils.parse import (
     parse_bool,
     parse_call_sign,
+    parse_choice,
     parse_emails,
     parse_list,
     parse_phone_no,
@@ -174,6 +175,51 @@ if raw is None:
 else:
     # Défini explicitement : respecter l'intention de l'utilisateur
     discovery = parse_bool(raw, default=False)
+```
+
+### `parse_choice()`
+
+Fait correspondre une valeur fournie par l'utilisateur à un ensemble fixe de
+choix, comme une option `?mode=` ou `?priority=`. Utilisez-la plutôt que
+d'écrire votre propre recherche, afin que tous les plugins acceptent les
+entrées de la même façon.
+
+```python
+from apprise.utils.parse import parse_choice
+
+self.mode = parse_choice(mode, EXAMPLE_MODES)
+if self.mode is None:
+    msg = f"The Example mode specified ({mode}) is invalid."
+    self.logger.warning(msg)
+    raise AppriseImproperlyConfigured(msg)
+```
+
+#### Règles de correspondance
+
+- La casse et les espaces autour de la valeur sont ignorés.
+- Une correspondance exacte l'emporte. Sinon, le premier choix, dans l'ordre
+  donné, qui commence par la valeur est renvoyé : `web` correspond donc à
+  `webhook`.
+- Le choix correspondant est renvoyé tel qu'il a été déclaré.
+- `choices` peut être un tuple, une liste, un dictionnaire (ses clés) ou une
+  Enum de type `str`. Passez un tuple ordonné plutôt qu'un ensemble (`set`)
+  pour que les abréviations se résolvent toujours de la même façon.
+- Elle ne lève jamais d'exception. Une valeur vide, une valeur qui n'est pas
+  une chaîne, des choix inutilisables ou l'absence de correspondance renvoient
+  tous `default`.
+
+#### Arguments optionnels
+
+- `default` est renvoyé quand rien ne correspond (`None` par défaut).
+- `length` ne compare que les premiers caractères de la valeur. Avec
+  `length=2`, `highest` correspond à `high` et `maximum` à `max`. Une longueur
+  invalide est ignorée.
+
+```python
+priority = parse_choice(
+    "highest", ("min", "low", "normal", "high", "max"), length=2
+)
+# priority vaut maintenant "high"
 ```
 
 ### `parse_list()`

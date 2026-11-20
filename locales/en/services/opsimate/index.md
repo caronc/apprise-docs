@@ -74,7 +74,7 @@ By default a `success` notification resolves the alert instead of firing it. A t
 | dedup    | No       | A fixed alert id. Every notification sent through this URL then fires or resolves that one alert, whatever its title. Without it, the id is derived from the alert name.                                                                                                                  |
 | click    | No       | A link added to the alert, for example the dashboard or check that raised it. It must be a full URL such as `https://grafana.example.com/d/disk`.                                                                                                                                         |
 | severity | No       | Always use this severity instead of the one picked from the notification type. Possible values are **info**, **warning** and **critical**.                                                                                                                                                |
-| +key     | No       | Adds a tag to the alert, for example `+env=prod`. Use `+team=` to set the team that owns the alert. The `source` tag is `apprise` unless you set it yourself.                                                                                       |
+| +key     | No       | Adds a tag to the alert, for example `+env=prod`. Use `+team=` to set the team that owns the alert. The `source` tag is `apprise` unless you set it yourself.                                                                                                                             |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
 
