@@ -3,16 +3,18 @@ title: Apprise Mobile Terms of Service
 description: Terms governing the use of Apprise Mobile.
 sidebar:
   label: Terms of Service
-  order: 4
+  order: 5
 ---
 
-**Last updated: November 18, 2026**
+**Last updated: November 19, 2026**
 
 These Terms are an agreement between you and Chris Caron, the independent developer who publishes Apprise Mobile ("we", "us", or "our"). They apply to Apprise Mobile, published as **Apprise** on Google Play and the App Store ("the app"). By using the app, you agree to these Terms. If you do not agree, please do not use it.
 
 ## 1. What the App Does
 
 The app is a companion for Apprise API Servers that you or a third party operate. It stores app data on your device and sends requests directly to the servers you configure so you can manage them and send notifications.
+
+Scheduled reminders are stored on, and sent by, the Apprise API Server you configure. The app only creates, edits, and removes them.
 
 Apprise API is separate, open-source server software. We do not operate your server, receive its traffic, or control the notification services it contacts. We have no access to your device, servers, credentials, or notification URLs, and we cannot secure them for you.
 
@@ -46,6 +48,8 @@ To the extent permitted by law, the app is provided **"as is" and "as available"
 
 We also do not promise that the app, the data it stores, or its backups are free of vulnerabilities or secure from unauthorized access. Safeguards such as encrypted credential storage and backup passphrases reduce risk but cannot remove it.
 
+**Not for critical use.** The app, including scheduled reminders, is not designed or intended for situations where a failed, late, or missed notification could lead to death, injury, or serious property or environmental damage, such as medical or life-support alerts, emergency response, air traffic control, or aircraft or vehicle navigation. Do not rely on it for those purposes.
+
 ## 6. Limitation of Liability
 
 To the maximum extent permitted by law, we are not liable for indirect, incidental, special, consequential, or punitive damages, or for any loss of data, profits, or goodwill, arising from or related to the app or these Terms. This includes failed or delayed notifications, unavailable services, unauthorized messages, or use of connected accounts resulting from an exposed or compromised device, computer, server, network, backup, credential, configuration ID, or notification URL, however that exposure occurred.
@@ -68,7 +72,7 @@ If any part of these Terms is found unenforceable, the rest remains in effect. I
 
 ## 10. Contact
 
-Questions about these Terms can be sent to **[lead2gold@gmail.com](mailto:lead2gold@gmail.com)**.
+Questions about these Terms can be sent to **[support@appriseit.com](mailto:support@appriseit.com)**.
 
 ## 11. Trademarks
 

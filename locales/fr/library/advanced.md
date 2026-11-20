@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-## Notifications asynchrones
+## Notifications Asynchrones
 
 Si vous exécutez votre code dans une boucle d'événements `asyncio`, vous pouvez utiliser `async_notify()` pour envoyer des notifications sans bloquer.
 
@@ -31,8 +31,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Voir [Résultats de notification](/library/results/) pour tout ce que `result`
-peut vous dire : détail par service, durée, journaux capturés, et plus encore.
+Voir [Résultats de notification](/library/results/) pour tout ce que `result` peut vous dire : détail par service, durée, journaux capturés, et plus encore.
 
 ## Sérialisation (Pickle)
 
@@ -56,7 +55,7 @@ restored_obj = pickle.loads(serialized_data)
 restored_obj.notify("Je suis de retour !")
 ```
 
-## Bas niveau : l'objet de notification Apprise
+## Bas Niveau : l'Objet de Notification Apprise
 
 Lorsque vous appelez `Apprise.notify()`, Apprise gère pour vous les tags, la configuration et la journalisation. Si vous devez contourner cela et interagir directement avec un objet de notification précis :
 
@@ -78,11 +77,41 @@ obj.send(
 Utiliser `send()` directement contourne une grande partie des protections et fonctionnalités (comme les tags et le traitement des pièces jointes) fournies par la méthode `notify()`.
 :::
 
-## Gestion des erreurs de configuration
+### Les URL et Leurs Champs
 
-Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque
-reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette
-exception lorsque votre application doit signaler un problème de configuration :
+Un objet de notification peut rendre son URL sous forme de champs séparés, nommés d'après les jetons et les arguments de [`details()`](/fr/library/inspection/), les mêmes noms que ceux du [générateur d'URL](/fr/url-builder/). `fields_to_url()` rassemble les champs en une URL. Un programme peut ainsi présenter une URL sous forme de formulaire, puis transformer le formulaire en URL.
+
+```python
+import apprise
+from apprise.fields import fields_to_url
+
+obj = apprise.Apprise.instantiate(
+    "mailtos://user:secret@example.com?to=a@example.com&smtp=smtp.example.com"
+)
+
+# L'URL sous forme de champs, et les mêmes champs aux secrets masqués
+fields = obj.url_fields()
+hidden = obj.url_fields(privacy=True)
+
+# fields["targets"] == ["a@example.com"]
+# fields["smtp"] == "smtp.example.com"
+# hidden["password"] == "****"
+
+# Les champs redonnent la même URL
+url = fields_to_url(fields)
+assert apprise.Apprise.instantiate(url).url() == obj.url()
+```
+
+- Un alias comme `to` est regroupé dans l'entrée qu'il représente, ici `targets`.
+- Les options clé/valeur (`+header`, `-param`, `:key`) reviennent sous forme de tables, comme `headers`, `params` et `payload`.
+- Les valeurs reviennent dans le type que leur donne `details()` : listes, nombres et `True`/`False`.
+- Les champs masqués masquent chaque entrée que `details()` marque comme privée.
+- `fields_to_url()` renvoie `None` lorsque le schéma est inconnu ou qu'un nom de champ ne fait pas partie de ceux du service. Elle ne vérifie pas l'URL ; chargez-la pour savoir si elle fonctionne.
+- `apprise.fields.parse_fields(url)` lit les champs d'une URL que son service ne chargerait pas encore, comme `mailto://` sans rien après, pour qu'un formulaire affiche ce qui a déjà été saisi.
+
+## Gestion des Erreurs de Configuration
+
+Apprise lève `AppriseImproperlyConfigured` lorsqu'un appel à la bibliothèque reçoit des paramètres manquants, non valides ou incompatibles. Interceptez cette exception lorsque votre application doit signaler un problème de configuration :
 
 ```python
 from apprise import AppriseAsset
@@ -94,32 +123,17 @@ except AppriseImproperlyConfigured as error:
     print(f"Paramètres Apprise non valides : {error}")
 ```
 
-Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError`
-continuent de fonctionner. Dans le nouveau code, interceptez plutôt
-`AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de
-configuration.
+Les gestionnaires existants pour `TypeError`, `ValueError` ou `AttributeError` continuent de fonctionner. Dans le nouveau code, interceptez plutôt `AppriseImproperlyConfigured` afin d'identifier facilement les problèmes de configuration.
 
-Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous
-pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin
-de distinguer la cause.
-Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être
-interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent
-sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs
-détails individuels ne sont pas nécessaires.
+Toutes les exceptions propres à Apprise héritent de `AppriseException`. Vous pouvez donc intercepter cette dernière lorsque votre application n'a pas besoin de distinguer la cause. Les erreurs de disque signalées par `AppriseDiskIOError` peuvent également être interceptées avec `OSError`. Les erreurs propres aux plugins qui reposent sur `ApprisePluginException` peuvent être traitées ensemble lorsque leurs détails individuels ne sont pas nécessaires.
 
-`notify()` et `async_notify()` signalent ces problèmes dans leur valeur de
-retour plutôt qu'en levant une exception.
+`notify()` et `async_notify()` signalent ces problèmes dans leur valeur de retour plutôt qu'en levant une exception.
 
-Un service qui échoue avant de préparer son message reçoit sa propre entrée
-`FAILURE`, comme un service qui échoue pendant l'envoi. Les autres services sont
-quand même exécutés, l'escalade continue et les services optionnels le restent.
-Un appel dont les résultats sont mixtes renvoie `PARTIAL`.
+Un service qui échoue avant de préparer son message reçoit sa propre entrée `FAILURE`, comme un service qui échoue pendant l'envoi. Les autres services sont quand même exécutés, l'escalade continue et les services optionnels le restent. Un appel dont les résultats sont mixtes renvoie `PARTIAL`.
 
-Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE`
-sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le
-seul cas où ces méthodes lèvent encore une exception.
+Si Apprise ne peut pas utiliser le message, l'appel entier renvoie `FAILURE` sans entrée de service et n'envoie rien. Une valeur `timeout=` invalide est le seul cas où ces méthodes lèvent encore une exception.
 
-## Prise en charge des proxys
+## Prise en Charge des Proxys
 
 Apprise envoie chaque notification via [requests](https://requests.readthedocs.io/), qui respecte automatiquement les variables d'environnement standard `HTTP_PROXY`, `HTTPS_PROXY` et `NO_PROXY`. Aucune configuration spécifique à Apprise n'est nécessaire : définissez la variable avant de démarrer votre processus (ou exportez-la dans l'environnement dans lequel Apprise s'exécute) et chaque requête sortante passera par le proxy :
 

@@ -7,14 +7,9 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Lorsque vous passez `attach=` à `Apprise.notify()`, Apprise normalise chaque entrée
-en un objet `AppriseAttachment` (reposant en interne sur des implémentations
-de `AttachBase`). Les plugins qui activent cette prise en charge
-(en définissant `attachment_support = True`) reçoivent une liste d'objets
-pièces jointes via l'argument `attach` de `send()`.
+Lorsque vous passez `attach=` à `Apprise.notify()`, Apprise normalise chaque entrée en un objet `AppriseAttachment` (reposant en interne sur des implémentations de `AttachBase`). Les plugins qui activent cette prise en charge (en définissant `attachment_support = True`) reçoivent une liste d'objets pièces jointes via l'argument `attach` de `send()`.
 
-Du point de vue de l'auteur d'un plugin, une pièce jointe est une petite API
-uniforme qui vous permet de :
+Du point de vue de l'auteur d'un plugin, une pièce jointe est une petite API uniforme qui vous permet de :
 
 - valider sa disponibilité (`if not attachment: ...`) ;
 - lire son contenu (`attachment.path`, `attachment.open()`, `attachment.chunk()`) ;
@@ -56,26 +51,18 @@ Raccourci pratique :
 
 ### `send()` Peut Être Appelé Plusieurs Fois
 
-Un long message peut être réparti sur plusieurs appels à `send()`. Apprise ne
-transmet `attach` qu'à un seul de ces appels. Le test `if attach:` évite donc
-d'envoyer les mêmes fichiers avec chaque partie du message.
+Un long message peut être réparti sur plusieurs appels à `send()`. Apprise ne transmet `attach` qu'à un seul de ces appels. Le test `if attach:` évite donc d'envoyer les mêmes fichiers avec chaque partie du message.
 
-Par défaut, la pièce jointe accompagne la première partie. Pour l'envoyer avec
-une autre partie, surchargez `_attachment_send_index()`. Consultez
-[Connaître Sa Position Parmi Plusieurs Appels à `send()`](../extending/message-format-conversion/#connaitre-sa-position-parmi-plusieurs-appels-a-send)
-pour voir un exemple.
+Par défaut, la pièce jointe accompagne la première partie. Pour l'envoyer avec une autre partie, surchargez `_attachment_send_index()`. Consultez [Connaître Sa Position Parmi Plusieurs Appels à `send()`](../extending/message-format-conversion/#connaitre-sa-position-parmi-plusieurs-appels-a-send) pour voir un exemple.
 
 ## Sources des Pièces Jointes
 
-Apprise prend en charge plusieurs sources de pièces jointes. Elles sont toutes
-normalisées vers la même surface d'API.
+Apprise prend en charge plusieurs sources de pièces jointes. Elles sont toutes normalisées vers la même surface d'API.
 
 <Tabs>
 <TabItem value="file" label="Fichier Local (file://)">
 
-**`AttachFile`** : les fichiers locaux référencent des chemins côté serveur. L'usage
-le plus simple consiste à passer directement une chaîne de chemin : Apprise
-la convertit en URL `file://` en interne :
+**`AttachFile`** : les fichiers locaux référencent des chemins côté serveur. L'usage le plus simple consiste à passer directement une chaîne de chemin : Apprise la convertit en URL `file://` en interne :
 
 ```python
 # Single path. Apprise wraps it in AttachFile automatically
@@ -89,13 +76,10 @@ apobj.notify(
 ```
 
 :::note
-`file://` est le schéma par défaut si rien n'est précisé. Le chemin
-`/var/log/syslog` est traité exactement comme `file:///var/log/syslog`.
+`file://` est le schéma par défaut si rien n'est précisé. Le chemin `/var/log/syslog` est traité exactement comme `file:///var/log/syslog`.
 :::
 
-**Constructeur direct** : utilisez `AttachFile` lorsque vous devez surcharger
-le nom de fichier ou le type MIME présenté au service distant, sans renommer
-le fichier sur le disque :
+**Constructeur direct** : utilisez `AttachFile` lorsque vous devez surcharger le nom de fichier ou le type MIME présenté au service distant, sans renommer le fichier sur le disque :
 
 ```python
 from apprise.attachment import AttachFile
@@ -122,9 +106,7 @@ apobj.notify(body="Nightly log", attach=a)
 
 <TabItem value="http" label="URL Hébergée (http://, https://)">
 
-**`AttachHTTP`** : les URL hébergées sont téléchargées dans un fichier temporaire
-avant d'être fournies aux plugins. Passez directement une chaîne URL :
-Apprise crée alors un `AttachHTTP` en interne :
+**`AttachHTTP`** : les URL hébergées sont téléchargées dans un fichier temporaire avant d'être fournies aux plugins. Passez directement une chaîne URL : Apprise crée alors un `AttachHTTP` en interne :
 
 ```python
 # Single URL
@@ -154,12 +136,10 @@ apobj.notify(
 ```
 
 :::caution
-Traitez les URL de pièces jointes contenant des identifiants comme des secrets.
-Ne les journalisez jamais et ne les versionnez jamais.
+Traitez les URL de pièces jointes contenant des identifiants comme des secrets. Ne les journalisez jamais et ne les versionnez jamais.
 :::
 
-**Constructeur direct** : utilisez `AttachHTTP` lorsque vous avez besoin
-d'un contrôle fin sur le cache, les timeouts ou les en-têtes personnalisés :
+**Constructeur direct** : utilisez `AttachHTTP` lorsque vous avez besoin d'un contrôle fin sur le cache, les timeouts ou les en-têtes personnalisés :
 
 ```python
 from apprise.attachment import AttachHTTP
@@ -174,8 +154,7 @@ a = AttachHTTP(
 apobj.notify(body="Fresh report", attach=a)
 ```
 
-**En-têtes HTTP personnalisés** : utilisez la syntaxe d'URL `+Clé=Valeur`
-pour transmettre des en-têtes avec la requête de téléchargement :
+**En-têtes HTTP personnalisés** : utilisez la syntaxe d'URL `+Clé=Valeur` pour transmettre des en-têtes avec la requête de téléchargement :
 
 ```python
 # Bearer token forwarded when downloading the asset
@@ -207,8 +186,7 @@ Tous les autres paramètres de requête sont transmis tels quels.
 
 ### En-têtes Personnalisés
 
-Des en-têtes HTTP personnalisés peuvent être définis avec la syntaxe
-`+Header=Value`.
+Des en-têtes HTTP personnalisés peuvent être définis avec la syntaxe `+Header=Value`.
 
 Exemple :
 
@@ -220,35 +198,38 @@ Ces entrées deviennent des en-têtes HTTP, et non des paramètres de requête.
 
 ### Vérification des Certificats
 
-Le paramètre `verify=` contrôle la vérification des certificats TLS pour
-les pièces jointes basées sur HTTPS.
+Le paramètre `verify=` contrôle la vérification des certificats TLS pour les pièces jointes basées sur HTTPS.
 
 - `verify=yes` (par défaut) : les certificats TLS sont validés à l'aide du magasin de confiance du système.
-- `verify=no` : la vérification des certificats TLS est désactivée. Cela ne doit être utilisé que pour les tests ou lors d'interactions avec des endpoints internes de confiance.
+- `verify=no` : la vérification des certificats TLS est désactivée. Cela ne doit être utilisé que pour les tests ou lors d'interactions avec des points de terminaison internes de confiance.
 
 ### Délais d'Attente
 
-Les pièces jointes HTTP prennent en charge une configuration explicite des timeouts :
+Les pièces jointes HTTP prennent en charge une configuration explicite des délais d'attente :
 
-- `cto=` timeout de connexion (secondes)
-- `rto=` timeout de lecture (secondes)
+- `cto=` délai de connexion (secondes)
+- `rto=` délai de lecture (secondes)
 
-Les valeurs de timeout persistent avec la pièce jointe.
+Ces délais restent attachés à la pièce jointe.
+
+Le délai `service_timeout` de l'objet `AppriseAsset` (60 secondes par défaut) limite aussi le téléchargement, compté depuis le début de la requête. Voir [Ressources et image de marque](/library/assets/).
+
+- La connexion, et l'attente de la réponse du serveur, ne dépassent jamais le temps restant. Une suite de redirections s'arrête une fois le délai écoulé.
+- Un fichier encore en cours de réception après ce délai est arrêté et le téléchargement échoue, même si le serveur envoie ses données petit à petit.
+- `0` désactive cette limite, et un téléchargement peut alors prendre le temps qu'il lui faut.
+
+Cela couvre aussi un serveur, ou un proxy, qui envoie ses en-têtes de réponse octet par octet. Cette limite ne s'applique pas entièrement à une application qui fournit sa propre `requests.Session` (la `HTTPPolicySession` d'Apprise, utilisée par Apprise API, est entièrement couverte). Dans ce cas, le délai n'est vérifié qu'entre deux morceaux du fichier, donc un serveur qui envoie ses en-têtes ou ses données au compte-gouttes peut prendre plus de temps.
 
 ### Cache
 
-Définit pendant combien de temps une pièce jointe téléchargée est considérée
-comme valide avant d'être retéléchargée. C'est utile pour des cas comme
-les caméras de sécurité : si votre application conserve un objet
-`AppriseAttachment` longtemps, vous pouvez toujours garantir une version fraîche.
+Définit pendant combien de temps une pièce jointe téléchargée est considérée comme valide avant d'être retéléchargée. C'est utile pour des cas comme les caméras de sécurité : si votre application conserve un objet `AppriseAttachment` longtemps, vous pouvez toujours garantir une version fraîche.
 
 - `cache=yes` met en cache indéfiniment ;
 - `cache=no` désactive le cache (les URL hébergées sont récupérées à chaque fois) ;
 - `cache=<seconds>` met en cache pendant la durée indiquée (TTL en secondes) ; la valeur par défaut est 600.
 
 :::note
-Le cache est toujours supprimé du système de fichiers dès que l'instance
-`AppriseAttachment` sort de portée ou que l'objet est supprimé.
+Le cache est toujours supprimé du système de fichiers dès que l'instance `AppriseAttachment` sort de portée ou que l'objet est supprimé.
 :::
 
 ### Ordre de Détection du Nom de Fichier et du MIME
@@ -260,23 +241,17 @@ Le cache est toujours supprimé du système de fichiers dès que l'instance
 
 ### Lecture en Continu et Limites
 
-Les pièces jointes HTTP sont diffusées vers le disque et validées
-progressivement. Lorsque `Content-Length` est absent ou invalide, les limites
-de taille sont appliquées pendant le streaming.
+Les pièces jointes HTTP sont diffusées vers le disque et validées progressivement. Lorsque `Content-Length` est absent ou invalide, les limites de taille sont appliquées pendant le streaming.
 
 ### Réutilisation des Téléchargements
 
-Lorsque le cache est activé, un même téléchargement HTTP peut être réutilisé
-sur plusieurs envois de notifications.
+Lorsque le cache est activé, un même téléchargement HTTP peut être réutilisé sur plusieurs envois de notifications.
 
 </TabItem>
 
 <TabItem value="memory" label="En Mémoire (memory://)">
 
-**`AttachMemory`** : stocke entièrement le contenu dans un tampon `BytesIO`,
-sans écrire de fichiers temporaires sur disque. C'est le bon choix lorsque
-vous générez du contenu à la volée : rapports, HTML rendu, graphiques ou
-octets déjà présents en mémoire.
+**`AttachMemory`** : stocke entièrement le contenu dans un tampon `BytesIO`, sans écrire de fichiers temporaires sur disque. C'est le bon choix lorsque vous générez du contenu à la volée : rapports, HTML rendu, graphiques ou octets déjà présents en mémoire.
 
 `AttachMemory` doit toujours être construit directement ; il n'existe pas de raccourci URL pour lui.
 
@@ -425,10 +400,7 @@ Une pièce jointe peut échouer parce qu'elle est absente, dépasse les limites 
 
 ### Préférez `attachment.open()` pour les API de Téléversement
 
-De nombreux services exigent des uploads multipart. Utilisez `attachment.open()`
-pour obtenir un objet de type fichier : cela fonctionne correctement pour
-**tous** les types de pièces jointes, y compris `AttachMemory`, qui n'a
-aucun chemin sur disque :
+De nombreux services exigent des uploads multipart. Utilisez `attachment.open()` pour obtenir un objet de type fichier : cela fonctionne correctement pour **tous** les types de pièces jointes, y compris `AttachMemory`, qui n'a aucun chemin sur disque :
 
 ```python
 filename = attachment.name
@@ -451,17 +423,12 @@ with attachment as f:
 ```
 
 :::caution
-N'appelez **pas** directement `open(attachment.path, "rb")`. `attachment.path`
-renvoie `None` pour les pièces jointes distantes non encore téléchargées, et
-renvoie uniquement un nom de fichier nu (pas un chemin complet) pour les
-objets `AttachMemory` : dans les deux cas, cela lèvera un `OSError`.
-Utilisez toujours `attachment.open()` ou `with attachment as f:` à la place.
+N'appelez **pas** directement `open(attachment.path, "rb")`. `attachment.path` renvoie `None` pour les pièces jointes distantes non encore téléchargées, et renvoie uniquement un nom de fichier nu (pas un chemin complet) pour les objets `AttachMemory` : dans les deux cas, cela lèvera un `OSError`. Utilisez toujours `attachment.open()` ou `with attachment as f:` à la place.
 :::
 
 ### Base64 Lorsque le Service l'Exige
 
-Tous les types de pièces jointes prennent en charge l'export Base64. Certaines
-API exigent des pièces jointes encodées en base64. Utilisez `attachment.base64()` :
+Tous les types de pièces jointes prennent en charge l'export Base64. Certaines API exigent des pièces jointes encodées en base64. Utilisez `attachment.base64()` :
 
 ```python
 encoded = attachment.base64()  # returns a str by default
@@ -471,8 +438,7 @@ payload["base64_attachments"].append(encoded)
 - `base64()` renvoie une chaîne ;
 - `base64(encoding=None)` renvoie des octets bruts.
 
-Si la pièce jointe ne peut pas être lue, `base64()` lève une exception Apprise.
-Interceptez-la et échouez proprement.
+Si la pièce jointe ne peut pas être lue, `base64()` lève une exception Apprise. Interceptez-la et échouez proprement.
 
 Cela est fréquemment utilisé par les API qui ne prennent pas en charge les uploads multipart.
 
@@ -488,12 +454,9 @@ for chunk in attachment.chunk(size=5 * 1024 * 1024):
 
 ### Nettoyage et Cycle de Vie
 
-Les plugins n'ont généralement pas besoin de supprimer manuellement les fichiers
-temporaires téléchargés. Les objets pièces jointes gèrent eux-mêmes leur
-nettoyage via `invalidate()` et leurs destructeurs.
+Les plugins n'ont généralement pas besoin de supprimer manuellement les fichiers temporaires téléchargés. Les objets pièces jointes gèrent eux-mêmes leur nettoyage via `invalidate()` et leurs destructeurs.
 
-Si vous conservez des objets pièces jointes au-delà de `send()`, il vous revient
-de bien comprendre leur cycle de vie. En règle générale, traitez-les comme des objets éphémères.
+Si vous conservez des objets pièces jointes au-delà de `send()`, il vous revient de bien comprendre leur cycle de vie. En règle générale, traitez-les comme des objets éphémères.
 
 ## Limites et Sécurité
 
@@ -503,8 +466,7 @@ de bien comprendre leur cycle de vie. En règle générale, traitez-les comme de
 
 ## Conseils pour les Auteurs de Plugins
 
-Les plugins devraient valider tôt la taille et le nombre des pièces jointes,
-et gérer proprement les pièces jointes inaccessibles.
+Les plugins devraient valider tôt la taille et le nombre des pièces jointes, et gérer proprement les pièces jointes inaccessibles.
 
 ## Exemples Pratiques dans les Plugins Principaux
 

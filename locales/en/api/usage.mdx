@@ -59,13 +59,13 @@ A field can be sent in the payload, in an `X-Apprise-*` header, or in the query 
 
 | Field      | Payload                                                                          | Header                                                     | Query string           | When none is sent                                                                          |
 | ---------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------ |
-| `body`     | `body`, or the whole request body for `text/plain`, `text/html`, `text/markdown` | —                                                          | —                      | Required, unless an attachment is sent                                                     |
+| `body`     | `body`, or the whole request body for `text/plain`, `text/html`, `text/markdown` | -                                                          | -                      | Required, unless an attachment is sent                                                     |
 | `title`    | `title`                                                                          | `X-Apprise-Title`                                          | `?title=`              | No title                                                                                   |
 | `type`     | `type`                                                                           | `X-Apprise-Type`                                           | `?type=`               | `info`                                                                                     |
 | `tag`      | `tag`, then `tags`                                                               | `X-Apprise-Tag`                                            | `?tag=`, then `?tags=` | Stateful: only the URLs with no tag. Stateless: every URL                                  |
-| `format`   | `format`                                                                         | —                                                          | `?format=`             | Plain text: set by its `Content-Type`. JSON: `APPRISE_DEFAULT_FORMAT`. Form: no conversion |
-| `template` | `template` object, or `template[name]` form fields                               | `X-Apprise-Template`                                       | —                      | Each name falls back to its configuration default, then `APPRISE_TEMPLATE_<NAME>`          |
-| `urls`     | `urls` (stateless only)                                                          | `X-Apprise-Config-ID` uses the saved configuration instead | —                      | `APPRISE_STATELESS_URLS`, for an administrator only when authentication is on              |
+| `format`   | `format`                                                                         | -                                                          | `?format=`             | Plain text: set by its `Content-Type`. JSON: `APPRISE_DEFAULT_FORMAT`. Form: no conversion |
+| `template` | `template` object, or `template[name]` form fields                               | `X-Apprise-Template`                                       | -                      | Each name falls back to its configuration default, then `APPRISE_TEMPLATE_<NAME>`          |
+| `urls`     | `urls` (stateless only)                                                          | `X-Apprise-Config-ID` uses the saved configuration instead | -                      | `APPRISE_STATELESS_URLS`, for an administrator only when authentication is on              |
 
 - An empty `title`, `type`, or `tag` counts as not sent, so the next source is used.
 - Values set by [payload mapping](#payload-mapping-hooks) (`?:field=`) count as payload values.
@@ -433,9 +433,7 @@ By default, endpoints return `text/plain`. If you prefer JSON, send `Accept: app
 
 For notification endpoints (`/notify` and `/notify/{KEY}`), you can also request a simple HTML log view by sending `Accept: text/html`. This is mainly useful for human testing in a browser.
 
-These normal responses wait for notification work to finish, then send retained
-logs one entry at a time. This avoids rebuilding a large on-disk result in
-memory and does not change the response format.
+These normal responses wait for notification work to finish, then send retained logs one entry at a time. This avoids rebuilding a large on-disk result in memory and does not change the response format.
 
 ### Live Progress Streaming
 
@@ -460,35 +458,19 @@ data: {"status": "SUCCESS"}
 
 The stream starts with HTTP `200`, before delivery finishes. Check the final `result` status (`SUCCESS`, `FAILURE`, `NOMATCH`, `PARTIAL`, or `TIMEOUT`) instead of expecting HTTP `424`.
 
-Each connection keeps up to 2 MB of waiting logs in memory. If the client falls
-behind, up to 256 MB more can use temporary disk storage. Events stay ordered
-unless either limit is reached.
+Each connection keeps up to 2 MB of waiting logs in memory. If the client falls behind, up to 256 MB more can use temporary disk storage. Events stay ordered unless either limit is reached.
 
-If the storage limit is reached or temporary storage fails, notification
-delivery continues. The stream sends an `ERROR` log asking the caller to
-contact the server administrator. New entries resume after the stored backlog
-drains.
+If the storage limit is reached or temporary storage fails, notification delivery continues. The stream sends an `ERROR` log asking the caller to contact the server administrator. New entries resume after the stored backlog drains.
 
-Operators can change these limits with `APPRISE_STREAM_MEMORY_SIZE` and
-`APPRISE_STREAM_DISK_SIZE`. The same limits also keep the completed result's
-logs from growing without bound in memory. See [Environment Variables](/api/reference/environment/#storage--limits) for the zero-value modes.
+Operators can change these limits with `APPRISE_STREAM_MEMORY_SIZE` and `APPRISE_STREAM_DISK_SIZE`. The same limits also keep the completed result's logs from growing without bound in memory. See [Environment Variables](/api/reference/environment/#storage--limits) for the zero-value modes.
 
-At most `APPRISE_STREAM_WORKER_COUNT` streamed notifications run concurrently
-in each Gunicorn worker process. The default is `4`, so the effective
-server-wide default is `APPRISE_WORKER_COUNT * 4`.
+At most `APPRISE_STREAM_WORKER_COUNT` streamed notifications run concurrently in each Gunicorn worker process. The default is `4`, so the effective server-wide default is `APPRISE_WORKER_COUNT * 4`.
 
-`APPRISE_STREAM_QUEUE_SIZE` allows up to `8` additional streams to remain
-connected in each worker process while waiting for an active slot or
-finishing their responses. When both the active and queued slots are full, a
-new stream receives HTTP `503` with a `Retry-After` header. Non-streaming
-notifications are unaffected.
+`APPRISE_STREAM_QUEUE_SIZE` allows up to `8` additional streams to remain connected in each worker process while waiting for an active slot or finishing their responses. When both the active and queued slots are full, a new stream receives HTTP `503` with a `Retry-After` header. Non-streaming notifications are unaffected.
 
-Work still occupies its slot if the client disconnects during delivery. A
-reverse proxy may also enforce its own limits before a request reaches
-Apprise API.
+Work still occupies its slot if the client disconnects during delivery. A reverse proxy may also enforce its own limits before a request reaches Apprise API.
 
-In the packaged container, `APPRISE_CONNECTION_TIMEOUT` controls how long a
-proxy waits for live-stream activity and defaults to 10 minutes.
+In the packaged container, `APPRISE_CONNECTION_TIMEOUT` controls how long a proxy waits for live-stream activity and defaults to 10 minutes.
 
 :::note
 `-N` (`--no-buffer`) tells `curl` to print each event as it arrives instead of waiting for the connection to close.
@@ -551,6 +533,8 @@ curl -X POST \
     http://localhost:8000/notify
 ```
 
+In the web interface, the **Attachments** section of the **Notifications** tab takes uploaded files and web addresses. **Preview** downloads a web address the way a send would and shows the file, or why it could not be fetched (such as a `404`). It always offers a **Download** button.
+
 ## Stateful Notifications
 
 <picture class="theme-aware-sf-diagram">
@@ -596,7 +580,7 @@ A password-only administrator login uses `-u ":password"`.
 
 An administrator may also set a Config ID to `public`. Public callers omit Basic Auth but must provide a specific tag other than `all`. Public access works only for stateful notification calls; other endpoints remain protected.
 
-The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it.
+The `disabled` mode freezes configuration-user access without deleting its saved configuration or credentials. An administrator can still manage and use it, but its reminders are kept as they are and none run or can be changed, not even by the administrator, until its access changes.
 
 ### Tagging
 
@@ -629,9 +613,7 @@ The tag can also be sent in the `X-Apprise-Tag` header or the `?tag=` query stri
 
 ### Supplying Template Values
 
-If a saved configuration uses `${NAME}` markers, the URLs that need them are
-not used until a value is available. You can supply values with the
-notification itself.
+If a saved configuration uses `${NAME}` markers, the URLs that need them are not used until a value is available. You can supply values with the notification itself.
 
 The saved YAML must declare each marker:
 
@@ -680,35 +662,18 @@ curl -X POST \
 
 The header is used only when the payload has no `template` values. A malformed header returns HTTP `400`.
 
-A value sent this way takes priority. If it is blank or whitespace-only,
-Apprise uses the configuration default, then the server's environment.
-Names are case-insensitive. Extra valid names are accepted and ignored, with
-their names acknowledged only in
-the server's local debug log.
+A value sent this way takes priority. If it is blank or whitespace-only, Apprise uses the configuration default, then the server's environment. Names are case-insensitive. Extra valid names are accepted and ignored, with their names acknowledged only in the server's local debug log.
 
-Missing values skip only the affected URLs. The result is `PARTIAL` if another
-matching URL sends, or `FAILURE` if all matching URLs are skipped. Missing names
-appear only in the local server log. Use the **Review** tab or
-`GET /json/urls/{KEY}` to see what a configuration needs.
+Missing values skip only the affected URLs. The result is `PARTIAL` if another matching URL sends, or `FAILURE` if all matching URLs are skipped. Missing names appear only in the local server log. Use the **Review** tab or `GET /json/urls/{KEY}` to see what a configuration needs.
 
 These values affect saved configurations only; stateless requests ignore them.
 
-The **Notifications** tab adds a concealed key/value row for each variable used
-by the selected destinations. Defaults declared in `template:` are filled when
-available, but server environment values are never shown. A blank field uses
-the configuration default, then the environment. You may remove rows freely,
-and **Clear Form** rebuilds the suggestions. **Add Value** is available after
-every current row has a name; highlighted rows will be sent. Quick tests use a
-separate concealed prompt. Stateless tests are unchanged.
+The **Notifications** tab adds a concealed key/value row for each variable used by the selected destinations. Defaults declared in `template:` are filled when available, but server environment values are never shown. A blank field uses the configuration default, then the environment. You may remove rows freely, and **Clear Form** rebuilds the suggestions. **Add Value** is available after every current row has a name; highlighted rows will be sent. Quick tests use a separate concealed prompt. Stateless tests are unchanged.
 
-Any caller allowed to send through a saved configuration may supply its
-declared template values. See [Template Variables](../getting-started/template/)
-for setup and placement guidance.
+Any caller allowed to send through a saved configuration may supply its declared template values. See [Template Variables](../getting-started/template/) for setup and placement guidance.
 
 :::note
-`X-Apprise-Log-Level: debug` (or `trace`) may expose a saved configuration, so
-it requires administrator privileges or `user` access. Calls using `locked`,
-`public`, or `disabled` access receive no more than `info`.
+`X-Apprise-Log-Level: debug` (or `trace`) may expose a saved configuration, so it requires administrator privileges or `user` access. Calls using `locked`, `public`, or `disabled` access receive no more than `info`.
 :::
 
 ### Seeing What a Configuration Needs
@@ -736,6 +701,37 @@ The markers inside `url` are left exactly as written:
 Each `url` also carries the settings written underneath it in the configuration, so substituting the markers gives you a URL that sends the same way the saved entry does. The exception is a setting the service has no URL argument for, which is left out because a URL cannot express it.
 
 Add `privacy=1` and the text around each marker is masked and every default is withheld. That listing is fine to display, but it cannot be used to send.
+
+### Reminders
+
+A reminder is a notification saved now and sent later, once or on a repeating schedule.
+
+#### Add a Reminder
+
+On the **Notifications** tab, write the message and select **Add Reminder**. Choose a date and time or a public holiday, then select **Add Reminder** again to save it. If you leave the name empty, the title or first line of the message is used.
+
+Select **Make recurring** to repeat by seconds, minutes, hours, days, weeks, months, or years. You can limit the schedule to selected weekdays or months and add an end date. **Drift** moves each scheduled time later, or earlier when you enter a negative value.
+
+Uploaded files are stored with the reminder. Web addresses are downloaded at send time, so a link to a changing file, such as a camera snapshot, retrieves its current content.
+
+#### View and Manage Reminders
+
+The **Reminders** tab provides calendar and **All** views. From either view, you can:
+
+- pause or resume a reminder;
+- edit, copy, test, or delete it;
+- change one occurrence or the whole series when it repeats; and
+- choose the timezone used to display dates without changing when reminders are sent.
+
+Paused reminders remain visible. Finished reminders stay in the **All** view until they are removed. Selecting an empty calendar day starts a reminder for that date.
+
+The tab is available to the administrator and to a configuration login while its access is `user`. When `APPRISE_ADMIN` is enabled in simple stateful mode, **Reminder List** shows reminders from every Config ID.
+
+#### Limits
+
+After a Config ID has a login, the administrator can set its reminder count and attachment allowance on the access page. These limits do not apply to the administrator, although files added by the administrator still count toward the configuration's attachment use.
+
+See [Reminders](../endpoints/#reminders) for the API.
 
 ## Payload Mapping (Hooks)
 

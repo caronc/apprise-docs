@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   /* Existing styling to ensure block behavior */
   .theme-aware-a1-diagram img {
@@ -70,17 +72,7 @@ Les notifications restent ainsi portables, maintenables et faciles à raisonner.
 
 ## Comment Apprise s'Articule
 
-<picture class="apprise-flow">
-  <source
-    srcset="/assets/apprise-overview-fr-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-fr-light.svg"
-    alt="Les sources à gauche passent par l'API Apprise ou la bibliothèque au centre, qui distribuent vers les services de notification à droite."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview alt="Les sources à gauche passent par l'API Apprise ou la bibliothèque au centre, qui distribuent vers les services de notification à droite." />
 
 - **Quelque chose doit envoyer un message.** Un script, un webhook, la ligne de commande, l'application mobile, ou un logiciel qui parle déjà Apprise.
 - **Apprise se charge de la remise.** Vous importez la bibliothèque Python dans votre propre code, ou vous exécutez le serveur API comme passerelle partagée vers laquelle n'importe quoi peut poster.
@@ -88,7 +80,7 @@ Les notifications restent ainsi portables, maintenables et faciles à raisonner.
 
 Comme le format d'URL est le même partout, une URL testée en ligne de commande fonctionne telle quelle dans un script, dans le serveur API ou sur votre téléphone.
 
-## À quoi ça ressemble
+## À Quoi Ça Ressemble
 
 Depuis un script ou la ligne de commande :
 
@@ -129,3 +121,4 @@ Les deux envoient la même notification. Pour viser un autre service, seule l'UR
 | Envoyer des notifications depuis votre application             | [La Bibliothèque Python](../library/)                                    |
 | Offrir une passerelle de notifications partagée à vos systèmes | [Le Serveur API](../api/), sans état ou avec configurations enregistrées |
 | Envoyer depuis votre téléphone vers votre serveur auto-hébergé | [Apprise Mobile](../mobile/)                                             |
+| Envoyer une notification plus tard, ou selon un calendrier     | Les [rappels](../api/endpoints/#rappels) du Serveur API                  |

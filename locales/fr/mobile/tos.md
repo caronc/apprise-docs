@@ -3,16 +3,18 @@ title: Conditions d'Utilisation d'Apprise Mobile
 description: Conditions régissant l'utilisation d'Apprise Mobile.
 sidebar:
   label: Conditions d'Utilisation
-  order: 4
+  order: 5
 ---
 
-**Dernière mise à jour : 18 novembre 2026**
+**Dernière mise à jour : 19 novembre 2026**
 
 Les présentes Conditions constituent un accord entre vous et Chris Caron, le développeur indépendant qui publie Apprise Mobile (« nous », « notre » ou « nos »). Elles s'appliquent à Apprise Mobile, publiée sous le nom **Apprise** sur Google Play et l'App Store (« l'application »). En utilisant l'application, vous acceptez ces Conditions. Si vous ne les acceptez pas, veuillez ne pas l'utiliser.
 
 ## 1. Fonctionnement de l'Application
 
 L'application accompagne les serveurs Apprise API que vous-même ou un tiers exploitez. Elle stocke des données sur votre appareil et envoie des requêtes directement aux serveurs que vous configurez afin de les gérer et d'envoyer des notifications.
+
+Les rappels programmés sont enregistrés sur le serveur Apprise API que vous configurez, et c'est lui qui les envoie. L'application se contente de les créer, de les modifier et de les supprimer.
 
 Apprise API est un logiciel serveur libre et distinct. Nous n'exploitons pas votre serveur, ne recevons pas ses échanges et ne contrôlons pas les services de notification qu'il contacte. Nous n'avons aucun accès à votre appareil, à vos serveurs, à vos identifiants de connexion ni à vos URL de notification, et nous ne pouvons pas les sécuriser à votre place.
 
@@ -46,6 +48,8 @@ Dans la mesure permise par la loi, l'application est fournie **« telle quelle �
 
 Nous ne garantissons pas non plus que l'application, les données qu'elle stocke ou ses sauvegardes sont exemptes de vulnérabilités ou protégées contre tout accès non autorisé. Les mesures de protection telles que le stockage chiffré des identifiants de connexion et les phrases secrètes des sauvegardes réduisent le risque, mais ne peuvent pas l'éliminer.
 
+**Usage critique exclu.** L'application, y compris les rappels programmés, n'est ni conçue ni destinée à des situations où une notification échouée, en retard ou manquée pourrait entraîner la mort, des blessures ou de graves dommages matériels ou environnementaux, par exemple les alertes médicales ou de maintien des fonctions vitales, les interventions d'urgence, le contrôle de la circulation aérienne ou la navigation des aéronefs ou des véhicules. Ne vous y fiez pas à ces fins.
+
 ## 6. Limitation de Responsabilité
 
 Dans toute la mesure permise par la loi, nous ne sommes pas responsables des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ni d'aucune perte de données, de bénéfices ou de clientèle, découlant de l'application ou des présentes Conditions ou s'y rapportant. Cela comprend les notifications échouées ou retardées, l'indisponibilité des services, les messages non autorisés ou l'utilisation de comptes connectés résultant de l'exposition ou de la compromission d'un appareil, d'un ordinateur, d'un serveur, d'un réseau, d'une sauvegarde, d'un identifiant de connexion ou de configuration, ou d'une URL de notification, quelle que soit la manière dont cette exposition s'est produite.
@@ -68,7 +72,7 @@ Si une disposition des présentes Conditions est jugée inapplicable, les autres
 
 ## 10. Contact
 
-Pour toute question concernant ces Conditions, écrivez à [lead2gold@gmail.com](mailto:lead2gold@gmail.com).
+Pour toute question concernant ces Conditions, écrivez à **[support@appriseit.com](mailto:support@appriseit.com)**.
 
 ## 11. Marques Commerciales
 

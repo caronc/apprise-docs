@@ -28,6 +28,7 @@
   "formatNotUsed": "Not used",
   "choiceYes": "Yes",
   "choiceNo": "No",
+  "choiceNotSet": "Not set",
   "listPlaceholder": "One per line or comma-separated",
   "listCommaSeparated": "Comma-separated",
 

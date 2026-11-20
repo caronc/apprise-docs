@@ -37,14 +37,9 @@ Mutating an asset after it has been bound to `Apprise` can produce inconsistent 
 
 ## Object Initialization
 
-`AppriseAsset.__init__()` provides named arguments for storage, timeouts,
-payload limits, and other shared settings. Always use the documented
-constructor name, such as `timezone=`, `service_timeout=`, or
-`payload_max_size=`. These arguments validate values before applying them.
+`AppriseAsset.__init__()` provides named arguments for storage, timeouts, payload limits, and other shared settings. Always use the documented constructor name, such as `timezone=`, `service_timeout=`, or `payload_max_size=`. These arguments validate values before applying them.
 
-Python constructor arguments and YAML `asset:` keys are separate interfaces.
-Some settings are available to applications through `AppriseAsset(...)` but
-are intentionally unavailable to YAML configuration.
+Python constructor arguments and YAML `asset:` keys are separate interfaces. Some settings are available to applications through `AppriseAsset(...)` but are intentionally unavailable to YAML configuration.
 
 ---
 
@@ -87,14 +82,14 @@ This table documents the **actual defaults** from the implementation, plus where
 
 ### Concurrency and Delivery
 
-| Field                    | Type            | Default | Used by                | Notes                                                                                                                                                                                                  |
-| ------------------------ | --------------- | ------: | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `async_mode`             | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                            |
-| `default_service_retry`  | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                     |
-| `default_service_wait`   | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                          |
-| `service_timeout`        | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. `0` disables the limit. See [Notification Results](/library/results/). |
-| `result_log_memory_size` | `int`           |     `0` | Result logs            | Bytes kept in memory before result logs spill to temporary disk storage. Used only when `result_log_disk_size` is greater than `0`.                                                                    |
-| `result_log_disk_size`   | `int`           |     `0` | Result logs            | Maximum temporary disk space for one notification result. `0` keeps all result logs in memory.                                                                                                         |
+| Field                    | Type            | Default | Used by                | Notes                                                                                                                                                                                                                                                                             |
+| ------------------------ | --------------- | ------: | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `async_mode`             | `bool`          |  `True` | Delivery orchestration | Controls concurrent vs sequential dispatch.                                                                                                                                                                                                                                       |
+| `default_service_retry`  | `int`           |     `0` | Per-service retry      | Fallback retry count for any service that does not set `?retry=` in its URL. Clamped to `[0, 10]`.                                                                                                                                                                                |
+| `default_service_wait`   | `float`         |   `0.5` | Per-service retry      | Fallback inter-retry pause (seconds) for services without `?wait=`. Clamped to `[0.0, 20.0]`.                                                                                                                                                                                     |
+| `service_timeout`        | `int` / `float` |  `60.0` | Per-service timeout    | Maximum seconds a single service (including all of its retries) may take before Apprise gives up on it and reports a `TIMEOUT`. A web attachment download still running after this long is also stopped. `0` disables both limits. See [Notification Results](/library/results/). |
+| `result_log_memory_size` | `int`           |     `0` | Result logs            | Bytes kept in memory before result logs spill to temporary disk storage. Used only when `result_log_disk_size` is greater than `0`.                                                                                                                                               |
+| `result_log_disk_size`   | `int`           |     `0` | Result logs            | Maximum temporary disk space for one notification result. `0` keeps all result logs in memory.                                                                                                                                                                                    |
 
 ### Plugin Discovery
 
@@ -189,9 +184,7 @@ asset = AppriseAsset(async_mode=False)
 
 <TabItem value="timeout" label="Service Timeout">
 
-Give every service in the session the same time budget, instead of the default
-60 seconds. See [Notification Results](/library/results/) for how a service
-that runs out of time is reported back to you.
+Give every service in the session the same time budget, instead of the default 60 seconds. See [Notification Results](/library/results/) for how a service that runs out of time is reported back to you.
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -212,8 +205,7 @@ apobj.notify(body="Time-sensitive alert", timeout=30)
 
 <TabItem value="result-logs" label="Result Log Storage">
 
-Keep a small result-log buffer in memory and place later entries in an
-automatically removed temporary file:
+Keep a small result-log buffer in memory and place later entries in an automatically removed temporary file:
 
 ```python
 from apprise import Apprise, AppriseAsset
@@ -225,9 +217,7 @@ asset = AppriseAsset(
 apobj = Apprise(asset=asset)
 ```
 
-The limits are shared by all services and retries in one notification. If the
-disk allowance is exhausted or unavailable, delivery continues and the result
-contains a warning that later log entries could not be retained.
+The limits are shared by all services and retries in one notification. If the disk allowance is exhausted or unavailable, delivery continues and the result contains a warning that later log entries could not be retained.
 
 </TabItem>
 
@@ -270,8 +260,7 @@ asset = AppriseAsset(
 
 <TabItem value="timezone" label="Timezone Control" >
 
-Plugins that generate timestamps (for example email Date headers) use the
-configured timezone.
+Plugins that generate timestamps (for example email Date headers) use the configured timezone.
 
 ```python
 from apprise import AppriseAsset
@@ -283,9 +272,7 @@ asset = AppriseAsset(timezone="America/Toronto")
 
 <TabItem value="language" label="Language Control" >
 
-Apprise translates its own human-readable text, such as the field names
-`details()` returns. Leave `language` unset and the language of the system
-Apprise runs on is used.
+Apprise translates its own human-readable text, such as the field names `details()` returns. Leave `language` unset and the language of the system Apprise runs on is used.
 
 ```python
 from apprise import AppriseAsset
@@ -295,13 +282,9 @@ asset = AppriseAsset(language="fr")
 asset = AppriseAsset(language="en-CA")
 ```
 
-A regional tag looks for that exact translation first (`en_CA`), then for
-its plain language (`en`), and finally falls back to English. Apprise ships
-translations for `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`, `ko`,
-`ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi`, and `zh`.
+A regional tag looks for that exact translation first (`en_CA`), then for its plain language (`en`), and finally falls back to English. Apprise ships translations for `ar`, `de`, `en`, `es`, `fr`, `hi`, `id`, `it`, `ja`, `ko`, `ms`, `nl`, `pl`, `pt`, `ru`, `th`, `tl`, `tr`, `vi`, and `zh`.
 
-Only text a person reads is translated. Anything a program reads, such as a
-status code or a key in a response, stays in English.
+Only text a person reads is translated. Anything a program reads, such as a status code or a key in a response, stays in English.
 
   </TabItem>
 
@@ -331,17 +314,13 @@ asset = AppriseAsset(
 
 ### HTTP Redirects
 
-By default, Apprise follows HTTP 3xx redirects, matching the behaviour of the
-underlying requests library. If you want to prevent custom headers and
-credentials from being forwarded to destinations that differ from the original
-URL, you can disable redirect following globally:
+By default, Apprise follows HTTP 3xx redirects, matching the behaviour of the underlying requests library. If you want to prevent custom headers and credentials from being forwarded to destinations that differ from the original URL, you can disable redirect following globally:
 
 ```python
 asset = AppriseAsset(http_redirects=False)
 ```
 
-Individual URLs can still override the asset default using the `redirect=`
-URL parameter:
+Individual URLs can still override the asset default using the `redirect=` URL parameter:
 
 ```text
 # Override per-URL regardless of the asset setting
@@ -361,10 +340,7 @@ Disabling this is strongly discouraged outside isolated environments.
 
 ### Payload Size Cap
 
-`payload_max_size` is the payload limit, or total character budget (`N`), for
-the title and body before formatting or splitting begins. A value of `0`
-disables the limit. If the title and body already fit within `N`, Apprise
-leaves both unchanged.
+`payload_max_size` is the payload limit, or total character budget (`N`), for the title and body before formatting or splitting begins. A value of `0` disables the limit. If the title and body already fit within `N`, Apprise leaves both unchanged.
 
 ```python
 asset = AppriseAsset(payload_max_size=100000)
@@ -381,17 +357,10 @@ Three settings work together when the content is larger than `N`:
 With the default values, an oversized payload is resolved in this order:
 
 1. **One side is empty:** The other side receives the full budget.
-2. **One side is short:** A title of 10 characters or fewer stays whole if
-   the body can keep 25 characters, or its full length when shorter. The
-   same rule then checks for a short body. If both qualify, the title is
-   checked first.
-3. **Otherwise:** The title and body share `N` in proportion to their
-   original lengths. When `N` has room for both, each keeps at least one
-   character.
+2. **One side is short:** A title of 10 characters or fewer stays whole if the body can keep 25 characters, or its full length when shorter. The same rule then checks for a short body. If both qualify, the title is checked first.
+3. **Otherwise:** The title and body share `N` in proportion to their original lengths. When `N` has room for both, each keeps at least one character.
 
-For example, a 20-character title and an 18-character body with `N=20`
-split approximately 10/10. A smaller cap may still leave a short fragment,
-but it does not favor one side when both can be represented.
+For example, a 20-character title and an 18-character body with `N=20` split approximately 10/10. A smaller cap may still leave a short fragment, but it does not favor one side when both can be represented.
 
 Library users can change both settings when constructing the asset:
 
@@ -403,20 +372,13 @@ asset = AppriseAsset(
 )
 ```
 
-Setting `payload_min_buffer=0` removes the reservation, so a qualifying
-short side may use the entire cap.
+Setting `payload_min_buffer=0` removes the reservation, so a qualifying short side may use the entire cap.
 
-Formatting and escaping can add a few characters afterward. The limit
-applies to every `overflow=` mode, including `upstream`.
+Formatting and escaping can add a few characters afterward. The limit applies to every `overflow=` mode, including `upstream`.
 
 ## Configuration File Boundaries
 
-YAML deliberately supports a smaller set of asset settings than the Python
-constructor. Numeric controls such as `service_timeout`, `payload_max_size`,
-`payload_buffer_threshold`, and `payload_min_buffer` must be supplied
-through their named `AppriseAsset(...)` arguments. Plugin paths and storage
-settings are also application-controlled so configuration files cannot load
-code or redirect persistent storage.
+YAML deliberately supports a smaller set of asset settings than the Python constructor. Numeric controls such as `service_timeout`, `payload_max_size`, `payload_buffer_threshold`, and `payload_min_buffer` must be supplied through their named `AppriseAsset(...)` arguments. Plugin paths and storage settings are also application-controlled so configuration files cannot load code or redirect persistent storage.
 
 `image_path_mask` and `secure_logging` are application-controlled too. A
 configuration may be fetched from another server or written by another user,

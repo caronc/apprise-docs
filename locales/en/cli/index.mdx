@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
     content: url("/assets/apprise-overview-en-dark.svg");
@@ -20,17 +22,10 @@ The Apprise CLI (`apprise`) is a lightweight command-line tool that allows you t
 
 The CLI is one of the ways into Apprise. It uses the same notification URLs as everything else, and can talk to an Apprise API server instead of sending directly.
 
-<picture class="apprise-flow apprise-flow--cli">
-  <source
-    srcset="/assets/apprise-overview-en-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-en-light.svg"
-    alt="The Apprise CLI highlighted among the ways to send notifications through Apprise."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="cli"
+  alt="The Apprise CLI highlighted among the ways to send notifications through Apprise."
+/>
 
 ## Installing the CLI
 
@@ -63,11 +58,9 @@ apprise -t "Task Complete" -b "The backup finished successfully." \
 
 ### Chaining Multiple Services
 
-You can notify multiple services at once by listing them sequentially. By default,
-Apprise sends notifications asynchronously for better performance.
+You can notify multiple services at once by listing them sequentially. By default, Apprise sends notifications asynchronously for better performance.
 
-Use `--disable-async` to send notifications synchronously, processing each service
-one at a time in the order they are loaded.
+Use `--disable-async` to send notifications synchronously, processing each service one at a time in the order they are loaded.
 
 ```bash
 # Notify Discord and Email simultaneously
@@ -78,9 +71,7 @@ apprise -vv -t "Server Alert" -b "High CPU usage detected." \
 ```
 
 :::tip
-Adding `-v` (verbose) is useful for debugging. It prints delivery status and
-diagnostic information to the console. Verbosity increases with each additional
-`v` (for example `-vv`, `-vvv`), with higher levels producing more detailed output.
+Adding `-v` (verbose) is useful for debugging. It prints delivery status and diagnostic information to the console. Verbosity increases with each additional `v` (for example `-vv`, `-vvv`), with higher levels producing more detailed output.
 :::
 
 ## Piping Input (stdin)

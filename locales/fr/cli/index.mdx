@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
     content: url("/assets/apprise-overview-fr-dark.svg");
@@ -20,17 +22,10 @@ La CLI Apprise (`apprise`) est un outil léger en ligne de commande qui vous per
 
 La CLI est l'une des portes d'entrée d'Apprise. Elle utilise les mêmes URL de notification que le reste, et peut s'adresser à un serveur API Apprise plutôt que d'envoyer directement.
 
-<picture class="apprise-flow apprise-flow--cli">
-  <source
-    srcset="/assets/apprise-overview-fr-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-fr-light.svg"
-    alt="La CLI Apprise mise en évidence parmi les façons d'envoyer des notifications avec Apprise."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="cli"
+  alt="La CLI Apprise mise en évidence parmi les façons d'envoyer des notifications avec Apprise."
+/>
 
 ## Installer la CLI
 
@@ -42,7 +37,7 @@ Les images Docker ciblent principalement **Apprise API**, même si la CLI reste 
 
 Pour toutes les options d'installation, consultez [Installation](../getting-started/installation/).
 
-## Utilisation de base
+## Utilisation de Base
 
 La syntaxe est volontairement intuitive. Il vous suffit de fournir les détails de la notification et les URL de destination.
 
@@ -51,7 +46,7 @@ La syntaxe est volontairement intuitive. Il vous suffit de fournir les détails 
 apprise -t "Titre" -b "Corps" "service-url://..."
 ```
 
-### Envoyer une notification simple
+### Envoyer une Notification Simple
 
 Pour envoyer une notification, fournissez un titre (`-t`) et un corps (`-b`), suivis d'une ou plusieurs URL Apprise.
 
@@ -61,7 +56,7 @@ apprise -t "Tâche terminée" -b "La sauvegarde s'est terminée avec succès." \
     "discord://webhook_id/webhook_token"
 ```
 
-### Chaîner plusieurs services
+### Chaîner Plusieurs Services
 
 Vous pouvez notifier plusieurs services à la fois en les listant à la suite. Par défaut, Apprise envoie les notifications de manière asynchrone pour de meilleures performances.
 
@@ -79,7 +74,7 @@ apprise -vv -t "Alerte serveur" -b "Utilisation CPU élevée détectée." \
 Ajouter `-v` (mode verbeux) est utile pour le débogage. Cela affiche l'état de livraison et des informations de diagnostic dans la console. La verbosité augmente à chaque `v` supplémentaire (par exemple `-vv`, `-vvv`), les niveaux plus élevés produisant une sortie plus détaillée.
 :::
 
-## Lecture depuis l'entrée standard (`stdin`)
+## Lecture depuis l'Entrée Standard (`stdin`)
 
 La CLI fonctionne naturellement avec l'entrée standard (`stdin`). Si vous ne spécifiez pas de corps (`-b`), Apprise lit ce qui arrive par le pipe. C'est idéal pour surveiller des journaux ou capturer la sortie d'une commande.
 
@@ -92,7 +87,7 @@ cat /proc/cpuinfo | apprise -t "Infos CPU" \
 uptime | apprise "discord://webhook_id/webhook_token"
 ```
 
-## Charger une configuration
+## Charger une Configuration
 
 Bien que vous puissiez passer les URL directement à la commande, il est souvent plus propre d'utiliser un fichier de configuration. Cela garde les secrets hors de votre historique de commandes et facilite la gestion de groupes de notification complexes.
 

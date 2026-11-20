@@ -30,8 +30,7 @@ async def main():
 asyncio.run(main())
 ```
 
-See [Notification Results](/library/results/) for everything `result` can tell you
-(per-service detail, timing, captured logs, and more).
+See [Notification Results](/library/results/) for everything `result` can tell you (per-service detail, timing, captured logs, and more).
 
 ## Serialization (Pickle)
 
@@ -77,11 +76,41 @@ obj.send(
 Using `send()` directly bypasses many of the safeguards and features (like tagging and attachment processing) provided by the main `notify()` method.
 :::
 
+### URLs and Their Fields
+
+A notification object can give its URL back as separate fields, named after the tokens and arguments in [`details()`](/library/inspection/), the same names the [URL Builder](/url-builder/) shows. `fields_to_url()` puts fields back together into a URL. This lets a program show a URL as a form and turn the form back into a URL.
+
+```python
+import apprise
+from apprise.fields import fields_to_url
+
+obj = apprise.Apprise.instantiate(
+    "mailtos://user:secret@example.com?to=a@example.com&smtp=smtp.example.com"
+)
+
+# The URL as fields, and the same fields with the secrets hidden
+fields = obj.url_fields()
+hidden = obj.url_fields(privacy=True)
+
+# fields["targets"] == ["a@example.com"]
+# fields["smtp"] == "smtp.example.com"
+# hidden["password"] == "****"
+
+# The fields make the same URL again
+url = fields_to_url(fields)
+assert apprise.Apprise.instantiate(url).url() == obj.url()
+```
+
+- An alias such as `to` is folded into the entry it stands for, here `targets`.
+- Key/value options (`+header`, `-param`, `:key`) come back as maps, such as `headers`, `params` and `payload`.
+- Values come back as the type `details()` gives them: lists, numbers and `True`/`False`.
+- The hidden fields mask every entry `details()` marks as private.
+- `fields_to_url()` returns `None` when the schema is unknown or a field name isn't one the service lists. It doesn't check the URL; load it to find out whether it works.
+- `apprise.fields.parse_fields(url)` reads the fields of a URL its service wouldn't load yet, such as `mailto://` with nothing after it, so a form can show what was typed so far.
+
 ## Handling Configuration Errors
 
-Apprise raises `AppriseImproperlyConfigured` when a library call receives
-missing, invalid, or conflicting settings. Catch it when your application needs
-to report a configuration problem:
+Apprise raises `AppriseImproperlyConfigured` when a library call receives missing, invalid, or conflicting settings. Catch it when your application needs to report a configuration problem:
 
 ```python
 from apprise import AppriseAsset
@@ -93,27 +122,15 @@ except AppriseImproperlyConfigured as error:
     print(f"Invalid Apprise settings: {error}")
 ```
 
-Existing handlers for `TypeError`, `ValueError`, or `AttributeError` continue to
-work. New code should catch `AppriseImproperlyConfigured` so configuration
-problems are easier to identify.
+Existing handlers for `TypeError`, `ValueError`, or `AttributeError` continue to work. New code should catch `AppriseImproperlyConfigured` so configuration problems are easier to identify.
 
-All Apprise-specific exceptions inherit from `AppriseException`, which provides
-one catch-all when your application does not need to distinguish the cause.
-Disk failures reported as `AppriseDiskIOError` can also be caught as
-`OSError`. Plugin-specific failures based on `ApprisePluginException` can be
-handled together when their individual details are not needed.
+All Apprise-specific exceptions inherit from `AppriseException`, which provides one catch-all when your application does not need to distinguish the cause. Disk failures reported as `AppriseDiskIOError` can also be caught as `OSError`. Plugin-specific failures based on `ApprisePluginException` can be handled together when their individual details are not needed.
 
-`notify()` and `async_notify()` report these problems in their return value
-instead of raising exceptions.
+`notify()` and `async_notify()` report these problems in their return value instead of raising exceptions.
 
-A service that fails before preparing its message gets its own `FAILURE` entry,
-just like one that fails while sending. Other services still run, escalation
-continues, and optional services remain optional. A call with mixed outcomes
-reports `PARTIAL`.
+A service that fails before preparing its message gets its own `FAILURE` entry, just like one that fails while sending. Other services still run, escalation continues, and optional services remain optional. A call with mixed outcomes reports `PARTIAL`.
 
-If Apprise cannot use the message, the whole call reports `FAILURE` with no
-service entries and sends nothing. An invalid `timeout=` value is the only case
-these methods still raise for.
+If Apprise cannot use the message, the whole call reports `FAILURE` with no service entries and sends nothing. An invalid `timeout=` value is the only case these methods still raise for.
 
 ## Proxy Support
 

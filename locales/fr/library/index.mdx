@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
     content: url("/assets/apprise-overview-fr-dark.svg");
@@ -20,17 +22,10 @@ La bibliothèque Apprise vous permet d'envoyer des notifications vers la quasi-t
 
 La bibliothèque est le moteur sous tout le reste : la CLI, le serveur API et l'application mobile passent tous par elle.
 
-<picture class="apprise-flow apprise-flow--library">
-  <source
-    srcset="/assets/apprise-overview-fr-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-fr-light.svg"
-    alt="La bibliothèque Apprise mise en évidence parmi les façons d'envoyer des notifications."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="library"
+  alt="La bibliothèque Apprise mise en évidence parmi les façons d'envoyer des notifications."
+/>
 
 Pour les utilitaires communs utilisés dans les plugins, consultez la [référence des utilitaires](./utilities/).
 

@@ -6,6 +6,8 @@ sidebar:
   order: 1
 ---
 
+import AppriseOverview from "~/components/AppriseOverview.astro";
+
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
     content: url("/assets/apprise-overview-en-dark.svg");
@@ -20,17 +22,10 @@ The Apprise library allows you to send notifications to almost all of the most p
 
 The library is the engine underneath everything else: the CLI, the API server, and the mobile app all send through it.
 
-<picture class="apprise-flow apprise-flow--library">
-  <source
-    srcset="/assets/apprise-overview-en-dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <img
-    src="/assets/apprise-overview-en-light.svg"
-    alt="The Apprise core library highlighted among the ways to send notifications through Apprise."
-    loading="lazy"
-  />
-</picture>
+<AppriseOverview
+  highlight="library"
+  alt="The Apprise core library highlighted among the ways to send notifications through Apprise."
+/>
 
 For common helpers used across plugins, see the [Utilities Reference](./utilities/).
 

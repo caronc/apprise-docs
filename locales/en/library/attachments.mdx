@@ -7,14 +7,9 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-When you pass `attach=` into `Apprise.notify()`, Apprise normalizes every entry into an
-`AppriseAttachment` object (internally backed by `AttachBase`
-implementations). Plugins that opt in (by setting
-`attachment_support = True`) receive a list of attachment objects through
-the `attach` argument of `send()`.
+When you pass `attach=` into `Apprise.notify()`, Apprise normalizes every entry into an `AppriseAttachment` object (internally backed by `AttachBase` implementations). Plugins that opt in (by setting `attachment_support = True`) receive a list of attachment objects through the `attach` argument of `send()`.
 
-From a plugin author perspective, an attachment is a small, uniform API
-that lets you:
+From a plugin author perspective, an attachment is a small, uniform API that lets you:
 
 - Validate availability (`if not attachment: ...`)
 - Read from disk (`attachment.path`, `attachment.open()`, `attachment.chunk()`)
@@ -56,19 +51,13 @@ A quick rule of thumb:
 
 ### `send()` May Be Called More Than Once
 
-A long message may be split across several `send()` calls. Apprise includes
-`attach` in only one of those calls, so `if attach:` prevents the same files
-from being sent with every piece.
+A long message may be split across several `send()` calls. Apprise includes `attach` in only one of those calls, so `if attach:` prevents the same files from being sent with every piece.
 
-The attachment is sent with the first piece by default. To send it with another
-piece, override `_attachment_send_index()`. See
-[Knowing Your Position Among Multiple `send()` Calls](../extending/message-format-conversion/#knowing-your-position-among-multiple-send-calls)
-for an example.
+The attachment is sent with the first piece by default. To send it with another piece, override `_attachment_send_index()`. See [Knowing Your Position Among Multiple `send()` Calls](../extending/message-format-conversion/#knowing-your-position-among-multiple-send-calls) for an example.
 
 ## Attachment Sources
 
-Apprise supports multiple attachment sources. These are all normalized to
-the same API surface.
+Apprise supports multiple attachment sources. These are all normalized to the same API surface.
 
 <Tabs>
 <TabItem value="file" label="Local File (file://)">
@@ -209,13 +198,10 @@ These entries become HTTP headers, not query parameters.
 
 ### Certificate Verification
 
-The `verify=` parameter controls TLS certificate verification for HTTPS-based
-attachments.
+The `verify=` parameter controls TLS certificate verification for HTTPS-based attachments.
 
-- `verify=yes` (default): TLS certificates are validated using the system trust
-  store.
-- `verify=no`: TLS certificate verification is disabled. This should only be
-  used for testing or when interacting with trusted internal endpoints.
+- `verify=yes` (default): TLS certificates are validated using the system trust store.
+- `verify=no`: TLS certificate verification is disabled. This should only be used for testing or when interacting with trusted internal endpoints.
 
 ### Timeouts
 
@@ -226,12 +212,17 @@ HTTP attachments support explicit timeout configuration:
 
 Timeout values persist with the attachment.
 
+The asset's `service_timeout` (60 seconds by default) also limits the download, counted from the start of the request. See [Assets & Branding](/library/assets/).
+
+- Connecting, and waiting for the server to answer, never take longer than the time left. A chain of redirects stops once time is up.
+- A file still arriving after that is stopped and the download fails, even when the server sends data a little at a time.
+- `0` turns this off, and a download can take as long as it needs.
+
+This also covers a server, or a proxy, that sends its response headers a byte at a time. It does not fully apply to an application that passes its own `requests.Session` (Apprise's `HTTPPolicySession`, used by Apprise API, is fully covered). There, the time is only checked between pieces of the file, so a server that trickles its headers or data can take longer.
+
 ### Caching
 
-Controls how long a downloaded attachment is considered valid before it is
-re-fetched. This is useful for things like security cameras where if your
-application is holding onto an AppriseAttachment object for a long time, you
-can always be guaranteed a fresh update.
+Controls how long a downloaded attachment is considered valid before it is re-fetched. This is useful for things like security cameras where if your application is holding onto an AppriseAttachment object for a long time, you can always be guaranteed a fresh update.
 
 - `cache=yes` caches indefinitely
 - `cache=no` disables caching (hosted URLs are fetched every time)
@@ -250,14 +241,11 @@ Cache is always deleted from the filesystem once the AppriseAttachment instance 
 
 ### Streaming and Limits
 
-HTTP attachments are streamed to disk and validated incrementally. When
-`Content-Length` is missing or invalid, size limits are enforced during
-streaming.
+HTTP attachments are streamed to disk and validated incrementally. When `Content-Length` is missing or invalid, size limits are enforced during streaming.
 
 ### Fetch Reuse
 
-When caching is enabled, a single HTTP fetch may be reused across many
-notification sends.
+When caching is enabled, a single HTTP fetch may be reused across many notification sends.
 
 </TabItem>
 
@@ -478,8 +466,7 @@ If you hold on to attachment objects beyond `send()`, you are responsible for un
 
 ## Guidance for Plugin Authors
 
-Plugins should validate attachment size and count early and handle inaccessible
-attachments gracefully.
+Plugins should validate attachment size and count early and handle inaccessible attachments gracefully.
 
 ## Practical Examples in Core Plugins
 

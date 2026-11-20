@@ -12,3 +12,4 @@ Cette section regroupe les documents de référence détaillés pour l'API Appri
 - [Variables d'environnement](./environment/)
 - [Codes de réponse](./response-codes/)
 - [Spécification OpenAPI](./openapi/)
+- [Diagnostics des rappels](./reminder-diagnostics/)
