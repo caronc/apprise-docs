@@ -44,7 +44,7 @@ The access token is valid for 60 days. Generate a new one from the same page whe
 
 If your app is still in **Development** mode, add each person you message as an Instagram tester under **App roles**.
 
-### Finding a user ID
+### Finding a User ID
 
 Instagram identifies each person by a numeric user ID that is only valid for your account. Once someone has messaged you, list your conversations to find it:
 
@@ -54,7 +54,7 @@ curl "https://graph.instagram.com/v26.0/me/conversations?platform=instagram&fiel
 
 Each conversation lists its participants with their `username` and `id`. Use the `id` of the person you want to notify.
 
-### Using a Facebook Page token
+### Using a Facebook Page Token
 
 If your Instagram account is linked to a Facebook Page, you can use that Page's access token (it starts with `EAA`) instead. Apprise detects it automatically. Meta documents sending files with a Page token, so use one if attachments fail with your Instagram token.
 

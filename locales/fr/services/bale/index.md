@@ -27,7 +27,7 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
 Apprise envoie les messages Bale grâce à un Bot Bale.
 

@@ -26,7 +26,7 @@ limits:
 <!-- SPONSORS:BANNER -->
 <!-- SERVICE:DETAILS -->
 
-## Configuration du compte
+## Configuration du Compte
 
 Apprise envoie les messages Zalo grâce à un Bot Zalo.
 
