@@ -10,6 +10,7 @@ sidebar:
 import "~/styles/mobile.css";
 import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
 import AppriseOverview from "~/components/AppriseOverview.astro";
+import MobileHeroPhone from "~/components/MobileHeroPhone.astro";
 
 <style>{`
   :root[data-theme="dark"] .apprise-flow img {
@@ -23,13 +24,17 @@ import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <div class="mobile-page">
   <section class="mobile-hero">
+    <MobileHeroPhone />
     <div class="mobile-hero-copy">
       <span class="mobile-app-label">Application Android et iOS</span>
-      <h2>Vos notifications, où que vous soyez</h2>
+      <h2>Vos Notifications, Où que Vous Soyez</h2>
       <p>
         Envoyez un message ou une photo que vous venez de prendre vers une destination, un groupe
         ou toutes les destinations configurées. Apprise Mobile relie votre téléphone ou votre tablette à
         <!-- SERVICES:COUNT --> services pris en charge grâce à votre API Apprise auto-hébergée.
+      </p>
+      <p>
+        Pas encore le moment d'envoyer ? Créez un <a href="./reminders/">rappel</a> et votre serveur l'enverra plus tard, une seule fois ou de façon répétée, même si votre téléphone est éteint.
       </p>
       <p>
         Nécessite un <a href="../api/deployment/">serveur API Apprise</a> en cours d'exécution.
@@ -37,7 +42,6 @@ import AppriseOverview from "~/components/AppriseOverview.astro";
       </p>
       <MobileStoreLinks lang="fr" />
     </div>
-
   </section>
 
 <section class="mobile-preview">
@@ -88,39 +92,85 @@ import AppriseOverview from "~/components/AppriseOverview.astro";
 </section>
 
   <section class="mobile-preview">
-    <h2>Tout au même endroit</h2>
+    <h2>Tout au Même Endroit</h2>
     <p>
-      Gérez vos serveurs, créez des URL de service et suivez chaque envoi jusqu'à son rapport de
-      livraison.
+      Gérez vos serveurs, planifiez des rappels, créez des URL de service et suivez chaque envoi
+      jusqu'à son rapport de livraison.
     </p>
 
     <div class="mobile-screenshots">
       <figure>
         <img
+          class="mobile-shot-dark"
           src="/assets/apprise-mobile-dashboard.png"
           alt="Tableau de bord Apprise Mobile présentant les serveurs, les tags et les services de notification"
           width="450"
-          height="932"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-dashboard-light.png"
+          alt="Tableau de bord Apprise Mobile présentant les serveurs, les tags et les services de notification"
+          width="450"
+          height="968"
           loading="lazy"
         />
         <figcaption>Tableau de Bord</figcaption>
       </figure>
       <figure>
         <img
+          class="mobile-shot-dark"
+          src="/assets/apprise-mobile-reminders.png"
+          alt="Rappels Apprise Mobile : un calendrier du mois avec chaque rappel listé sous le jour de son envoi"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-reminders-light.png"
+          alt="Rappels Apprise Mobile : un calendrier du mois avec chaque rappel listé sous le jour de son envoi"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <figcaption>Rappels</figcaption>
+      </figure>
+      <figure>
+        <img
+          class="mobile-shot-dark"
           src="/assets/apprise-mobile-url-builder.png"
           alt="Générateur d'URL Apprise Mobile avec une liste de services consultable"
           width="450"
-          height="932"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-url-builder-light.png"
+          alt="Générateur d'URL Apprise Mobile avec une liste de services consultable"
+          width="450"
+          height="968"
           loading="lazy"
         />
         <figcaption>Générateur d'URL</figcaption>
       </figure>
       <figure>
         <img
+          class="mobile-shot-dark"
           src="/assets/apprise-mobile-delivery-report.png"
           alt="Rapport de livraison Apprise Mobile présentant la progression et les résultats"
           width="450"
-          height="932"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-delivery-report-light.png"
+          alt="Rapport de livraison Apprise Mobile présentant la progression et les résultats"
+          width="450"
+          height="968"
           loading="lazy"
         />
         <figcaption>Rapport de Livraison</figcaption>
@@ -130,7 +180,7 @@ import AppriseOverview from "~/components/AppriseOverview.astro";
   </section>
 
 <section class="mobile-get">
-  <h2>Connectez votre téléphone ou votre tablette</h2>
+  <h2>Connectez Votre Téléphone ou Votre Tablette</h2>
   <p>
     Disponible pour Android 8.0 ou version ultérieure et pour iPhone ou iPad
     avec iOS 17.2 ou version ultérieure. Installez l'application depuis l'une

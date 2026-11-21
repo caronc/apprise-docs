@@ -85,6 +85,12 @@ tox -e test,lint
 
 Si vous préférez exécuter les outils directement (une fois les dépendances de développement installées), le dépôt documente `pytest` et `ruff` comme équivalents manuels optionnels.
 
+Quelques tests pilotent l'interface Web dans un vrai navigateur. Ils utilisent Google Chrome s'il est installé, ou le Chromium que Playwright télécharge, et sont ignorés si aucun des deux n'est disponible :
+
+```bash
+.tox/test/bin/python -m playwright install chromium
+```
+
 ## Traductions de l'interface
 
 Les langues prises en charge par l'interface sont définies dans

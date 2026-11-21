@@ -84,6 +84,12 @@ tox -e test,lint
 
 If you prefer running tools directly (once dev dependencies are installed), the repository documents `pytest` and `ruff` as optional manual equivalents.
 
+A few tests drive the web interface in a real browser. They use an installed Google Chrome, or the Chromium that Playwright downloads, and are skipped when neither is available:
+
+```bash
+.tox/test/bin/python -m playwright install chromium
+```
+
 ## Interface Translations
 
 The supported interface languages are defined in
