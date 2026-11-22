@@ -6,7 +6,7 @@ sidebar:
   order: 1
 ---
 
-import { Icon } from "@astrojs/starlight/components";
+import { Icon, TabItem, Tabs } from "@astrojs/starlight/components";
 import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
@@ -164,6 +164,36 @@ C'est la boîte centrale du schéma ci-dessous : tout ce qui se trouve à gauc
 - **Une interface web incluse.** Gérez les configurations enregistrées et envoyez des tests depuis votre navigateur. Elle suit la langue de votre navigateur et se désactive avec `APPRISE_API_ONLY=yes`.
 - **Envoyer plus tard, ou selon un calendrier.** Enregistrez un [rappel](./endpoints/#rappels) et le serveur l'envoie une fois, de façon répétée ou lors d'un jour férié. Rien d'autre n'a besoin de rester en marche pour l'envoyer.
 - **S'exécute partout.** Un petit conteneur à l'aise sous Docker, Docker Compose ou Kubernetes.
+
+## Interface Web Optionnelle
+
+Tout ce qui précède fonctionne avec de simples requêtes HTTP, et c'est l'usage principal du serveur. Si vous préférez cliquer plutôt qu'écrire un script, le serveur inclut aussi une interface web à l'adresse `http://localhost:8000` pour enregistrer vos URL, vérifier ce qui a été chargé et envoyer un test. Vous n'utilisez que l'API ? Désactivez l'interface avec `APPRISE_API_ONLY=yes`.
+
+<Tabs>
+<TabItem label="Configurer">
+
+Choisissez un ID de configuration, saisissez vos URL au format TEXT ou YAML, puis enregistrez. Le bouton Générateur d'URL vous aide si vous ne savez pas comment en écrire une.
+
+![L'onglet Configuration, avec un ID de configuration saisi et une configuration TEXT prête à être enregistrée](../getting-started/images/api-configuration.png)
+
+</TabItem>
+<TabItem label="Vérifier">
+
+Consultez chaque URL chargée par le serveur, avec ses tags. Choisissez les tags à notifier, ou envoyez un test rapide à une seule URL.
+
+![L'onglet Vérification, avec le tag alertes sélectionné sur deux services](../getting-started/images/api-review.png)
+
+</TabItem>
+<TabItem label="Envoyer">
+
+Rédigez un message et envoyez-le aux tags choisis, ou transformez-le en rappel qui partira plus tard.
+
+![L'onglet Notifications, avec un tag sélectionné et un message prêt à partir](../getting-started/images/api-notifications.png)
+
+</TabItem>
+</Tabs>
+
+Le [Guide de Démarrage Rapide](/getting-started/quick-start/) présente ces écrans étape par étape.
 
 <div class="api-mobile-callout">
   <div class="api-mobile-callout__copy">

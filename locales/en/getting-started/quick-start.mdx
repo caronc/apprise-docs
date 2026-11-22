@@ -63,33 +63,27 @@ curl -X POST \
 
 The API includes a built-in Configuration Manager at `http://localhost:8000`.
 
-#### Step 1: Choose a Key
+#### Step 1: Save a Configuration
 
-Configurations are stored under a unique **Config ID** (or Key). Pick a keyword (e.g., `my-alerts`) to get started.
+Pick a **Config ID**, a name such as `my-alerts` that your settings are saved under. Open the **Configuration** tab, enter your Apprise URLs (TEXT or YAML format), and press **Save Configuration**. Not sure how to write a URL? The **Apprise URL Builder** button builds one for you.
 
-![Apprise API Login](./images/api-screen-1.png)
+![The Configuration tab, with a Config ID entered and a TEXT configuration ready to save](./images/api-configuration.png)
 
-#### Step 2: Add Configuration
+#### Step 2: Review Your URLs
 
-Enter your Apprise URLs (TEXT or YAML format) and save them to your Key.
+The **Review** tab lists every URL Apprise loaded from your configuration, along with its **tags**. Click a tag to include that service in your next notification, or press the arrow beside a URL to send it a quick test.
 
-![Apprise API Configuration](./images/api-screen-2.png)
+![The Review tab, with the alerts tag selected on two services](./images/api-review.png)
 
-#### Step 3: Review & Tag
+#### Step 3: Send a Notification
 
-Verify your URLs are loaded. You can see which **tags** are assigned to them, allowing you to target specific groups later.
+Switch to the **Notifications** tab. The tags you picked are already filled in, and you can add more. The body is the only required field. Press **Send Notification**, or **Add Reminder** to have it sent later.
 
-![Apprise API Review](./images/api-screen-3.png)
-
-#### Step 4: Send Notification
-
-Switch to the **Notifications** tab. Select the tags you want to target (or leave blank to notify all) and fire away.
-
-![Apprise API Send](./images/api-screen-4.png)
+![The Notifications tab, with a tag selected and a message ready to send](./images/api-notifications.png)
 
 ### Developer API (Swagger)
 
-Apprise API follows the OpenAPI 3.0 specification. You can find the `swagger.yaml` spec [in the root of the repository](https://github.com/caronc/apprise-api/blob/master/swagger.yaml).
+Apprise API follows the OpenAPI 3.0 specification. You can find the `swagger.yaml` spec [in the root of the repository](https://github.com/caronc/apprise-api/blob/master/swagger.yaml). The [OpenAPI Specification](/api/reference/openapi/) page shows how to browse it in Swagger UI.
 
 </TabItem>
 </Tabs>
@@ -99,3 +93,4 @@ Apprise API follows the OpenAPI 3.0 specification. You can find the `swagger.yam
 - **[Learn the Syntax](/getting-started/universal-syntax/):** Understand how Apprise URLs work.
 - **[Configure It](/getting-started/configuration/):** Learn how to use configuration files to manage your URLs.
 - **[Find Services](/services/):** Browse the supported services catalog.
+- **[Build a URL](/url-builder/):** Pick a service, fill in a short form, and copy the finished URL.

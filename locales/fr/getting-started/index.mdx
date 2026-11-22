@@ -58,17 +58,98 @@ Que vous lanciez des tâches cron, gériez des conteneurs ou développiez des ap
 
 ## Une Syntaxe pour Toutes les Gouverner
 
-Au cœur d'Apprise se trouve l'**URL Universelle de Notification**.
+Au cœur d'Apprise se trouve l'**URL Universelle de Notification**. Chaque service, qu'il s'agisse de Discord, d'un e-mail ou d'une passerelle SMS, se configure avec la même adresse en quatre parties :
 
-Au lieu d'apprendre un format de charge utile propre à chaque service, vous configurez vos destinations à l'aide d'une syntaxe unique, prévisible et cohérente :
+<div class="url-anatomy">
+  <p class="url-anatomy__url">
+    <span class="ua-schema">service://</span>
+    <span class="ua-creds">credentials</span>
+    <span class="ua-target">/direction/</span>
+    <span class="ua-params">?parameter=value</span>
+  </p>
+  <dl class="url-anatomy__legend">
+    <div class="ua-schema">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a5 5 0 0 0-5 5v4l-2 3h14l-2-3V8a5 5 0 0 0-5-5z" />
+            <path d="M10 18a2 2 0 0 0 4 0" />
+          </svg>
+        </span>
+        Service
+      </dt>
+      <dd>L'application qui reçoit le message.</dd>
+    </div>
+    <div class="ua-creds">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="8" cy="12" r="4" />
+            <path d="M12 12h9M18 12v3M21 12v2" />
+          </svg>
+        </span>
+        Identifiants
+      </dt>
+      <dd>Votre jeton, connexion ou serveur.</dd>
+    </div>
+    <div class="ua-target">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3z" />
+            <path d="m10 13 4-4" />
+          </svg>
+        </span>
+        Direction
+      </dt>
+      <dd>Le canal, la discussion, le sujet ou la personne.</dd>
+    </div>
+    <div class="ua-params">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+            <circle cx="15" cy="7" r="2" />
+            <circle cx="9" cy="17" r="2" />
+          </svg>
+        </span>
+        Paramètres
+      </dt>
+      <dd>Réglages optionnels propres au service.</dd>
+    </div>
+  </dl>
+  <div class="url-anatomy__caption">
+    Voici à quoi elle ressemble pour quelques services :
+  </div>
+  <ul class="url-anatomy__examples">
+    <li>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params">?silent=yes</span>
+    </li>
+    <li>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general</span>
+      <span class="ua-params">?footer=no</span>
+    </li>
+    <li>
+      <span class="ua-schema">ntfy://</span>
+      <span class="ua-creds">ntfy.sh</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params">?priority=high</span>
+    </li>
+    <li>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params">?format=html</span>
+    </li>
+  </ul>
+</div>
 
-```text
-service://credentials/direction/?parameter=value
-```
-
-Changer de service plus tard revient à modifier l'URL, pas votre code ni vos scripts.
-
-Les notifications restent ainsi portables, maintenables et faciles à raisonner.
+Changer de service plus tard revient à modifier l'URL, pas votre code ni vos scripts. La page [Syntaxe URL Universelle](/fr/getting-started/universal-syntax/) détaille chaque partie, et le [Générateur d'URL](/url-builder/) peut écrire l'URL pour vous.
 
 ## Comment Apprise s'Articule
 

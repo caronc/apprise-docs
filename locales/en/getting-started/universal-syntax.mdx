@@ -1,0 +1,256 @@
+---
+title: "Universal URL Syntax"
+description: "Understanding the Apprise URL Structure"
+sidebar:
+  order: 5
+---
+
+import { LinkCard, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Every destination in Apprise is written as one URL. Learn its four parts once and you can read or write a URL for any of the <!-- SERVICES:COUNT --> [supported services](/services/).
+
+:::tip[No Need to Memorize This]
+The [URL Builder](/url-builder/) asks for each value in a simple form and writes the URL for you. Every [service page](/services/) also lists the exact URL formats that service accepts.
+:::
+
+## The Blueprint
+
+The service is always there. Which of the other three parts you need depends on the service.
+
+<div class="url-anatomy">
+  <p class="url-anatomy__url">
+    <span class="ua-schema">service://</span>
+    <span class="ua-creds">credentials</span>
+    <span class="ua-target">/direction/</span>
+    <span class="ua-params">?parameter=value</span>
+  </p>
+  <dl class="url-anatomy__legend">
+    <div class="ua-schema">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a5 5 0 0 0-5 5v4l-2 3h14l-2-3V8a5 5 0 0 0-5-5z" />
+            <path d="M10 18a2 2 0 0 0 4 0" />
+          </svg>
+        </span>
+        Service
+      </dt>
+      <dd>Which app gets the message.</dd>
+    </div>
+    <div class="ua-creds">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="8" cy="12" r="4" />
+            <path d="M12 12h9M18 12v3M21 12v2" />
+          </svg>
+        </span>
+        Credentials
+      </dt>
+      <dd>Your token, login, or server.</dd>
+    </div>
+    <div class="ua-target">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3z" />
+            <path d="m10 13 4-4" />
+          </svg>
+        </span>
+        Direction
+      </dt>
+      <dd>The channel, chat, topic, or person.</dd>
+    </div>
+    <div class="ua-params">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+            <circle cx="15" cy="7" r="2" />
+            <circle cx="9" cy="17" r="2" />
+          </svg>
+        </span>
+        Parameters
+      </dt>
+      <dd>Optional settings for that service.</dd>
+    </div>
+  </dl>
+</div>
+
+## Breakdown
+
+### 1. The Service (`service://`)
+
+The first part picks the service Apprise talks to. Many services have a secure form ending in `s`, such as `mailtos://` or `ntfys://`, which uses an encrypted connection.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="schema">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Email</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Telegram</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Slack</span>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+Not sure what yours is called? [Browse every supported service](/services/).
+
+### 2. Credentials and Host
+
+This part tells the service who you are, or where your server lives. Depending on the service it is a token, a user name and password, or the address of a server you run yourself.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="creds">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">A bot token</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">A login and mail server</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@example.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">A self-hosted server</span>
+      <span class="ua-schema">ntfys://</span>
+      <span class="ua-creds">ntfy.example.com</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+:::caution[Special Characters]
+If a password or token contains characters such as `@`, `/`, `:` or `#`, encode them or Apprise will split the URL in the wrong place. For example, `@` becomes `%40`. See [URL Construction](/qa/special-characters/) for the full list.
+:::
+
+### 3. The Direction (`/direction`)
+
+This part says where the message goes: a channel, a chat, a topic, a phone number, or a person. Many services take several at once, separated by `/`.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="target">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Two channels</span>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general/#alerts</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">A phone number</span>
+      <span class="ua-schema">twilio://</span>
+      <span class="ua-creds">AccountSid:AuthToken@15551234567</span>
+      <span class="ua-target">/15557654321</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">A chat</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+### 4. Parameters (`?key=value`)
+
+Optional settings go at the end, after a `?`. Each one is written as `key=value`, and several are joined with `&`. Most belong to one service, but a few such as `format=` work everywhere (see [Formatting](/getting-started/formatting/)).
+
+<div class="url-anatomy url-anatomy--compact" data-focus="params">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Read the message aloud</span>
+      <span class="ua-schema">discord://</span>
+      <span class="ua-creds">webhook_id/webhook_token</span>
+      <span class="ua-target"></span>
+      <span class="ua-params">?tts=yes</span>
+    </li>
+    <li>
+      <span class="ua-note">Send the email as HTML</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params">?format=html</span>
+    </li>
+    <li>
+      <span class="ua-note">Raise the priority</span>
+      <span class="ua-schema">ntfys://</span>
+      <span class="ua-creds">ntfy.example.com</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params">?priority=high</span>
+    </li>
+  </ul>
+</div>
+
+Each [service page](/services/) lists the parameters it supports.
+
+## Where URLs Are Used
+
+The same URL works everywhere in Apprise, so one you test on the command line can go straight into a config file or an API call.
+
+<Tabs>
+<TabItem label="Command Line">
+
+```bash
+apprise -b "Hello" "tgram://bottoken/chat_id"
+```
+
+</TabItem>
+<TabItem label="YAML Config">
+
+```yaml
+urls:
+  - tgram://bottoken/chat_id
+```
+
+</TabItem>
+<TabItem label="Text Config">
+
+```text
+tgram://bottoken/chat_id
+```
+
+</TabItem>
+<TabItem label="API Call">
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"urls": "tgram://bottoken/chat_id", "body": "Hello"}' \
+    http://localhost:8000/notify/
+```
+
+</TabItem>
+</Tabs>
+
+## URL Builder
+
+You never have to write these by hand. The URL Builder shows a short form for the service you pick and fills in the URL as you type.
+
+<LinkCard
+  title="Open the URL Builder"
+  description="Pick a service, fill in its fields, and copy the finished URL."
+  href="/url-builder/"
+/>

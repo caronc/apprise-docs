@@ -45,7 +45,7 @@ apobj.notify(
 </TabItem>
 <TabItem label="Serveur API">
 
-Assurez-vous que votre conteneur API Apprise est en cours d'exécution (voir [Installation](./installation/)).
+Assurez-vous que votre conteneur API Apprise est en cours d'exécution (voir [Installation](/getting-started/installation/)).
 
 ### 1. Sans État (Le Plus Rapide)
 
@@ -63,39 +63,34 @@ curl -X POST \
 
 L'API inclut un gestionnaire de configuration intégré à l'adresse `http://localhost:8000`.
 
-#### Étape 1 : Choisir une Clé
+#### Étape 1 : Enregistrer une Configuration
 
-Les configurations sont stockées sous un **ID de configuration** unique (ou clé). Choisissez un mot-clé (par exemple `mes-alertes`) pour commencer.
+Choisissez un **ID de configuration**, un nom comme `mes-alertes` sous lequel vos réglages sont enregistrés. Ouvrez l'onglet **Configuration**, saisissez vos URL Apprise (au format TEXT ou YAML), puis cliquez sur **Enregistrer la configuration**. Vous ne savez pas comment écrire une URL ? Le bouton **Générateur d'URL Apprise** la construit pour vous.
 
-![Connexion à l'API Apprise](./images/api-screen-1.png)
+![L'onglet Configuration, avec un ID de configuration saisi et une configuration TEXT prête à être enregistrée](./images/api-configuration.png)
 
-#### Étape 2 : Ajouter une Configuration
+#### Étape 2 : Vérifier Vos URL
 
-Saisissez vos URL Apprise (au format TEXT ou YAML) et enregistrez-les sous votre clé.
+L'onglet **Vérification** liste chaque URL chargée depuis votre configuration, avec ses **tags**. Cliquez sur un tag pour inclure ce service dans votre prochaine notification, ou appuyez sur la flèche à côté d'une URL pour lui envoyer un test rapide.
 
-![Configuration de l'API Apprise](./images/api-screen-2.png)
+![L'onglet Vérification, avec le tag alertes sélectionné sur deux services](./images/api-review.png)
 
-#### Étape 3 : Vérifier et Étiqueter
+#### Étape 3 : Envoyer une Notification
 
-Vérifiez que vos URL sont bien chargées. Vous pouvez voir les **tags** qui leur sont associés afin de cibler certains groupes plus tard.
+Passez à l'onglet **Notifications**. Les tags choisis sont déjà renseignés, et vous pouvez en ajouter d'autres. Le corps du message est le seul champ obligatoire. Appuyez sur **Envoyer une notification**, ou sur **Ajouter un rappel** pour l'envoyer plus tard.
 
-![Vérification de l'API Apprise](./images/api-screen-3.png)
-
-#### Étape 4 : Envoyer une Notification
-
-Passez à l'onglet **Notifications**. Sélectionnez les tags à cibler (ou laissez vide pour notifier tout le monde), puis envoyez votre notification.
-
-![Envoi via l'API Apprise](./images/api-screen-4.png)
+![L'onglet Notifications, avec un tag sélectionné et un message prêt à partir](./images/api-notifications.png)
 
 ### API Développeur (Swagger)
 
-L'API Apprise suit la spécification OpenAPI 3.0. Vous pouvez trouver le fichier `swagger.yaml` [à la racine du dépôt](https://github.com/caronc/apprise-api/blob/master/swagger.yaml).
+L'API Apprise suit la spécification OpenAPI 3.0. Vous pouvez trouver le fichier `swagger.yaml` [à la racine du dépôt](https://github.com/caronc/apprise-api/blob/master/swagger.yaml). La page [Spécification OpenAPI](/api/reference/openapi/) explique comment le parcourir dans Swagger UI.
 
 </TabItem>
 </Tabs>
 
 ## Étapes Suivantes
 
-- **[Apprenez la Syntaxe](./universal-syntax/) :** comprenez comment fonctionnent les URL Apprise.
-- **[Configurez-le](./configuration/) :** apprenez à utiliser les fichiers de configuration pour gérer vos URL.
-- **[Trouvez des Services](../services/) :** parcourez le catalogue des services pris en charge.
+- **[Apprenez la Syntaxe](/getting-started/universal-syntax/) :** comprenez comment fonctionnent les URL Apprise.
+- **[Configurez-le](/getting-started/configuration/) :** apprenez à utiliser les fichiers de configuration pour gérer vos URL.
+- **[Trouvez des Services](/services/) :** parcourez le catalogue des services pris en charge.
+- **[Construisez une URL](/url-builder/) :** choisissez un service, remplissez un court formulaire et copiez l'URL obtenue.

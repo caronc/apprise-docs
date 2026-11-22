@@ -58,17 +58,98 @@ Whether you run cron jobs, manage containers, or build applications, Apprise sav
 
 ## One Syntax to Rule Them All
 
-At the core of Apprise is the **Universal Notification URL**.
+At the core of Apprise is the **Universal Notification URL**. Every service, whether it is Discord, email, or an SMS gateway, is set up with the same four-part address:
 
-Instead of learning a unique payload format for every service, you configure destinations using a single, predictable syntax:
+<div class="url-anatomy">
+  <p class="url-anatomy__url">
+    <span class="ua-schema">service://</span>
+    <span class="ua-creds">credentials</span>
+    <span class="ua-target">/direction/</span>
+    <span class="ua-params">?parameter=value</span>
+  </p>
+  <dl class="url-anatomy__legend">
+    <div class="ua-schema">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a5 5 0 0 0-5 5v4l-2 3h14l-2-3V8a5 5 0 0 0-5-5z" />
+            <path d="M10 18a2 2 0 0 0 4 0" />
+          </svg>
+        </span>
+        Service
+      </dt>
+      <dd>Which app gets the message.</dd>
+    </div>
+    <div class="ua-creds">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="8" cy="12" r="4" />
+            <path d="M12 12h9M18 12v3M21 12v2" />
+          </svg>
+        </span>
+        Credentials
+      </dt>
+      <dd>Your token, login, or server.</dd>
+    </div>
+    <div class="ua-target">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3z" />
+            <path d="m10 13 4-4" />
+          </svg>
+        </span>
+        Direction
+      </dt>
+      <dd>The channel, chat, topic, or person.</dd>
+    </div>
+    <div class="ua-params">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+            <circle cx="15" cy="7" r="2" />
+            <circle cx="9" cy="17" r="2" />
+          </svg>
+        </span>
+        Parameters
+      </dt>
+      <dd>Optional settings for that service.</dd>
+    </div>
+  </dl>
+  <div class="url-anatomy__caption">
+    Here is how it looks for a few real services:
+  </div>
+  <ul class="url-anatomy__examples">
+    <li>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params">?silent=yes</span>
+    </li>
+    <li>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general</span>
+      <span class="ua-params">?footer=no</span>
+    </li>
+    <li>
+      <span class="ua-schema">ntfy://</span>
+      <span class="ua-creds">ntfy.sh</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params">?priority=high</span>
+    </li>
+    <li>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params">?format=html</span>
+    </li>
+  </ul>
+</div>
 
-```text
-service://credentials/direction/?parameter=value
-```
-
-Switching services later means changing the URL, not your code or your scripts.
-
-This makes notifications portable, maintainable, and easy to reason about.
+Switching services later means changing the URL, not your code or your scripts. The [Universal URL Syntax](/getting-started/universal-syntax/) page walks through each part in detail, or the [URL Builder](/url-builder/) can write the URL for you.
 
 ## How Apprise Fits Together
 

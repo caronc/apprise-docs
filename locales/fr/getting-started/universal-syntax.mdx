@@ -1,0 +1,256 @@
+---
+title: "Syntaxe URL Universelle"
+description: "Comprendre la Structure des URL Apprise"
+sidebar:
+  order: 5
+---
+
+import { LinkCard, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Dans Apprise, chaque destination s'écrit sous la forme d'une URL. Une fois ses quatre parties connues, vous pouvez lire ou écrire une URL pour n'importe lequel des <!-- SERVICES:COUNT --> [services pris en charge](/services/).
+
+:::tip[Inutile de Tout Retenir]
+Le [Générateur d'URL](/url-builder/) vous demande chaque valeur dans un formulaire simple et écrit l'URL pour vous. Chaque [page de service](/services/) indique aussi les formats d'URL exacts acceptés par ce service.
+:::
+
+## Le Modèle
+
+Le service est toujours présent. Les trois autres parties dont vous avez besoin dépendent du service.
+
+<div class="url-anatomy">
+  <p class="url-anatomy__url">
+    <span class="ua-schema">service://</span>
+    <span class="ua-creds">credentials</span>
+    <span class="ua-target">/direction/</span>
+    <span class="ua-params">?parameter=value</span>
+  </p>
+  <dl class="url-anatomy__legend">
+    <div class="ua-schema">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a5 5 0 0 0-5 5v4l-2 3h14l-2-3V8a5 5 0 0 0-5-5z" />
+            <path d="M10 18a2 2 0 0 0 4 0" />
+          </svg>
+        </span>
+        Service
+      </dt>
+      <dd>L'application qui reçoit le message.</dd>
+    </div>
+    <div class="ua-creds">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="8" cy="12" r="4" />
+            <path d="M12 12h9M18 12v3M21 12v2" />
+          </svg>
+        </span>
+        Identifiants
+      </dt>
+      <dd>Votre jeton, connexion ou serveur.</dd>
+    </div>
+    <div class="ua-target">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3z" />
+            <path d="m10 13 4-4" />
+          </svg>
+        </span>
+        Direction
+      </dt>
+      <dd>Le canal, la discussion, le sujet ou la personne.</dd>
+    </div>
+    <div class="ua-params">
+      <dt>
+        <span class="ua-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+            <circle cx="15" cy="7" r="2" />
+            <circle cx="9" cy="17" r="2" />
+          </svg>
+        </span>
+        Paramètres
+      </dt>
+      <dd>Réglages optionnels propres au service.</dd>
+    </div>
+  </dl>
+</div>
+
+## Décomposition
+
+### 1. Le Service (`service://`)
+
+La première partie choisit le service avec lequel Apprise communique. Beaucoup de services ont une forme sécurisée qui se termine par `s`, comme `mailtos://` ou `ntfys://`, et qui utilise une connexion chiffrée.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="schema">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">E-mail</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Telegram</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Slack</span>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+Vous ne savez pas comment s'appelle le vôtre ? [Parcourez tous les services pris en charge](/services/).
+
+### 2. Identifiants et Hôte
+
+Cette partie indique au service qui vous êtes, ou où se trouve votre serveur. Selon le service, il s'agit d'un jeton, d'un nom d'utilisateur et d'un mot de passe, ou de l'adresse d'un serveur que vous hébergez vous-même.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="creds">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Un jeton de bot</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Une connexion et un serveur mail</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@example.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Un serveur auto-hébergé</span>
+      <span class="ua-schema">ntfys://</span>
+      <span class="ua-creds">ntfy.example.com</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+:::caution[Caractères Spéciaux]
+Si un mot de passe ou un jeton contient des caractères comme `@`, `/`, `:` ou `#`, encodez-les, sinon Apprise découpera l'URL au mauvais endroit. Par exemple, `@` devient `%40`. Consultez [Construction d'URL](/qa/special-characters/) pour la liste complète.
+:::
+
+### 3. La Direction (`/direction`)
+
+Cette partie indique où va le message : un canal, une discussion, un sujet, un numéro de téléphone ou une personne. Beaucoup de services en acceptent plusieurs à la fois, séparés par `/`.
+
+<div class="url-anatomy url-anatomy--compact" data-focus="target">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Deux canaux</span>
+      <span class="ua-schema">slack://</span>
+      <span class="ua-creds">TokenA/TokenB/TokenC</span>
+      <span class="ua-target">/#general/#alerts</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Un numéro de téléphone</span>
+      <span class="ua-schema">twilio://</span>
+      <span class="ua-creds">AccountSid:AuthToken@15551234567</span>
+      <span class="ua-target">/15557654321</span>
+      <span class="ua-params"></span>
+    </li>
+    <li>
+      <span class="ua-note">Une discussion</span>
+      <span class="ua-schema">tgram://</span>
+      <span class="ua-creds">bottoken</span>
+      <span class="ua-target">/chat_id</span>
+      <span class="ua-params"></span>
+    </li>
+  </ul>
+</div>
+
+### 4. Les Paramètres (`?key=value`)
+
+Les réglages optionnels se placent à la fin, après un `?`. Chacun s'écrit `key=value`, et plusieurs se joignent avec `&`. La plupart sont propres à un service, mais quelques-uns comme `format=` fonctionnent partout (voir [Formatage](/getting-started/formatting/)).
+
+<div class="url-anatomy url-anatomy--compact" data-focus="params">
+  <ul class="url-anatomy__examples url-anatomy__examples--noted">
+    <li>
+      <span class="ua-note">Lire le message à voix haute</span>
+      <span class="ua-schema">discord://</span>
+      <span class="ua-creds">webhook_id/webhook_token</span>
+      <span class="ua-target"></span>
+      <span class="ua-params">?tts=yes</span>
+    </li>
+    <li>
+      <span class="ua-note">Envoyer l'e-mail en HTML</span>
+      <span class="ua-schema">mailtos://</span>
+      <span class="ua-creds">user:pass@gmail.com</span>
+      <span class="ua-target">/jane@example.com</span>
+      <span class="ua-params">?format=html</span>
+    </li>
+    <li>
+      <span class="ua-note">Augmenter la priorité</span>
+      <span class="ua-schema">ntfys://</span>
+      <span class="ua-creds">ntfy.example.com</span>
+      <span class="ua-target">/my-topic</span>
+      <span class="ua-params">?priority=high</span>
+    </li>
+  </ul>
+</div>
+
+Chaque [page de service](/services/) liste les paramètres qu'elle prend en charge.
+
+## Où Utiliser les URL
+
+La même URL fonctionne partout dans Apprise : celle que vous testez en ligne de commande peut aller directement dans un fichier de configuration ou un appel API.
+
+<Tabs>
+<TabItem label="Ligne de Commande">
+
+```bash
+apprise -b "Bonjour" "tgram://bottoken/chat_id"
+```
+
+</TabItem>
+<TabItem label="Configuration YAML">
+
+```yaml
+urls:
+  - tgram://bottoken/chat_id
+```
+
+</TabItem>
+<TabItem label="Configuration Texte">
+
+```text
+tgram://bottoken/chat_id
+```
+
+</TabItem>
+<TabItem label="Appel API">
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"urls": "tgram://bottoken/chat_id", "body": "Bonjour"}' \
+    http://localhost:8000/notify/
+```
+
+</TabItem>
+</Tabs>
+
+## Générateur d'URL
+
+Vous n'avez jamais à les écrire à la main. Le Générateur d'URL affiche un court formulaire pour le service choisi et remplit l'URL au fur et à mesure.
+
+<LinkCard
+  title="Ouvrir le Générateur d'URL"
+  description="Choisissez un service, remplissez ses champs et copiez l'URL obtenue."
+  href="/url-builder/"
+/>

@@ -23,9 +23,7 @@ Use Apprise exceptions so applications can handle failures consistently.
 | `AppriseInvalidData`          | Stored or received data cannot be used safely.                                        |
 | `AppriseDiskIOError`          | A file or disk operation failed. It can also be caught as `OSError`.                  |
 
-Import exceptions from `apprise.exception`. Existing applications that catch
-`TypeError`, `ValueError`, or `AttributeError` remain compatible with
-`AppriseImproperlyConfigured`.
+Import exceptions from `apprise.exception`. Existing applications that catch `TypeError`, `ValueError`, or `AttributeError` remain compatible with `AppriseImproperlyConfigured`.
 
 <Tabs>
 <TabItem value="basic" label="Basic plugin">
@@ -629,14 +627,244 @@ A key rule that the unit tests enforce is that your template metadata must map c
 
 ### Throttling, Verification, Redirects, and Timeouts
 
-`URLBase` defines common SSL verification, redirect behaviour, and socket
-timeouts as URL arguments. Always pass the corresponding attributes into every
-`requests.*` call your plugin makes:
+`URLBase` defines common SSL verification, redirect behaviour, and socket timeouts as URL arguments. Always pass the corresponding attributes into every `requests.*` call your plugin makes:
 
 - `verify` controls `verify_certificate` -- pass as `verify=self.verify_certificate`
 - `redirect` controls `redirects` -- pass as `allow_redirects=self.redirects`
 - `rto` controls the socket read timeout
 - `cto` controls the socket connect timeout
+
+## Hiding Secrets in `url()`
+
+Every plugin's `url()` method takes a `privacy` flag. When it is `True`, the URL is headed for a log or a screen, so passwords and tokens must be masked. Wrap each sensitive value in `self.pprint()` and pick a mode that decides how much of it stays visible:
+
+| Mode                          | `privacy=True` Output for `i-am-a-token` | Use It For                                                                      |
+| ----------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
+| `PrivacyMode.Outer` (default) | `i...n`                                  | Tokens, API keys and webhook IDs. Enough is left to tell two of them apart.     |
+| `PrivacyMode.Tail`            | `...oken`                                | Values people recognize by their last digits, such as phone or account numbers. |
+| `PrivacyMode.Secret`          | `****`                                   | Passwords. Nothing is shown, not even the length.                               |
+
+With `privacy=False`, `pprint()` returns the value URL-encoded instead, the same as `self.quote()`. Pass `safe=""` for values that sit in the URL path so a `/` inside them is encoded too. An empty value comes back as an empty string in `Outer` and `Tail` mode, while `Secret` always returns `****`.
+
+```python
+from ..url import PrivacyMode
+
+
+def url(self, privacy=False, *args, **kwargs):
+    params = self.url_parameters(privacy=privacy, *args, **kwargs)
+
+    return "{schema}://{user}:{password}@{token}/?{params}".format(
+        schema=self.secure_protocol,
+        user=self.quote(self.user, safe=""),
+        password=self.pprint(
+            self.password, privacy, mode=PrivacyMode.Secret, safe=""
+        ),
+        token=self.pprint(self.token, privacy, safe=""),
+        params=self.urlencode(params),
+    )
+```
+
+| Call                | Result                                    |
+| ------------------- | ----------------------------------------- |
+| `url()`             | `myservice://joe:pass123@abcdef1234/?...` |
+| `url(privacy=True)` | `myservice://joe:****@a...4/?...`         |
+
+Mark the same values with `"private": True` in `template_tokens` or `template_args`. That is what tells the [URL Builder](#private-flag-matters) to hide them, and the [unit tests](#testing-your-plugin) check that nothing marked private shows up in the privacy URL.
+
+## Rate Limits
+
+### Fixed Delay
+
+Call `self.throttle()` right before every request your plugin makes. It sleeps just long enough that at least `request_rate_per_sec` seconds pass between two requests from the same plugin instance.
+
+```python
+class NotifyMyService(NotifyBase):
+    # The vendor allows one request per second
+    request_rate_per_sec = 1.0
+
+    def send(self, body, title="", notify_type=NotifyType.INFO, **kwargs):
+        # Always throttle before talking to the server
+        self.throttle()
+        r = requests.post(...)
+```
+
+`NotifyBase` sets this to `5.5` seconds, which is safe for almost any service but slow. Lower it when the vendor documents a higher limit, and set it to `0` for local plugins or for plugins that track the limit themselves (see below).
+
+`self.throttle(wait=10)` sleeps for exactly 10 seconds instead of the usual interval. That is how a plugin waits out a limit the server told it about.
+
+### Server-Reported Limits
+
+Some services tell you how close you are to their limit, or how long to back off after you hit it. Plugins that read this use two instance attributes, set in `__init__()`:
+
+| Attribute             | Type             | Meaning                                                                                                    |
+| --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `ratelimit_remaining` | `float`          | How many more requests the server allows. `0` or less means the plugin is blocked until `ratelimit_reset`. |
+| `ratelimit_reset`     | `datetime` (UTC) | When the server reopens the window. Stored without a timezone (`.replace(tzinfo=None)`).                   |
+
+These are not built into `NotifyBase`. They are a shared convention, so reuse these names. Discord, Fluxer, Mastodon, Bluesky, Reddit, Revolt and Twitter all use them, in one of two styles:
+
+<Tabs>
+<TabItem label="Rate-Limit Headers (Discord)">
+
+The server sends `X-RateLimit-Remaining` and `X-RateLimit-Reset` (a Unix timestamp) on every response. The plugin copies them after each request, so it knows it is out of requests before it gets a `429`.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+
+class NotifyMyService(NotifyBase):
+    # The server reports its limits, so skip the fixed delay
+    request_rate_per_sec = 0
+
+    # Our clock and the server's may differ slightly; wait a bit longer
+    clock_skew = timedelta(seconds=10)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # Not blocked yet
+        self.ratelimit_reset = datetime.now(timezone.utc).replace(tzinfo=None)
+        self.ratelimit_remaining = 1.0
+
+    def _send(self, payload, rate_limit=1):
+        wait = None
+        if self.ratelimit_remaining <= 0.0:
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            if now < self.ratelimit_reset:
+                wait = abs(
+                    (self.ratelimit_reset - now + self.clock_skew)
+                    .total_seconds()
+                )
+
+        self.throttle(wait=wait)
+
+        r = requests.post(...)
+
+        try:
+            # Remember what the server told us for the next request
+            self.ratelimit_remaining = float(
+                r.headers.get("X-RateLimit-Remaining")
+            )
+            self.ratelimit_reset = datetime.fromtimestamp(
+                int(r.headers.get("X-RateLimit-Reset")), timezone.utc
+            ).replace(tzinfo=None)
+
+        except (TypeError, ValueError):
+            # Headers missing or unreadable; keep the old values
+            pass
+
+        if r.status_code == requests.codes.too_many_requests and rate_limit > 0:
+            # Try once more. The check at the top now waits for the reset.
+            return self._send(payload, rate_limit=rate_limit - 1)
+
+        # ...normal status handling
+```
+
+</TabItem>
+<TabItem label="Retry-After (Fluxer)">
+
+The server says nothing until you hit the limit. Then it answers `429` with a `Retry-After` header holding the number of seconds to wait. The plugin blocks itself for that long, retries, and clears the block once a send succeeds.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+
+class NotifyMyService(NotifyBase):
+    # The server reports its limits, so skip the fixed delay
+    request_rate_per_sec = 0
+
+    # Wait at least this long after a 429, even without Retry-After
+    default_delay_sec = 1.0
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # Not blocked yet
+        self.ratelimit_reset = datetime.now(timezone.utc).replace(tzinfo=None)
+        self.ratelimit_remaining = 1.0
+
+    def _send(self, payload, rate_limit=1):
+        wait = None
+        if self.ratelimit_remaining <= 0.0:
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            if now >= self.ratelimit_reset:
+                # The block has passed; clear it
+                self.ratelimit_remaining = 1.0
+            else:
+                wait = (self.ratelimit_reset - now).total_seconds()
+
+        self.throttle(wait=wait)
+
+        r = requests.post(...)
+
+        if r.status_code == requests.codes.too_many_requests:
+            delay = self.default_delay_sec
+            try:
+                delay = float(r.headers.get("Retry-After"))
+            except (TypeError, ValueError):
+                pass
+
+            # Block ourselves until the server is ready again
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            self.ratelimit_remaining = 0.0
+            self.ratelimit_reset = now + timedelta(
+                seconds=max(self.default_delay_sec, delay)
+            )
+
+            if rate_limit > 0:
+                # The check at the top now waits out the delay
+                return self._send(payload, rate_limit=rate_limit - 1)
+
+            return False
+
+        # ...normal status handling
+```
+
+</TabItem>
+</Tabs>
+
+Both styles share a few rules:
+
+- Set `request_rate_per_sec = 0`, or the fixed delay is added on top of the server's.
+- Retry a `429` a limited number of times. The `rate_limit` counter above allows one retry, so a server that keeps refusing cannot hold the plugin forever.
+- Close any open file handles (attachments) before calling `_send()` again.
+- This retry is separate from the user's `retry=` URL option, which repeats a whole send after it fails.
+
+## Notification Images
+
+Apprise ships an icon for each notification type (info, success, warning and failure). Setting `image_size` tells Apprise which size your service should get. Leave it as `None` and your plugin never sends one.
+
+| Value                    | Size      |
+| ------------------------ | --------- |
+| `NotifyImageSize.XY_32`  | 32 x 32   |
+| `NotifyImageSize.XY_72`  | 72 x 72   |
+| `NotifyImageSize.XY_128` | 128 x 128 |
+| `NotifyImageSize.XY_256` | 256 x 256 |
+
+Pick the size closest to what the service displays. Three helpers return the icon for a notification type:
+
+| Helper                         | Returns                          | Use When                                        |
+| ------------------------------ | -------------------------------- | ----------------------------------------------- |
+| `self.image_url(notify_type)`  | A public URL to the icon         | The service downloads the image itself.         |
+| `self.image_path(notify_type)` | A path to the icon on local disk | A local library needs a file (desktop pop-ups). |
+| `self.image_raw(notify_type)`  | The icon as `bytes`              | You upload or embed the image yourself.         |
+
+Each one returns `None` when `image_size` is not set or the user turned images off in their `AppriseAsset`, so always check the result. Most plugins also offer an `image=` URL option (mapped to `include_image`) so a user can turn the icon off per URL:
+
+```python
+from ..common import NotifyImageSize
+
+
+class NotifyMyService(NotifyBase):
+    image_size = NotifyImageSize.XY_256
+
+    def send(self, body, title="", notify_type=NotifyType.INFO, **kwargs):
+        payload = {"text": body}
+
+        image_url = self.image_url(notify_type)
+        if self.include_image and image_url:
+            payload["icon"] = image_url
+```
 
 ## url_identifier
 
@@ -701,8 +929,7 @@ When combined with a well-formed `url_identifier` (configuration identity only),
 
 ## Delivering to More Than One Target
 
-If `send()` loops over several targets, record each successful target. A
-retry then contacts only the targets that failed.
+If `send()` loops over several targets, record each successful target. A retry then contacts only the targets that failed.
 
 ```python
 for target in self.targets:
@@ -716,21 +943,17 @@ for target in self.targets:
     self.mark_delivered(target)
 ```
 
-`is_delivered()` checks whether a target already received the message.
-Call `mark_delivered()` only after the target accepts it.
+`is_delivered()` checks whether a target already received the message. Call `mark_delivered()` only after the target accepts it.
 
-The key identifies the target, such as a phone number, room ID, token, or
-email address. Lists and dictionaries also work.
+The key identifies the target, such as a phone number, room ID, token, or email address. Lists and dictionaries also work.
 
 Notes:
 
 - Both methods do nothing when `retry=0`, which is the default.
 - Each piece of a split message is tracked on its own.
-- A piece that `send()` returned `True` for is not sent again on a retry.
-  Your own tracking only decides who receives a piece that partly failed.
+- A piece that `send()` returned `True` for is not sent again on a retry. Your own tracking only decides who receives a piece that partly failed.
 - Tracking is dropped when the notification finishes.
-- Something sent once for the whole notification, such as an image, uses
-  `per_message=True` so it is not repeated for every piece:
+- Something sent once for the whole notification, such as an image, uses `per_message=True` so it is not repeated for every piece:
 
 ```python
 image_key = ("image", target)
@@ -739,10 +962,8 @@ if not self.is_delivered(image_key, per_message=True):
         self.mark_delivered(image_key, per_message=True)
 ```
 
-- For batches, use a stable key such as `(category, batch_position)` so each
-  batch remains distinct.
-- If one target needs several requests, include the request position in the
-  key and mark each request only after it succeeds.
+- For batches, use a stable key such as `(category, batch_position)` so each batch remains distinct.
+- If one target needs several requests, include the request position in the key and mark each request only after it succeeds.
 - If you count successes, count a skipped target too:
 
 ```python
@@ -751,8 +972,7 @@ if self.is_delivered(target):
     continue
 ```
 
-Only sending loops need this tracking. Loops that build a payload, split a
-message, or collect recipients for one request do not.
+Only sending loops need this tracking. Loops that build a payload, split a message, or collect recipients for one request do not.
 
 To share other values between attempts, see **Carrying State Across Retries** below.
 
@@ -916,28 +1136,28 @@ The following identifies the default values of variables defined in your plugin 
 
 Your plugin should be configured to inherit from `NotifyBase` granting you these defaults
 
-| Attribute                           | Default    | Purpose                                                        | When To Override                                                                     |
-| :---------------------------------- | :--------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
-| `enabled`                           | `True`     | If `False`, the plugin is not used.                            | Disable for platform-specific or dependency-specific reasons.                        |
-| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).               | Usually leave as-is.                                                                 |
-| `requirements.details`              | `None`     | Human-friendly requirements text.                              | If you need to explain optional or required packages.                                |
-| `requirements.packages_required`    | `[]`       | Required packages for full function.                           | If your plugin requires extra libraries.                                             |
-| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                       | If you can run without them, but benefit from them.                                  |
-| `service_url`                       | `None`     | Vendor or upstream product URL.                                | For public services, set this.                                                       |
-| `setup_url`                         | `None`     | Apprise setup page for your service.                           | Set this to your `appriseit.com/services/<service>/` page.                           |
-| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                           | Tune for vendor rate limits, or set to `0` for local-only.                           |
-| `image_size`                        | `None`     | Preferred image size, for attachment pre-scaling.              | Set when your service expects a specific size.                                       |
-| `body_maxlen`                       | `32768`    | Max body characters before truncation.                         | Set based on upstream constraints.                                                   |
-| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported.     | Set to `0` for title-less endpoints, or tune to vendor constraints.                  |
-| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation.     | If upstream is line-sensitive.                                                       |
-| `persistent_storage`                | `True`     | Allows the persistent store to be used.                        | If your plugin must never store identifiers or state.                                |
-| `storage_mode`                      | `memory`   | Default persistent store mode.                                 | Rare, but can be tuned for special behaviours.                                       |
-| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                     | If your service must always operate in a specific timezone.                          |
-| `notify_format`                     | `text`     | Default message format(s); one value or an ordered tuple/list. | If your service is Markdown or HTML-first, or natively renders more than one format. |
-| `overflow_mode`                     | `upstream` | Default overflow strategy.                                     | If you want Apprise to split, truncate, or alter overflow behaviour.                 |
-| `interpret_emojis`                  | `False`    | Emoji interpretation.                                          | If the upstream service benefits from emoji conversion.                              |
-| `attachment_support`                | `False`    | Attachment enablement.                                         | Set to `True` if you accept attachments.                                             |
-| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.        | Rare, unless you want different formatting.                                          |
+| Attribute                           | Default    | Purpose                                                           | When To Override                                                                         |
+| :---------------------------------- | :--------- | :---------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
+| `enabled`                           | `True`     | If `False`, the plugin is not used.                               | Disable for platform-specific or dependency-specific reasons.                            |
+| `category`                          | `"native"` | Classifies plugin origin (`native` vs `custom`).                  | Usually leave as-is.                                                                     |
+| `requirements.details`              | `None`     | Human-friendly requirements text.                                 | If you need to explain optional or required packages.                                    |
+| `requirements.packages_required`    | `[]`       | Required packages for full function.                              | If your plugin requires extra libraries.                                                 |
+| `requirements.packages_recommended` | `[]`       | Optional packages that improve function.                          | If you can run without them, but benefit from them.                                      |
+| `service_url`                       | `None`     | Vendor or upstream product URL.                                   | For public services, set this.                                                           |
+| `setup_url`                         | `None`     | Apprise setup page for your service.                              | Set this to your `appriseit.com/services/<service>/` page.                               |
+| `request_rate_per_sec`              | `5.5`      | Default throttle interval (seconds).                              | Tune for vendor rate limits, or set to `0` for local-only.                               |
+| `image_size`                        | `None`     | Size of the notification-type icon to send. `None` sends no icon. | Set when your service can show an icon. See [Notification Images](#notification-images). |
+| `body_maxlen`                       | `32768`    | Max body characters before truncation.                            | Set based on upstream constraints.                                                       |
+| `title_maxlen`                      | `250`      | Max title characters. Set `0` if titles are not supported.        | Set to `0` for title-less endpoints, or tune to vendor constraints.                      |
+| `body_max_line_count`               | `0`        | Max number of lines to keep. `0` disables line truncation.        | If upstream is line-sensitive.                                                           |
+| `persistent_storage`                | `True`     | Allows the persistent store to be used.                           | If your plugin must never store identifiers or state.                                    |
+| `storage_mode`                      | `memory`   | Default persistent store mode.                                    | Rare, but can be tuned for special behaviours.                                           |
+| `timezone`                          | `None`     | Uses server-detected timezone when `None`.                        | If your service must always operate in a specific timezone.                              |
+| `notify_format`                     | `text`     | Default message format(s); one value or an ordered tuple/list.    | If your service is Markdown or HTML-first, or natively renders more than one format.     |
+| `overflow_mode`                     | `upstream` | Default overflow strategy.                                        | If you want Apprise to split, truncate, or alter overflow behaviour.                     |
+| `interpret_emojis`                  | `False`    | Emoji interpretation.                                             | If the upstream service benefits from emoji conversion.                                  |
+| `attachment_support`                | `False`    | Attachment enablement.                                            | Set to `True` if you accept attachments.                                                 |
+| `default_html_tag_id`               | `"b"`      | Used to inject title into body for title-less services.           | Rare, unless you want different formatting.                                              |
 
 ## Templates and Metadata
 
@@ -1324,26 +1544,20 @@ requirements = {
 
 ## Attachment Support
 
-Plugins that support file attachments **must** explicitly declare support by
-setting the following class attribute:
+Plugins that support file attachments **must** explicitly declare support by setting the following class attribute:
 
 ```python
 class NotifyExample(NotifyBase):
     attachment_support = True
 ```
 
-When enabled, attachments are provided to the plugin as a list of
-`AppriseAttachment` objects. These objects abstract file access and may be
-backed by local files, in-memory data, or remote HTTP resources.
+When enabled, attachments are provided to the plugin as a list of `AppriseAttachment` objects. These objects abstract file access and may be backed by local files, in-memory data, or remote HTTP resources.
 
-Full details on attachment handling, lifecycle management, size limits, and
-common implementation patterns are documented here:
+Full details on attachment handling, lifecycle management, size limits, and common implementation patterns are documented here:
 
 - [Attachments](./attachments.mdx)
 
-Authors are strongly encouraged to review the attachment documentation before
-implementing support, as incorrect handling can easily lead to excessive memory
-usage or failed deliveries.
+Authors are strongly encouraged to review the attachment documentation before implementing support, as incorrect handling can easily lead to excessive memory usage or failed deliveries.
 
 ## URL Builder Integration
 
@@ -1405,3 +1619,86 @@ During delivery, `body_format` is the resolved format the plugin must send. `bod
 The framework handles ordinary character limits and the `upstream`, `truncate`, and `split` modes. A plugin with byte-based limits, escaping, multiple body representations, or encryption overhead should calculate its final budget from the payload it will actually send and verify the result after conversion.
 
 Do not assume arbitrary pass-through content can be split safely. JSON documents, ciphertext, signatures, and unknown markup may become invalid when divided. Honour the requested overflow mode, but treat splitting as best effort and avoid format-specific repair when `body_passthrough` is true.
+
+## Testing Your Plugin
+
+Apprise aims for 100% test coverage, so every plugin ships with a `tests/test_plugin_<name>.py` file. Most of the work is done by `AppriseURLTester`. You give it a list of URLs and what each one should do. For every URL it:
+
+1. Loads the URL and checks that the right class (or the right error) comes back.
+2. Rebuilds the URL with `url()` and checks that it loads as the same service.
+3. Checks that `url(privacy=True)` hides every value marked `private`.
+4. Sends a notification against a mocked `requests` library and checks the result.
+
+Throttling is turned off during these tests, so a high `request_rate_per_sec` will not slow them down.
+
+```python
+import requests
+
+from apprise.exception import AppriseImproperlyConfigured
+from apprise.plugins.myservice import NotifyMyService
+
+from helpers import AppriseURLTester
+
+apprise_url_tests = (
+    # No token given
+    (
+        "myservice://",
+        {
+            "instance": AppriseImproperlyConfigured,
+        },
+    ),
+    # A working URL; check how it prints with privacy on
+    (
+        "myservice://joe:pass123@abcdef1234",
+        {
+            "instance": NotifyMyService,
+            "privacy_url": "myservice://joe:****@a...4",
+        },
+    ),
+    # The server answers 500
+    (
+        "myservice://joe:pass123@abcdef1234",
+        {
+            "instance": NotifyMyService,
+            "response": False,
+            "requests_response_code": requests.codes.internal_server_error,
+        },
+    ),
+    # The connection fails outright
+    (
+        "myservice://joe:pass123@abcdef1234",
+        {
+            "instance": NotifyMyService,
+            "test_requests_exceptions": True,
+        },
+    ),
+)
+
+
+def test_plugin_myservice_urls():
+    """URLs load, print and send as expected."""
+    AppriseURLTester(tests=apprise_url_tests).run_all()
+```
+
+Each URL's dictionary accepts these keys. Leave out any you do not need.
+
+| Key                        | Default                                  | What It Checks                                                                                                   |
+| -------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `instance`                 | (required)                               | The class the URL should load as, or the exception it should raise. `None` means the URL should not load at all. |
+| `privacy_url`              | not checked                              | The start of `url(privacy=True)`. Only the start is compared, so leave off the query string.                     |
+| `url_matches`              | not checked                              | A regular expression that `url()` must match.                                                                    |
+| `self`                     | not checked                              | A `dict` of attributes and the values they should hold after loading, such as `{"token": "abcdef1234"}`.         |
+| `response`                 | `True`                                   | What `notify()` should return.                                                                                   |
+| `notify_response`          | same as `response`                       | Overrides `response` for the plain `notify()` call only.                                                         |
+| `attach_response`          | same as `notify_response`                | What `notify()` should return when an attachment is sent.                                                        |
+| `requests_response_code`   | `200`, or `404` if `response` is `False` | The HTTP status the mocked server answers with.                                                                  |
+| `requests_response_text`   | empty                                    | The body the mocked server answers with. A `dict` is sent as JSON.                                               |
+| `test_requests_exceptions` | `False`                                  | Set to `True` to make every request raise a connection error, and check the plugin handles it.                   |
+| `notify_type`              | `NotifyType.INFO`                        | The notification type to send.                                                                                   |
+| `include_image`            | `True`                                   | Set to `False` to send with images turned off in the asset.                                                      |
+| `check_attachments`        | `True`                                   | Set to `False` to skip the attachment send.                                                                      |
+| `fields_round_trip`        | `True`                                   | Set to `False` to skip checking that the URL's fields rebuild the same URL.                                      |
+| `storage_mode`             | `memory`                                 | The persistent storage mode to load the plugin with.                                                             |
+| `pdb`                      | `False`                                  | Set to `True` to stop in the Python debugger just before this URL loads.                                         |
+
+`AppriseURLTester` covers the common paths. Behavior it cannot reach, such as a `429` retry or a multi-step login, gets its own test function that patches `requests.post` (or `get`) directly and inspects the calls. Look at the existing tests for a plugin that works like yours for examples. See [Running Tests](../../contributing/core/#running-tests) for how to run them.

@@ -6,7 +6,7 @@ sidebar:
   order: 1
 ---
 
-import { Icon } from "@astrojs/starlight/components";
+import { Icon, TabItem, Tabs } from "@astrojs/starlight/components";
 import AppriseOverview from "~/components/AppriseOverview.astro";
 
 <style>{`
@@ -164,6 +164,36 @@ It is the middle box in the picture below: everything on the left hands it a mes
 - **A web interface included.** Manage saved configurations and send test notifications from your browser. It follows your browser language, and you can turn it off with `APPRISE_API_ONLY=yes`.
 - **Send later, or on a schedule.** Save a [reminder](/api/endpoints/#reminders) and the server sends it once, on a repeating schedule, or on a public holiday. Nothing else has to stay running to send it.
 - **Runs anywhere.** A small container that is at home under Docker, Docker Compose, or Kubernetes.
+
+## Optional Web Interface
+
+Everything above works through plain HTTP requests, and that is what most people use the server for. If you would rather click than script, the server also includes a web interface at `http://localhost:8000` where you can save your URLs, check what loaded, and send a test. Running the API only? Turn it off with `APPRISE_API_ONLY=yes`.
+
+<Tabs>
+<TabItem label="Configure">
+
+Pick a Config ID, enter your URLs in TEXT or YAML format, and save. The URL Builder button helps when you are not sure how to write one.
+
+![The Configuration tab, with a Config ID entered and a TEXT configuration ready to save](../getting-started/images/api-configuration.png)
+
+</TabItem>
+<TabItem label="Review">
+
+See every URL the server loaded, with its tags. Pick the tags to notify, or send one URL a quick test.
+
+![The Review tab, with the alerts tag selected on two services](../getting-started/images/api-review.png)
+
+</TabItem>
+<TabItem label="Send">
+
+Write a message and send it to the tags you picked, or turn it into a reminder that goes out later.
+
+![The Notifications tab, with a tag selected and a message ready to send](../getting-started/images/api-notifications.png)
+
+</TabItem>
+</Tabs>
+
+The [Quick Start Guide](/getting-started/quick-start/) walks through these screens step by step.
 
 <div class="api-mobile-callout">
   <div class="api-mobile-callout__copy">
