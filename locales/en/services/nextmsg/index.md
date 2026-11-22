@@ -31,9 +31,9 @@ limits:
 NextMsg is a one-way push notification app for iPhone and Android. There is no account to create.
 
 1. Install NextMsg from the [App Store](https://apps.apple.com/app/nextmsg-push-notifications/id6831546010) or [Google Play](https://play.google.com/store/apps/details?id=app.nextmsg).
-1. Open **Settings** in the app and copy your send key. It starts with `nextmsg_live_`.
+1. Open **Settings** -> **Send keys** in the app and copy a send key. Every key starts with `nextmsg_live_`.
 
-You can also give Apprise a key of its own, which you can revoke in the app without changing anything else: open **Settings** -> **Agents** -> **Connect agent** and claim the code it shows as described in the [NextMsg docs](https://nextmsg.app/docs#agent-keys). These keys start with `nextmsg_agent_`.
+To give Apprise a key of its own, which you can revoke in the app without changing anything else, tap **Create a key** on the same screen. The free plan includes 2 send keys, Pro up to 20.
 
 ## Syntax
 
@@ -50,7 +50,7 @@ You can also paste the URL from the `curl` example in the app straight into Appr
 
 | Variable | Required | Description                                                                                                                                |
 | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| key      | Yes      | Your send key (`nextmsg_live_...`) or an agent key (`nextmsg_agent_...`).                                                                  |
+| key      | Yes      | Your send key (`nextmsg_live_...`).                                                                                                        |
 | channel  | No       | The channel the message is filed under; each channel gets its own tab in the app. Use 1 to 32 characters: `a-z`, `0-9`, `-` and `_`. The default is `general`. |
 
 <!-- TEMPLATE:SERVICE-PARAMS -->
