@@ -1,0 +1,275 @@
+---
+title: "Using the App"
+description: "A guided tour of Apprise Mobile: the dashboard, swipe gestures, reminders, templates, and delivery reports."
+sidebar:
+  order: 3
+---
+
+<style>{`
+  /* Each screenshot ships in a light and a dark version; show the one
+     that matches the site theme. */
+  .mobile-guide-shot {
+    margin: 1.5rem auto;
+    text-align: center;
+  }
+
+  .mobile-guide-shot img {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--sl-color-hairline);
+  }
+
+  .mobile-guide-shot--phone img {
+    max-width: 40rem;
+  }
+
+  .mobile-guide-shot--crop img {
+    max-width: 34rem;
+  }
+
+  .mobile-guide-shot .mobile-guide-dark,
+  :root[data-theme="dark"] .mobile-guide-shot .mobile-guide-light {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .mobile-guide-shot .mobile-guide-dark {
+    display: inline-block;
+  }
+`}</style>
+
+This page walks through the everyday parts of Apprise Mobile. Every picture has numbered callouts, with what each one does listed beside it. The pictures follow the light and dark switch at the top of this site, so you see the app in the same look you are reading it in.
+
+If you have not connected the app to your server yet, start with [Set Up Apprise Mobile](/mobile/getting-started/).
+
+## The Dashboard
+
+The dashboard lists every service your server can send to, grouped under each Config ID. The colored bar on the left tells the Config IDs apart, and the line under the address shows whether the server answered its last check.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/dashboard-en-light.webp"
+    alt="The dashboard. 1: tap tags to choose who gets the message. 2: a Config ID and its health. 3: a service you can reach. 4: write and send a message."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/dashboard-en-dark.webp"
+    alt="The dashboard. 1: tap tags to choose who gets the message. 2: a Config ID and its health. 3: a service you can reach. 4: write and send a message."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Tap one or more tags to choose who gets your next message, or tap a service to pick just that one. Then tap **Send** to write the message.
+
+## Sending to a Single Service
+
+To send to one service without writing a full message first, swipe it to the right and let go. Apprise sends to that service only.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/swipe-send-en-light.webp"
+    alt="A service held mid-swipe to the right, showing the send arrow. 1: swipe right and let go to send to this service only."
+    width="860"
+    height="603"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/swipe-send-en-dark.webp"
+    alt="A service held mid-swipe to the right, showing the send arrow. 1: swipe right and let go to send to this service only."
+    width="860"
+    height="603"
+    loading="lazy"
+  />
+</figure>
+
+If your server keeps its configuration but does not accept one-off URLs, the app says so and suggests sending by tag instead.
+
+## Switching a Config ID Off and On
+
+Swipe a Config ID's header to the left and let go to switch it off. It turns grey, and its services are left out of sends, health checks, and refreshes. Swipe left again to switch it back on.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/server-off-en-light.webp"
+    alt="A Config ID header held mid-swipe to the left, showing the power button. 1: swipe left and let go to switch this Config ID off; do it again to switch it back on."
+    width="860"
+    height="581"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/server-off-en-dark.webp"
+    alt="A Config ID header held mid-swipe to the left, showing the power button. 1: swipe left and let go to switch this Config ID off; do it again to switch it back on."
+    width="860"
+    height="581"
+    loading="lazy"
+  />
+</figure>
+
+This is handy for a server you only use some of the time, such as one at a cottage.
+
+## Server Shortcuts
+
+Swipe a Config ID's header to the right to uncover its shortcuts. They stay open until you slide the header back.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/server-panel-en-light.webp"
+    alt="The shortcuts behind a Config ID header. 1: swipe right for its settings and refresh."
+    width="860"
+    height="555"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/server-panel-en-dark.webp"
+    alt="The shortcuts behind a Config ID header. 1: swipe right for its settings and refresh."
+    width="860"
+    height="555"
+    loading="lazy"
+  />
+</figure>
+
+- **Settings** (the gear): change the server's address, login, or colour.
+- **Refresh**: check the server and download its list of services again now.
+- Some servers also offer buttons to move the configuration to a new Config ID, or to change its password.
+
+## Writing a Message
+
+Tap **Send** on the dashboard to open the message screen. The bar at the top shows how many services your message will reach; tap it to change who it goes to.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/compose-en-light.webp"
+    alt="The message screen. 1: who it goes to, tap to change. 2: the title is optional, the body is not. 3: send it later instead. 4: send it now."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/compose-en-dark.webp"
+    alt="The message screen. 1: who it goes to, tap to change. 2: the title is optional, the body is not. 3: send it later instead. 4: send it now."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Only the body is required. Switch on **Reminder** to send it later instead of now, then the **Send** button becomes **Schedule**.
+
+## Repeating Reminders
+
+With **Make recurring** switched on, a reminder repeats on the schedule you choose: every few days, weeks, months, or years, and only on the days or months you pick. The **Upcoming** list shows the next few times your server will send it, and updates as you change the fields.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/reminder-repeat-en-light.webp"
+    alt="A repeating reminder. 1: repeat every week. 2: only on these days. 3: the next times it will be sent. 4: save the reminder."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/reminder-repeat-en-dark.webp"
+    alt="A repeating reminder. 1: repeat every week. 2: only on these days. 3: the next times it will be sent. 4: save the reminder."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Your reminders then appear on the **Reminders** screen. The calendar marks each day with something due, and the list below it shows what is coming up.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/reminders-en-light.webp"
+    alt="The Reminders screen. 1: a dot marks each day something is due. 2: swipe right to send now, left to pause. 3: add a reminder."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/reminders-en-dark.webp"
+    alt="The Reminders screen. 1: a dot marks each day something is due. 2: swipe right to send now, left to pause. 3: add a reminder."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Swipe a reminder to the right to send it now without changing its schedule, or to the left to pause it. The [Reminders](/mobile/reminders/) page covers every field in detail.
+
+## Templates
+
+A template is a saved message, with its title, body, and who it goes to, ready to send again with one swipe. Templates need the full version of the app.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/templates-en-light.webp"
+    alt="The Templates screen. 1: swipe right to send a template. 2: remove it. 3: hold and drag to reorder."
+    width="860"
+    height="1080"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/templates-en-dark.webp"
+    alt="The Templates screen. 1: swipe right to send a template. 2: remove it. 3: hold and drag to reorder."
+    width="860"
+    height="1080"
+    loading="lazy"
+  />
+</figure>
+
+- Tap **Create** on the Templates screen to write a new one, or turn a message you already sent into a template from its delivery report.
+- Swipe a template to the right to send it.
+- Tap a template to see or change it, hold the handle on the right to move it up or down, or tap the bin to remove it.
+
+Good candidates are messages you send often: "Dinner Is Ready", "On My Way Home", or "Running Late".
+
+## Delivery Reports
+
+Everything you send is listed on the **Tasks** screen. Tap one to open its delivery report.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/delivery-en-light.webp"
+    alt="A delivery report. 1: how the delivery went. 2: send it again. 3: save it as a template. 4: every step, as it happened."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/delivery-en-dark.webp"
+    alt="A delivery report. 1: how the delivery went. 2: send it again. 3: save it as a template. 4: every step, as it happened."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+The report shows whether each service received the message and lists every step as it happened, which helps when something did not arrive. From here you can send the same message again or save it as a template.
+
+## Light and Dark
+
+The app follows your phone's light or dark setting. To pick one yourself, open **Settings > Appearance**. The same menu has **Language**, where you can choose a language for the app that differs from your phone's.

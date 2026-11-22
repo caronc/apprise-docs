@@ -3,7 +3,7 @@ title: Conditions d'Utilisation d'Apprise Mobile
 description: Conditions régissant l'utilisation d'Apprise Mobile.
 sidebar:
   label: Conditions d'Utilisation
-  order: 5
+  order: 6
 ---
 
 **Dernière mise à jour : 19 novembre 2026**

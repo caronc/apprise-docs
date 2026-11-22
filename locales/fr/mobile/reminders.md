@@ -3,7 +3,7 @@ title: Rappels
 description: Programmez depuis Apprise Mobile des notifications envoyées plus tard, une fois ou de façon répétée.
 sidebar:
   label: Rappels
-  order: 3
+  order: 4
 ---
 
 Un rappel est une notification que vous écrivez maintenant et que votre serveur Apprise API envoie plus tard. Il peut être envoyé une seule fois, de façon répétée (chaque jour, un mardi sur deux, le premier de chaque mois) ou lors d'un jour férié, chaque année.

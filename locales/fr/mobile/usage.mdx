@@ -1,0 +1,275 @@
+---
+title: "Utiliser l'Application"
+description: "Une visite guidée d'Apprise Mobile : le tableau de bord, les gestes de balayage, les rappels, les modèles et les rapports de livraison."
+sidebar:
+  order: 3
+---
+
+<style>{`
+  /* Each screenshot ships in a light and a dark version; show the one
+     that matches the site theme. */
+  .mobile-guide-shot {
+    margin: 1.5rem auto;
+    text-align: center;
+  }
+
+  .mobile-guide-shot img {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--sl-color-hairline);
+  }
+
+  .mobile-guide-shot--phone img {
+    max-width: 40rem;
+  }
+
+  .mobile-guide-shot--crop img {
+    max-width: 34rem;
+  }
+
+  .mobile-guide-shot .mobile-guide-dark,
+  :root[data-theme="dark"] .mobile-guide-shot .mobile-guide-light {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .mobile-guide-shot .mobile-guide-dark {
+    display: inline-block;
+  }
+`}</style>
+
+Cette page présente les parties de l'application que vous utiliserez tous les jours. Chaque image porte des repères numérotés, expliqués à côté. Les images suivent le choix clair ou sombre en haut de ce site : vous voyez l'application avec le même thème que celui de votre lecture.
+
+Si l'application n'est pas encore reliée à votre serveur, commencez par [Configurer Apprise Mobile](/mobile/getting-started/).
+
+## Le Tableau de Bord
+
+Le tableau de bord liste chaque service auquel votre serveur peut envoyer, regroupés sous chaque Config ID. La barre de couleur à gauche distingue les Config ID, et la ligne sous l'adresse indique si le serveur a répondu à sa dernière vérification.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/dashboard-fr-light.webp"
+    alt="Le tableau de bord. 1 : touchez des tags pour choisir les destinataires. 2 : un Config ID et son état. 3 : un service joignable. 4 : écrire et envoyer un message."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/dashboard-fr-dark.webp"
+    alt="Le tableau de bord. 1 : touchez des tags pour choisir les destinataires. 2 : un Config ID et son état. 3 : un service joignable. 4 : écrire et envoyer un message."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Touchez un ou plusieurs tags pour choisir qui reçoit votre prochain message, ou touchez un service pour ne choisir que lui. Touchez ensuite **Envoyer** pour écrire le message.
+
+## Envoyer à un Seul Service
+
+Pour envoyer à un seul service sans passer par l'écran du message, faites-le glisser vers la droite puis relâchez. Apprise n'envoie qu'à ce service.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/swipe-send-fr-light.webp"
+    alt="Un service en cours de glissement vers la droite, avec la flèche d'envoi. 1 : glissez vers la droite et relâchez pour n'envoyer qu'à ce service."
+    width="860"
+    height="603"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/swipe-send-fr-dark.webp"
+    alt="Un service en cours de glissement vers la droite, avec la flèche d'envoi. 1 : glissez vers la droite et relâchez pour n'envoyer qu'à ce service."
+    width="860"
+    height="603"
+    loading="lazy"
+  />
+</figure>
+
+Si votre serveur conserve sa configuration mais n'accepte pas les URL ponctuelles, l'application vous le dit et propose d'envoyer par tag.
+
+## Désactiver et Réactiver un Config ID
+
+Faites glisser l'en-tête d'un Config ID vers la gauche puis relâchez pour le désactiver. Il devient gris, et ses services sont laissés de côté lors des envois, des vérifications et des actualisations. Glissez de nouveau vers la gauche pour le réactiver.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/server-off-fr-light.webp"
+    alt="L'en-tête d'un Config ID en cours de glissement vers la gauche, avec le bouton d'alimentation. 1 : glissez vers la gauche et relâchez pour désactiver ce Config ID ; recommencez pour le réactiver."
+    width="860"
+    height="581"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/server-off-fr-dark.webp"
+    alt="L'en-tête d'un Config ID en cours de glissement vers la gauche, avec le bouton d'alimentation. 1 : glissez vers la gauche et relâchez pour désactiver ce Config ID ; recommencez pour le réactiver."
+    width="860"
+    height="581"
+    loading="lazy"
+  />
+</figure>
+
+C'est pratique pour un serveur dont vous ne vous servez qu'une partie du temps, par exemple celui d'un chalet.
+
+## Raccourcis du Serveur
+
+Faites glisser l'en-tête d'un Config ID vers la droite pour faire apparaître ses raccourcis. Ils restent ouverts jusqu'à ce que vous rameniez l'en-tête.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/server-panel-fr-light.webp"
+    alt="Les raccourcis derrière l'en-tête d'un Config ID. 1 : glissez vers la droite pour ses réglages et l'actualisation."
+    width="860"
+    height="586"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/server-panel-fr-dark.webp"
+    alt="Les raccourcis derrière l'en-tête d'un Config ID. 1 : glissez vers la droite pour ses réglages et l'actualisation."
+    width="860"
+    height="586"
+    loading="lazy"
+  />
+</figure>
+
+- **Réglages** (l'engrenage) : modifier l'adresse, l'identifiant ou la couleur du serveur.
+- **Actualiser** : vérifier le serveur et télécharger de nouveau sa liste de services.
+- Certains serveurs proposent aussi de déplacer la configuration vers un nouveau Config ID, ou d'en changer le mot de passe.
+
+## Écrire un Message
+
+Touchez **Envoyer** sur le tableau de bord pour ouvrir l'écran du message. La barre du haut indique combien de services votre message atteindra ; touchez-la pour changer les destinataires.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/compose-fr-light.webp"
+    alt="L'écran du message. 1 : les destinataires, touchez pour modifier. 2 : le titre est facultatif, pas le corps. 3 : l'envoyer plus tard. 4 : l'envoyer maintenant."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/compose-fr-dark.webp"
+    alt="L'écran du message. 1 : les destinataires, touchez pour modifier. 2 : le titre est facultatif, pas le corps. 3 : l'envoyer plus tard. 4 : l'envoyer maintenant."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Seul le corps est obligatoire. Activez **Rappel** pour l'envoyer plus tard plutôt que maintenant : le bouton **Envoyer** devient alors **Planifier**.
+
+## Rappels Récurrents
+
+Avec **Rendre récurrent** activé, un rappel se répète selon le rythme choisi : tous les quelques jours, semaines, mois ou années, et seulement les jours ou les mois que vous cochez. La liste **À venir** montre les prochains envois prévus par votre serveur et se met à jour au fil de vos changements.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/reminder-repeat-fr-light.webp"
+    alt="Un rappel récurrent. 1 : répéter chaque semaine. 2 : seulement ces jours-là. 3 : les prochains envois prévus. 4 : enregistrer le rappel."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/reminder-repeat-fr-dark.webp"
+    alt="Un rappel récurrent. 1 : répéter chaque semaine. 2 : seulement ces jours-là. 3 : les prochains envois prévus. 4 : enregistrer le rappel."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Vos rappels apparaissent ensuite sur l'écran **Rappels**. Le calendrier marque chaque jour où un rappel est prévu, et la liste en dessous montre ce qui arrive.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/reminders-fr-light.webp"
+    alt="L'écran Rappels. 1 : un point marque chaque jour où un rappel est prévu. 2 : glissez à droite pour envoyer maintenant, à gauche pour mettre en pause. 3 : ajouter un rappel."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/reminders-fr-dark.webp"
+    alt="L'écran Rappels. 1 : un point marque chaque jour où un rappel est prévu. 2 : glissez à droite pour envoyer maintenant, à gauche pour mettre en pause. 3 : ajouter un rappel."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Faites glisser un rappel vers la droite pour l'envoyer tout de suite sans changer son calendrier, ou vers la gauche pour le mettre en pause. La page [Rappels](/mobile/reminders/) détaille chaque champ.
+
+## Modèles
+
+Un modèle est un message enregistré, avec son titre, son corps et ses destinataires, prêt à être renvoyé d'un simple glissement. Les modèles nécessitent la version complète de l'application.
+
+<figure class="mobile-guide-shot mobile-guide-shot--crop">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/templates-fr-light.webp"
+    alt="L'écran Modèles. 1 : glissez à droite pour envoyer un modèle. 2 : le supprimer. 3 : maintenez et glissez pour réordonner."
+    width="860"
+    height="1080"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/templates-fr-dark.webp"
+    alt="L'écran Modèles. 1 : glissez à droite pour envoyer un modèle. 2 : le supprimer. 3 : maintenez et glissez pour réordonner."
+    width="860"
+    height="1080"
+    loading="lazy"
+  />
+</figure>
+
+- Touchez **Créer** sur l'écran Modèles pour en écrire un nouveau, ou transformez un message déjà envoyé en modèle depuis son rapport de livraison.
+- Faites glisser un modèle vers la droite pour l'envoyer.
+- Touchez un modèle pour le voir ou le modifier, maintenez la poignée à droite pour le déplacer, ou touchez la corbeille pour le supprimer.
+
+Les bons candidats sont les messages que vous envoyez souvent : « Le repas est servi », « En route vers la maison » ou « En retard ».
+
+## Rapports de Livraison
+
+Tout ce que vous envoyez est listé sur l'écran **Tâches**. Touchez un envoi pour ouvrir son rapport de livraison.
+
+<figure class="mobile-guide-shot mobile-guide-shot--phone">
+  <img
+    class="mobile-guide-light"
+    src="/assets/mobile-guide/delivery-fr-light.webp"
+    alt="Un rapport de livraison. 1 : le résultat de l'envoi. 2 : renvoyer. 3 : l'enregistrer comme modèle. 4 : chaque étape, au fil de l'envoi."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+  <img
+    class="mobile-guide-dark"
+    src="/assets/mobile-guide/delivery-fr-dark.webp"
+    alt="Un rapport de livraison. 1 : le résultat de l'envoi. 2 : renvoyer. 3 : l'enregistrer comme modèle. 4 : chaque étape, au fil de l'envoi."
+    width="1000"
+    height="1333"
+    loading="lazy"
+  />
+</figure>
+
+Le rapport indique si chaque service a reçu le message et liste chaque étape au fil de l'envoi, ce qui aide lorsqu'un message n'est pas arrivé. Depuis cet écran, vous pouvez renvoyer le même message ou l'enregistrer comme modèle.
+
+## Clair et Sombre
+
+L'application suit le réglage clair ou sombre de votre téléphone. Pour en choisir un vous-même, ouvrez **Paramètres > Apparence**. Le même menu propose **Langue**, pour choisir une langue d'application différente de celle de votre téléphone.

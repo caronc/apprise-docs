@@ -3,7 +3,7 @@ title: Reminders
 description: Schedule notifications from Apprise Mobile to be sent later, once or on a repeating schedule.
 sidebar:
   label: Reminders
-  order: 3
+  order: 4
 ---
 
 A reminder is a notification you write now and your Apprise API server sends later. It can be sent once, on a repeating schedule (every day, every second Tuesday, the first of each month), or on a public holiday every year.
