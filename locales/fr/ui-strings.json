@@ -175,6 +175,10 @@
     "503": {
       "title": "503 Service indisponible",
       "tagline": "Le service est actuellement indisponible. Veuillez réessayer plus tard."
+    },
+    "504": {
+      "title": "504 Délai de passerelle dépassé",
+      "tagline": "Le serveur en amont a mis trop de temps à répondre. Veuillez réessayer dans un instant."
     }
   },
   "donate": {

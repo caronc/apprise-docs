@@ -10,9 +10,9 @@
   "resolveIgnored": "{name}: left out, since this service doesn't use it or the value isn't valid.",
   "resolveMissing": "{name}: required, but the URL doesn't include it.",
   "resolveUnsafe": "Links with ?resolve= are not loaded, since they send the URL (and any password in it) to the server. Use #resolve= instead.",
-  "resolveUncertain": "{name}: this value could also be meant as {given}. Check that it is in the right field.",
   "resolveUnreadable": "The URL to load does not match any supported service format, so it was not used.",
   "resolvePathUnread": "The part after :// does not fit any URL pattern of this service, so it was left out.",
+  "resolveLoginCut": "The login part of the URL has an extra @ or :, so the text after it was left out, as Apprise would. Write a literal @ or : as %40 or %3A.",
   "resolveMoreNotes": "{count} more not shown.",
   "dismissNotice": "Dismiss",
   "allServices": "All services",
@@ -42,6 +42,7 @@
   "choiceNo": "No",
   "choiceNotSet": "Not set",
   "listPlaceholder": "One per line or comma-separated",
+  "hostPortPlaceholder": "{name} (or host:port)",
   "listCommaSeparated": "Comma-separated",
 
   "options": "Options",
@@ -58,7 +59,6 @@
   "stepGeneratedUrl": "Access Your Generated URL",
 
   "schemaVariant": "Schema",
-  "schemaSecureSuffix": "secure",
   "templateResetTitle": "Reset to auto-select",
   "templateAutoBadge": "auto",
   "requiredProgressTitle": "Minimum parameters required to generate a valid notification URL.",
@@ -70,6 +70,7 @@
   "showUrl": "Show URL",
   "hideUrl": "Hide URL",
   "selectServiceToBegin": "Select a service above to begin",
+  "metadataLoadError": "Could not load the list of services. Reload the page to try again.",
 
   "privacyTrigger": "Privacy & Security",
   "privacyTitle": "How the URL Builder Handles Data",

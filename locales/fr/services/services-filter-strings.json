@@ -12,6 +12,7 @@
   "secureLabel": "Sécurisé",
   "insecureLabel": "Non sécurisé",
   "loadError": "Impossible de charger les données des services.",
+  "loadingLabel": "Chargement des services",
   "urlBuilderBtn": "Créer votre URL Apprise",
   "resultsAllOne": "Affichage de l'unique service ({total})",
   "resultsAllOther": "Affichage des {total} services",

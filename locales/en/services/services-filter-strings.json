@@ -12,6 +12,7 @@
   "secureLabel": "Secure",
   "insecureLabel": "Insecure",
   "loadError": "Failed to load service data.",
+  "loadingLabel": "Loading services",
   "urlBuilderBtn": "Build Your Apprise URL",
   "resultsAllOne": "Showing all {total} service",
   "resultsAllOther": "Showing all {total} services",

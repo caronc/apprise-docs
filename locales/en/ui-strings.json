@@ -175,6 +175,10 @@
     "503": {
       "title": "503 Unavailable",
       "tagline": "The service is currently unavailable. Please try again later."
+    },
+    "504": {
+      "title": "504 Gateway Timeout",
+      "tagline": "The upstream server took too long to respond. Please try again in a moment."
     }
   },
   "donate": {

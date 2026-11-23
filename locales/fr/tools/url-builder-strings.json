@@ -10,9 +10,9 @@
   "resolveIgnored": "{name} : ignor\u00e9, car ce service ne l'utilise pas ou la valeur n'est pas valide.",
   "resolveMissing": "{name} : obligatoire, mais l'URL ne le contient pas.",
   "resolveUnsafe": "Les liens avec ?resolve= ne sont pas charg\u00e9s, car ils envoient l'URL (et tout mot de passe qu'elle contient) au serveur. Utilisez plut\u00f4t #resolve=.",
-  "resolveUncertain": "{name} : cette valeur pourrait aussi correspondre \u00e0 {given}. V\u00e9rifiez qu'elle est dans le bon champ.",
   "resolveUnreadable": "L'URL \u00e0 charger ne correspond \u00e0 aucun format de service pris en charge, donc elle n'a pas \u00e9t\u00e9 utilis\u00e9e.",
   "resolvePathUnread": "La partie apr\u00e8s :// ne correspond \u00e0 aucun mod\u00e8le d'URL de ce service, donc elle a \u00e9t\u00e9 ignor\u00e9e.",
+  "resolveLoginCut": "La partie identifiant de l'URL contient un @ ou un : de trop, donc le texte qui suit a \u00e9t\u00e9 ignor\u00e9, comme le ferait Apprise. \u00c9crivez un @ ou un : litt\u00e9ral sous la forme %40 ou %3A.",
   "resolveMoreNotes": "{count} de plus non affich\u00e9s.",
   "dismissNotice": "Fermer",
   "allServices": "Tous les services",
@@ -42,6 +42,7 @@
   "choiceNo": "Non",
   "choiceNotSet": "Non d\u00e9fini",
   "listPlaceholder": "Un par ligne ou s\u00e9par\u00e9 par virgule",
+  "hostPortPlaceholder": "{name} (ou h\u00f4te:port)",
   "listCommaSeparated": "S\u00e9par\u00e9 par virgule",
 
   "options": "Options",
@@ -58,7 +59,6 @@
   "stepGeneratedUrl": "Votre URL g\u00e9n\u00e9r\u00e9e",
 
   "schemaVariant": "Sch\u00e9ma",
-  "schemaSecureSuffix": "s\u00e9curis\u00e9",
   "templateResetTitle": "R\u00e9initialiser la s\u00e9lection automatique",
   "templateAutoBadge": "auto",
   "requiredProgressTitle": "Param\u00e8tres minimums requis pour g\u00e9n\u00e9rer une URL de notification valide.",
@@ -70,6 +70,7 @@
   "showUrl": "Afficher l\u2019URL",
   "hideUrl": "Masquer l\u2019URL",
   "selectServiceToBegin": "S\u00e9lectionnez un service ci-dessus pour commencer",
+  "metadataLoadError": "Impossible de charger la liste des services. Rechargez la page pour r\u00e9essayer.",
 
   "privacyTrigger": "Confidentialit\u00e9 et S\u00e9curit\u00e9",
   "privacyTitle": "Comment le G\u00e9n\u00e9rateur d\u2019URL Traite les Donn\u00e9es",
