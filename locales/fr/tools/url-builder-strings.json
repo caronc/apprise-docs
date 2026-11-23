@@ -12,6 +12,8 @@
   "resolveUnsafe": "Les liens avec ?resolve= ne sont pas charg\u00e9s, car ils envoient l'URL (et tout mot de passe qu'elle contient) au serveur. Utilisez plut\u00f4t #resolve=.",
   "resolveUncertain": "{name} : cette valeur pourrait aussi correspondre \u00e0 {given}. V\u00e9rifiez qu'elle est dans le bon champ.",
   "resolveUnreadable": "L'URL \u00e0 charger ne correspond \u00e0 aucun format de service pris en charge, donc elle n'a pas \u00e9t\u00e9 utilis\u00e9e.",
+  "resolvePathUnread": "La partie apr\u00e8s :// ne correspond \u00e0 aucun mod\u00e8le d'URL de ce service, donc elle a \u00e9t\u00e9 ignor\u00e9e.",
+  "resolveMoreNotes": "{count} de plus non affich\u00e9s.",
   "dismissNotice": "Fermer",
   "allServices": "Tous les services",
   "popularServices": "Populaires",

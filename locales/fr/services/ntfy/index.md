@@ -78,8 +78,9 @@ Vous pouvez specifier plus d'un sujet :
 | hostname   | Non         | Serveur ntfy vers lequel envoyer les notifications.                                                                                                                                                                                                                                                                                                  |
 | port       | Non         | La valeur par defaut est **80** pour `ntfy://` et **443** pour `ntfys://`.                                                                                                                                                                                                                                                                           |
 | topic      | Oui         | Au moins un sujet doit etre defini.                                                                                                                                                                                                                                                                                                                  |
+| to         | Non         | Autre facon de lister les sujets a notifier, separes par une virgule. C'est un alias de `topic`.                                                                                                                                                                                                                                                     |
 | token      | Non         | Jeton d'autorisation, detecte automatiquement s'il est fourni dans l'URL.                                                                                                                                                                                                                                                                            |
-| mode       | Non         | Mode d'authentification, detecte automatiquement. Valeurs possibles : `private`, `cloud`.                                                                                                                                                                                                                                                            |
+| mode       | Non         | Mode du serveur, detecte automatiquement. Valeurs possibles : `private`, `cloud`.                                                                                                                                                                                                                                                                    |
 | auth       | Non         | `basic`, par defaut, ou `token`.                                                                                                                                                                                                                                                                                                                     |
 | email      | Non         | Associe une adresse e-mail a la publication ntfy.                                                                                                                                                                                                                                                                                                    |
 | xtags      | Non         | **Etiquettes de message ntfy**, envoyees dans l'en-tete `X-Tags`, a associer a la notification. Utilisez des virgules et/ou des espaces pour en specifier plusieurs. L'ancien parametre `tags=` est toujours accepte comme alias compatible. A ne pas confondre avec les tags Apprise ; [voir ici pour plus de details](#tags-ntfy-vs-tags-apprise). |
@@ -145,21 +146,21 @@ Dans l'exemple ci-dessus :
 
 ## Exemples
 
-Envoyer une notification vers un serveur Ntfy local :
+Envoyer une notification vers votre propre serveur Ntfy :
 
 ```bash
-# Supposons que notre {hostname} soit localhost
-# Supposons que notre {topic} soit great-place
+# Supposons que notre {hostname} soit myserver.example.ca
+# Supposons que notre {topic} soit topic1
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
-   ntfy://localhost/great-place
+   ntfy://myserver.example.ca/topic1
 ```
 
-Nous pouvons aussi envoyer une notification au serveur ntfy.sh, en mode cloud :
+Nous pouvons aussi envoyer une notification au serveur ntfy.sh, ouvert et gratuit :
 
 ```bash
-# Supposons que notre {topic} soit great-place
+# Supposons que notre {topic} soit topic1
 apprise -vv -t "Titre du Message de Test" -b "Corps du Message de Test" \
-   ntfy://great-place
+   ntfy://topic1
 ```
 
 Ntfy prend egalement en charge Markdown ; pour en profiter, ajoutez simplement `?format=markdown` a votre URL Apprise, par exemple :

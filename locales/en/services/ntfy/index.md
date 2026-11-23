@@ -79,8 +79,9 @@ You can specify more than one topic:
 | hostname   | No       | The ntfy server to send notifications to.                                                                                                                                                                                                                                                                                        |
 | port       | No       | Defaults to **80** for `ntfy://` and **443** for `ntfys://`.                                                                                                                                                                                                                                                                     |
 | topic      | Yes      | At least one topic must be defined.                                                                                                                                                                                                                                                                                              |
+| to         | No       | Another way to list the topics to notify, separated by a comma. This is an alias of `topic`.                                                                                                                                                                                                                                     |
 | token      | No       | Authorization token (auto-detected if provided in URL).                                                                                                                                                                                                                                                                          |
-| mode       | No       | Authentication mode. Auto-detected. Possible values: `private`, `cloud`.                                                                                                                                                                                                                                                         |
+| mode       | No       | Server mode. Auto-detected. Possible values: `private`, `cloud`.                                                                                                                                                                                                                                                                 |
 | auth       | No       | `basic` (default) or `token`.                                                                                                                                                                                                                                                                                                    |
 | email      | No       | Associate an email address with the ntfy post.                                                                                                                                                                                                                                                                                   |
 | xtags      | No       | **ntfy message tags** (sent as the `X-Tags` header) to associate with the notification. Use comma and/or space to specify more than one. The legacy `tags=` parameter is still accepted as a backward-compatible alias. These are not to be confused with Apprise tags; [see here for more details](#ntfy-tags-vs-apprise-tags). |
@@ -157,21 +158,21 @@ In the example above:
 
 ## Examples
 
-Send a notification to a local Ntfy server:
+Send a notification to your own Ntfy server:
 
 ```bash
-# Assuming our {hostname} is localhost
-# Assuming our {topic} is great-place
+# Assuming our {hostname} is myserver.example.ca
+# Assuming our {topic} is topic1
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   ntfy://localhost/great-place
+   ntfy://myserver.example.ca/topic1
 ```
 
-We can also send a notification to the ntfy.sh (cloud) server:
+We can also send a notification to the open and free ntfy.sh server:
 
 ```bash
-# Assuming our {topic} is great-place
+# Assuming our {topic} is topic1
 apprise -vv -t "Test Message Title" -b "Test Message Body" \
-   ntfy://great-place
+   ntfy://topic1
 ```
 
 Ntfy also supports Markdown; if you want to leverage this, simply add `?format=markdown` to your Apprise URL; eg:

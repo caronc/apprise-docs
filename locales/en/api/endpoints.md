@@ -228,7 +228,8 @@ When `APPRISE_CONFIG_LOCK=yes`, an authenticated administrator retains full conf
       },
       "service": "E-Mail",
       "id": "a130f191",
-      "valid": true
+      "valid": true,
+      "missing": []
     }
   ]
 }
@@ -237,6 +238,7 @@ When `APPRISE_CONFIG_LOCK=yes`, an authenticated administrator retains full conf
 - Fields use the token and argument names from [`details()`](/library/inspection/), the same names the [URL Builder](/url-builder/) shows. An alias such as `to` is folded into `targets`, and key/value options come back as maps (`headers`, `params`, `payload`).
 - `url` and `privacy_url` leave out options Apprise would set the same way anyway, so they keep only what changes something. `fields` still lists every option.
 - Send `fields` back in place of a URL to put it together again.
+- `missing` names the required fields still empty, such as `targets`; it is empty when nothing required is missing. Any name in it means the URL alone can't notify anyone, even one that loads (`schema://host` with no one to send to). Servers whose Apprise is too old to tell leave `missing` out.
 - An entry that can't be loaded comes back with `valid` set to `false`, an `error`, and only its schema in `privacy_url`. When its service is known, `fields` and `privacy_fields` still hold what could be read, such as `mailto://` with nothing after it.
 - It works whatever the stateful and stateless modes are. On a `public` or `disabled` configuration, only the administrator may use it.
 

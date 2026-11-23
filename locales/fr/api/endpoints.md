@@ -228,7 +228,8 @@ Avec `APPRISE_CONFIG_LOCK=yes`, un administrateur authentifié conserve un accè
       },
       "service": "E-Mail",
       "id": "a130f191",
-      "valid": true
+      "valid": true,
+      "missing": []
     }
   ]
 }
@@ -237,6 +238,7 @@ Avec `APPRISE_CONFIG_LOCK=yes`, un administrateur authentifié conserve un accè
 - Les champs portent les noms des jetons et des arguments de [`details()`](/library/inspection/), les mêmes que ceux du [générateur d'URL](/url-builder/). Un alias comme `to` est fusionné dans `targets`, et les options clé/valeur reviennent sous forme de tables (`headers`, `params`, `payload`).
 - `url` et `privacy_url` omettent les options qu'Apprise réglerait de toute façon de la même manière, pour ne garder que ce qui change quelque chose. `fields` liste toujours toutes les options.
 - Renvoyez `fields` à la place d'une URL pour la reconstituer.
+- `missing` nomme les champs obligatoires encore vides, comme `targets` ; la liste est vide quand rien d'obligatoire ne manque. Tout nom présent signifie que l'URL seule ne peut avertir personne, même si elle se charge (`schema://host` sans personne à qui envoyer). Les serveurs dont la version d'Apprise est trop ancienne pour le savoir omettent `missing`.
 - Une entrée qui ne peut pas être chargée revient avec `valid` à `false`, une `error`, et seulement son schéma dans `privacy_url`. Quand son service est connu, `fields` et `privacy_fields` contiennent tout de même ce qui a pu être lu, comme `mailto://` sans rien après.
 - Elle fonctionne quels que soient les modes avec et sans état. Sur une configuration `public` ou `disabled`, seul l'administrateur peut l'utiliser.
 

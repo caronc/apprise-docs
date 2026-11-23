@@ -12,6 +12,8 @@
   "resolveUnsafe": "Links with ?resolve= are not loaded, since they send the URL (and any password in it) to the server. Use #resolve= instead.",
   "resolveUncertain": "{name}: this value could also be meant as {given}. Check that it is in the right field.",
   "resolveUnreadable": "The URL to load does not match any supported service format, so it was not used.",
+  "resolvePathUnread": "The part after :// does not fit any URL pattern of this service, so it was left out.",
+  "resolveMoreNotes": "{count} more not shown.",
   "dismissNotice": "Dismiss",
   "allServices": "All services",
   "popularServices": "Popular",
