@@ -1,0 +1,194 @@
+---
+title: Apprise Mobile
+description: Send notifications and attachments from anywhere with your self-hosted Apprise API.
+tableOfContents: false
+sidebar:
+  label: Introduction
+  order: 1
+---
+
+import "~/styles/mobile.css";
+import MobileStoreLinks from "~/components/MobileStoreLinks.astro";
+import AppriseOverview from "~/components/AppriseOverview.astro";
+import MobileHeroPhone from "~/components/MobileHeroPhone.astro";
+
+<style>{`
+  :root[data-theme="dark"] .apprise-flow img {
+    content: url("/assets/apprise-overview-en-dark.svg");
+  }
+
+  :root[data-theme="light"] .apprise-flow img {
+    content: url("/assets/apprise-overview-en-light.svg");
+  }
+`}</style>
+
+<div class="mobile-page">
+  <section class="mobile-hero">
+    <MobileHeroPhone />
+    <div class="mobile-hero-copy">
+      <span class="mobile-app-label">Android and iOS App</span>
+      <h2>Your Notifications, Wherever You Are</h2>
+      <p>
+        Send a message or a photo you just took to one destination, a group, or every destination
+        you have configured. Apprise Mobile connects your phone or tablet to
+        <!-- SERVICES:COUNT --> supported services through your self-hosted Apprise API.
+      </p>
+      <p>
+        Not ready to send yet? Set a <a href="/mobile/reminders/">reminder</a> and your server sends it later, once or on a repeating schedule, even with your phone switched off.
+      </p>
+      <p>
+        Requires a running <a href="/api/deployment/">Apprise API server</a>. Apprise Mobile is a
+        client for your server, not a notification service on its own.
+      </p>
+      <MobileStoreLinks lang="en" />
+    </div>
+  </section>
+
+<section class="mobile-preview">
+  <h2>Where Apprise Mobile Fits</h2>
+  <p>
+    Apprise Mobile is a client for a server you run. It talks to your Apprise
+    API, which does the delivering.
+  </p>
+  <AppriseOverview
+    highlight="mobile"
+    alt="Apprise Mobile highlighted among the ways to send notifications through Apprise."
+  />
+</section>
+
+<section class="mobile-preview">
+  <h2>Send It Now or Save It for Later</h2>
+  <ul>
+    <li>
+      <strong>Send from anywhere.</strong> Reach the people, apps, and services
+      that matter from your phone.
+    </li>
+    <li>
+      <strong>Share photos and files.</strong> Take a photo or choose a file,
+      share it to Apprise Mobile, select your targets, and send.
+    </li>
+    <li>
+      <strong>Reuse your messages.</strong> Full Version lets you save common
+      messages and their targets as templates, then send them again on demand.
+    </li>
+    <li>
+      <strong>Connect quickly.</strong> Scan a QR code from the Apprise API Web
+      interface to add a server and its configuration.
+    </li>
+    <li>
+      <strong>Edit when needed.</strong> Work with remote configurations in Text
+      or YAML using formatting, error hints, undo, and local conversion.
+    </li>
+    <li>
+      <strong>Schedule reminders.</strong> Save a notification for your server
+      to send later, once or on a repeating schedule, even with your phone
+      switched off. See <a href="/mobile/reminders/">Reminders</a>.
+    </li>
+  </ul>
+</section>
+
+  <section class="mobile-preview">
+    <h2>Everything in One Place</h2>
+    <p>
+      Manage your servers, plan reminders, build service URLs, and follow every send through its delivery report.
+    </p>
+
+    <div class="mobile-screenshots">
+      <figure>
+        <img
+          class="mobile-shot-dark"
+          src="/assets/apprise-mobile-dashboard.png"
+          alt="Apprise Mobile dashboard showing servers, tags, and notification services"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-dashboard-light.png"
+          alt="Apprise Mobile dashboard showing servers, tags, and notification services"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <figcaption>Dashboard</figcaption>
+      </figure>
+      <figure>
+        <img
+          class="mobile-shot-dark"
+          src="/assets/apprise-mobile-reminders.png"
+          alt="Apprise Mobile reminders: a month calendar with each reminder listed under the day it is sent"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-reminders-light.png"
+          alt="Apprise Mobile reminders: a month calendar with each reminder listed under the day it is sent"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <figcaption>Reminders</figcaption>
+      </figure>
+      <figure>
+        <img
+          class="mobile-shot-dark"
+          src="/assets/apprise-mobile-url-builder.png"
+          alt="Apprise Mobile URL Builder with a searchable service list"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-url-builder-light.png"
+          alt="Apprise Mobile URL Builder with a searchable service list"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <figcaption>URL Builder</figcaption>
+      </figure>
+      <figure>
+        <img
+          class="mobile-shot-dark"
+          src="/assets/apprise-mobile-delivery-report.png"
+          alt="Apprise Mobile delivery report with notification progress and results"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <img
+          class="mobile-shot-light"
+          src="/assets/apprise-mobile-delivery-report-light.png"
+          alt="Apprise Mobile delivery report with notification progress and results"
+          width="450"
+          height="968"
+          loading="lazy"
+        />
+        <figcaption>Delivery Report</figcaption>
+      </figure>
+    </div>
+
+  </section>
+
+<section class="mobile-get">
+  <h2>Connect Your Phone or Tablet</h2>
+  <p>
+    Available for Android 8.0 or later and iPhone or iPad with iOS 17.2 or
+    later. Install from the store above, connect your Apprise API server, and
+    send your first notification.
+  </p>
+  <a class="mobile-get-link mobile-get-link-primary" href="./getting-started/">
+    Set up Apprise Mobile
+  </a>
+</section>
+
+<nav class="mobile-legal" aria-label="Apprise Mobile legal documents">
+  <a href="./privacy/">Privacy Policy</a>
+  <a href="./tos/">Terms of Service</a>
+</nav>
+
+</div>
