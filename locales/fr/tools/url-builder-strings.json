@@ -53,6 +53,8 @@
   "removeRow": "\u00d7",
   "keyPlaceholder": "cl\u00e9",
   "valuePlaceholder": "valeur",
+  "showValue": "Afficher la valeur",
+  "hideValue": "Masquer la valeur",
 
   "stepSelectService": "S\u00e9lectionnez le service souhait\u00e9",
   "stepConfigure": "Fournissez la configuration requise",
@@ -61,8 +63,9 @@
   "schemaVariant": "Sch\u00e9ma",
   "templateResetTitle": "R\u00e9initialiser la s\u00e9lection automatique",
   "templateAutoBadge": "auto",
-  "requiredProgressTitle": "Param\u00e8tres minimums requis pour g\u00e9n\u00e9rer une URL de notification valide.",
+  "requiredProgressTitle": "Param\u00e8tres minimums requis pour g\u00e9n\u00e9rer une URL de notification valide. Cliquez pour aller au prochain champ requis encore vide.",
   "requiredTitle": "Requis",
+  "requiredJumpLabel": "Champs requis : {filled} sur {total} remplis. Aller au prochain champ vide.",
 
   "fillRequired": "Remplissez les champs requis (*) pour compl\u00e9ter l\u2019URL",
   "copy": "Copier",
@@ -78,7 +81,7 @@
   "privacyPointClientTitle": "Assemblage c\u00f4t\u00e9 client",
   "privacyPointClientBody": "Toute la logique s\u2019ex\u00e9cute localement dans votre navigateur, afin que les URL Apprise soient assembl\u00e9es sur votre machine plut\u00f4t que sur nos serveurs.",
   "privacyPointSharingTitle": "Partage s\u00fbr",
-  "privacyPointSharingBody": "L\u2019URL de la page peut conserver des param\u00e8tres non sensibles du g\u00e9n\u00e9rateur pour les favoris ou le partage, mais les champs sensibles sont volontairement exclus de la barre d\u2019adresse.",
+  "privacyPointSharingBody": "L\u2019URL de la page peut conserver des param\u00e8tres non sensibles du g\u00e9n\u00e9rateur pour les favoris ou le partage, mais les champs sensibles et les paires cl\u00e9/valeur personnalis\u00e9es (comme les en-t\u00eates) sont volontairement exclus de la barre d\u2019adresse.",
   "privacyPointLoggingTitle": "Journalisation standard",
   "privacyPointLoggingBody": "Comme pour la plupart des sites Web, la journalisation standard du serveur peut enregistrer des m\u00e9tadonn\u00e9es de requ\u00eate de base comme l\u2019adresse IP et les horodatages, mais le g\u00e9n\u00e9rateur est con\u00e7u pour ne pas placer d\u2019identifiants sensibles dans les URL partageables ni dans les requ\u00eates normales de la page.",
   "privacyPointLocalTitle": "Responsabilit\u00e9 locale",

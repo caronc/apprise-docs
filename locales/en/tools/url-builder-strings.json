@@ -53,6 +53,8 @@
   "removeRow": "\u00d7",
   "keyPlaceholder": "key",
   "valuePlaceholder": "value",
+  "showValue": "Show value",
+  "hideValue": "Hide value",
 
   "stepSelectService": "Select the service you wish to use",
   "stepConfigure": "Provide the required configuration",
@@ -61,8 +63,9 @@
   "schemaVariant": "Schema",
   "templateResetTitle": "Reset to auto-select",
   "templateAutoBadge": "auto",
-  "requiredProgressTitle": "Minimum parameters required to generate a valid notification URL.",
+  "requiredProgressTitle": "Minimum parameters required to generate a valid notification URL. Click to jump to the next empty required field.",
   "requiredTitle": "Required",
+  "requiredJumpLabel": "Required fields: {filled} of {total} filled. Go to the next empty one.",
 
   "fillRequired": "Fill required (*) fields to complete the URL",
   "copy": "Copy",
@@ -78,7 +81,7 @@
   "privacyPointClientTitle": "Client-Side Assembly",
   "privacyPointClientBody": "All logic runs locally in your browser, so Apprise URLs are assembled on your machine rather than on our servers.",
   "privacyPointSharingTitle": "Safe Sharing",
-  "privacyPointSharingBody": "The page URL can preserve non-sensitive builder settings for bookmarking and sharing, but sensitive fields are intentionally excluded from the address bar.",
+  "privacyPointSharingBody": "The page URL can preserve non-sensitive builder settings for bookmarking and sharing, but sensitive fields and custom key/value rows (such as headers) are intentionally excluded from the address bar.",
   "privacyPointLoggingTitle": "Standard Logging",
   "privacyPointLoggingBody": "Like most websites, standard web server logs may capture basic request metadata such as IP address and timestamps, but the builder is designed not to place sensitive credentials into shareable URLs or normal page requests.",
   "privacyPointLocalTitle": "Local Responsibility",
