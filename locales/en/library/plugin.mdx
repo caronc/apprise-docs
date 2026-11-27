@@ -86,7 +86,6 @@ import requests
 
 from ..common import NotifyType
 from ..exception import AppriseImproperlyConfigured
-from ..url import PrivacyMode
 from ..utils import parse_bool
 from ..locale import gettext_lazy as _
 from .base import NotifyBase
@@ -171,16 +170,8 @@ class NotifyDemoHTTP(NotifyBase):
     def url(self, privacy=False, *args, **kwargs):
         params = self.url_parameters(privacy=privacy, *args, **kwargs)
 
-        auth = ""
-        if self.user and self.password:
-            auth = "{user}:{password}@".format(
-                user=self.quote(self.user, safe=""),
-                password=self.pprint(
-                    self.password, privacy, mode=PrivacyMode.Secret, safe=""
-                ),
-            )
-        elif self.user:
-            auth = "{user}@".format(user=self.quote(self.user, safe=""))
+        # Determine Authentication
+        auth = self.url_auth(privacy)
 
         default_port = 443 if self.secure else 80
         schema = self.secure_protocol if self.secure else self.protocol
@@ -518,16 +509,8 @@ class NotifyMyService(NotifyBase):
         params.update({f"-{k}": v for k, v in self.params.items()})
         params.update({f":{k}": v for k, v in self.payload.items()})
 
-        auth = ""
-        if self.user and self.password:
-            auth = "{user}:{password}@".format(
-                user=self.quote(self.user, safe=""),
-                password=self.pprint(
-                    self.password, privacy, mode=PrivacyMode.Secret, safe=""
-                ),
-            )
-        elif self.user:
-            auth = "{user}@".format(user=self.quote(self.user, safe=""))
+        # Determine Authentication
+        auth = self.url_auth(privacy)
 
         default_port = 443 if self.secure else 80
         schema = self.secure_protocol if self.secure else self.protocol
@@ -634,6 +617,51 @@ A key rule that the unit tests enforce is that your template metadata must map c
 - `rto` controls the socket read timeout
 - `cto` controls the socket connect timeout
 
+### Basic Authentication
+
+When your service uses the URL's `user` and `password` as HTTP Basic credentials, let `URLBase` handle both directions instead of building them yourself:
+
+- Pass `auth=self.request_auth` into each `requests.*` call. It is `None` when the URL has no credentials.
+- In `url()`, write them back with `self.url_auth(privacy)`. It returns the `user:password@` part, with the password hidden when `privacy=True`, or an empty string.
+
+Both follow [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617), where the user or the password may be empty:
+
+| URL              | Sent as Basic Auth | Written Back by `url_auth()` |
+| ---------------- | ------------------ | ---------------------------- |
+| `user:pass@host` | `user:pass`        | `user:pass@`                 |
+| `user@host`      | `user:`            | `user@`                      |
+| `user:@host`     | `user:`            | `user@`                      |
+| `:pass@host`     | `:pass`            | `:pass@`                     |
+| `host`           | nothing            | an empty string              |
+
+```python
+def send(self, body, title="", notify_type=NotifyType.INFO, **kwargs):
+    r = requests.post(
+        self.notify_url,
+        data=payload,
+        headers=headers,
+        auth=self.request_auth,
+        verify=self.verify_certificate,
+        timeout=self.request_timeout,
+        allow_redirects=self.redirects,
+    )
+
+
+def url(self, privacy=False, *args, **kwargs):
+    params = self.url_parameters(privacy=privacy, *args, **kwargs)
+
+    return "{schema}://{auth}{host}/?{params}".format(
+        schema=self.secure_protocol,
+        auth=self.url_auth(privacy),
+        host=self.host,
+        params=self.urlencode(params),
+    )
+```
+
+:::caution
+Skip these helpers when the URL's password holds something else, such as an API key, or when your plugin sets its own `Authorization` header. `requests` replaces that header with Basic auth whenever `auth=` is set.
+:::
+
 ## Hiding Secrets in `url()`
 
 Every plugin's `url()` method takes a `privacy` flag. When it is `True`, the URL is headed for a log or a screen, so passwords and tokens must be masked. Wrap each sensitive value in `self.pprint()` and pick a mode that decides how much of it stays visible:
@@ -668,6 +696,8 @@ def url(self, privacy=False, *args, **kwargs):
 | ------------------- | ----------------------------------------- |
 | `url()`             | `myservice://joe:pass123@abcdef1234/?...` |
 | `url(privacy=True)` | `myservice://joe:****@a...4/?...`         |
+
+When the user and password are Basic auth credentials, `self.url_auth(privacy)` already masks the password this way. See [Basic Authentication](#basic-authentication).
 
 Mark the same values with `"private": True` in `template_tokens` or `template_args`. That is what tells the [URL Builder](#private-flag-matters) to hide them, and the [unit tests](#testing-your-plugin) check that nothing marked private shows up in the privacy URL.
 
