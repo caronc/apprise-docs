@@ -1449,6 +1449,34 @@ Two functions should work together:
 - `parse_url()` should extract every argument you expose through `template_args` and `template_kwargs`.
 - `url()` should emit a URL that can recreate the same object, and should generate the same `url_identifier` when re-instantiated.
 
+#### Recipients that were refused
+
+Some services send to the sender, source number or account owner when no recipients are given. If your plugin does this, keep three cases apart so a round trip through `url()` never changes who receives the message:
+
+- **No recipients given:** send to the sender, as before.
+- **Recipients given, but every one refused:** send to nobody. Keep each refused entry in `self.invalid_targets` and have `url()` write it back after the valid ones. On reload it is refused again, so the plugin still has nobody to send to.
+- **Only separators given** (such as `;` or `, ,`): treat it as no recipients given. Decide the fallback on the parsed list, not on the raw input.
+
+```python
+self.invalid_targets = []
+
+# Parse first, so text holding only separators counts as none given
+targets = parse_phone_no(targets)
+if not targets:
+    targets = [self.source]
+
+for target in targets:
+    result = is_phone_no(target)
+    if not result:
+        self.logger.warning("Dropped invalid phone # (%s).", target)
+        self.invalid_targets.append(target)
+        continue
+
+    self.targets.append(result["full"])
+```
+
+In `url()`, write `self.targets + self.invalid_targets` so the refused entries survive the round trip. If your `send()` falls back instead (for example `self.targets or [self.source]`), have it return `False` when every recipient was refused.
+
 ## Template Schema Reference
 
 This table documents the most common directives supported by `template_tokens`, `template_args`, and `template_kwargs`.

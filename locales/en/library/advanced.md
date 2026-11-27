@@ -105,7 +105,7 @@ assert apprise.Apprise.instantiate(url).url() == obj.url()
 - Key/value options (`+header`, `-param`, `:key`) come back as maps, such as `headers`, `params` and `payload`.
 - Values come back as the type `details()` gives them: lists, numbers and `True`/`False`.
 - The hidden fields mask every entry `details()` marks as private.
-- `fields_to_url()` returns `None` when the schema is unknown or a field name isn't one the service lists. It doesn't check the URL; load it to find out whether it works.
+- `fields_to_url()` returns `None` when the schema is unknown, a field name isn't one the service lists, or the service refuses the values. A host holding `/`, `?`, `#`, `@` or `:` (other than an IPv6 address) and a port that isn't a whole number from 1 to 65535 are refused too, so one field can never change another part of the URL.
 - `apprise.fields.parse_fields(url)` reads the fields of a URL its service wouldn't load yet, such as `mailto://` with nothing after it, so a form can show what was typed so far.
 
 ## Handling Configuration Errors

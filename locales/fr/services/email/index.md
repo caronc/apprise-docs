@@ -20,7 +20,7 @@ sample_urls:
   - mailtos://domain.com?user=userid&pass=password
   - mailtos://domain.com:465?user=userid&pass=password
   - mailto://mySendingUsername:mySendingPassword@example.com?to=receivingAddress@example.com
-  - mailto://userid:password@example.com?smtp=mail.example.com&from=noreply@example.com&name=no%20reply
+  - mailto://userid:password@example.com?smtp=mail.example.com&from=noreply@example.com
 ---
 
 <!-- SPONSORS:BANNER -->
@@ -173,14 +173,14 @@ mailto://server.com?smtp=smtp.server.com&from=noreply@server.com
 
 L'adresse d'expéditeur comporte deux composantes : l'**adresse email** et le **nom d'affichage** facultatif (ce que les destinataires voient dans leur client mail à la place d'une adresse brute).
 
-**Forme historique (toujours prise en charge) :** `name=` acceptait un nom d'affichage et `from=` une adresse e-mail. Ensemble, ils fournissaient les deux valeurs :
+**Forme obsolète (toujours prise en charge) :** `name=` est obsolète et son utilisation produit un avertissement d'obsolescence. Il acceptait un nom d'affichage et `from=` une adresse e-mail. Ensemble, ils fournissaient les deux valeurs. Il en va de même pour une clé `name:` dans un fichier de configuration YAML ; utilisez `from:` à la place :
 
 ```text
 name=No%20Reply&from=noreply@example.com
 # Résultat : "No Reply" <noreply@example.com>
 ```
 
-**Forme moderne (recommandée) :** les deux paramètres acceptent `Nom d'affichage <email@example.com>`, mais il est recommandé d'utiliser uniquement `from=` :
+**Forme actuelle :** `from=` accepte un nom d'affichage, une adresse e-mail ou les deux (`Nom d'affichage <email@example.com>`). Quand Apprise réécrit une URL, il utilise toujours cette forme :
 
 ```text
 from=No%20Reply <noreply@example.com>
@@ -194,13 +194,14 @@ Lorsque `from=` contient `Nom <email>`, il n'est pas nécessaire de fournir `nam
 | Paramètres              | Nom d'affichage        | Adresse email                   |
 | ----------------------- | ---------------------- | ------------------------------- |
 | `from=email` seul       | Nom de l'appli (repli) | Valeur de `from=`               |
+| `from=Nom` seul         | Valeur de `from=`      | Dérivée de user + host de l'URL |
 | `name=Nom` seul         | Valeur de `name=`      | Dérivée de user + host de l'URL |
 | `from=email&name=Nom`   | Valeur de `name=`      | Valeur de `from=`               |
 | `from=Nom <email>` seul | Nom intégré            | Email intégré                   |
 | `name=Nom <email>` seul | Nom intégré            | Email intégré                   |
 
 :::caution
-Ne combinez pas `name=` avec une valeur `from=` qui intègre déjà un nom d'affichage (ex. `from=Nom <email>&name=Autre`). Les deux sont combinés de manière indéfinie et peuvent produire un en-tête From malformé. Utilisez `from=Nom <email>` seul lorsque la forme combinée est souhaitée.
+Ne combinez pas `name=` avec une valeur `from=` qui intègre déjà un nom d'affichage (ex. `from=Nom <email>&name=Autre`). Dans ce cas, `name=` remplace ce nom d'affichage et l'email de `from=` est conservé. Utilisez `from=Nom <email>` seul lorsque la forme combinée est souhaitée.
 :::
 
 ## Manipulation des En-têtes
@@ -506,26 +507,26 @@ Si un fichier de clé est manquant pour un destinataire particulier, le repli op
 
 ## Détail des Paramètres
 
-| Variable | Requis | Description                                                                                                                                                                                                                                                    |
-| -------- | -----: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`.                                                                                                                                        |
-| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                                                                                                                                                                      |
-| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                                                                                                                                                             |
-| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                                                                                                                                                         |
-| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                                                                                                                                                                     |
-| from     |    Non | Adresse expéditeur. Accepte un email simple (`noreply@example.com`) ou une valeur combinée `Nom d'Affichage <email>`. En forme combinée, `name=` n'est pas nécessaire.                                                                                         |
-| name     |    Non | Nom d'affichage de l'expéditeur. Historiquement, n'acceptait qu'une chaîne de nom ; accepte désormais aussi le format `Nom <email>`. Utilisé avec `from=`, `name=` fournit le nom et `from=` l'email. Ne pas combiner avec un `from=` qui intègre déjà un nom. |
-| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                                                                                                                                                             |
-| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                    |
-| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                             |
-| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                    |
-| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                                                                                                                         |
-| pgp      |    Non | Mode PGP : `no` (par défaut), `sign` ou `encrypt`. Les préfixes `n`, `s` et `e` sont également acceptés. `none` correspond à `no`.                                                                                                                             |
-| pgppub   |    Non | Chemin ou URL vers la clé PGP **publique** blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Masqué dans les URL anonymisées.                                                                                  |
-| pgpprv   |    Non | Chemin vers la clé PGP **privée** blindée ASCII (`.asc`) de l'expéditeur. Requis pour `pgp=sign`. Les clés protégées par phrase de passe ne sont pas prises en charge. Masqué dans les URL anonymisées.                                                        |
-| wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.                                                                                                    |
-| inline   |    Non | Incorpore les pièces jointes de type image dans le corps des e-mails HTML (`yes` ou `no`). Par défaut : `no`. Voir [Pièces Jointes Intégrées](#pieces-jointes-integrees-rfc-2387).                                                                             |
-| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                                                                                                             |
+| Variable | Requis | Description                                                                                                                                                                                                                                                                  |
+| -------- | -----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user     |  Oui\* | Nom d'utilisateur SMTP. Peut être un identifiant ou une adresse e-mail complète. Peut aussi être précisé avec `?user=`.                                                                                                                                                      |
+| pass     |  Oui\* | Mot de passe SMTP. Peut aussi être précisé avec `?pass=`.                                                                                                                                                                                                                    |
+| domain   |    Oui | Partie domaine de l'hôte URL. Pour `mailto://user:pass@example.com`, le domaine est `example.com`.                                                                                                                                                                           |
+| port     |    Non | Port SMTP. Par défaut : 25 (`mailto`) et 587 (`mailtos`) sauf si des valeurs fournisseur s'appliquent.                                                                                                                                                                       |
+| smtp     |    Non | Surcharge l'hôte SMTP. Si défini, la détection fournisseur est contournée.                                                                                                                                                                                                   |
+| from     |    Non | Adresse expéditeur. Accepte un nom d'affichage (`No Reply`), un email simple (`noreply@example.com`) ou les deux (`No Reply <noreply@example.com>`).                                                                                                                         |
+| name     |    Non | Obsolète ; utilisez `from=` à la place. Toujours accepté, avec un avertissement d'obsolescence : un nom d'affichage, ou `Nom <email>`. Utilisé avec `from=`, `name=` fournit le nom et `from=` l'email. Il en va de même pour `name:` dans un fichier de configuration YAML. |
+| to       |    Non | Surcharge du destinataire. Pris en charge aussi via les cibles dans le chemin URL.                                                                                                                                                                                           |
+| cc       |    Non | Destinataires en copie. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                                  |
+| bcc      |    Non | Destinataires en copie cachée. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                           |
+| reply    |    Non | Destinataires Reply-To. Séparés par des virgules. Le formatage des noms est pris en charge.                                                                                                                                                                                  |
+| mode     |    Non | Mode sécurisé : `ssl` ou `starttls`. Avec `mailto://`, préciser `mode=` force une connexion sécurisée.                                                                                                                                                                       |
+| pgp      |    Non | Mode PGP : `no` (par défaut), `sign` ou `encrypt`. Les préfixes `n`, `s` et `e` sont également acceptés. `none` correspond à `no`.                                                                                                                                           |
+| pgppub   |    Non | Chemin ou URL vers la clé PGP **publique** blindée ASCII (`.asc`) du destinataire. Si défini, WKD et la génération automatique sont ignorés. Masqué dans les URL anonymisées.                                                                                                |
+| pgpprv   |    Non | Chemin vers la clé PGP **privée** blindée ASCII (`.asc`) de l'expéditeur. Requis pour `pgp=sign`. Les clés protégées par phrase de passe ne sont pas prises en charge. Masqué dans les URL anonymisées.                                                                      |
+| wkd      |    Non | Active la découverte de clé via Web Key Directory (`yes` ou `no`). Par défaut : `no`. Définir `wkd=yes` implique `pgp=encrypt` si `pgp=` n'est pas précisé.                                                                                                                  |
+| inline   |    Non | Incorpore les pièces jointes de type image dans le corps des e-mails HTML (`yes` ou `no`). Par défaut : `no`. Voir [Pièces Jointes Intégrées](#pieces-jointes-integrees-rfc-2387).                                                                                           |
+| +Header  |    Non | Ajoute des en-têtes e-mail personnalisés en préfixant les clés avec `+`. Exemple : `?+X-Team=Ops`.                                                                                                                                                                           |
 
 **\*** Non requis pour les relais anonymes.
 
