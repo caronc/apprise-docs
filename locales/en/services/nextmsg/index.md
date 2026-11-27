@@ -33,7 +33,7 @@ NextMsg is a one-way push notification app for iPhone and Android. There is no a
 1. Install NextMsg from the [App Store](https://apps.apple.com/app/nextmsg-push-notifications/id6831546010) or [Google Play](https://play.google.com/store/apps/details?id=app.nextmsg).
 1. Open **Settings** -> **Send keys** in the app and copy a send key. Every key starts with `nextmsg_live_`.
 
-To give Apprise a key of its own, which you can revoke in the app without changing anything else, tap **Create a key** on the same screen. The free plan includes 2 send keys, Pro up to 20.
+To give Apprise a key of its own, which you can revoke in the app without changing anything else, tap **Add send key** -> **Copy a key** on the same screen. The free plan includes 2 send keys, Pro up to 20.
 
 ## Syntax
 
