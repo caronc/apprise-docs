@@ -1449,6 +1449,35 @@ Deux fonctions doivent travailler ensemble :
 - `parse_url()` doit extraire chaque argument exposé via `template_args` et `template_kwargs`.
 - `url()` doit émettre une URL capable de recréer le même objet, et doit générer le même `url_identifier` lorsqu'il est réinstancié.
 
+#### Destinataires refusés
+
+Certains services envoient à l'expéditeur, au numéro source ou au titulaire du compte lorsqu'aucun destinataire n'est indiqué. Si votre plugin le fait, distinguez trois cas afin qu'un aller-retour par `url()` ne change jamais qui reçoit le message :
+
+- **Aucun destinataire indiqué :** envoyer à l'expéditeur, comme avant.
+- **Des destinataires indiqués, mais tous refusés :** n'envoyer à personne. Conservez chaque entrée refusée dans `self.invalid_targets` et faites en sorte que `url()` la réécrive après les entrées valides. Au rechargement, elle est de nouveau refusée, et le plugin n'a toujours personne à qui envoyer.
+- **Uniquement des séparateurs** (comme `;` ou `, ,`) : traitez-les comme si aucun destinataire n'était indiqué. Décidez du repli à partir de la liste analysée, et non de l'entrée brute.
+
+```python
+self.invalid_targets = []
+
+# Analyser d'abord, pour que du texte ne contenant que des séparateurs
+# compte comme aucun destinataire
+targets = parse_phone_no(targets)
+if not targets:
+    targets = [self.source]
+
+for target in targets:
+    result = is_phone_no(target)
+    if not result:
+        self.logger.warning("Dropped invalid phone # (%s).", target)
+        self.invalid_targets.append(target)
+        continue
+
+    self.targets.append(result["full"])
+```
+
+Dans `url()`, écrivez `self.targets + self.invalid_targets` afin que les entrées refusées survivent à l'aller-retour. Si votre `send()` effectue le repli à la place (par exemple `self.targets or [self.source]`), faites-lui renvoyer `False` lorsque tous les destinataires ont été refusés.
+
 ## Référence du Schéma de Template
 
 Ce tableau documente les directives les plus courantes prises en charge par `template_tokens`, `template_args` et `template_kwargs`.

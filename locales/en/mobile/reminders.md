@@ -91,7 +91,7 @@ Each reminder also has a menu with these choices:
 - **Delete Entry**: remove a one-off reminder, or, in the Agenda view, just that one time of a repeating reminder.
 - **Delete Series**: remove a repeating reminder and every time it would be sent. It only shows for a reminder that repeats.
 
-A reminder whose server can't be reached right now can't be changed: its menu shows faded, and tapping it explains why.
+A reminder whose server can't be reached right now can't be changed: its card shows faded, and tapping its menu explains why. Reminders on servers that answer stay as they are. A server that answers with an error instead (for example, it refuses the login) is named in a notice at the top. With no network at all (for example in airplane mode), no server is asked and no notice shows: every reminder simply shows faded, as loaded previously. Once your phone is back online, they load again by themselves while the Reminders screen is open.
 
 ## Free and Full Versions
 

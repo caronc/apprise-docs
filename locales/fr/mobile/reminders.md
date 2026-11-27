@@ -91,7 +91,7 @@ Chaque rappel dispose aussi d'un menu avec ces choix :
 - **Supprimer l'entrée** : retirer un rappel unique ou, dans la vue Agenda, seulement cet envoi d'un rappel répété.
 - **Supprimer la série** : retirer un rappel répété et tous ses envois. Ce choix n'apparaît que pour un rappel qui se répète.
 
-Un rappel dont le serveur est injoignable pour le moment ne peut pas être modifié : son menu apparaît estompé, et le toucher explique pourquoi.
+Un rappel dont le serveur est injoignable pour le moment ne peut pas être modifié : sa carte apparaît estompée, et toucher son menu explique pourquoi. Les rappels des serveurs qui répondent restent tels quels. Un serveur qui répond par une erreur (par exemple, il refuse l'identifiant) est nommé dans un avis en haut de l'écran. Sans aucun réseau (par exemple en mode avion), aucun serveur n'est interrogé et aucun avis ne s'affiche : chaque rappel apparaît simplement estompé, tel que chargé précédemment. Une fois votre téléphone de nouveau en ligne, ils se rechargent d'eux-mêmes tant que l'écran Rappels est ouvert.
 
 ## Versions Gratuite et Complète
 

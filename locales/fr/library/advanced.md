@@ -106,7 +106,7 @@ assert apprise.Apprise.instantiate(url).url() == obj.url()
 - Les options clé/valeur (`+header`, `-param`, `:key`) reviennent sous forme de tables, comme `headers`, `params` et `payload`.
 - Les valeurs reviennent dans le type que leur donne `details()` : listes, nombres et `True`/`False`.
 - Les champs masqués masquent chaque entrée que `details()` marque comme privée.
-- `fields_to_url()` renvoie `None` lorsque le schéma est inconnu ou qu'un nom de champ ne fait pas partie de ceux du service. Elle ne vérifie pas l'URL ; chargez-la pour savoir si elle fonctionne.
+- `fields_to_url()` renvoie `None` lorsque le schéma est inconnu, qu'un nom de champ ne fait pas partie de ceux du service ou que le service refuse les valeurs. Un hôte contenant `/`, `?`, `#`, `@` ou `:` (hors adresse IPv6) et un port qui n'est pas un nombre entier de 1 à 65535 sont également refusés : un champ ne peut ainsi jamais modifier une autre partie de l'URL.
 - `apprise.fields.parse_fields(url)` lit les champs d'une URL que son service ne chargerait pas encore, comme `mailto://` sans rien après, pour qu'un formulaire affiche ce qui a déjà été saisi.
 
 ## Gestion des Erreurs de Configuration
